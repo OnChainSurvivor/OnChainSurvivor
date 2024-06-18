@@ -10,7 +10,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮
 
 Onchain Survivor is a web-based game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 2.5D environment to do what they do best.... Survive Together! while enjoying blockchain features to enhance their gameplay experience.
 
-### Key Features
+### Key Features 🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
 - **Blockchain Integration**: Interact with the Ethereum blockchain using Web3.js. Ethereum will hold the game data. 
@@ -73,7 +73,7 @@ We welcome contributions from everyone! Here’s how you can help:
 This project license is currently [TBD]. 
 
 
-## OnChain Survivor Game NFT features
+## 🌆 OnChain Survivor NFT  features 🌆
 
 
 |                |Own NFT                          |Borrow NFT                         |
@@ -83,7 +83,7 @@ This project license is currently [TBD].
 
 
 
-## Basic Interaction models
+##  📚 Basic Interaction Models 🕹️
 ```mermaid
 sequenceDiagram
 Client -> Blockchain*: NFT / Asset List
