@@ -82,9 +82,9 @@ This project license is currently [TBD].
 ## Onchain Survivor Dynamic Difficulty Scaling 👺😈
 
 The *Onchain Survivor Dynamic Difficulty Scaling  function* will be satisfying gameplay up until minute 30. We'll assume the difficulty increases exponentially until the end. Depending on several accounting factors related to both the Players $P$ and the blockchain $B$. Let  $D(t)$  be the difficulty at time  $t$.   The final difficulty can be modeled as:
-$$
+$
 D(t) = D_0 e^{kt} +α(Pavg​−P(t)+βB(t))
-$$
+$
 
 where:
 
