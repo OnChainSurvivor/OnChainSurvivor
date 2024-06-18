@@ -98,12 +98,18 @@ User->> Blockchain*: Write Results
 ```
 *Blockchain / RPC
 
-```mermaid
-graph TD
-A[Welcome Screen] --> B((Wallet Log in))
-A --> C(Play as Guest)
+  ```mermaid
+  graph TD
+A[Welcome Screen] --> B[Wallet Log in]
+A --> C[Play as Guest]
 B --> D{Select NFT}
-C --> D
+D --> E[Own NFT]
+D --> F[Borrow NFT]
+E --> G[Free Play]
+F --> H[Fee / Tip Owner]
+G --> I[Begin Play]
+H --> I
+C --> I
 ```
 
 ## 🙏 Acknowledgments
