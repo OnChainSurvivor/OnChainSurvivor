@@ -111,6 +111,80 @@ G --> I[Begin Play]
 H --> I
 C --> I
 ```
+Ideal design "Endgame" Onchain Survivor
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant FrontEnd as Decentralized Front-End
+    participant SmartContract as Smart Contracts
+    participant AppLogic as Decentralized App Logic
+    participant Storage as Decentralized Storage
+    participant OnChainData as On-Chain Data
+    participant Consensus as Consensus Mechanisms
+    participant P2P as P2P Network
+
+    User ->> FrontEnd: Access Game
+    FrontEnd ->> SmartContract: Request Game Logic
+    SmartContract ->> AppLogic: Execute Game Logic
+    AppLogic ->> Storage: Store Game Data
+    AppLogic ->> OnChainData: Update On-Chain Data
+    Storage ->> Consensus: Verify Data Storage
+    OnChainData ->> Consensus: Validate Data
+    Consensus ->> P2P: Broadcast Consensus
+    P2P ->> SmartContract: Update Network State
+    P2P ->> FrontEnd: Update User Interface
+    FrontEnd ->> User: Display Game State
+```
+
+
+```mermaid
+graph TD
+    A[User Interaction Layer]
+    A --> B[Decentralized Front-End Interface]
+
+    B --> C[Execution Layer]
+    C --> D[Smart Contracts on Blockchain]
+    C --> E[Decentralized Application Logic]
+
+    D --> F[Data Layer]
+    E --> F
+    F --> G[Decentralized Storage Solutions]
+    F --> H[On-Chain Data]
+
+    G --> I[Consensus Layer]
+    H --> I
+    I --> J[Consensus Mechanisms]
+
+    J --> K[Networking Layer]
+    K --> L[P2P Network Protocols]
+    K --> M[Node Communication]
+    
+    subgraph Execution Layer
+        C
+        D
+        E
+    end
+    
+    subgraph Data Layer
+        F
+        G
+        H
+    end
+    
+    subgraph Consensus Layer
+        I
+        J
+    end
+    
+    subgraph Networking Layer
+        K
+        L
+        M
+    end
+```
+
+
 
 ## 🙏 Acknowledgments
 
