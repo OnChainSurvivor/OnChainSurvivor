@@ -30,7 +30,6 @@ Survivor! Congratulations on making it this far, You survived every hack, every 
 9. [Acknowledgments](#acknowledgments)
 10. [License](#license)
 
-
 # Onchain Survivor 🔗🏆
 
 Welcome to **OnChain Survivor** Official Repository ! 🌐🎮
