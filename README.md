@@ -1,14 +1,14 @@
-# Congratulations, Survivor!
+# Congratulations, Survivor 🏆 !
 
 Survivor! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
-## Table of Contents
+## Table of Contents🧩
 1. [Onchain Survivor](#onchain-survivor)
-2. [About the Project](#about-the-project-🌟)
+2. [About the Project](#about-the-project)
    - [Key Features](#key-features)
 3. [Onchain Survivor Dynamic Difficulty Scaling](#onchain-survivor-dynamic-difficulty-scaling)
 4. [Getting Started](#getting-started)
-   - [Prerequisites](#prerequisites)
+   - [Prerequisites](#%EF%B8%8prerequisites%EF%B8%8F)
    - [Installation](#installation)
 5. [How to Play](#how-to-play)
 6. [Contributing](#contributing)
@@ -18,29 +18,29 @@ Survivor! Congratulations on making it this far, You survived every hack, every 
    - [Push to the Branch](#push-to-the-branch)
    - [Open a Pull Request](#open-a-pull-request)
 7. [License](#license)
-8. [OnChain Survivor NFT Features](#onchain-survivor-nft-features)
-9. [Basic Interaction Models](#basic-interaction-models)
+8. [OnChain Survivor NFT Features](#-onchain-survivor-nft-features-)
+9. [Basic Interaction Models](#-basic-interaction-models-%EF%B8%8F)
    - [Sequence Diagrams](#sequence-diagrams)
    - [Flowcharts](#flowcharts)
-10. [Acknowledgments](#acknowledgments)
-11. [Contact](#contact)
+10. [Acknowledgments](#-acknowledgments)
+11. [Contact](#-contact)
 
-## Onchain Survivor 🔗🏆
+## Onchain Survivor🔗🏆
 
 Welcome to **OnChain Survivor** Official Repository ! 🌐🎮
 
-## About the Project 🌟
+## 🌟About the Project🌟
 
 Onchain Survivor is a web-based game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 2.5D environment to do what they do best.... Survive Together! while enjoying blockchain features to enhance their gameplay experience.
 
-### Key Features 🔑
+### 🔑Key Features🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
 - **Blockchain Integration**: Interact with the Ethereum blockchain using Web3.js. Ethereum will hold the game data. 
 - **3D Graphics**: Experience immersive 2.5D graphics powered by Three.js.
 - **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional installations. Simple is best.
 
-## Onchain Survivor Dynamic Difficulty Scaling 👺😈
+## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
 The *Onchain Survivor Dynamic Difficulty Scaling  function* will be satisfying gameplay up until minute 30. We'll assume the difficulty increases exponentially until the end. Depending on several accounting factors related to both the Players $P$ and the blockchain $B$. Let  $D(t)$  be the difficulty at time  $t$.   The final difficulty can be modeled as:
 
@@ -58,24 +58,24 @@ where:
 
 Note:  Random difficulty factor $B(t)$ that is extracted from the latest block in the blockchain. The factor $B(t)$ could be based on various metrics from the blockchain, such as transaction volume, block size, or other relevant activities. The term $βB(t)$ allows the difficulty to adapt dynamically based on real-time blockchain data, adding an element of unpredictability and aligning with the decentralized nature of blockchain games. 
 
-## 🚀 Getting Started
+## 🚀Getting Started🚀 
 
 Follow these steps to set up Onchain Survivor on your local machine:
 
-### Prerequisites
+### ⏱️Prerequisites⏱️
 - TBD
 
-### Installation
+### 💿Installation💿
 - TBD
 
-## 🎮 How to Play
+## 🎮How to Play🎮
 
 -   **Select to play as guest or with your own NFT**
 -   **Join a Room**: Enter a room ID and click "Join Room" to connect with other players.
 -   **Move Your Character**: Use the arrow keys to move your character around the 3D environment.
 -   **Survive**: Your movements will be broadcast to the other player in real-time.
 
-## 🤝 Contributing
+## 🤝Contributing🤝
 
 We welcome contributions from everyone! Here’s how you can help:
 
@@ -91,12 +91,12 @@ We welcome contributions from everyone! Here’s how you can help:
     
 5.  **Open a Pull Request**: Navigate to the original repository and click "New Pull Request".
 
-## 📜 License
+## 📜License📜 
 
 This project license is currently [TBD]. 
 
 
-## 🌆 OnChain Survivor NFT  features 🌆
+## 🌆 OnChain Survivor NFT features 🌆
 
 
 |                |Own NFT                          |Borrow NFT                         |
