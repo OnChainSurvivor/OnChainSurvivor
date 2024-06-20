@@ -2,6 +2,35 @@
 
 Survivor! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
+# OnChain Survivor
+
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Features](#features)
+   - [Decentralized Gameplay](#decentralized-gameplay)
+   - [Blockchain Integration](#blockchain-integration)
+   - [Graphics](#graphics)
+   - [Cross-Platform](#cross-platform)
+3. [Dynamic Difficulty Scaling](#dynamic-difficulty-scaling)
+4. [How to Play](#how-to-play)
+   - [Select Play Mode](#select-play-mode)
+   - [Join a Room](#join-a-room)
+   - [Controls](#controls)
+5. [Installation](#installation)
+   - [Prerequisites](#prerequisites)
+   - [Setup](#setup)
+6. [Usage](#usage)
+7. [Contributing](#contributing)
+   - [Forking the Repository](#forking-the-repository)
+   - [Creating a Branch](#creating-a-branch)
+   - [Submitting a Pull Request](#submitting-a-pull-request)
+8. [Interaction Models](#interaction-models)
+   - [Sequence Diagrams](#sequence-diagrams)
+   - [Flowcharts](#flowcharts)
+9. [Acknowledgments](#acknowledgments)
+10. [License](#license)
+
+
 # Onchain Survivor 🔗🏆
 
 Welcome to **OnChain Survivor** Official Repository ! 🌐🎮
