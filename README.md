@@ -39,6 +39,7 @@ Onchain Survivor is a web-based game that utilizes Web3 technologies to enable O
 - **Blockchain Integration**: Interact with the Ethereum blockchain using Web3.js. Ethereum will hold the game data. 
 - **3D Graphics**: Experience immersive 2.5D graphics powered by Three.js.
 - **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional installations. Simple is best.
+- **Variable Gameplay**: Every play is different, try as many times as you want. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -213,7 +214,6 @@ graph TD
 
 -   **Three js**: For the amazing 3D graphics library.
 -   **Web3 js**: For simplifying blockchain interactions.
-
 
 ## 📬 Contact
 
