@@ -31,7 +31,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 2.5D environment to do what they do best.... Survive Together! while enjoying blockchain features to enhance their gameplay experience.
+Onchain Survivor is a web-based game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 2.5D environment to do what they do best... Survive Together! while enjoying blockchain features to enhance their gameplay experience.
 
 ### 🔑Key Features🔑
 
@@ -96,16 +96,12 @@ We welcome contributions from everyone! Here’s how you can help:
 
 This project license is currently [TBD]. 
 
-
 ## 🌆 OnChain Survivor NFT features 🌆
-
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
 |Onchain Survivor NFT|Free Play           |Fee / TIP Play      |
 |Guest Series NFT         | Fee / TIP Play         |Fee / TIP Play            |
-
-
 
 ##  📚 Basic Interaction Models 🕹️
 ```mermaid
@@ -135,7 +131,7 @@ G --> I[Begin Play]
 H --> I
 C --> I
 ```
-Ideal design "Endgame" Onchain Survivor
+Ideal design of Onchain Survivor
 
 ```mermaid
 sequenceDiagram
@@ -207,7 +203,6 @@ graph TD
         M
     end
 ```
-
 
 
 ## 🙏 Acknowledgments
