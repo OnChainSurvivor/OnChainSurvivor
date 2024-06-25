@@ -27,7 +27,7 @@ Survivor! Congratulations on making it this far, You survived every hack, every 
 
 ## Onchain Survivor🔗🏆
 
-Welcome to **OnChain Survivor** Official Repository ! 🌐🎮
+Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. 
 
 ## 🌟About the Project🌟
 
