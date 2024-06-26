@@ -20,6 +20,14 @@ const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Add lighting to the scene
+const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(10, 10, 10);
+scene.add(pointLight);
+
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
@@ -35,5 +43,12 @@ const animate = function () {
 
     renderer.render(scene, camera);
 };
+
+// Adjust the scene on window resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 animate();
