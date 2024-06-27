@@ -64,10 +64,10 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 Follow these steps to set up Onchain Survivor on your local machine:
 
 ### ⏱️Prerequisites⏱️
-- TBD
+- 
 
 ### 💿Installation💿
-- TBD
+- Simply run index.html in your preferred browser. 
 
 ## 🎮How to Play🎮
 
