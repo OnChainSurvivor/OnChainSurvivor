@@ -100,8 +100,8 @@ This project license is currently [TBD].
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|Free Play           |Fee / TIP Play      |
-|Guest Series NFT         | Fee / TIP Play         |Fee / TIP Play            |
+|Onchain Survivor NFT|Free Play           | Set Fee / TIP / Donation      |
+|Guest Series NFT         | Set Fee / TIP / Donation         | Set Fee / TIP / Donation             |
 
 ##  📚 Basic Interaction Models 🕹️
 ```mermaid
