@@ -100,8 +100,8 @@ This project license is currently [TBD].
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|Free Play           | Set Fee / TIP / Donation      |
-|Guest Series NFT         | Set Fee / TIP / Donation         | Set Fee / TIP / Donation             |
+|Onchain Survivor NFT|Free Play           | Set Donation      |
+|Guest Series NFT         | Set Donation         | Set Donation             |
 
 ##  📚 Basic Interaction Models 🕹️
 ```mermaid
@@ -109,7 +109,7 @@ sequenceDiagram
 Client -> Blockchain*: NFT / Asset List
 Blockchain* -->>User: Selection complete ?
 activate User
-User->> Blockchain*: Signature / Tip
+User->> Blockchain*: Signature / Donation
 Blockchain*-->> Client:Update client
 Note left of Blockchain*: Magical gameplay happens....
 Blockchain* -> Client: Block Calculated Difficulty data
@@ -126,7 +126,7 @@ B --> D{Select NFT}
 D --> E[Own NFT]
 D --> F[Borrow NFT]
 E --> G[Free Play]
-F --> H[Fee / Tip Owner]
+F --> H[Donate to Owner]
 G --> I[Begin Play]
 H --> I
 C --> I
