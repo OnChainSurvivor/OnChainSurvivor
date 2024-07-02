@@ -126,7 +126,7 @@ B --> D{Select NFT}
 D --> E[Own NFT]
 D --> F[Borrow NFT]
 E --> G[Free Play]
-F --> H[Donate to Owner]
+F --> H[TBD interaction to Owner]
 G --> I[Begin Play]
 H --> I
 C --> I
