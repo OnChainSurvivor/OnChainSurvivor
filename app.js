@@ -39,8 +39,8 @@ marker.position.set(0, 0, -0.6);
 cube.add(marker);
 
 // Position the camera
-camera.position.set(0, 10, 0);
-camera.lookAt(0, 0, 0);
+camera.position.set(0, 10, 10);
+camera.lookAt(cube.position);
 
 // Add ambient light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -53,7 +53,7 @@ scene.add(directionalLight);
 
 // Handle user input
 const keys = {};
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
+['w', 'a', 's', 'd', 'i', 'j', 'k', 'l'].forEach(key => keys[key] = false);
 
 document.addEventListener('keydown', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = true;
@@ -65,7 +65,6 @@ document.addEventListener('keyup', (event) => {
 
 // Array to store mini cubes
 const miniCubes = [];
-let rotationAngle = 0;
 
 function createMiniCube(x, y, z, direction) {
     const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
@@ -88,47 +87,53 @@ function cleanupMiniCubes() {
     }
 }
 
-// Calculate direction vector based on rotation angle
-function getDirectionVector(angle) {
-    return new THREE.Vector3(Math.sin(angle), 0, -Math.cos(angle));
+// Update the cube's movement
+function updateCubeMovement() {
+    const movementSpeed = 0.1;
+    const direction = new THREE.Vector3();
+
+    if (keys.w) direction.z -= movementSpeed;
+    if (keys.s) direction.z += movementSpeed;
+    if (keys.a) direction.x -= movementSpeed;
+    if (keys.d) direction.x += movementSpeed;
+
+    direction.normalize().multiplyScalar(movementSpeed);
+    cube.position.add(direction);
 }
 
-// Transform direction vector by the cube's rotation
-function transformDirectionVector(vector, rotationAngle) {
-    const rotationMatrix = new THREE.Matrix4().makeRotationY(rotationAngle);
-    vector.applyMatrix4(rotationMatrix);
-    return vector;
+// Camera follow function
+function updateCamera() {
+    const cameraOffset = new THREE.Vector3(0, 10, 10);
+    const targetPosition = cube.position.clone().add(cameraOffset);
+    camera.position.lerp(targetPosition, 0.1);
+    camera.lookAt(cube.position);
+}
+
+// Update the mini cubes' movement
+function updateMiniCubes() {
+    miniCubes.forEach(miniCube => {
+        miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.2));
+    });
 }
 
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
 
-    const movementSpeed = 0.1;
-    const shootingSpeed = 0.2;
-
-    if (keys.w) cube.position.add(transformDirectionVector(new THREE.Vector3(0, 0, -movementSpeed), rotationAngle));
-    if (keys.a) cube.position.add(transformDirectionVector(new THREE.Vector3(-movementSpeed, 0, 0), rotationAngle));
-    if (keys.s) cube.position.add(transformDirectionVector(new THREE.Vector3(0, 0, movementSpeed), rotationAngle));
-    if (keys.d) cube.position.add(transformDirectionVector(new THREE.Vector3(movementSpeed, 0, 0), rotationAngle));
-
-    if (keys.u) rotationAngle -= 0.1;  // Turn left
-    if (keys.o) rotationAngle += 0.1;  // Turn right
-
-    cube.rotation.y = rotationAngle;  // Update the cube's rotation
-
-    if (keys.i) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(0, 0, -shootingSpeed), rotationAngle));
-    if (keys.j) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(-shootingSpeed, 0, 0), rotationAngle));
-    if (keys.k) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(0, 0, shootingSpeed), rotationAngle));
-    if (keys.l) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(shootingSpeed, 0, 0), rotationAngle));
-
-    miniCubes.forEach(miniCube => {
-        miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.2));
-    });
-
+    updateCubeMovement();
+    updateCamera();
+    updateMiniCubes();
     cleanupMiniCubes();
 
     renderer.render(scene, camera);
 }
+
+// Handle mini cube firing
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'i') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, -1));
+    if (event.key === 'j') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(-1, 0, 0));
+    if (event.key === 'k') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 1));
+    if (event.key === 'l') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(1, 0, 0));
+});
 
 animate();
