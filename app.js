@@ -35,8 +35,8 @@ const markerGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
 const markerMaterial = createNeonMaterial(0xffff00);
 const marker = new THREE.Mesh(markerGeometry, markerMaterial);
 marker.rotation.x = Math.PI / 2;
-cube.add(marker);
 marker.position.set(0, 0, -0.6);
+cube.add(marker);
 
 // Position the camera
 camera.position.set(0, 10, 0);
@@ -93,22 +93,34 @@ function getDirectionVector(angle) {
     return new THREE.Vector3(Math.sin(angle), 0, -Math.cos(angle));
 }
 
+// Transform direction vector by the cube's rotation
+function transformDirectionVector(vector, rotationAngle) {
+    const rotationMatrix = new THREE.Matrix4().makeRotationY(rotationAngle);
+    vector.applyMatrix4(rotationMatrix);
+    return vector;
+}
+
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
 
-    if (keys.w) cube.position.add(getDirectionVector(rotationAngle).multiplyScalar(0.1));
-    if (keys.a) cube.position.add(getDirectionVector(rotationAngle + Math.PI / 2).multiplyScalar(0.1));
-    if (keys.s) cube.position.add(getDirectionVector(rotationAngle + Math.PI).multiplyScalar(0.1));
-    if (keys.d) cube.position.add(getDirectionVector(rotationAngle - Math.PI / 2).multiplyScalar(0.1));
+    const movementSpeed = 0.1;
+    const shootingSpeed = 0.2;
+
+    if (keys.w) cube.position.add(transformDirectionVector(new THREE.Vector3(0, 0, -movementSpeed), rotationAngle));
+    if (keys.a) cube.position.add(transformDirectionVector(new THREE.Vector3(-movementSpeed, 0, 0), rotationAngle));
+    if (keys.s) cube.position.add(transformDirectionVector(new THREE.Vector3(0, 0, movementSpeed), rotationAngle));
+    if (keys.d) cube.position.add(transformDirectionVector(new THREE.Vector3(movementSpeed, 0, 0), rotationAngle));
 
     if (keys.u) rotationAngle -= 0.1;  // Turn left
     if (keys.o) rotationAngle += 0.1;  // Turn right
 
-    if (keys.i) createMiniCube(cube.position.x, cube.position.y, cube.position.z, getDirectionVector(rotationAngle));
-    if (keys.j) createMiniCube(cube.position.x, cube.position.y, cube.position.z, getDirectionVector(rotationAngle + Math.PI / 2));
-    if (keys.k) createMiniCube(cube.position.x, cube.position.y, cube.position.z, getDirectionVector(rotationAngle + Math.PI));
-    if (keys.l) createMiniCube(cube.position.x, cube.position.y, cube.position.z, getDirectionVector(rotationAngle - Math.PI / 2));
+    cube.rotation.y = rotationAngle;  // Update the cube's rotation
+
+    if (keys.i) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(0, 0, -shootingSpeed), rotationAngle));
+    if (keys.j) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(-shootingSpeed, 0, 0), rotationAngle));
+    if (keys.k) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(0, 0, shootingSpeed), rotationAngle));
+    if (keys.l) createMiniCube(cube.position.x, cube.position.y, cube.position.z, transformDirectionVector(new THREE.Vector3(shootingSpeed, 0, 0), rotationAngle));
 
     miniCubes.forEach(miniCube => {
         miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.2));
