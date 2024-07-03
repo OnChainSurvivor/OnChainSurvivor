@@ -35,7 +35,7 @@ const markerGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
 const markerMaterial = createNeonMaterial(0xffff00);
 const marker = new THREE.Mesh(markerGeometry, markerMaterial);
 marker.rotation.x = Math.PI / 2;
-marker.position.set(0, 0, -0.6);
+marker.position.set(0, 0, 0.6);
 cube.add(marker);
 
 // Position the camera
@@ -65,6 +65,8 @@ document.addEventListener('keyup', (event) => {
 
 // Array to store mini cubes
 const miniCubes = [];
+const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
+const shotInterval = 50; // Interval between shots in milliseconds
 
 function createMiniCube(x, y, z, direction) {
     const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
@@ -87,9 +89,9 @@ function cleanupMiniCubes() {
     }
 }
 
-// Update the cube's movement
+// Update the cube's movement and rotation
 function updateCubeMovement() {
-    const movementSpeed = 0.1;
+    const movementSpeed = 0.2;
     const direction = new THREE.Vector3();
 
     if (keys.w) direction.z -= movementSpeed;
@@ -97,8 +99,13 @@ function updateCubeMovement() {
     if (keys.a) direction.x -= movementSpeed;
     if (keys.d) direction.x += movementSpeed;
 
-    direction.normalize().multiplyScalar(movementSpeed);
-    cube.position.add(direction);
+    if (direction.length() > 0) {
+        direction.normalize().multiplyScalar(movementSpeed);
+        cube.position.add(direction);
+
+        const targetRotation = Math.atan2(direction.x, direction.z);
+        cube.rotation.y += (targetRotation - cube.rotation.y) * 0.1; // Smooth rotation
+    }
 }
 
 // Camera follow function
@@ -112,8 +119,30 @@ function updateCamera() {
 // Update the mini cubes' movement
 function updateMiniCubes() {
     miniCubes.forEach(miniCube => {
-        miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.2));
+        miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.4)); // Increased speed from 0.2 to 0.4
     });
+}
+
+// Handle continuous shooting
+function handleShooting() {
+    const currentTime = Date.now();
+
+    if (keys.i && currentTime - lastShotTimes.i > shotInterval) {
+        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, -1));
+        lastShotTimes.i = currentTime;
+    }
+    if (keys.j && currentTime - lastShotTimes.j > shotInterval) {
+        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(-1, 0, 0));
+        lastShotTimes.j = currentTime;
+    }
+    if (keys.k && currentTime - lastShotTimes.k > shotInterval) {
+        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 1));
+        lastShotTimes.k = currentTime;
+    }
+    if (keys.l && currentTime - lastShotTimes.l > shotInterval) {
+        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(1, 0, 0));
+        lastShotTimes.l = currentTime;
+    }
 }
 
 // Render loop
@@ -124,16 +153,9 @@ function animate() {
     updateCamera();
     updateMiniCubes();
     cleanupMiniCubes();
+    handleShooting();
 
     renderer.render(scene, camera);
 }
-
-// Handle mini cube firing
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'i') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, -1));
-    if (event.key === 'j') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(-1, 0, 0));
-    if (event.key === 'k') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 1));
-    if (event.key === 'l') createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(1, 0, 0));
-});
 
 animate();
