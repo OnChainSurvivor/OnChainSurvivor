@@ -7,8 +7,8 @@ document.body.appendChild(renderer.domElement);
 
 // Create a floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
-const floorMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x222222, 
+const floorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x222222,
     metalness: 0.6,
     roughness: 0.4
 });
@@ -53,7 +53,7 @@ scene.add(directionalLight);
 
 // Handle user input
 const keys = {};
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l'].forEach(key => keys[key] = false);
+['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
 
 document.addEventListener('keydown', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = true;
@@ -92,27 +92,48 @@ function cleanupMiniCubes() {
 // Update the cube's movement and rotation
 function updateCubeMovement() {
     const movementSpeed = 0.2;
-    const direction = new THREE.Vector3();
+    let direction = new THREE.Vector3();
 
-    if (keys.w) direction.z -= movementSpeed;
-    if (keys.s) direction.z += movementSpeed;
-    if (keys.a) direction.x -= movementSpeed;
-    if (keys.d) direction.x += movementSpeed;
+    // Move forward and backward relative to the camera's direction
+    if (keys.s) direction.z -= movementSpeed;
+    if (keys.w) direction.z += movementSpeed;
+    // Move left and right relative to the camera's direction
+    if (keys.a) direction.x += movementSpeed;
+    if (keys.d) direction.x -= movementSpeed;
 
+    // Transform the direction from camera space to world space
     if (direction.length() > 0) {
-        direction.normalize().multiplyScalar(movementSpeed);
-        cube.position.add(direction);
+        direction.normalize();
+        const cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection);
+        cameraDirection.y = 0; // Keep movement on the XZ plane
+        cameraDirection.normalize();
 
-        const targetRotation = Math.atan2(direction.x, direction.z);
+        // Apply the camera's orientation to the movement direction
+        const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
+        cube.position.add(moveDirection.multiplyScalar(movementSpeed));
+
+        const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         cube.rotation.y += (targetRotation - cube.rotation.y) * 0.1; // Smooth rotation
     }
 }
 
+// Variables for camera rotation
+let cameraAngle = 0;
+const cameraRadius = 10;
+const cameraHeight = 10;
+const cameraRotationSpeed = 0.05;
+
 // Camera follow function
 function updateCamera() {
-    const cameraOffset = new THREE.Vector3(0, 10, 10);
-    const targetPosition = cube.position.clone().add(cameraOffset);
-    camera.position.lerp(targetPosition, 0.1);
+    // Check for camera rotation input
+    if (keys.u) cameraAngle -= cameraRotationSpeed;
+    if (keys.o) cameraAngle += cameraRotationSpeed;
+
+    // Update camera position
+    const cameraX = cube.position.x + cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = cube.position.z + cameraRadius * Math.sin(cameraAngle);
+    camera.position.set(cameraX, cameraHeight, cameraZ);
     camera.lookAt(cube.position);
 }
 
@@ -127,21 +148,25 @@ function updateMiniCubes() {
 function handleShooting() {
     const currentTime = Date.now();
 
-    if (keys.i && currentTime - lastShotTimes.i > shotInterval) {
-        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, -1));
-        lastShotTimes.i = currentTime;
-    }
-    if (keys.j && currentTime - lastShotTimes.j > shotInterval) {
-        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(-1, 0, 0));
-        lastShotTimes.j = currentTime;
-    }
-    if (keys.k && currentTime - lastShotTimes.k > shotInterval) {
-        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 1));
-        lastShotTimes.k = currentTime;
-    }
-    if (keys.l && currentTime - lastShotTimes.l > shotInterval) {
-        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(1, 0, 0));
-        lastShotTimes.l = currentTime;
+    // Calculate shoot direction based on screen perspective
+    const cameraRight = new THREE.Vector3();
+    const cameraUp = new THREE.Vector3();
+    const cameraForward = new THREE.Vector3();
+
+    camera.matrix.extractBasis(cameraRight, cameraUp, cameraForward);
+
+    const shootDirection = new THREE.Vector3();
+    if (keys.i) shootDirection.set(-cameraForward.x, 0, -cameraForward.z); // North from the camera's perspective
+    if (keys.k) shootDirection.set(cameraForward.x, 0, cameraForward.z); // South from the camera's perspective
+    if (keys.j) shootDirection.set(-cameraRight.x, 0, -cameraRight.z); // West from the camera's perspective
+    if (keys.l) shootDirection.set(cameraRight.x, 0, cameraRight.z); // East from the camera's perspective
+
+    if (shootDirection.length() > 0) {
+        shootDirection.normalize();
+        if (currentTime - lastShotTimes.i > shotInterval) {
+            createMiniCube(cube.position.x, cube.position.y, cube.position.z, shootDirection);
+            lastShotTimes.i = currentTime;
+        }
     }
 }
 
