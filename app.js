@@ -67,22 +67,24 @@ document.addEventListener('keyup', (event) => {
 const miniCubes = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 50; // Interval between shots in milliseconds
+const trailLifetime = 3000; // Lifetime of the trail cubes in milliseconds
 
 function createMiniCube(x, y, z, direction) {
     const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
     const miniMaterial = createNeonMaterial(0xff0000);
     const miniCube = new THREE.Mesh(miniGeometry, miniMaterial);
     miniCube.position.set(x, y, z);
-    miniCube.userData.direction = direction;
+    miniCube.userData = { direction, creationTime: Date.now() };
     scene.add(miniCube);
     miniCubes.push(miniCube);
 }
 
 // Cleanup function to remove mini cubes that go out of the scene
 function cleanupMiniCubes() {
+    const currentTime = Date.now();
     for (let i = miniCubes.length - 1; i >= 0; i--) {
         const miniCube = miniCubes[i];
-        if (miniCube.position.x > 50 || miniCube.position.x < -50 || miniCube.position.z > 50 || miniCube.position.z < -50) {
+        if (currentTime - miniCube.userData.creationTime > trailLifetime) {
             scene.remove(miniCube);
             miniCubes.splice(i, 1);
         }
@@ -115,6 +117,9 @@ function updateCubeMovement() {
 
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         cube.rotation.y += (targetRotation - cube.rotation.y) * 0.1; // Smooth rotation
+
+        // Add trail cubes
+        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 0));
     }
 }
 
