@@ -16,7 +16,13 @@ const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
 
-// Create a cube with neon effect
+// Rainbow colors
+const rainbowColors = [
+    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
+];
+let colorIndex = 0;
+
+// Create a neon material with a rainbow color
 const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
     color: color,
     emissive: color,
@@ -26,7 +32,7 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
 });
 
 const cubeGeometry = new THREE.BoxGeometry();
-const cubeMaterial = createNeonMaterial(0x00ff00);
+const cubeMaterial = createNeonMaterial(rainbowColors[colorIndex]);
 const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 scene.add(cube);
 
@@ -70,8 +76,9 @@ const shotInterval = 50; // Interval between shots in milliseconds
 const trailLifetime = 3000; // Lifetime of the trail cubes in milliseconds
 
 function createMiniCube(x, y, z, direction) {
+    colorIndex = (colorIndex + 1) % rainbowColors.length;
     const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const miniMaterial = createNeonMaterial(0xff0000, 2); // Higher emissive intensity for neon effect
+    const miniMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
     const miniCube = new THREE.Mesh(miniGeometry, miniMaterial);
     miniCube.position.set(x, y, z);
     miniCube.userData = { direction, creationTime: Date.now() };
