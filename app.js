@@ -5,22 +5,22 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create a floor
+// Create a floor with higher reflectivity and lower roughness
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
 const floorMaterial = new THREE.MeshStandardMaterial({
-    color: 0x222222,
-    metalness: 0.6,
-    roughness: 0.4
+    color: 0x111111,
+    metalness: 0.8,
+    roughness: 0.1
 });
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
 
 // Create a cube with neon effect
-const createNeonMaterial = (color) => new THREE.MeshStandardMaterial({
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
     color: color,
     emissive: color,
-    emissiveIntensity: 1,
+    emissiveIntensity: emissiveIntensity,
     metalness: 0.5,
     roughness: 0.3
 });
@@ -71,7 +71,7 @@ const trailLifetime = 3000; // Lifetime of the trail cubes in milliseconds
 
 function createMiniCube(x, y, z, direction) {
     const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const miniMaterial = createNeonMaterial(0xff0000);
+    const miniMaterial = createNeonMaterial(0xff0000, 2); // Higher emissive intensity for neon effect
     const miniCube = new THREE.Mesh(miniGeometry, miniMaterial);
     miniCube.position.set(x, y, z);
     miniCube.userData = { direction, creationTime: Date.now() };
@@ -175,6 +175,31 @@ function handleShooting() {
     }
 }
 
+// Add bloom effect
+const renderScene = new THREE.RenderPass(scene, camera);
+const bloomPass = new THREE.UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1, // Strength
+    1, // Radius
+    0.1 // Threshold
+);
+
+const composer = new THREE.EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+
+// GUI for controlling bloom effect
+const gui = new dat.GUI();
+const bloomParams = {
+    strength: 1,
+    radius: 1,
+    threshold: 0.1
+};
+
+gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength = value);
+gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
+gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
+
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
@@ -185,7 +210,7 @@ function animate() {
     cleanupMiniCubes();
     handleShooting();
 
-    renderer.render(scene, camera);
+    composer.render();
 }
 
 animate();
