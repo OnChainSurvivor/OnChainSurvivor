@@ -22,6 +22,7 @@ directionalLight.position.set(10, 10, 10);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
+
 // Infinite seamless glass floor (textureless)
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
 const floorMaterial = new THREE.MeshStandardMaterial({
@@ -49,9 +50,26 @@ gui.add(floorParams, 'metalness', 0, 1).onChange(value => floorMaterial.metalnes
 gui.add(floorParams, 'roughness', 0, 1).onChange(value => floorMaterial.roughness = value);
 gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = value);
 
+
+// Rainbow colors
+const rainbowColors = [
+    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
+];
+let colorIndex = 0;
+
+// Create a neon material with a rainbow color
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: emissiveIntensity,
+    metalness: 0.5,
+    roughness: 0.3
+});
+
+
 // Create the player (a simple cube)
 const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
-const playerMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+const playerMaterial =  createNeonMaterial(rainbowColors[colorIndex]);
 const player = new THREE.Mesh(playerGeometry, playerMaterial);
 player.castShadow = true;
 scene.add(player);
@@ -313,6 +331,30 @@ gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
 
 spawnEnemies();
 
+// Add bloom effect
+const renderScene = new THREE.RenderPass(scene, camera);
+const bloomPass = new THREE.UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1, // Strength
+    1, // Radius
+    0.1 // Threshold
+);
+
+const composer = new THREE.EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+
+const bloomParams = {
+    strength: 1,
+    radius: 1,
+    threshold: 0.1
+};
+
+gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength = value);
+gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
+gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
+
+
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
@@ -326,6 +368,7 @@ function animate() {
 
     // Update player's HP bar
     playerHPBar.style.width = `${playerHP * 10}px`;
+    composer.render();
 
     renderer.render(scene, camera);
 }
