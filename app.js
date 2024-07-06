@@ -109,8 +109,9 @@ const shotInterval = 50; // Interval between shots in milliseconds
 const trailLifetime = 3000; // Lifetime of the trail bullets in milliseconds
 
 function createBullet(x, y, z, direction) {
+    colorIndex = (colorIndex + 1) % rainbowColors.length;
     const bulletGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const bulletMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    const bulletMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
     const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
     bullet.position.set(x, y, z);
     bullet.userData = { direction, creationTime: Date.now() };
@@ -176,7 +177,7 @@ function updatePlayerMovement() {
 
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
-
+        createBullet(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
 
