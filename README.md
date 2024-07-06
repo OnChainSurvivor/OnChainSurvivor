@@ -27,18 +27,18 @@ Survivor! Congratulations on making it this far, You survived every hack, every 
 
 ## Onchain Survivor🔗🏆
 
-Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory.Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
+Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 2.5D environment to do what they do best... Survive Together! while enjoying blockchain features to enhance their gameplay experience.
+Onchain Survivor is an upcoming  web-based top-down arena shooter survival roguelite  game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
 
 ### 🔑Key Features🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
-- **Blockchain Integration**: Interact with the Ethereum blockchain using Web3.js. Ethereum will hold the game data. 
-- **3D Graphics**: Experience immersive 2.5D graphics powered by Three.js.
-- **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional installations. Simple is best.
+- **Blockchain Integration**: Interact with the dynamic blockchain technology and data.  
+- **3D Graphics**: Experience immersive 3D graphics powered by Three.js.
+- **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional clients. Simple is best.
 - **Variable Gameplay**: Every play is different, try as many times as you want. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈

@@ -1,3 +1,5 @@
+// File path: main.js
+
 // Initialize scene, camera, and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -5,24 +7,35 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Create a floor with higher reflectivity and lower roughness
+// Infinite seamless glass floor
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
-const floorMaterial = new THREE.MeshStandardMaterial({
-    color: 0x111111,
-    metalness: 0.8,
-    roughness: 0.1
+let floorMaterial = new THREE.MeshStandardMaterial({
+    color: 0xaaaaaa,
+    metalness: 0.9,
+    roughness: 0.1,
+    transparent: true,
+    opacity: 0.8
 });
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
+floor.position.y = -0.5; // Slightly below the humanoid
 scene.add(floor);
 
-// Rainbow colors
-const rainbowColors = [
-    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
-];
-let colorIndex = 0;
+// GUI for controlling floor material properties
+const gui = new dat.GUI();
+const floorParams = {
+    color: floorMaterial.color.getHex(),
+    metalness: floorMaterial.metalness,
+    roughness: floorMaterial.roughness,
+    opacity: floorMaterial.opacity
+};
 
-// Create a neon material with a rainbow color
+gui.addColor(floorParams, 'color').onChange(value => floorMaterial.color.set(value));
+gui.add(floorParams, 'metalness', 0, 1).onChange(value => floorMaterial.metalness = value);
+gui.add(floorParams, 'roughness', 0, 1).onChange(value => floorMaterial.roughness = value);
+gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = value);
+
+// Create a neon material
 const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
     color: color,
     emissive: color,
@@ -31,31 +44,64 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
     roughness: 0.3
 });
 
-const cubeGeometry = new THREE.BoxGeometry();
-const cubeMaterial = createNeonMaterial(rainbowColors[colorIndex]);
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-scene.add(cube);
+// Function to create a polygon humanoid
+const createHumanoid = () => {
+    const humanoid = new THREE.Group();
 
-// Add a marker to show the front of the cube
-const markerGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 32);
-const markerMaterial = createNeonMaterial(0xffff00);
-const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-marker.rotation.x = Math.PI / 2;
-marker.position.set(0, 0, 0.6);
-cube.add(marker);
+    const headGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const headMaterial = createNeonMaterial(0x00ff00);
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.set(0, 2.5, 0);
+    humanoid.add(head);
+
+    const bodyGeometry = new THREE.BoxGeometry(1.5, 2, 1);
+    const bodyMaterial = createNeonMaterial(0x00ff00);
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.set(0, 1, 0);
+    humanoid.add(body);
+
+    const armGeometry = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+    const armMaterial = createNeonMaterial(0x00ff00);
+    const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+    const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+    leftArm.position.set(-1.25, 1.75, 0);
+    rightArm.position.set(1.25, 1.75, 0);
+    humanoid.add(leftArm);
+    humanoid.add(rightArm);
+
+    const legGeometry = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+    const legMaterial = createNeonMaterial(0x00ff00);
+    const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+    const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+    leftLeg.position.set(-0.5, -0.75, 0);
+    rightLeg.position.set(0.5, -0.75, 0);
+    humanoid.add(leftLeg);
+    humanoid.add(rightLeg);
+
+    const clock = new THREE.Clock();
+    function animateHumanoid() {
+        const time = clock.getElapsedTime();
+        leftArm.rotation.z = Math.sin(time * 2) * 0.5;
+        rightArm.rotation.z = -Math.sin(time * 2) * 0.5;
+        leftLeg.rotation.z = -Math.sin(time * 2) * 0.5;
+        rightLeg.rotation.z = Math.sin(time * 2) * 0.5;
+        requestAnimationFrame(animateHumanoid);
+    }
+    animateHumanoid();
+
+    return humanoid;
+};
+
+const player = createHumanoid();
+scene.add(player);
 
 // Position the camera
 camera.position.set(0, 10, 10);
-camera.lookAt(cube.position);
+camera.lookAt(player.position);
 
-// Add ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// Add global ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
-
-// Add directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(0, 10, 10);
-scene.add(directionalLight);
 
 // Handle user input
 const keys = {};
@@ -69,64 +115,61 @@ document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
 
-// Array to store mini cubes
-const miniCubes = [];
+// Array to store bullets
+const bullets = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 50; // Interval between shots in milliseconds
-const trailLifetime = 3000; // Lifetime of the trail cubes in milliseconds
+const trailLifetime = 3000; // Lifetime of the trail bullets in milliseconds
 
-function createMiniCube(x, y, z, direction) {
-    colorIndex = (colorIndex + 1) % rainbowColors.length;
-    const miniGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const miniMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
-    const miniCube = new THREE.Mesh(miniGeometry, miniMaterial);
-    miniCube.position.set(x, y, z);
-    miniCube.userData = { direction, creationTime: Date.now() };
-    scene.add(miniCube);
-    miniCubes.push(miniCube);
+function createBullet(x, y, z, direction) {
+    const bulletGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+    const bulletMaterial = createNeonMaterial(0xff0000, 2); // Higher emissive intensity for neon effect
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    bullet.position.set(x, y, z);
+    bullet.userData = { direction, creationTime: Date.now() };
+    scene.add(bullet);
+    bullets.push(bullet);
 }
 
-// Cleanup function to remove mini cubes that go out of the scene
-function cleanupMiniCubes() {
+// Cleanup function to remove bullets that go out of the scene
+function cleanupBullets() {
     const currentTime = Date.now();
-    for (let i = miniCubes.length - 1; i >= 0; i--) {
-        const miniCube = miniCubes[i];
-        if (currentTime - miniCube.userData.creationTime > trailLifetime) {
-            scene.remove(miniCube);
-            miniCubes.splice(i, 1);
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        if (currentTime - bullet.userData.creationTime > trailLifetime) {
+            scene.remove(bullet);
+            bullets.splice(i, 1);
+        } else {
+            const ageRatio = (currentTime - bullet.userData.creationTime) / trailLifetime;
+            bullet.scale.set(1 - ageRatio, 1 - ageRatio, 1 - ageRatio); // Scale down over time
         }
     }
 }
 
-// Update the cube's movement and rotation
-function updateCubeMovement() {
+// Update the player's movement and rotation
+function updatePlayerMovement() {
     const movementSpeed = 0.2;
     let direction = new THREE.Vector3();
 
-    // Move forward and backward relative to the camera's direction
     if (keys.s) direction.z -= movementSpeed;
     if (keys.w) direction.z += movementSpeed;
-    // Move left and right relative to the camera's direction
     if (keys.a) direction.x += movementSpeed;
     if (keys.d) direction.x -= movementSpeed;
 
-    // Transform the direction from camera space to world space
     if (direction.length() > 0) {
         direction.normalize();
         const cameraDirection = new THREE.Vector3();
         camera.getWorldDirection(cameraDirection);
-        cameraDirection.y = 0; // Keep movement on the XZ plane
+        cameraDirection.y = 0;
         cameraDirection.normalize();
 
-        // Apply the camera's orientation to the movement direction
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
-        cube.position.add(moveDirection.multiplyScalar(movementSpeed));
+        player.position.add(moveDirection.multiplyScalar(movementSpeed));
 
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-        cube.rotation.y += (targetRotation - cube.rotation.y) * 0.1; // Smooth rotation
+        player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
 
-        // Add trail cubes
-        createMiniCube(cube.position.x, cube.position.y, cube.position.z, new THREE.Vector3(0, 0, 0));
+        createBullet(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
     }
 }
 
@@ -136,23 +179,20 @@ const cameraRadius = 10;
 const cameraHeight = 10;
 const cameraRotationSpeed = 0.05;
 
-// Camera follow function
 function updateCamera() {
-    // Check for camera rotation input
     if (keys.u) cameraAngle -= cameraRotationSpeed;
     if (keys.o) cameraAngle += cameraRotationSpeed;
 
-    // Update camera position
-    const cameraX = cube.position.x + cameraRadius * Math.cos(cameraAngle);
-    const cameraZ = cube.position.z + cameraRadius * Math.sin(cameraAngle);
+    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
     camera.position.set(cameraX, cameraHeight, cameraZ);
-    camera.lookAt(cube.position);
+    camera.lookAt(player.position);
 }
 
-// Update the mini cubes' movement
-function updateMiniCubes() {
-    miniCubes.forEach(miniCube => {
-        miniCube.position.add(miniCube.userData.direction.clone().multiplyScalar(0.4)); // Increased speed from 0.2 to 0.4
+// Update the bullets' movement
+function updateBullets() {
+    bullets.forEach(bullet => {
+        bullet.position.add(bullet.userData.direction.clone().multiplyScalar(0.4));
     });
 }
 
@@ -160,64 +200,37 @@ function updateMiniCubes() {
 function handleShooting() {
     const currentTime = Date.now();
 
-    // Calculate shoot direction based on screen perspective
     const cameraRight = new THREE.Vector3();
     const cameraUp = new THREE.Vector3();
     const cameraForward = new THREE.Vector3();
-
     camera.matrix.extractBasis(cameraRight, cameraUp, cameraForward);
 
     const shootDirection = new THREE.Vector3();
-    if (keys.i) shootDirection.set(-cameraForward.x, 0, -cameraForward.z); // North from the camera's perspective
-    if (keys.k) shootDirection.set(cameraForward.x, 0, cameraForward.z); // South from the camera's perspective
-    if (keys.j) shootDirection.set(-cameraRight.x, 0, -cameraRight.z); // West from the camera's perspective
-    if (keys.l) shootDirection.set(cameraRight.x, 0, cameraRight.z); // East from the camera's perspective
+    if (keys.i) shootDirection.set(-cameraForward.x, 0, -cameraForward.z);
+    if (keys.k) shootDirection.set(cameraForward.x, 0, cameraForward.z);
+    if (keys.j) shootDirection.set(-cameraRight.x, 0, -cameraRight.z);
+    if (keys.l) shootDirection.set(cameraRight.x, 0, cameraRight.z);
 
     if (shootDirection.length() > 0) {
         shootDirection.normalize();
         if (currentTime - lastShotTimes.i > shotInterval) {
-            createMiniCube(cube.position.x, cube.position.y, cube.position.z, shootDirection);
+            createBullet(player.position.x, player.position.y, player.position.z, shootDirection);
             lastShotTimes.i = currentTime;
         }
     }
 }
 
-// Add bloom effect
-const renderScene = new THREE.RenderPass(scene, camera);
-const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1, // Strength
-    1, // Radius
-    0.1 // Threshold
-);
-
-const composer = new THREE.EffectComposer(renderer);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
-
-// GUI for controlling bloom effect
-const gui = new dat.GUI();
-const bloomParams = {
-    strength: 1,
-    radius: 1,
-    threshold: 0.1
-};
-
-gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength = value);
-gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
-gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
-
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
 
-    updateCubeMovement();
+    updatePlayerMovement();
     updateCamera();
-    updateMiniCubes();
-    cleanupMiniCubes();
+    updateBullets();
+    cleanupBullets();
     handleShooting();
 
-    composer.render();
+    renderer.render(scene, camera);
 }
 
 animate();
