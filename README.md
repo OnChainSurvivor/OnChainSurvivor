@@ -36,10 +36,10 @@ Onchain Survivor is an upcoming  web-based top-down arena shooter survival rogue
 ### 🔑Key Features🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
-- **Blockchain Integration**: Interact with the dynamic blockchain technology and data.  
-- **3D Graphics**: Experience immersive 3D graphics powered by Three.js.
-- **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional clients. Simple is best.
-- **Variable Gameplay**: Every play is different, try as many times as you want. 
+- **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty.  
+- **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
+- **Cross-Platform**: Play directly Either desktop or mobile, without the need for additional clients. Simple is best. You can even olay from your wallet!
+- **Variable Gameplay**: Every play is different, Guaranteed. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
