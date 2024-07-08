@@ -31,15 +31,15 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is an upcoming  web-based top-down arena shooter survival roguelite  game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
+Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
 
 ### 🔑Key Features🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
-- **Blockchain Integration**: Interact with the dynamic blockchain technology and data.  
-- **3D Graphics**: Experience immersive 3D graphics powered by Three.js.
-- **Cross-Platform**: Play directly in your web browser, Either desktop or mobile, without the need for additional clients. Simple is best.
-- **Variable Gameplay**: Every play is different, try as many times as you want. 
+- **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty.  
+- **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
+- **Cross-Platform**: Play directly Either desktop or mobile, without the need for additional clients. Simple is best. You can even olay from your wallet!
+- **Variable Gameplay**: Every play is different, Guaranteed. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -78,7 +78,7 @@ Follow these steps to set up Onchain Survivor on your local machine:
 
 ## 🤝Contributing🤝
 
-We welcome contributions from everyone! Here’s how you can help:
+Contributions from everyone are welcomed! Here’s how you can help:
 
 1.  **Fork the Repository**: Click the "Fork" button at the top-right corner of this page.
 2.  **Create a New Branch**:
@@ -100,7 +100,7 @@ This project license is currently [TBD].
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|Free Play           | TBD      |
+|Onchain Survivor NFT|TBD           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
 
 ##  📚 Basic Interaction Models 🕹️
@@ -125,7 +125,7 @@ A --> C[Play as Guest]
 B --> D{Select NFT}
 D --> E[Own NFT]
 D --> F[Borrow NFT]
-E --> G[Free Play]
+E --> G[TBD]
 F --> H[TBD interaction to Owner]
 G --> I[Begin Play]
 H --> I
@@ -209,6 +209,7 @@ graph TD
 
 -   **Three js**: For the amazing 3D graphics library.
 -   **Web3 js**: For simplifying blockchain interactions.
+-   **OpenAI ChatGPT**: For making development great again.
 
 ## 📬 Contact
 
