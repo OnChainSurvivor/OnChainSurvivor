@@ -105,6 +105,7 @@ const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 50; // Interval between shots in milliseconds
 const trailLifetime = 3000; // Lifetime of the trail bullets in milliseconds
 let trailActive = false;
+let autoShooterActive = false;
 
 function createBullet(x, y, z, direction) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -359,22 +360,18 @@ gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshol
 const powerUps = [];
 const powerUpLifetime = 10000; // Lifetime of the power-up in milliseconds
 
-function createPowerUp() {
+function createPowerUp(color, position, type) {
     const powerUpGeometry = new THREE.BoxGeometry(1, 1, 1);
     const powerUpMaterial = new THREE.MeshStandardMaterial({
-        color: 0x00ff00,
-        emissive: 0x00ff00,
+        color: color,
+        emissive: color,
         emissiveIntensity: 1,
         metalness: 0.5,
         roughness: 0.3
     });
     const powerUp = new THREE.Mesh(powerUpGeometry, powerUpMaterial);
-    powerUp.position.set(
-        (Math.random() - 0.5) * 50,
-        0,
-        (Math.random() - 0.5) * 50
-    );
-    powerUp.userData.creationTime = Date.now();
+    powerUp.position.set(position.x, position.y, position.z);
+    powerUp.userData = { type: type, creationTime: Date.now() };
     powerUp.castShadow = true;
     scene.add(powerUp);
     powerUps.push(powerUp);
@@ -383,15 +380,49 @@ function createPowerUp() {
 function checkPowerUpCollection() {
     powerUps.forEach((powerUp, index) => {
         if (player.position.distanceTo(powerUp.position) < 1) {
-            trailActive = true;
+            if (powerUp.userData.type === 'trail') {
+                trailActive = true;
+                setTimeout(() => {
+                    trailActive = false;
+                }, powerUpLifetime);
+            } else if (powerUp.userData.type === 'autoShooter') {
+                autoShooterActive = true;
+                setTimeout(() => {
+                    autoShooterActive = false;
+                }, powerUpLifetime);
+            }
             scene.remove(powerUp);
             powerUps.splice(index, 1);
-            setTimeout(() => {
-                trailActive = false;
-            }, powerUpLifetime);
         }
     });
 }
+
+function findClosestEnemy() {
+    let closestEnemy = null;
+    let closestDistance = Infinity;
+    enemies.forEach(enemy => {
+        const distance = player.position.distanceTo(enemy.position);
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestEnemy = enemy;
+        }
+    });
+    return closestEnemy;
+}
+
+function autoShootClosestEnemy() {
+    if (autoShooterActive) {
+        const closestEnemy = findClosestEnemy();
+        if (closestEnemy) {
+            const direction = new THREE.Vector3().subVectors(closestEnemy.position, player.position).normalize();
+            createBullet(player.position.x, player.position.y, player.position.z, direction);
+        }
+    }
+}
+
+// Initialize power-ups at game start
+createPowerUp(0x00ff00, new THREE.Vector3(-10, 0, -10), 'trail');
+createPowerUp(0x0000ff, new THREE.Vector3(10, 0, 10), 'autoShooter');
 
 // Render loop
 function animate() {
@@ -404,6 +435,7 @@ function animate() {
     handleShooting();
     updateEnemies();
     checkPowerUpCollection();
+    autoShootClosestEnemy();
 
     // Update player's HP bar
     playerHPBar.style.width = `${playerHP * 10}px`;
@@ -413,6 +445,9 @@ function animate() {
 }
 
 // Spawn a power-up box every 5 seconds
-setInterval(createPowerUp, 5000);
+setInterval(() => {
+    createPowerUp(0x00ff00, new THREE.Vector3((Math.random() - 0.5) * 50, 0, (Math.random() - 0.5) * 50), 'trail');
+    createPowerUp(0x0000ff, new THREE.Vector3((Math.random() - 0.5) * 50, 0, (Math.random() - 0.5) * 50), 'autoShooter');
+}, 5000);
 
 animate();
