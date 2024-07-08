@@ -22,7 +22,6 @@ directionalLight.position.set(10, 10, 10);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-
 // Infinite seamless glass floor (textureless)
 const floorGeometry = new THREE.PlaneGeometry(100, 100);
 const floorMaterial = new THREE.MeshStandardMaterial({
@@ -50,7 +49,6 @@ gui.add(floorParams, 'metalness', 0, 1).onChange(value => floorMaterial.metalnes
 gui.add(floorParams, 'roughness', 0, 1).onChange(value => floorMaterial.roughness = value);
 gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = value);
 
-
 // Rainbow colors
 const rainbowColors = [
     0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
@@ -65,7 +63,6 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
     metalness: 0.5,
     roughness: 0.3
 });
-
 
 // Create the player (a simple cube)
 const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -107,6 +104,7 @@ const enemies = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 50; // Interval between shots in milliseconds
 const trailLifetime = 3000; // Lifetime of the trail bullets in milliseconds
+let trailActive = false;
 
 function createBullet(x, y, z, direction) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -177,7 +175,9 @@ function updatePlayerMovement() {
 
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
-        createBullet(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
+        if (trailActive) {
+            createBullet(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
+        }
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
 
@@ -355,6 +355,43 @@ gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength 
 gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
 gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
 
+// Power-up box variables
+const powerUps = [];
+const powerUpLifetime = 10000; // Lifetime of the power-up in milliseconds
+
+function createPowerUp() {
+    const powerUpGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const powerUpMaterial = new THREE.MeshStandardMaterial({
+        color: 0x00ff00,
+        emissive: 0x00ff00,
+        emissiveIntensity: 1,
+        metalness: 0.5,
+        roughness: 0.3
+    });
+    const powerUp = new THREE.Mesh(powerUpGeometry, powerUpMaterial);
+    powerUp.position.set(
+        (Math.random() - 0.5) * 50,
+        0,
+        (Math.random() - 0.5) * 50
+    );
+    powerUp.userData.creationTime = Date.now();
+    powerUp.castShadow = true;
+    scene.add(powerUp);
+    powerUps.push(powerUp);
+}
+
+function checkPowerUpCollection() {
+    powerUps.forEach((powerUp, index) => {
+        if (player.position.distanceTo(powerUp.position) < 1) {
+            trailActive = true;
+            scene.remove(powerUp);
+            powerUps.splice(index, 1);
+            setTimeout(() => {
+                trailActive = false;
+            }, powerUpLifetime);
+        }
+    });
+}
 
 // Render loop
 function animate() {
@@ -366,6 +403,7 @@ function animate() {
     cleanupBullets();
     handleShooting();
     updateEnemies();
+    checkPowerUpCollection();
 
     // Update player's HP bar
     playerHPBar.style.width = `${playerHP * 10}px`;
@@ -373,5 +411,8 @@ function animate() {
 
     renderer.render(scene, camera);
 }
+
+// Spawn a power-up box every 5 seconds
+setInterval(createPowerUp, 5000);
 
 animate();
