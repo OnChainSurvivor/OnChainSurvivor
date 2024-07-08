@@ -100,7 +100,7 @@ This project license is currently [TBD].
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|Free Play           | TBD      |
+|Onchain Survivor NFT|TBD           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
 
 ##  📚 Basic Interaction Models 🕹️
@@ -125,7 +125,7 @@ A --> C[Play as Guest]
 B --> D{Select NFT}
 D --> E[Own NFT]
 D --> F[Borrow NFT]
-E --> G[Free Play]
+E --> G[TBD]
 F --> H[TBD interaction to Owner]
 G --> I[Begin Play]
 H --> I
