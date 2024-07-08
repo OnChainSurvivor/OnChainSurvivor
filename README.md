@@ -31,7 +31,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is an upcoming  web-based top-down arena shooter survival roguelite  game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
+Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
 
 ### 🔑Key Features🔑
 
@@ -78,7 +78,7 @@ Follow these steps to set up Onchain Survivor on your local machine:
 
 ## 🤝Contributing🤝
 
-We welcome contributions from everyone! Here’s how you can help:
+Contributions from everyone are welcomed! Here’s how you can help:
 
 1.  **Fork the Repository**: Click the "Fork" button at the top-right corner of this page.
 2.  **Create a New Branch**:
@@ -209,6 +209,7 @@ graph TD
 
 -   **Three js**: For the amazing 3D graphics library.
 -   **Web3 js**: For simplifying blockchain interactions.
+-   **OpenAI ChatGPT**: For making development great again.
 
 ## 📬 Contact
 
