@@ -131,7 +131,7 @@ G --> I[Begin Play]
 H --> I
 C --> I
 ```
-Ideal design of Onchain Survivor
+Ideal design of Onchain Survivor, fully descentralized vertical stack
 
 ```mermaid
 sequenceDiagram
