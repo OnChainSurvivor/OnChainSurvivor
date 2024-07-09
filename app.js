@@ -66,21 +66,51 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
 
 // Create the player (a simple cube)
 const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
-const playerMaterial =  createNeonMaterial(rainbowColors[colorIndex]);
+const playerMaterial = createNeonMaterial(rainbowColors[colorIndex]);
 const player = new THREE.Mesh(playerGeometry, playerMaterial);
 player.castShadow = true;
 scene.add(player);
 
-// Player HP
+// Player HP and XP
 let playerHP = 10;
+let playerXP = 0;
+let playerLevel = 1;
+
 const playerHPBar = document.createElement('div');
 playerHPBar.style.position = 'absolute';
-playerHPBar.style.top = '10px';
-playerHPBar.style.left = '10px';
 playerHPBar.style.width = '100px';
 playerHPBar.style.height = '20px';
 playerHPBar.style.backgroundColor = 'red';
+
+const playerXPBar = document.createElement('div');
+playerXPBar.style.position = 'absolute';
+playerXPBar.style.width = '100px';
+playerXPBar.style.height = '5px';
+playerXPBar.style.backgroundColor = 'blue';
+
+const playerLevelDisplay = document.createElement('div');
+playerLevelDisplay.style.position = 'absolute';
+playerLevelDisplay.style.fontSize = '20px';
+playerLevelDisplay.style.color = 'white';
+
 document.body.appendChild(playerHPBar);
+document.body.appendChild(playerXPBar);
+document.body.appendChild(playerLevelDisplay);
+
+function updatePlayerBars() {
+    const vector = player.position.clone().project(camera);
+    playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
+    playerHPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
+    playerHPBar.style.width = `${playerHP * 10}px`;
+
+    playerXPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
+    playerXPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 5}px`;
+    playerXPBar.style.width = `${playerXP}px`;
+
+    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 105}px`;
+    playerLevelDisplay.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
+    playerLevelDisplay.innerHTML = playerLevel;
+}
 
 // Position the camera farther away
 camera.position.set(0, 15, 15);
@@ -277,6 +307,16 @@ function createHPBar() {
     return hpBar;
 }
 
+// Create XP sphere
+function createXPSphere(position) {
+    const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+    const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    xpSphere.position.copy(position);
+    scene.add(xpSphere);
+    return xpSphere;
+}
+
 // Update HP bar position
 function updateHPBar(hpBar, position, hp) {
     const vector = position.clone().project(camera);
@@ -303,8 +343,9 @@ function updateEnemies() {
         // Update HP bar
         updateHPBar(enemy.userData.hpBar, enemy.position, enemy.userData.hp);
 
-        // Remove enemy if HP is 0
+        // Remove enemy if HP is 0 and create XP sphere
         if (enemy.userData.hp <= 0) {
+            createXPSphere(enemy.position);
             scene.remove(enemy);
             document.body.removeChild(enemy.userData.hpBar);
             enemies.splice(enemies.indexOf(enemy), 1);
@@ -424,6 +465,20 @@ function autoShootClosestEnemy() {
 createPowerUp(0x00ff00, new THREE.Vector3(-10, 0, -10), 'trail');
 createPowerUp(0x0000ff, new THREE.Vector3(10, 0, 10), 'autoShooter');
 
+// Function to check for XP sphere collection
+function checkXPSphereCollection() {
+    scene.children.forEach(child => {
+        if (child.geometry && child.geometry.type === 'SphereGeometry' && player.position.distanceTo(child.position) < 1) {
+            playerXP += 10;
+            if (playerXP >= 100) {
+                playerLevel += 1;
+                playerXP = 0;
+            }
+            scene.remove(child);
+        }
+    });
+}
+
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
@@ -436,11 +491,10 @@ function animate() {
     updateEnemies();
     checkPowerUpCollection();
     autoShootClosestEnemy();
+    checkXPSphereCollection();
+    updatePlayerBars();
 
-    // Update player's HP bar
-    playerHPBar.style.width = `${playerHP * 10}px`;
     composer.render();
-
     renderer.render(scene, camera);
 }
 
