@@ -22,8 +22,8 @@ directionalLight.position.set(10, 10, 10);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-// Infinite seamless glass floor (textureless)
-const floorGeometry = new THREE.PlaneGeometry(10000, 10000);
+// Infinite seamless floor
+const floorGeometry = new THREE.PlaneGeometry(1, 1);
 const floorMaterial = new THREE.MeshStandardMaterial({
     color: 0xaaaaaa,
     metalness: 0.9,
@@ -34,9 +34,16 @@ const floorMaterial = new THREE.MeshStandardMaterial({
 });
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.5; // Slightly below the player
+floor.position.y = -0.5;
 floor.receiveShadow = true;
 scene.add(floor);
+
+floor.onBeforeRender = (renderer, scene, camera) => {
+    const distance = 1000;
+    const cameraDirection = camera.getWorldDirection(new THREE.Vector3());
+    const floorPosition = camera.position.clone().add(cameraDirection.multiplyScalar(distance));
+    floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
+};
 
 // GUI for controlling floor material properties
 const gui = new dat.GUI();
@@ -78,13 +85,13 @@ let playerLevel = 1;
 
 const playerHPBar = document.createElement('div');
 playerHPBar.style.position = 'absolute';
-playerHPBar.style.width = '80px';
-playerHPBar.style.height = '15px';
+playerHPBar.style.width = '50px';
+playerHPBar.style.height = '10px';
 playerHPBar.style.backgroundColor = 'red';
 
 const playerXPBar = document.createElement('div');
 playerXPBar.style.position = 'absolute';
-playerXPBar.style.width = '80px';
+playerXPBar.style.width = '50px';
 playerXPBar.style.height = '5px';
 playerXPBar.style.backgroundColor = 'blue';
 
@@ -101,13 +108,13 @@ function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
     playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
     playerHPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
-    playerHPBar.style.width = `${playerHP * 8}px`;
+    playerHPBar.style.width = `${playerHP * 5}px`;
 
     playerXPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
-    playerXPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 5}px`;
-    playerXPBar.style.width = `${playerXP * 0.8}px`;
+    playerXPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 10}px`;
+    playerXPBar.style.width = `${playerXP * 0.5}px`;
 
-    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 85}px`;
+    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 55}px`;
     playerLevelDisplay.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
     playerLevelDisplay.innerHTML = playerLevel;
 }
@@ -206,6 +213,8 @@ scene.add(particleSystem);
 function updatePlayerMovement() {
     const movementSpeed = 0.2;
     let direction = new THREE.Vector3();
+
+
 
     if (keys.s) direction.z -= movementSpeed;
     if (keys.w) direction.z += movementSpeed;
@@ -431,13 +440,13 @@ function createPowerUp(color, position, type) {
     powerUp.castShadow = true;
     scene.add(powerUp);
     powerUps.push(powerUp);
-        // Power-up self-destruction after 7 seconds
-        setTimeout(() => {
-            if (powerUps.includes(powerUp)) {
-                scene.remove(powerUp);
-                powerUps.splice(powerUps.indexOf(powerUp), 1);
-            }
-        }, 7000);
+    // Power-up self-destruction after 7 seconds
+    setTimeout(() => {
+        if (powerUps.includes(powerUp)) {
+            scene.remove(powerUp);
+            powerUps.splice(powerUps.indexOf(powerUp), 1);
+        }
+    }, 7000);
 }
 
 function checkPowerUpCollection() {
@@ -452,6 +461,8 @@ function checkPowerUpCollection() {
                 autoShooterActive = true;
                 setTimeout(() => {
                     autoShooterActive = false;
+
+
                 }, powerUpLifetime);
             }
             scene.remove(powerUp);
@@ -495,15 +506,62 @@ function checkXPSphereCollection() {
             if (playerXP >= 100) {
                 playerLevel += 1;
                 playerXP = 0;
+                showLevelUpUI();
             }
             scene.remove(child);
         }
     });
 }
 
+// Show level-up UI
+function showLevelUpUI() {
+    const uiContainer = document.createElement('div');
+    uiContainer.style.position = 'absolute';
+    uiContainer.style.width = '100%';
+    uiContainer.style.height = '100%';
+    uiContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    uiContainer.style.display = 'flex';
+    uiContainer.style.justifyContent = 'center';
+    uiContainer.style.alignItems = 'center';
+    uiContainer.style.zIndex = '10';
+
+    const powerUpOptions = ['trail', 'autoShooter']; // Add all power-up types here
+    const buttons = [];
+
+    for (let i = 0; i < 3; i++) {
+        const button = document.createElement('button');
+        button.style.width = '100px';
+        button.style.height = '50px';
+        button.style.margin = '10px';
+        const powerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
+        button.innerText = powerUp;
+        button.onclick = () => {
+            uiContainer.remove();
+            if (powerUp === 'trail') {
+                trailActive = true;
+                setTimeout(() => {
+                    trailActive = false;
+                }, powerUpLifetime);
+            } else if (powerUp === 'autoShooter') {
+                autoShooterActive = true;
+                setTimeout(() => {
+                    autoShooterActive = false;
+                }, powerUpLifetime);
+            }
+            animate();
+        };
+        buttons.push(button);
+        uiContainer.appendChild(button);
+    }
+
+    document.body.appendChild(uiContainer);
+    cancelAnimationFrame(animationFrameId);
+}
+
 // Render loop
+let animationFrameId;
 function animate() {
-    requestAnimationFrame(animate);
+    animationFrameId = requestAnimationFrame(animate);
 
     updatePlayerMovement();
     updateCamera();
