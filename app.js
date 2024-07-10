@@ -23,7 +23,7 @@ directionalLight.castShadow = true;
 scene.add(directionalLight);
 
 // Infinite seamless glass floor (textureless)
-const floorGeometry = new THREE.PlaneGeometry(100, 100);
+const floorGeometry = new THREE.PlaneGeometry(10000, 10000);
 const floorMaterial = new THREE.MeshStandardMaterial({
     color: 0xaaaaaa,
     metalness: 0.9,
@@ -78,13 +78,13 @@ let playerLevel = 1;
 
 const playerHPBar = document.createElement('div');
 playerHPBar.style.position = 'absolute';
-playerHPBar.style.width = '100px';
-playerHPBar.style.height = '20px';
+playerHPBar.style.width = '80px';
+playerHPBar.style.height = '15px';
 playerHPBar.style.backgroundColor = 'red';
 
 const playerXPBar = document.createElement('div');
 playerXPBar.style.position = 'absolute';
-playerXPBar.style.width = '100px';
+playerXPBar.style.width = '80px';
 playerXPBar.style.height = '5px';
 playerXPBar.style.backgroundColor = 'blue';
 
@@ -101,13 +101,13 @@ function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
     playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
     playerHPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
-    playerHPBar.style.width = `${playerHP * 10}px`;
+    playerHPBar.style.width = `${playerHP * 8}px`;
 
     playerXPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
     playerXPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 5}px`;
-    playerXPBar.style.width = `${playerXP}px`;
+    playerXPBar.style.width = `${playerXP * 0.8}px`;
 
-    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 105}px`;
+    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 85}px`;
     playerLevelDisplay.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
     playerLevelDisplay.innerHTML = playerLevel;
 }
@@ -132,10 +132,25 @@ document.addEventListener('keyup', (event) => {
 const bullets = [];
 const enemies = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
-const shotInterval = 50; // Interval between shots in milliseconds
+const shotInterval = 200; // Interval between shots in milliseconds
 const trailLifetime = 3000; // Lifetime of the trail bullets in milliseconds
 let trailActive = false;
 let autoShooterActive = false;
+
+// Trail object
+const trail = {
+    create: function (x, y, z, direction) {
+        colorIndex = (colorIndex + 1) % rainbowColors.length;
+        const trailGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        const trailMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
+        const trailBullet = new THREE.Mesh(trailGeometry, trailMaterial);
+        trailBullet.position.set(x, y, z);
+        trailBullet.userData = { direction, creationTime: Date.now() };
+        trailBullet.castShadow = true;
+        scene.add(trailBullet);
+        bullets.push(trailBullet);
+    }
+};
 
 function createBullet(x, y, z, direction) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -207,7 +222,7 @@ function updatePlayerMovement() {
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
         if (trailActive) {
-            createBullet(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
+            trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
         }
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
@@ -287,9 +302,9 @@ function createEnemy() {
 
     const enemy = new THREE.Points(enemyGeometry, enemyMaterial);
     enemy.position.set(
-        (Math.random() - 0.5) * 50,
+        (Math.random() - 0.5) * 20 + player.position.x,
         0,
-        (Math.random() - 0.5) * 50
+        (Math.random() - 0.5) * 20 + player.position.z
     );
     enemy.userData = { hp: 5, hpBar: createHPBar() };
     scene.add(enemy);
@@ -416,6 +431,13 @@ function createPowerUp(color, position, type) {
     powerUp.castShadow = true;
     scene.add(powerUp);
     powerUps.push(powerUp);
+        // Power-up self-destruction after 7 seconds
+        setTimeout(() => {
+            if (powerUps.includes(powerUp)) {
+                scene.remove(powerUp);
+                powerUps.splice(powerUps.indexOf(powerUp), 1);
+            }
+        }, 7000);
 }
 
 function checkPowerUpCollection() {
@@ -433,7 +455,7 @@ function checkPowerUpCollection() {
                 }, powerUpLifetime);
             }
             scene.remove(powerUp);
-            powerUps.splice(index, 1);
+            powerUps.splice(powerUps.indexOf(powerUp), 1);
         }
     });
 }
@@ -462,8 +484,8 @@ function autoShootClosestEnemy() {
 }
 
 // Initialize power-ups at game start
-createPowerUp(0x00ff00, new THREE.Vector3(-10, 0, -10), 'trail');
-createPowerUp(0x0000ff, new THREE.Vector3(10, 0, 10), 'autoShooter');
+//createPowerUp(0x00ff00, new THREE.Vector3(-10, 0, -10), 'trail');
+//createPowerUp(0x0000ff, new THREE.Vector3(10, 0, 10), 'autoShooter');
 
 // Function to check for XP sphere collection
 function checkXPSphereCollection() {
@@ -500,8 +522,8 @@ function animate() {
 
 // Spawn a power-up box every 5 seconds
 setInterval(() => {
-    createPowerUp(0x00ff00, new THREE.Vector3((Math.random() - 0.5) * 50, 0, (Math.random() - 0.5) * 50), 'trail');
-    createPowerUp(0x0000ff, new THREE.Vector3((Math.random() - 0.5) * 50, 0, (Math.random() - 0.5) * 50), 'autoShooter');
+    createPowerUp(0x00ff00, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), 'trail');
+    createPowerUp(0x0000ff, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), 'autoShooter');
 }, 5000);
 
 animate();
