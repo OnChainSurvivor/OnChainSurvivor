@@ -18,7 +18,7 @@ Survivor! Congratulations on making it this far, You survived every hack, every 
    - [Push to the Branch](#push-to-the-branch)
    - [Open a Pull Request](#open-a-pull-request)
 7. [License](#license)
-8. [OnChain Survivor NFT Series, "The Survivors"](#-onchain-survivor-nft-features-)
+8. [OnChain Survivor NFT Series, "The Survivors"](#-onchain-survivor-nft-series-the-survivors--)
 9. [Basic Interaction Models](#-basic-interaction-models-%EF%B8%8F)
    - [Sequence Diagrams](#sequence-diagrams)
    - [Flowcharts](#flowcharts)
