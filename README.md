@@ -96,11 +96,16 @@ Contributions from everyone are welcomed! Here’s how you can help:
 
 This project license is currently [TBD]. 
 
-## 🌆 OnChain Survivor ART NFT  🌆
+## 🌆 OnChain Survivor NFT Series, "The Survivors"  🌆
+
+DISCLAIMER: The Onchain Survivor NFT series will only serve as a collectible art piece. The NFT minting is neither an utility token nor a promise of equity. 
+Purchasers should not expect any form of profit, profit sharing or any kind of return. 
+
+This NFT is purely a digital collectible for fans and people who enjoy the AI Art.
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|NFT art Featured in game.           | TBD      |
+|Onchain Survivor NFT|NFT Art Featured in game.           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
 
 ##  📚 Basic Interaction Models 🕹️
