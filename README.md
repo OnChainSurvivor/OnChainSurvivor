@@ -35,10 +35,10 @@ Onchain Survivor is a web-based top-down arena shooter survival roguelite game t
 
 ### 🔑Key Features🔑
 
-- **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend. 
+- **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend!. 
 - **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty.  
 - **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
-- **Cross-Platform**: Play directly Either desktop or mobile, without the need for additional clients. Simple is best. You can even olay from your wallet!
+- **Cross-Platform**: Play directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
 - **Variable Gameplay**: Every play is different, Guaranteed. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
@@ -64,7 +64,7 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 Follow these steps to set up Onchain Survivor on your local machine:
 
 ### ⏱️Prerequisites⏱️
-- Currently test environments have almost no requirements, Should easily run in devices from 5 years or less.
+- Currently tests should easily run in  10 yearsold hardware or less.
 
 ### 💿Installation💿
 - Simply Fork the repo and open index.html in your preferred browser. 
@@ -72,9 +72,9 @@ Follow these steps to set up Onchain Survivor on your local machine:
 ## 🎮How to Play🎮
 
 -   **Select to play as guest or with your own NFT**
--   **Join a Room**: Enter a room ID and click "Join Room" to connect with other players.
+-   **Join a Room**: Enter an address and click "Join Room" to connect with other survivor.
 -   **Move Your Character**: Use the arrow keys to move your character around the 3D environment.
--   **Survive**: Your movements will be broadcast to the other player in real-time.
+-   **Survive**: Your movements will be broadcast to the other survivor in real-time.
 
 ## 🤝Contributing🤝
 
@@ -96,11 +96,11 @@ Contributions from everyone are welcomed! Here’s how you can help:
 
 This project license is currently [TBD]. 
 
-## 🌆 OnChain Survivor NFT features 🌆
+## 🌆 OnChain Survivor ART NFT  🌆
 
 |                |Own NFT                          |Borrow NFT                         |
 |----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|TBD           | TBD      |
+|Onchain Survivor NFT|NFT art Featured in game.           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
 
 ##  📚 Basic Interaction Models 🕹️
