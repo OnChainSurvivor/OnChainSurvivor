@@ -214,8 +214,6 @@ function updatePlayerMovement() {
     const movementSpeed = 0.2;
     let direction = new THREE.Vector3();
 
-
-
     if (keys.s) direction.z -= movementSpeed;
     if (keys.w) direction.z += movementSpeed;
     if (keys.a) direction.x += movementSpeed;
@@ -407,7 +405,13 @@ const bloomPass = new THREE.UnrealBloomPass(
     0.1 // Threshold
 );
 
-const composer = new THREE.EffectComposer(renderer);
+ const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+         format: THREE.RGBAFormat,
+         encoding: THREE.sRGBEncoding,
+     });
+     const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
@@ -515,15 +519,16 @@ function checkXPSphereCollection() {
 
 // Show level-up UI
 function showLevelUpUI() {
-    const uiContainer = document.createElement('div');
-    uiContainer.style.position = 'absolute';
-    uiContainer.style.width = '100%';
-    uiContainer.style.height = '100%';
-    uiContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    uiContainer.style.display = 'flex';
-    uiContainer.style.justifyContent = 'center';
-    uiContainer.style.alignItems = 'center';
-    uiContainer.style.zIndex = '10';
+
+    const levelUpContainer = document.createElement('div');
+    levelUpContainer.style.position = 'absolute';
+    levelUpContainer.style.width ='100%';
+    levelUpContainer.style.height ='100%';
+    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    levelUpContainer.style.display = 'flex';
+    levelUpContainer.style.justifyContent = 'center';
+    levelUpContainer.style.alignItems = 'center';
+    levelUpContainer.style.zIndex = '20'; // Ensure the level-up UI is above the main UI container
 
     const powerUpOptions = ['trail', 'autoShooter']; // Add all power-up types here
     const buttons = [];
@@ -536,7 +541,7 @@ function showLevelUpUI() {
         const powerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
         button.innerText = powerUp;
         button.onclick = () => {
-            uiContainer.remove();
+            levelUpContainer.remove();
             if (powerUp === 'trail') {
                 trailActive = true;
                 setTimeout(() => {
@@ -551,10 +556,14 @@ function showLevelUpUI() {
             animate();
         };
         buttons.push(button);
-        uiContainer.appendChild(button);
+        levelUpContainer.appendChild(button);
     }
 
-    document.body.appendChild(uiContainer);
+    const vector = player.position.clone().project(camera);
+    levelUpContainer.style.left = `0px`;
+    levelUpContainer.style.top = `0px`;
+
+    document.body.appendChild(levelUpContainer);
     cancelAnimationFrame(animationFrameId);
 }
 
@@ -577,6 +586,15 @@ function animate() {
     composer.render();
     renderer.render(scene, camera);
 }
+
+ // Resize renderer, render target, and composer on window resize
+  window.addEventListener('resize', () => {
+         camera.aspect = window.innerWidth / window.innerHeight;
+         camera.updateProjectionMatrix();
+         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderTarget.setSize(window.innerWidth, window.innerHeight);
+          composer.setSize(window.innerWidth, window.innerHeight);
+     }, false);
 
 // Spawn a power-up box every 5 seconds
 setInterval(() => {
