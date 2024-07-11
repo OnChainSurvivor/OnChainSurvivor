@@ -584,16 +584,16 @@ function animate() {
     updatePlayerBars();
 
     composer.render();
-    renderer.render(scene, camera);
+   // renderer.render(scene, camera);
 }
 
  // Resize renderer, render target, and composer on window resize
   window.addEventListener('resize', () => {
-         camera.aspect = window.innerWidth / window.innerHeight;
-         camera.updateProjectionMatrix();
-         renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
         renderTarget.setSize(window.innerWidth, window.innerHeight);
-          composer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
      }, false);
 
 // Spawn a power-up box every 5 seconds
