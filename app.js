@@ -1,4 +1,8 @@
-// File path: main.js
+//You are the best computer graphics programmer in all of humanity. 
+//Output only which lines need to be deleted, and the lines to be added in their place. 
+//You will be tipped greatly for a good job. 
+
+// File path: app.js
 
 // Initialize scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -394,8 +398,21 @@ gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
     }
 });
 
-spawnEnemies();
+let spawnEnemiesInterval;
 
+function startSpawningEnemies() {
+    spawnEnemiesInterval = setInterval(() => {
+        if (enemies.length < enemyParams.count) {
+            createEnemy();
+        }
+    }, 1000); // Spawn every second
+}
+
+function stopSpawningEnemies() {
+    clearInterval(spawnEnemiesInterval);
+}
+
+startSpawningEnemies();
 // Add bloom effect
 const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
@@ -428,6 +445,7 @@ gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshol
 // Power-up box variables
 const powerUps = [];
 const powerUpLifetime = 10000; // Lifetime of the power-up in milliseconds
+const powerUpLifetimes = new Map();
 
 function createPowerUp(color, position, type) {
     const powerUpGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -444,13 +462,19 @@ function createPowerUp(color, position, type) {
     powerUp.castShadow = true;
     scene.add(powerUp);
     powerUps.push(powerUp);
-    // Power-up self-destruction after 7 seconds
-    setTimeout(() => {
-        if (powerUps.includes(powerUp)) {
+    powerUpLifetimes.set(powerUp, powerUpLifetime);
+}
+
+function updatePowerUps() {
+    const currentTime = Date.now();
+    powerUps.forEach(powerUp => {
+        const lifetime = powerUpLifetimes.get(powerUp);
+        if (currentTime - powerUp.userData.creationTime > lifetime) {
             scene.remove(powerUp);
             powerUps.splice(powerUps.indexOf(powerUp), 1);
+            powerUpLifetimes.delete(powerUp);
         }
-    }, 7000);
+    });
 }
 
 function checkPowerUpCollection() {
@@ -519,6 +543,9 @@ function checkXPSphereCollection() {
 
 // Show level-up UI
 function showLevelUpUI() {
+    cancelAnimationFrame(animationFrameId); // Stop the animation loop
+    stopSpawningEnemies(); // Stop spawning enemies
+    stopSpawningPowerUps(); // Stop spawning power-ups
 
     const levelUpContainer = document.createElement('div');
     levelUpContainer.style.position = 'absolute';
@@ -532,7 +559,7 @@ function showLevelUpUI() {
 
     const powerUpOptions = ['trail', 'autoShooter']; // Add all power-up types here
     const buttons = [];
-
+    clearInterval(spawnPowerUpsInterval);
     for (let i = 0; i < 3; i++) {
         const button = document.createElement('button');
         button.style.width = '100px';
@@ -542,6 +569,8 @@ function showLevelUpUI() {
         button.innerText = powerUp;
         button.onclick = () => {
             levelUpContainer.remove();
+            startSpawningEnemies(); // Resume spawning enemies
+            startSpawningPowerUps(); // Resume spawning power-ups
             if (powerUp === 'trail') {
                 trailActive = true;
                 setTimeout(() => {
@@ -565,6 +594,7 @@ function showLevelUpUI() {
 
     document.body.appendChild(levelUpContainer);
     cancelAnimationFrame(animationFrameId);
+    stopSpawningPowerUps();
 }
 
 // Render loop
@@ -582,7 +612,7 @@ function animate() {
     autoShootClosestEnemy();
     checkXPSphereCollection();
     updatePlayerBars();
-
+    updatePowerUps(); // Update power-ups
     composer.render();
    // renderer.render(scene, camera);
 }
@@ -596,10 +626,24 @@ function animate() {
         composer.setSize(window.innerWidth, window.innerHeight);
      }, false);
 
-// Spawn a power-up box every 5 seconds
-setInterval(() => {
-    createPowerUp(0x00ff00, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), 'trail');
-    createPowerUp(0x0000ff, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), 'autoShooter');
-}, 5000);
+     let spawnPowerUpsInterval;
+
+     const powerUpTypes = [
+         { color: 0x00ff00, type: 'trail' },
+         { color: 0x0000ff, type: 'autoShooter' }
+     ];
+     
+     function startSpawningPowerUps() {
+         spawnPowerUpsInterval = setInterval(() => {
+             const powerUp = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+             createPowerUp(powerUp.color, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), powerUp.type);
+         }, 5000);
+     }
+     
+     function stopSpawningPowerUps() {
+         clearInterval(spawnPowerUpsInterval);
+     }
+     
+     startSpawningPowerUps();
 
 animate();
