@@ -31,15 +31,15 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiplayer interactions. Players can navigate a 3D environment to do what they do best... Survive Together!
+Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiSurvivor interactions. Navigate a 3D Blockchained environment to do what they do best... Survive Together!
 
 ### 🔑Key Features🔑
 
-- **Decentralized Gameplay**: Enjoy a truly decentralized multiplayer experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend!. 
+- **Decentralized Gameplay**: Enjoy a truly decentralized multiSurvivor experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend!. 
 - **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty.  
 - **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
-- **Cross-Platform**: Play directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
-- **Variable Gameplay**: Every play is different, Guaranteed. 
+- **Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
+- **Variable Gameplay**: Every experience is different, Guaranteed. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -69,12 +69,12 @@ Follow these steps to set up Onchain Survivor on your local machine:
 ### 💿Installation💿
 - Simply Fork the repo and open index.html in your preferred browser. 
 
-## 🎮How to Play🎮
+## 🎮How to Survive🎮
 
--   **Select to play as guest or with your own NFT**
+-   **Select to Survive as guest or with your own NFT**
 -   **Join a Room**: Enter an address and click "Join Room" to connect with other survivor.
--   **Move Your Character**: Use the arrow keys to move your character around the 3D environment.
--   **Survive**: Your movements will be broadcast to the other survivor in real-time.
+-   **Move Your survivor**: Use the arrow keys to move your character around the 3D environment.
+-   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time.
 
 ## 🤝Contributing🤝
 
@@ -118,7 +118,7 @@ User->> Blockchain*: Signature
 Blockchain*-->> Client:Update client
 Note left of Blockchain*: Magical gameplay happens....
 Blockchain* -> Client: Block Calculated Difficulty data
-Client-->>User: Finished playing, 30m or less
+Client-->>User: Finished Surviving, 30m or less
 User->> Blockchain*: Write Results
 ```
 *Blockchain / RPC
@@ -126,13 +126,13 @@ User->> Blockchain*: Write Results
   ```mermaid
   graph TD
 A[Welcome Screen] --> B[Wallet Log in]
-A --> C[Play as Guest]
+A --> C[Survive as Guest]
 B --> D{Select NFT}
 D --> E[Own NFT]
 D --> F[Borrow NFT]
 E --> G[TBD]
 F --> H[TBD interaction to Owner]
-G --> I[Begin Play]
+G --> I[Survive]
 H --> I
 C --> I
 ```
@@ -222,4 +222,4 @@ Have questions? Feel free to reach out!
 
 -   **Twitter**:  [@ChainSurvivor](https://twitter.com/chainsurvivor)
 
-Thank you for visiting our repository! We hope you enjoy playing Onchain Survivor as much as we enjoy developing it. Happy surviving! 🌍🎮
+Thank you for visiting our repository! We hope you enjoy Onchain Survivor as much as we enjoy developing it. Happy surviving! 🌍🎮
