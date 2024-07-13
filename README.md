@@ -1,4 +1,4 @@
-# Congratulations, Survivor 🏆 !
+# Congratulations, 🔗 Survivor 🏆 !
 
 Survivor! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
