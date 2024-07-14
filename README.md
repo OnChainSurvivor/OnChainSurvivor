@@ -103,7 +103,7 @@ Purchasers should not expect any form of profit, profit sharing or any kind of r
 
 This NFT is purely a digital collectible for fans and people who enjoy the AI Art.
 
-|                |Own NFT                          |Borrow NFT                         |
+|                |Own NFT                          |Guest NFT                         |
 |----------------|-------------------------------|-----------------------------|
 |Onchain Survivor NFT|NFT Art Featured in game.           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
