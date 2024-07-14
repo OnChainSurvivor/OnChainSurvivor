@@ -1,8 +1,6 @@
-//You are the best computer graphics programmer in all of humanity. 
-//Output only which lines need to be deleted, and the lines to be added in their place. 
-//You will be tipped greatly for a good job. 
-
-// File path: app.js
+// You are the best computer graphics programmer in all of humanity. 
+// Output only code. no explanations. 
+// You will be tipped greatly for a good job. 
 
 // Initialize scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -218,7 +216,9 @@ function updatePlayerMovement() {
     const movementSpeed = 0.2;
     let direction = new THREE.Vector3();
 
-    if (keys.s) direction.z -= movementSpeed;
+    if (keys.s) direction
+
+.z -= movementSpeed;
     if (keys.w) direction.z += movementSpeed;
     if (keys.a) direction.x += movementSpeed;
     if (keys.d) direction.x -= movementSpeed;
@@ -468,7 +468,9 @@ function createPowerUp(color, position, type) {
 function updatePowerUps() {
     const currentTime = Date.now();
     powerUps.forEach(powerUp => {
-        const lifetime = powerUpLifetimes.get(powerUp);
+       
+
+ const lifetime = powerUpLifetimes.get(powerUp);
         if (currentTime - powerUp.userData.creationTime > lifetime) {
             scene.remove(powerUp);
             powerUps.splice(powerUps.indexOf(powerUp), 1);
@@ -489,8 +491,6 @@ function checkPowerUpCollection() {
                 autoShooterActive = true;
                 setTimeout(() => {
                     autoShooterActive = false;
-
-
                 }, powerUpLifetime);
             }
             scene.remove(powerUp);
@@ -522,19 +522,73 @@ function autoShootClosestEnemy() {
     }
 }
 
-// Initialize power-ups at game start
-//createPowerUp(0x00ff00, new THREE.Vector3(-10, 0, -10), 'trail');
-//createPowerUp(0x0000ff, new THREE.Vector3(10, 0, 10), 'autoShooter');
+function emitShockwave() {
+    const shockwaveGeometry = new THREE.RingGeometry(0.5, 1, 32);
+    const shockwaveMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffff00,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.5
+    });
+    const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
+    shockwave.position.copy(player.position);
+    shockwave.rotation.x = -Math.PI / 2;
+    scene.add(shockwave);
+
+    const maxScale = 20;
+    const duration = 500;
+    const startTime = Date.now();
+
+    function animateShockwave() {
+        const elapsed = Date.now() - startTime;
+        const scale = 1 + (maxScale - 1) * (elapsed / duration);
+        shockwave.scale.set(scale, scale, scale);
+        shockwave.material.opacity = 0.5 * (1 - elapsed / duration);
+
+        if (elapsed < duration) {
+            requestAnimationFrame(animateShockwave);
+        } else {
+            scene.remove(shockwave);
+        }
+    }
+
+    animateShockwave();
+}
+function smoothPushBackEnemies() {
+    const pushDistance = 5;
+    const pushDuration = 6000;
+    const startPositions = enemies.map(enemy => enemy.position.clone());
+    const startTime = Date.now();
+
+    function animatePushBack() {
+        const elapsed = Date.now() - startTime;
+        const progress = elapsed / pushDuration;
+
+        enemies.forEach((enemy, index) => {
+            const pushDirection = new THREE.Vector3().subVectors(enemy.position, player.position).normalize();
+            const newPosition = startPositions[index].clone().add(pushDirection.multiplyScalar(pushDistance * progress));
+            enemy.position.copy(newPosition);
+        });
+
+        if (progress < 1) {
+            requestAnimationFrame(animatePushBack);
+        }
+    }
+
+    animatePushBack();
+}
 
 // Function to check for XP sphere collection
 function checkXPSphereCollection() {
     scene.children.forEach(child => {
         if (child.geometry && child.geometry.type === 'SphereGeometry' && player.position.distanceTo(child.position) < 1) {
-            playerXP += 10;
+            playerXP += 20;
             if (playerXP >= 100) {
                 playerLevel += 1;
                 playerXP = 0;
                 showLevelUpUI();
+                emitShockwave();
+                smoothPushBackEnemies();
             }
             scene.remove(child);
         }
@@ -543,15 +597,11 @@ function checkXPSphereCollection() {
 
 // Show level-up UI
 function showLevelUpUI() {
-    cancelAnimationFrame(animationFrameId); // Stop the animation loop
-    stopSpawningEnemies(); // Stop spawning enemies
-    stopSpawningPowerUps(); // Stop spawning power-ups
-
     const levelUpContainer = document.createElement('div');
     levelUpContainer.style.position = 'absolute';
     levelUpContainer.style.width ='100%';
     levelUpContainer.style.height ='100%';
-    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
     levelUpContainer.style.display = 'flex';
     levelUpContainer.style.justifyContent = 'center';
     levelUpContainer.style.alignItems = 'center';
@@ -569,8 +619,6 @@ function showLevelUpUI() {
         button.innerText = powerUp;
         button.onclick = () => {
             levelUpContainer.remove();
-            startSpawningEnemies(); // Resume spawning enemies
-            startSpawningPowerUps(); // Resume spawning power-ups
             if (powerUp === 'trail') {
                 trailActive = true;
                 setTimeout(() => {
@@ -582,7 +630,6 @@ function showLevelUpUI() {
                     autoShooterActive = false;
                 }, powerUpLifetime);
             }
-            animate();
         };
         buttons.push(button);
         levelUpContainer.appendChild(button);
@@ -593,8 +640,6 @@ function showLevelUpUI() {
     levelUpContainer.style.top = `0px`;
 
     document.body.appendChild(levelUpContainer);
-    cancelAnimationFrame(animationFrameId);
-    stopSpawningPowerUps();
 }
 
 // Render loop
@@ -614,36 +659,35 @@ function animate() {
     updatePlayerBars();
     updatePowerUps(); // Update power-ups
     composer.render();
-   // renderer.render(scene, camera);
 }
 
- // Resize renderer, render target, and composer on window resize
-  window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderTarget.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
-     }, false);
+// Resize renderer, render target, and composer on window resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderTarget.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+}, false);
 
-     let spawnPowerUpsInterval;
+let spawnPowerUpsInterval;
 
-     const powerUpTypes = [
-         { color: 0x00ff00, type: 'trail' },
-         { color: 0x0000ff, type: 'autoShooter' }
-     ];
-     
-     function startSpawningPowerUps() {
-         spawnPowerUpsInterval = setInterval(() => {
-             const powerUp = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-             createPowerUp(powerUp.color, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), powerUp.type);
-         }, 5000);
-     }
-     
-     function stopSpawningPowerUps() {
-         clearInterval(spawnPowerUpsInterval);
-     }
-     
-     startSpawningPowerUps();
+const powerUpTypes = [
+    { color: 0x00ff00, type: 'trail' },
+    { color: 0x0000ff, type: 'autoShooter' }
+];
+
+function startSpawningPowerUps() {
+    spawnPowerUpsInterval = setInterval(() => {
+        const powerUp = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+        createPowerUp(powerUp.color, new THREE.Vector3((Math.random() - 0.5) * 20 + player.position.x, 0, (Math.random() - 0.5) * 20 + player.position.z), powerUp.type);
+    }, 5000);
+}
+
+function stopSpawningPowerUps() {
+    clearInterval(spawnPowerUpsInterval);
+}
+
+startSpawningPowerUps();
 
 animate();
