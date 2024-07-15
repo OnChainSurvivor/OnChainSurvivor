@@ -129,7 +129,7 @@ A[Welcome Screen] --> B[Wallet Log in]
 A --> C[Survive as Guest]
 B --> D{Select NFT}
 D --> E[Own NFT]
-D --> F[Borrow NFT]
+D --> F[Guest NFT]
 E --> G[TBD]
 F --> H[TBD interaction to Owner]
 G --> I[Survive]
