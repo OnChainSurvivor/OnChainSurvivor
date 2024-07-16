@@ -119,7 +119,55 @@ function updatePlayerBars() {
     playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 55}px`;
     playerLevelDisplay.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
     playerLevelDisplay.innerHTML = playerLevel;
+
+    // Check for game over
+    if (playerHP <= 0) {
+        triggerGameOver();
+    }
 }
+function triggerGameOver() {
+    cancelAnimationFrame(animationFrameId);
+
+    const gameOverScreen = document.createElement('div');
+    gameOverScreen.style.position = 'absolute';
+    gameOverScreen.style.top = '0';
+    gameOverScreen.style.left = '0';
+    gameOverScreen.style.width = '100%';
+    gameOverScreen.style.height = '100%';
+    gameOverScreen.style.backgroundColor = 'black';
+    gameOverScreen.style.display = 'flex';
+    gameOverScreen.style.justifyContent = 'center';
+    gameOverScreen.style.alignItems = 'center';
+    gameOverScreen.style.zIndex = '100';
+
+    const tryAgainButton = document.createElement('button');
+    tryAgainButton.innerText = 'Try Again';
+    tryAgainButton.style.fontSize = '20px';
+    tryAgainButton.style.padding = '10px 20px';
+    tryAgainButton.onclick = () => {
+        location.reload();
+    };
+
+    gameOverScreen.appendChild(tryAgainButton);
+    document.body.appendChild(gameOverScreen);
+}
+
+let countdown = 30 * 60; // 30 minutes in seconds
+const timerDisplay = document.createElement('div');
+timerDisplay.style.position = 'absolute';
+timerDisplay.style.top = '10px';
+timerDisplay.style.right = '10px';
+timerDisplay.style.fontSize = '20px';
+timerDisplay.style.color = 'white';
+document.body.appendChild(timerDisplay);
+
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(countdown / 60);
+    const seconds = countdown % 60;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
 
 // Position the camera farther away
 camera.position.set(0, 15, 15);
@@ -297,7 +345,6 @@ const enemyMaterial = new THREE.PointsMaterial({
     opacity: 0.8
 });
 
-// Create an enemy
 function createEnemy() {
     const enemyGeometry = new THREE.BufferGeometry();
     const enemyCount = 100;
@@ -312,10 +359,16 @@ function createEnemy() {
     enemyGeometry.setAttribute('position', new THREE.BufferAttribute(enemyParticles, 3));
 
     const enemy = new THREE.Points(enemyGeometry, enemyMaterial);
+
+    const spawnDistance = 30; // Distance outside the field of view
+    const angle = Math.random() * Math.PI * 2;
+    const offsetX = Math.cos(angle) * spawnDistance;
+    const offsetZ = Math.sin(angle) * spawnDistance;
+
     enemy.position.set(
-        (Math.random() - 0.5) * 20 + player.position.x,
+        player.position.x + offsetX,
         0,
-        (Math.random() - 0.5) * 20 + player.position.z
+        player.position.z + offsetZ
     );
     enemy.userData = { hp: 5, hpBar: createHPBar() };
     scene.add(enemy);
@@ -376,8 +429,15 @@ function updateEnemies() {
             document.body.removeChild(enemy.userData.hpBar);
             enemies.splice(enemies.indexOf(enemy), 1);
         }
+
+        // Check for enemy collision with the player
+        if (enemy.position.distanceTo(player.position) < 1) {
+            playerHP -= 1; // Reduce player HP on contact
+            updatePlayerBars(); // Update player HP bar
+        }
     });
 }
+
 
 // Automatically spawn enemies
 function spawnEnemies() {
@@ -659,7 +719,16 @@ function animate() {
     updatePlayerBars();
     updatePowerUps(); // Update power-ups
     composer.render();
+
+    // Update countdown timer
+    if (countdown > 0) {
+        countdown--;
+        updateTimerDisplay();
+    } else {
+        triggerGameOver();
+    }
 }
+
 
 // Resize renderer, render target, and composer on window resize
 window.addEventListener('resize', () => {
