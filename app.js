@@ -209,13 +209,13 @@ const trail = {
     }
 };
 
-function createBullet(x, y, z, direction) {
+function createBullet(x, y, z, direction,source) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
     const bulletGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
     const bulletMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
     const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
     bullet.position.set(x, y, z);
-    bullet.userData = { direction, creationTime: Date.now() };
+    bullet.userData = { direction, creationTime: Date.now(),source };
     bullet.castShadow = true;
     scene.add(bullet);
     bullets.push(bullet);
@@ -344,36 +344,103 @@ const enemyMaterial = new THREE.PointsMaterial({
     transparent: true,
     opacity: 0.8
 });
+// Hidden score value for all enemies
+let score = 0;
 
-function createEnemy() {
-    const enemyGeometry = new THREE.BufferGeometry();
-    const enemyCount = 100;
-    const enemyParticles = new Float32Array(enemyCount * 3);
+// Display current score below the timer
+const scoreDisplay = document.createElement('div');
+scoreDisplay.style.position = 'absolute';
+scoreDisplay.style.top = '40px';
+scoreDisplay.style.right = '10px';
+scoreDisplay.style.fontSize = '20px';
+scoreDisplay.style.color = 'white';
+document.body.appendChild(scoreDisplay);
 
-    for (let i = 0; i < enemyCount; i++) {
-        enemyParticles[i * 3] = (Math.random() - 0.5) * 1;
-        enemyParticles[i * 3 + 1] = (Math.random() - 0.5) * 1;
-        enemyParticles[i * 3 + 2] = (Math.random() - 0.5) * 1;
-    }
+// Update score display function
+function updateScoreDisplay() {
+    scoreDisplay.innerText = `Score: ${score}`;
+}
 
-    enemyGeometry.setAttribute('position', new THREE.BufferAttribute(enemyParticles, 3));
+// Function to create the new enemy type
+function createShootingEnemy() {
+    const enemyGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const enemyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+    const shootingEnemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
 
-    const enemy = new THREE.Points(enemyGeometry, enemyMaterial);
-
-    const spawnDistance = 30; // Distance outside the field of view
+    const spawnDistance = 15; // Half the distance between the player and the field of view
     const angle = Math.random() * Math.PI * 2;
     const offsetX = Math.cos(angle) * spawnDistance;
     const offsetZ = Math.sin(angle) * spawnDistance;
 
-    enemy.position.set(
+    shootingEnemy.position.set(
         player.position.x + offsetX,
         0,
         player.position.z + offsetZ
     );
-    enemy.userData = { hp: 5, hpBar: createHPBar() };
-    scene.add(enemy);
-    enemies.push(enemy);
+    shootingEnemy.userData = { hp: 5, hpBar: createHPBar(), scoreValue: 50, isShootingEnemy: true };
+    scene.add(shootingEnemy);
+    enemies.push(shootingEnemy);
 }
+
+
+
+// Function to create enemy bullets
+function createEnemyBullet(position, direction,enemy) {
+    const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    bullet.position.copy(position);
+    bullet.userData = { direction: direction.clone(), creationTime: Date.now(), enemy };
+    scene.add(bullet);
+    bullets.push(bullet);
+}
+
+// Function to handle shooting enemy bullets
+function handleEnemyShooting() {
+    enemies.forEach(enemy => {
+        if (!enemy.userData.isShootingEnemy) return;
+        const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
+        createEnemyBullet(enemy.position, direction);
+    });
+}
+
+
+
+function createEnemy() {
+    if (Math.random() < 0.5) {
+        createShootingEnemy();
+    } else {
+        // Existing enemy creation logic
+        const enemyGeometry = new THREE.BufferGeometry();
+        const enemyCount = 100;
+        const enemyParticles = new Float32Array(enemyCount * 3);
+
+        for (let i = 0; i < enemyCount; i++) {
+            enemyParticles[i * 3] = (Math.random() - 0.5) * 1;
+            enemyParticles[i * 3 + 1] = (Math.random() - 0.5) * 1;
+            enemyParticles[i * 3 + 2] = (Math.random() - 0.5) * 1;
+        }
+
+        enemyGeometry.setAttribute('position', new THREE.BufferAttribute(enemyParticles, 3));
+
+        const enemy = new THREE.Points(enemyGeometry, enemyMaterial);
+
+        const spawnDistance = 30;
+        const angle = Math.random() * Math.PI * 2;
+        const offsetX = Math.cos(angle) * spawnDistance;
+        const offsetZ = Math.sin(angle) * spawnDistance;
+
+        enemy.position.set(
+            player.position.x + offsetX,
+            0,
+            player.position.z + offsetZ
+        );
+        enemy.userData = { hp: 5, hpBar: createHPBar(), scoreValue: 20 };
+        scene.add(enemy);
+        enemies.push(enemy);
+    }
+}
+
 
 // Create an HP bar
 function createHPBar() {
@@ -404,41 +471,42 @@ function updateHPBar(hpBar, position, hp) {
     hpBar.style.width = `${hp * 10}px`; // Assuming max HP is 5
 }
 
-// Function to update enemies
 function updateEnemies() {
     enemies.forEach(enemy => {
+        // Handle shooting enemies
+        if (enemy.userData.isShootingEnemy) {
+            handleEnemyShooting();
+        }
+
+        // Existing update logic...
         const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
         enemy.position.add(direction.multiplyScalar(0.02));
 
-        // Check for bullet collision
         bullets.forEach(bullet => {
-            if (bullet.position.distanceTo(enemy.position) < 1) {
+            if (bullet.position.distanceTo(enemy.position) < 1 && bullet.userData.source == player) { // Check if bullet is not from the enemy itself
                 enemy.userData.hp -= 1;
                 scene.remove(bullet);
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
         });
 
-        // Update HP bar
         updateHPBar(enemy.userData.hpBar, enemy.position, enemy.userData.hp);
 
-        // Remove enemy if HP is 0 and create XP sphere
         if (enemy.userData.hp <= 0) {
+            score += enemy.userData.scoreValue;
+            updateScoreDisplay();
             createXPSphere(enemy.position);
             scene.remove(enemy);
             document.body.removeChild(enemy.userData.hpBar);
             enemies.splice(enemies.indexOf(enemy), 1);
         }
 
-        // Check for enemy collision with the player
         if (enemy.position.distanceTo(player.position) < 1) {
-            playerHP -= 1; // Reduce player HP on contact
-            updatePlayerBars(); // Update player HP bar
+            playerHP -= 1;
+            updatePlayerBars();
         }
     });
 }
-
-
 // Automatically spawn enemies
 function spawnEnemies() {
     setInterval(() => {
@@ -577,7 +645,7 @@ function autoShootClosestEnemy() {
         const closestEnemy = findClosestEnemy();
         if (closestEnemy) {
             const direction = new THREE.Vector3().subVectors(closestEnemy.position, player.position).normalize();
-            createBullet(player.position.x, player.position.y, player.position.z, direction);
+            createBullet(player.position.x, player.position.y, player.position.z, direction, player);
         }
     }
 }
