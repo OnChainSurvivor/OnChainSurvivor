@@ -306,10 +306,13 @@ function updateCamera() {
     camera.lookAt(player.position);
 }
 
-// Update the bullets' movement
 function updateBullets() {
+    const playerBulletSpeed = 0.4;
+    const enemyBulletSpeed = 0.1; // Slower bullet speed for enemies
+
     bullets.forEach(bullet => {
-        bullet.position.add(bullet.userData.direction.clone().multiplyScalar(0.4));
+        const speed = bullet.userData.source === player ? playerBulletSpeed : enemyBulletSpeed;
+        bullet.position.add(bullet.userData.direction.clone().multiplyScalar(speed));
     });
 }
 
@@ -384,25 +387,28 @@ function createShootingEnemy() {
 
 
 
-// Function to create enemy bullets
-function createEnemyBullet(position, direction) {
-    const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+function createEnemyBullet(position, direction, enemy) { // Added enemy parameter
+    const bulletGeometry = new THREE.SphereGeometry(0.5, 8, 8); // Increased bullet size
     const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
     bullet.position.copy(position);
-    bullet.userData = { direction: direction.clone(), creationTime: Date.now() };
+    bullet.userData = { direction: direction.clone(), creationTime: Date.now(), source: enemy }; // Store source of bullet
     scene.add(bullet);
     bullets.push(bullet);
 }
 
-// Function to handle shooting enemy bullets
 function handleEnemyShooting() {
+    const currentTime = Date.now();
     enemies.forEach(enemy => {
         if (!enemy.userData.isShootingEnemy) return;
-        const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
-        createEnemyBullet(enemy.position, direction);
+        if (currentTime - (enemy.userData.lastShotTime || 0) > shotInterval * 3) { // Slower shooting rate
+            const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
+            createEnemyBullet(enemy.position, direction, enemy);
+            enemy.userData.lastShotTime = currentTime;
+        }
     });
 }
+
 
 
 
@@ -490,7 +496,7 @@ function updateEnemies() {
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
             if (bullet.position.distanceTo(player.position) < 1 && bullet.userData.source !== player) { // Check if bullet is not from the player
-                playerHP -= 1/2; // Reduce player HP
+                playerHP -= 1; // Reduce player HP
                 updatePlayerBars(); // Update player HP bar
                 scene.remove(bullet);
                 bullets.splice(bullets.indexOf(bullet), 1);
@@ -521,11 +527,11 @@ function spawnEnemies() {
         if (enemies.length < enemyParams.count) {
             createEnemy();
         }
-    }, 1000); // Spawn every second
+    }, 1000/2); 
 }
 
 // GUI for controlling number of enemies
-const enemyParams = { count: 5 };
+const enemyParams = { count: 50 };
 gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
     while (enemies.length > enemyParams.count) {
         const enemy = enemies.pop();
@@ -577,6 +583,46 @@ const bloomParams = {
 gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength = value);
 gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
 gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
+
+
+
+// Rename powerUps to abilities and update references
+const abilities = [];
+const abilitiesLifetime = 10000; // Lifetime of the ability in milliseconds
+const abilitiesLifetimes = new Map();
+
+// Ability structure
+const abilityTypes = [
+    {
+        title: 'Trail',
+        description: 'Leaves a neon trail behind the player.',
+        tooltip: 'Neon Trail',
+        classes: ['archer', 'assassin'],
+        effect: (level) => { 
+            trailActive = true; 
+            setTimeout(() => { trailActive = false; }, abilitiesLifetime * level); 
+        },
+        thumbnail: 'path/to/trail_thumbnail.png',
+        level: 1
+    },
+    {
+        title: 'AutoShooter',
+        description: 'Automatically shoots at the nearest enemy.',
+        tooltip: 'Auto Shooter',
+        classes: ['archer', 'assassin'],
+        effect: (level) => { 
+            autoShooterActive = true; 
+            setTimeout(() => { autoShooterActive = false; }, abilitiesLifetime * level); 
+        },
+        thumbnail: 'path/to/autoShooter_thumbnail.png',
+        level: 1
+    }
+];
+
+// Apply ability effect with level
+function applyAbilityEffect(ability) {
+    ability.effect(ability.level);
+}
 
 // Power-up box variables
 const powerUps = [];
@@ -731,6 +777,7 @@ function checkXPSphereCollection() {
     });
 }
 
+let isPaused = false;
 // Show level-up UI
 function showLevelUpUI() {
     const levelUpContainer = document.createElement('div');
@@ -745,27 +792,26 @@ function showLevelUpUI() {
 
     const powerUpOptions = ['trail', 'autoShooter']; // Add all power-up types here
     const buttons = [];
+
+    // Pause the game
+    isPaused = true;
+    clearInterval(spawnEnemiesInterval); // Stop spawning enemies
+    cancelAnimationFrame(animationFrameId);
     clearInterval(spawnPowerUpsInterval);
     for (let i = 0; i < 3; i++) {
         const button = document.createElement('button');
         button.style.width = '100px';
         button.style.height = '50px';
         button.style.margin = '10px';
-        const powerUp = powerUpOptions[Math.floor(Math.random() * powerUpOptions.length)];
-        button.innerText = powerUp;
+        const ability = abilityTypes[Math.floor(Math.random() * abilityTypes.length)];
+        button.innerText = `${ability.title} (Level ${ability.level + 1})`;
         button.onclick = () => {
             levelUpContainer.remove();
-            if (powerUp === 'trail') {
-                trailActive = true;
-                setTimeout(() => {
-                    trailActive = false;
-                }, powerUpLifetime);
-            } else if (powerUp === 'autoShooter') {
-                autoShooterActive = true;
-                setTimeout(() => {
-                    autoShooterActive = false;
-                }, powerUpLifetime);
-            }
+            ability.level = Math.min(ability.level + 1, 10); // Increase level, max 10
+            applyAbilityEffect(ability);
+            isPaused = false;
+            startSpawningEnemies();
+            animate();
         };
         buttons.push(button);
         levelUpContainer.appendChild(button);
@@ -781,6 +827,7 @@ function showLevelUpUI() {
 // Render loop
 let animationFrameId;
 function animate() {
+    if (isPaused) return; // Do not animate if the game is paused
     animationFrameId = requestAnimationFrame(animate);
 
     updatePlayerMovement();
