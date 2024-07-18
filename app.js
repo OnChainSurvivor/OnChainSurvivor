@@ -152,7 +152,7 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-let countdown = 30 * 60; // 30 minutes in seconds
+let countdown = 1800 * 60; // 30 minutes in seconds
 const timerDisplay = document.createElement('div');
 timerDisplay.style.position = 'absolute';
 timerDisplay.style.top = '10px';
@@ -196,13 +196,13 @@ let autoShooterActive = false;
 
 // Trail object
 const trail = {
-    create: function (x, y, z, direction) {
+    create: function (x, y, z, direction,source) {
         colorIndex = (colorIndex + 1) % rainbowColors.length;
         const trailGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         const trailMaterial = createNeonMaterial(rainbowColors[colorIndex], 2); // Higher emissive intensity for neon effect
         const trailBullet = new THREE.Mesh(trailGeometry, trailMaterial);
         trailBullet.position.set(x, y, z);
-        trailBullet.userData = { direction, creationTime: Date.now() };
+        trailBullet.userData = { direction, creationTime: Date.now(),source };
         trailBullet.castShadow = true;
         scene.add(trailBullet);
         bullets.push(trailBullet);
@@ -281,7 +281,7 @@ function updatePlayerMovement() {
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
         if (trailActive) {
-            trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0));
+            trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0),player);
         }
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
@@ -331,7 +331,7 @@ function handleShooting() {
     if (shootDirection.length() > 0) {
         shootDirection.normalize();
         if (currentTime - lastShotTimes.i > shotInterval) {
-            createBullet(player.position.x, player.position.y, player.position.z, shootDirection);
+            createBullet(player.position.x, player.position.y, player.position.z, shootDirection,player);
             lastShotTimes.i = currentTime;
         }
     }
@@ -385,12 +385,12 @@ function createShootingEnemy() {
 
 
 // Function to create enemy bullets
-function createEnemyBullet(position, direction,enemy) {
+function createEnemyBullet(position, direction) {
     const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
     bullet.position.copy(position);
-    bullet.userData = { direction: direction.clone(), creationTime: Date.now(), enemy };
+    bullet.userData = { direction: direction.clone(), creationTime: Date.now() };
     scene.add(bullet);
     bullets.push(bullet);
 }
@@ -459,6 +459,7 @@ function createXPSphere(position) {
     const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
     const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     xpSphere.position.copy(position);
+    xpSphere.userData = { type: 'xpSphere' }; // Add type tag
     scene.add(xpSphere);
     return xpSphere;
 }
@@ -488,6 +489,13 @@ function updateEnemies() {
                 scene.remove(bullet);
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
+            if (bullet.position.distanceTo(player.position) < 1 && bullet.userData.source !== player) { // Check if bullet is not from the player
+                playerHP -= 1/2; // Reduce player HP
+                updatePlayerBars(); // Update player HP bar
+                scene.remove(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+            }
+
         });
 
         updateHPBar(enemy.userData.hpBar, enemy.position, enemy.userData.hp);
@@ -709,7 +717,7 @@ function smoothPushBackEnemies() {
 // Function to check for XP sphere collection
 function checkXPSphereCollection() {
     scene.children.forEach(child => {
-        if (child.geometry && child.geometry.type === 'SphereGeometry' && player.position.distanceTo(child.position) < 1) {
+        if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
             playerXP += 20;
             if (playerXP >= 100) {
                 playerLevel += 1;
