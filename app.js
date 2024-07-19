@@ -114,6 +114,9 @@ document.body.appendChild(playerHPBar);
 document.body.appendChild(playerXPBar);
 document.body.appendChild(playerLevelDisplay);
 
+
+
+
 function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
     playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
@@ -174,6 +177,8 @@ function updateTimerDisplay() {
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
+
+
 
 camera.position.set(0, 15, 15);
 camera.lookAt(player.position);
@@ -449,6 +454,7 @@ function createHPBar() {
     hpBar.style.width = '50px';
     hpBar.style.height = '5px';
     hpBar.style.backgroundColor = 'red';
+    hpBar.style.display = 'none';
     document.body.appendChild(hpBar);
     return hpBar;
 }
@@ -528,7 +534,7 @@ function spawnEnemies() {
         if (enemies.length < enemyParams.count) {
             createEnemy();
         }
-    }, 1000 / 2);
+    }, 100 );
 }
 
 let spawnEnemiesInterval;
@@ -570,6 +576,11 @@ const abilities = [];
 const abilitiesLifetime = 10000;
 const abilitiesLifetimes = new Map();
 
+const autoShooterParams = {
+    baseInterval: 3000,  // base interval for shooting in milliseconds
+    level: 1
+};
+
 const abilityTypes = [
     {
         title: 'Trail',
@@ -588,9 +599,8 @@ const abilityTypes = [
         description: 'Automatically shoots at the nearest enemy.',
         tooltip: 'Auto Shooter',
         classes: ['archer', 'assassin'],
-        effect: (level) => {
-            autoShooterActive = true;
-            setTimeout(() => { autoShooterActive = false; }, abilitiesLifetime * level);
+        effect: function(level) {
+            autoShooterParams.level = level;
         },
         thumbnail: 'path/to/autoShooter_thumbnail.png',
         level: 1
@@ -718,12 +728,18 @@ function findClosestEnemy() {
     return closestEnemy;
 }
 
+let lastAutoShootTime = 0;
+
 function autoShootClosestEnemy() {
-    if (autoShooterActive) {
+    const currentTime = Date.now();
+    const interval = autoShooterParams.baseInterval / autoShooterParams.level;
+
+    if (currentTime - lastAutoShootTime >= interval) {
         const closestEnemy = findClosestEnemy();
         if (closestEnemy) {
             const direction = new THREE.Vector3().subVectors(closestEnemy.position, player.position).normalize();
             createBullet(player.position.x, player.position.y, player.position.z, direction, player);
+            lastAutoShootTime = currentTime;
         }
     }
 }
@@ -882,5 +898,38 @@ window.addEventListener('resize', () => {
     renderTarget.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
 }, false);
+
+
+let uiVisible = false;
+
+const toggleUIButton = document.createElement('button');
+toggleUIButton.innerText = 'Toggle UI';
+toggleUIButton.style.position = 'absolute';
+toggleUIButton.style.top = '60px';
+toggleUIButton.style.right = '10px';
+toggleUIButton.style.fontSize = '20px';
+toggleUIButton.style.padding = '10px 20px';
+document.body.appendChild(toggleUIButton);
+
+toggleUIButton.onclick = () => {
+    uiVisible = !uiVisible;
+    playerHPBar.style.display = uiVisible ? 'block' : 'none';
+    playerXPBar.style.display = uiVisible ? 'block' : 'none';
+    playerLevelDisplay.style.display = uiVisible ? 'block' : 'none';
+    timerDisplay.style.display = uiVisible ? 'block' : 'none';
+    scoreDisplay.style.display = uiVisible ? 'block' : 'none';
+    enemies.forEach(enemy => {
+        enemy.userData.hpBar.style.display = uiVisible ? 'block' : 'none';
+    });
+    toggleUIButton.innerText = uiVisible ? 'Hide UI' : 'Show UI';
+};
+
+playerHPBar.style.display = 'none';
+playerXPBar.style.display = 'none';
+playerLevelDisplay.style.display = 'none';
+timerDisplay.style.display = 'none';
+scoreDisplay.style.display = 'none';
+toggleUIButton.innerText = 'Show UI';
+
 
 animate();
