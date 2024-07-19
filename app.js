@@ -145,16 +145,46 @@ function triggerGameOver() {
     gameOverScreen.style.left = '0';
     gameOverScreen.style.width = '100%';
     gameOverScreen.style.height = '100%';
-    gameOverScreen.style.backgroundColor = 'black';
+    gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
     gameOverScreen.style.display = 'flex';
+    gameOverScreen.style.flexDirection = 'column';
     gameOverScreen.style.justifyContent = 'center';
     gameOverScreen.style.alignItems = 'center';
     gameOverScreen.style.zIndex = '100';
+
+    const title = document.createElement('div');
+    title.innerText = 'Game Over';
+    title.style.fontSize = '40px';
+    title.style.color = 'white';
+    title.style.marginBottom = '20px';
+    gameOverScreen.appendChild(title);
 
     const tryAgainButton = document.createElement('button');
     tryAgainButton.innerText = 'Try Again';
     tryAgainButton.style.fontSize = '20px';
     tryAgainButton.style.padding = '10px 20px';
+    tryAgainButton.style.marginTop = '20px';
+    tryAgainButton.style.backgroundColor = 'white';
+    tryAgainButton.style.border = '1px solid black';
+    tryAgainButton.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+    tryAgainButton.style.display = 'flex';
+    tryAgainButton.style.flexDirection = 'column';
+    tryAgainButton.style.alignItems = 'center';
+
+    const img = document.createElement('img');
+    img.src = 'Media/Abilities/ONCHAINTRAIL.png'; // Add a relevant thumbnail for try again
+    img.style.width = '100px';
+    img.style.height = '100px';
+    img.style.marginBottom = '10px';
+
+    const description = document.createElement('div');
+    description.innerText = 'Restart the game from the beginning.';
+    description.style.fontSize = '12px';
+    description.style.textAlign = 'center';
+
+    tryAgainButton.appendChild(img);
+    tryAgainButton.appendChild(description);
+
     tryAgainButton.onclick = () => {
         location.reload();
     };
@@ -162,6 +192,7 @@ function triggerGameOver() {
     gameOverScreen.appendChild(tryAgainButton);
     document.body.appendChild(gameOverScreen);
 }
+
 
 let countdown = 1800 * 60;
 const timerDisplay = document.createElement('div');
@@ -583,15 +614,15 @@ const autoShooterParams = {
 
 const abilityTypes = [
     {
-        title: 'Trail',
-        description: 'Leaves a neon trail behind the player.',
-        tooltip: 'Neon Trail',
+        title: 'Onchain Trail',
+        description: 'The Survivor movements leave a powerful Onchain trail behind.',
+        tooltip: 'Powerful...interesting choice of words, to say the least.',
         classes: ['archer', 'assassin'],
         effect: (level) => {
             trailActive = true;
             setTimeout(() => { trailActive = false; }, abilitiesLifetime * level);
         },
-        thumbnail: 'path/to/trail_thumbnail.png',
+        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
         level: 1
     },
     {
@@ -602,7 +633,7 @@ const abilityTypes = [
         effect: function(level) {
             autoShooterParams.level = level;
         },
-        thumbnail: 'path/to/autoShooter_thumbnail.png',
+        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
         level: 1
     }
 ];
@@ -821,10 +852,12 @@ let isPaused = false;
 
 function showLevelUpUI() {
     const levelUpContainer = document.createElement('div');
+    levelUpContainer.style.top = '0';
+    levelUpContainer.style.left = '0';
     levelUpContainer.style.position = 'absolute';
     levelUpContainer.style.width = '100%';
     levelUpContainer.style.height = '100%';
-    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     levelUpContainer.style.display = 'flex';
     levelUpContainer.style.justifyContent = 'center';
     levelUpContainer.style.alignItems = 'center';
@@ -837,12 +870,45 @@ function showLevelUpUI() {
     cancelAnimationFrame(animationFrameId);
 
     for (let i = 0; i < 3; i++) {
-        const button = document.createElement('button');
-        button.style.width = '100px';
-        button.style.height = '50px';
-        button.style.margin = '10px';
         const ability = abilityTypes[Math.floor(Math.random() * abilityTypes.length)];
-        button.innerText = `${ability.title} (Level ${ability.level + 1})`;
+
+        const button = document.createElement('button');
+        button.style.width = '150px';
+        button.style.height = '200px';
+        button.style.margin = '10px';
+        button.style.display = 'flex';
+        button.style.flexDirection = 'column';
+        button.style.alignItems = 'center';
+        button.style.backgroundColor = 'white';
+        button.style.border = '1px solid black';
+        button.style.padding = '10px';
+        button.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+
+        const img = document.createElement('img');
+        img.src = ability.thumbnail;
+        img.style.width = '100px';
+        img.style.height = '100px';
+        img.style.marginBottom = '10px';
+
+        const title = document.createElement('div');
+        title.innerText = ability.title;
+        title.style.fontSize = '16px';
+        title.style.fontWeight = 'bold';
+        title.style.marginBottom = '10px';
+
+        const description = document.createElement('div');
+        description.innerText = ability.description;
+        description.style.fontSize = '12px';
+        description.style.textAlign = 'center';
+
+        const tooltipText = document.createElement('span');
+        tooltipText.classList.add('tooltiptext');
+        tooltipText.innerText = `${ability.title}: ${ability.description}`;
+
+        button.appendChild(img);
+        button.appendChild(title);
+        button.appendChild(description);
+
         button.onclick = () => {
             levelUpContainer.remove();
             ability.level = Math.min(ability.level + 1, 10);
@@ -850,19 +916,16 @@ function showLevelUpUI() {
             isPaused = false;
             startSpawningEnemies();
             animate();
-            emitShockwave();
-            smoothPushBackEnemies();
         };
+
+        img.appendChild(tooltipText);
         buttons.push(button);
         levelUpContainer.appendChild(button);
     }
 
-    const vector = player.position.clone().project(camera);
-    levelUpContainer.style.left = `0px`;
-    levelUpContainer.style.top = `0px`;
-
     document.body.appendChild(levelUpContainer);
 }
+
 
 let animationFrameId;
 
