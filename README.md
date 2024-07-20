@@ -2,29 +2,6 @@
 
 Survivor! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
-## Table of Contents🧩
-1. [Onchain Survivor](#onchain-survivor)
-2. [About the Project](#about-the-project)
-   - [Key Features](#key-features)
-3. [Onchain Survivor Dynamic Difficulty Scaling](#onchain-survivor-dynamic-difficulty-scaling)
-4. [Getting Started](#getting-started)
-   - [Prerequisites](#%EF%B8%8prerequisites%EF%B8%8F)
-   - [Installation](#installation)
-5. [How to Play](#how-to-play)
-6. [Contributing](#contributing)
-   - [Fork the Repository](#fork-the-repository)
-   - [Create a New Branch](#create-a-new-branch)
-   - [Commit Your Changes](#commit-your-changes)
-   - [Push to the Branch](#push-to-the-branch)
-   - [Open a Pull Request](#open-a-pull-request)
-7. [License](#license)
-8. [OnChain Survivor NFT Series, "The Survivors"](#-onchain-survivor-nft-series-the-survivors--)
-9. [Basic Interaction Models](#-basic-interaction-models-%EF%B8%8F)
-   - [Sequence Diagrams](#sequence-diagrams)
-   - [Flowcharts](#flowcharts)
-10. [Acknowledgments](#-acknowledgments)
-11. [Contact](#-contact)
-
 ## Onchain Survivor🔗🏆
 
 Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
@@ -109,17 +86,19 @@ This NFT is purely a digital collectible for fans and people who enjoy the AI Ar
 |Guest Series NFT         | TBD         | TBD             |
 
 ##  📚 Basic Interaction Models 🕹️
+
 ```mermaid
 sequenceDiagram
 Client -> Blockchain*: NFT / Asset List
 Blockchain* -->>User: Selection complete ?
-activate User
-User->> Blockchain*: Signature 
-Blockchain*-->> Client:Update client
+Activate User
+User->> Blockchain*: Tx / Signature 
+Blockchain*-->> Client: Update client
 Note left of Blockchain*: Magical gameplay happens....
 Blockchain* -> Client: Block Calculated Difficulty data
 Client-->>User: Finished Surviving, 30m or less
 User->> Blockchain*: Write Results
+Client->> Blockchain*: Write Results
 ```
 *Blockchain / RPC
 
@@ -136,77 +115,25 @@ G --> I[Survive]
 H --> I
 C --> I
 ```
-Ideal design of Onchain Survivor, fully descentralized vertical stack
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant FrontEnd as Decentralized Front-End
+    participant Client as Decentralized Front-End
     participant SmartContract as Smart Contracts
-    participant AppLogic as Decentralized App Logic
-    participant Storage as Decentralized Storage
     participant OnChainData as On-Chain Data
     participant Consensus as Consensus Mechanisms
     participant P2P as P2P Network
 
-    User ->> FrontEnd: Access Game
-    FrontEnd ->> SmartContract: Request Game Logic
-    SmartContract ->> AppLogic: Execute Game Logic
-    AppLogic ->> Storage: Store Game Data
-    AppLogic ->> OnChainData: Update On-Chain Data
-    Storage ->> Consensus: Verify Data Storage
-    OnChainData ->> Consensus: Validate Data
+    User ->> Client: Access Game
+    Client ->> SmartContract: Request hashed Game randomizer
+    SmartContract ->> Client: Execute Game Logic
+    Client ->> OnChainData: Update results, Meta Progress
+    OnChainData ->> Consensus: Validate Data, client results integrity
     Consensus ->> P2P: Broadcast Consensus
     P2P ->> SmartContract: Update Network State
-    P2P ->> FrontEnd: Update User Interface
-    FrontEnd ->> User: Display Game State
-```
-
-
-```mermaid
-graph TD
-    A[User Interaction Layer]
-    A --> B[Decentralized Front-End Interface]
-
-    B --> C[Execution Layer]
-    C --> D[Smart Contracts on Blockchain]
-    C --> E[Decentralized Application Logic]
-
-    D --> F[Data Layer]
-    E --> F
-    F --> G[Decentralized Storage Solutions]
-    F --> H[On-Chain Data]
-
-    G --> I[Consensus Layer]
-    H --> I
-    I --> J[Consensus Mechanisms]
-
-    J --> K[Networking Layer]
-    K --> L[P2P Network Protocols]
-    K --> M[Node Communication]
-    
-    subgraph Execution Layer
-        C
-        D
-        E
-    end
-    
-    subgraph Data Layer
-        F
-        G
-        H
-    end
-    
-    subgraph Consensus Layer
-        I
-        J
-    end
-    
-    subgraph Networking Layer
-        K
-        L
-        M
-    end
+    P2P ->> Client: Update User Interface
+    Client ->> User: Display Game State
 ```
 
 
@@ -215,6 +142,7 @@ graph TD
 -   **Three js**: For the amazing 3D graphics library.
 -   **Web3 js**: For simplifying blockchain interactions.
 -   **OpenAI ChatGPT**: For making development great again.
+-   **Microsoft Copilot**: Best Artist i've ever known.
 
 ## 📬 Contact
 
