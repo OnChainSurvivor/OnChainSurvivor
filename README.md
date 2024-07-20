@@ -87,20 +87,6 @@ This NFT is purely a digital collectible for fans and people who enjoy the AI Ar
 
 ##  📚 Basic Interaction Models 🕹️
 
-  ```mermaid
-  graph TD
-A[Welcome Screen] --> B[Wallet Log in]
-A --> C[Survive as Guest]
-B --> D{Select NFT}
-D --> E[Own NFT]
-D --> F[Guest NFT]
-E --> G[TBD]
-F --> H[TBD interaction to Owner]
-G --> I[Survive]
-H --> I
-C --> I
-```
-
 ```mermaid
 sequenceDiagram
     participant User2 as Survivors friend
@@ -122,6 +108,19 @@ sequenceDiagram
     User ->> User2: Display Game State
 ```
 
+```mermaid
+graph TD
+A[Welcome Screen] --> B[Wallet Log in]
+A --> C[Join a survivor as guest]
+B --> D{Select NFT}
+D --> E[Own NFT]
+D --> F[Guest NFT]
+E --> G[TBD]
+F --> H[TBD interaction to Owner]
+G --> I[Survive]
+H --> I
+C --> I
+```
 
 ## 🙏 Acknowledgments
 
