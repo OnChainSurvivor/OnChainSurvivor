@@ -64,10 +64,10 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 Follow these steps to set up Onchain Survivor on your local machine:
 
 ### ⏱️Prerequisites⏱️
-- Currently tests should easily run in  10 yearsold hardware or less.
+- Currently tests should easily run in 10 years old hardware or less.
 
 ### 💿Installation💿
-- Simply Fork the repo and open index.html in your preferred browser. 
+- Download the client release and open index.html in your preferred browser. 
 
 ## 🎮How to Survive🎮
 
