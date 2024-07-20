@@ -87,21 +87,6 @@ This NFT is purely a digital collectible for fans and people who enjoy the AI Ar
 
 ##  📚 Basic Interaction Models 🕹️
 
-```mermaid
-sequenceDiagram
-Client -> Blockchain*: NFT / Asset List
-Blockchain* -->>User: Selection complete ?
-Activate User
-User->> Blockchain*: Tx / Signature 
-Blockchain*-->> Client: Update client
-Note left of Blockchain*: Magical gameplay happens....
-Blockchain* -> Client: Block Calculated Difficulty data
-Client-->>User: Finished Surviving, 30m or less
-User->> Blockchain*: Write Results
-Client->> Blockchain*: Write Results
-```
-*Blockchain / RPC
-
   ```mermaid
   graph TD
 A[Welcome Screen] --> B[Wallet Log in]
@@ -118,22 +103,23 @@ C --> I
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Client as Decentralized Front-End
+    participant User2 as Survivors friend
+    participant User as Survivor Hosting
+    participant Client as OffChain Client
     participant SmartContract as Smart Contracts
-    participant OnChainData as On-Chain Data
+    participant OnChainData as OnChain Data
     participant Consensus as Consensus Mechanisms
-    participant P2P as P2P Network
-
-    User ->> Client: Access Game
+    
+    User ->> Client: Access Onchain Survivor
     Client ->> SmartContract: Request hashed Game randomizer
-    SmartContract ->> Client: Execute Game Logic
+    SmartContract ->> Client: Provide run, Initialize
+    User2 ->> User: Join Survivor Run
     Client ->> OnChainData: Update results, Meta Progress
-    OnChainData ->> Consensus: Validate Data, client results integrity
-    Consensus ->> P2P: Broadcast Consensus
-    P2P ->> SmartContract: Update Network State
-    P2P ->> Client: Update User Interface
+    OnChainData ->> SmartContract: Validate client results integrity
+    SmartContract ->> Consensus: Broadcast Consensus
+    SmartContract ->> Client: Update User Interface
     Client ->> User: Display Game State
+    User ->> User2: Display Game State
 ```
 
 

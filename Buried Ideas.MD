@@ -4,7 +4,7 @@ This unordered list includes ideas scrapped during design or production. They ar
 ## 
 
 
-## Onchain Execution, Ideal design of Onchain Survivor, fully descentralized vertical stack
+## Onchain Execution, Ideal design of Onchain Survivor, fully descentralized vertical stack, Initial basic design 
 The ideal final arquitectural design concept of executing the game entirely on-chain was scrapped. Instead, a new design was implemented where cryptographic proof ensures that the game client has not been tampered with. This approach maintains the integrity and security of the game while reducing the complexity and cost associated with full on-chain execution.
 
 ```mermaid
@@ -76,6 +76,22 @@ graph TD
         M
     end
 ```
+
+```mermaid
+sequenceDiagram
+Client -> Blockchain*: NFT / Asset List
+Blockchain* -->>User: Selection complete ?
+Activate User
+User->> Blockchain*: Tx / Signature 
+Blockchain*-->> Client: Update client
+Note left of Blockchain*: Magical gameplay happens....
+Blockchain* -> Client: Block Calculated Difficulty data
+Client-->>User: Finished Surviving, 30m or less
+User->> Blockchain*: Write Results
+Client->> Blockchain*: Write Results
+```
+*Blockchain / RPC
+
 
 ## Generic NFT Traits and Properties
 This document contains generic design elements that were initially drafted for the game. During production, these ideas were deemed too generic and were subsequently replaced with a more specific, onchain survivor class-oriented design.
