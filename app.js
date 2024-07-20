@@ -318,9 +318,6 @@ function updatePlayerMovement() {
 
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
-        if (trailActive) {
-            trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0), player);
-        }
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
 
@@ -335,6 +332,11 @@ function updatePlayerMovement() {
     });
 }
 
+function applyAbilityEffect(ability) {
+    if (!ability.active) {
+        ability.effect(ability.level);
+    }
+}
 let cameraAngle = 0;
 const cameraRadius = 20;
 const cameraHeight = 20;
@@ -608,7 +610,7 @@ const abilitiesLifetime = 10000;
 const abilitiesLifetimes = new Map();
 
 const autoShooterParams = {
-    baseInterval: 3000,  // base interval for shooting in milliseconds
+    baseInterval: 2000,  // base interval for shooting in milliseconds
     level: 1
 };
 
@@ -618,9 +620,21 @@ const abilityTypes = [
         description: 'The Survivor movements leave a powerful Onchain trail behind.',
         tooltip: 'Powerful...interesting choice of words, to say the least.',
         classes: ['archer', 'assassin'],
-        effect: (level) => {
-            trailActive = true;
-            setTimeout(() => { trailActive = false; }, abilitiesLifetime * level);
+        tags: ['Area Damage','Defensive','Miscellaneous'],
+        effect: function(level) {
+            this.level = level;
+            this.active = true;
+
+            this.update = () => {
+                const scale = 1 + (this.level - 1) * 0.5;
+                trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0), player, scale);
+            };
+
+            this.deactivate = () => {
+                this.active = false;
+            };
+
+            setTimeout(() => this.deactivate(), abilitiesLifetime * this.level);
         },
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
         level: 1
@@ -916,6 +930,7 @@ function showLevelUpUI() {
             isPaused = false;
             startSpawningEnemies();
             animate();
+            addAbilityToUI(ability);
         };
 
         img.appendChild(tooltipText);
@@ -924,6 +939,43 @@ function showLevelUpUI() {
     }
 
     document.body.appendChild(levelUpContainer);
+}
+
+function addAbilityToUI(ability) {
+    const abilityContainer = document.createElement('div');
+    abilityContainer.style.position = 'absolute';
+    abilityContainer.style.bottom = '10px';
+    abilityContainer.style.left = '10px';
+    abilityContainer.style.display = 'flex';
+    abilityContainer.style.flexDirection = 'column';
+    abilityContainer.style.alignItems = 'center';
+    abilityContainer.style.margin = '5px';
+    abilityContainer.classList.add('tooltip');
+
+    const img = document.createElement('img');
+    img.src = ability.thumbnail;
+    img.style.width = '50px';
+    img.style.height = '50px';
+    img.style.marginBottom = '5px';
+
+    const level = document.createElement('div');
+    level.innerText = `Level ${ability.level}`;
+    level.style.fontSize = '12px';
+    level.style.fontWeight = 'bold';
+    level.style.color = 'white';
+    level.style.backgroundColor = 'black';
+    level.style.borderRadius = '5px';
+    level.style.padding = '2px 5px';
+
+    const tooltipText = document.createElement('span');
+    tooltipText.classList.add('tooltiptext');
+    tooltipText.innerText = ability.tooltip;
+
+    abilityContainer.appendChild(img);
+    abilityContainer.appendChild(level);
+    abilityContainer.appendChild(tooltipText);
+
+    document.body.appendChild(abilityContainer);
 }
 
 
@@ -945,6 +997,13 @@ function animate() {
     updatePlayerBars();
     updatePowerUps();
     composer.render();
+
+        // Update active abilities
+        abilityTypes.forEach(ability => {
+            if (ability.active && typeof ability.update === 'function') {
+                ability.update();
+            }
+        });
 
     if (countdown > 0) {
         countdown--;
