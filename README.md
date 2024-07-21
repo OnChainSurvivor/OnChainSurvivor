@@ -36,6 +36,40 @@ where:
 
 Note:  Random difficulty factor $B(t)$ that is extracted from the latest block in the blockchain. The factor $B(t)$ could be based on various metrics from the blockchain, such as transaction volume, block size, or other relevant activities. The term $βB(t)$ allows the difficulty to adapt dynamically based on real-time blockchain data, adding an element of unpredictability and aligning with the decentralized nature of blockchain games. 
 
+##  📚 Basic Interaction Models 🕹️
+
+```mermaid
+sequenceDiagram
+    participant User as Survivors friend
+    participant Client as OffChain, Hosting Survivor Client
+    participant SmartContract as Smart Contracts
+    participant OnChainData as OnChain Data
+    participant Consensus as Consensus Mechanisms
+    Client ->> SmartContract: Request hashed Game randomizer
+    User ->> Client: Access Onchain Survivor
+    SmartContract ->> Client: Provide run, Initialize
+    User -> Client: Verify Gamestate Integrity of partner
+    Client ->> OnChainData: Update results, Meta Progress
+    OnChainData ->> SmartContract: Validate client results integrity
+    SmartContract ->> Consensus: Broadcast Consensus
+    SmartContract ->> Client: Update User Interface
+    Client -> User: Display Final Game State Results
+```
+
+```mermaid
+graph TD
+A[Welcome Screen] --> B[Wallet Log in]
+A --> C[Join a survivor as guest]
+B --> D{Select NFT}
+D --> E[Own NFT]
+D --> F[Guest NFT]
+E --> G[TBD]
+F --> H[TBD interaction to Owner]
+G --> I[Survive]
+H --> I
+C --> I
+```
+
 ## 🚀Getting Started🚀 
 
 Follow these steps to set up Onchain Survivor on your local machine:
@@ -84,43 +118,6 @@ This NFT is purely a digital collectible for fans and people who enjoy the AI Ar
 |----------------|-------------------------------|-----------------------------|
 |Onchain Survivor NFT|NFT Art Featured in game.           | TBD      |
 |Guest Series NFT         | TBD         | TBD             |
-
-##  📚 Basic Interaction Models 🕹️
-
-```mermaid
-sequenceDiagram
-    participant User2 as Survivors friend
-    participant User as Survivor Hosting
-    participant Client as OffChain Client
-    participant SmartContract as Smart Contracts
-    participant OnChainData as OnChain Data
-    participant Consensus as Consensus Mechanisms
-    
-    User ->> Client: Access Onchain Survivor
-    Client ->> SmartContract: Request hashed Game randomizer
-    SmartContract ->> Client: Provide run, Initialize
-    User2 ->> User: Join Survivor Run
-    Client ->> OnChainData: Update results, Meta Progress
-    OnChainData ->> SmartContract: Validate client results integrity
-    SmartContract ->> Consensus: Broadcast Consensus
-    SmartContract ->> Client: Update User Interface
-    Client ->> User: Display Game State
-    User ->> User2: Display Game State
-```
-
-```mermaid
-graph TD
-A[Welcome Screen] --> B[Wallet Log in]
-A --> C[Join a survivor as guest]
-B --> D{Select NFT}
-D --> E[Own NFT]
-D --> F[Guest NFT]
-E --> G[TBD]
-F --> H[TBD interaction to Owner]
-G --> I[Survive]
-H --> I
-C --> I
-```
 
 ## 🙏 Acknowledgments
 

@@ -7,6 +7,7 @@ This unordered list includes ideas scrapped during design or production. They ar
 ## Onchain Execution, Ideal design of Onchain Survivor, fully descentralized vertical stack, Initial basic design 
 The ideal final arquitectural design concept of executing the game entirely on-chain was scrapped. Instead, a new design was implemented where cryptographic proof ensures that the game client has not been tampered with. This approach maintains the integrity and security of the game while reducing the complexity and cost associated with full on-chain execution.
 
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -92,6 +93,26 @@ Client->> Blockchain*: Write Results
 ```
 *Blockchain / RPC
 
+```mermaid
+sequenceDiagram
+    participant User2 as Survivors friend
+    participant User as Survivor Hosting
+    participant Client as OffChain Client
+    participant SmartContract as Smart Contracts
+    participant OnChainData as OnChain Data
+    participant Consensus as Consensus Mechanisms
+    
+    User ->> Client: Access Onchain Survivor
+    Client ->> SmartContract: Request hashed Game randomizer
+    SmartContract ->> Client: Provide run, Initialize
+    User2 ->> User: Join Survivor Run
+    Client ->> OnChainData: Update results, Meta Progress
+    OnChainData ->> SmartContract: Validate client results integrity
+    SmartContract ->> Consensus: Broadcast Consensus
+    SmartContract ->> Client: Update User Interface
+    Client ->> User: Display Game State
+    User ->> User2: Display Game State
+```
 
 ## Generic NFT Traits and Properties
 This document contains generic design elements that were initially drafted for the game. During production, these ideas were deemed too generic and were subsequently replaced with a more specific, onchain survivor class-oriented design.
