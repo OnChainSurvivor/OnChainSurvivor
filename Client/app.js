@@ -1,4 +1,3 @@
-// Initialization
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -17,7 +16,6 @@ directionalLight.position.set(10, 10, 10);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-// Floor
 const floorGeometry = new THREE.PlaneGeometry(1, 1);
 const floorMaterial = new THREE.MeshStandardMaterial({
     color: 0xaaaaaa,
@@ -604,7 +602,6 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-// Abilities
 const abilities = [];
 const abilitiesLifetime = 10000;
 const abilitiesLifetimes = new Map();
@@ -978,7 +975,6 @@ function addAbilityToUI(ability) {
     document.body.appendChild(abilityContainer);
 }
 
-
 let animationFrameId;
 
 function animate() {
@@ -1052,6 +1048,5 @@ playerLevelDisplay.style.display = 'none';
 timerDisplay.style.display = 'none';
 scoreDisplay.style.display = 'none';
 toggleUIButton.innerText = 'Show UI';
-
 
 animate();
