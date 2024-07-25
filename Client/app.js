@@ -1,29 +1,90 @@
-// Ability class
 class Ability {
-    constructor(title, description, effect, level) {
-      this.title = title;
-      this.description = description;
-      this.effect = effect;
-      this.level = level;
-      this.active = false;
+    constructor(user, config) {
+        Object.assign(this, {user, ...config, active: false});
     }
-  
-    activate() {
-      this.active = true;
-    }
-  
-    deactivate() {
-      this.active = false;
-    }
-  
-    update() {
-      if (this.active) {
-        this.effect();
-      }
-    }
-  }
 
-  
+    activate() {
+        this.active = true;
+        this.effect(this.level, this.user);
+    }
+
+    deactivate() {
+        this.active = false;
+    }
+
+    update() {
+        this.active && typeof this.effect.update === 'function' && this.effect.update();
+    }
+}
+
+const abilityTypes = [{
+    title: 'Onchain Trail',
+    description: 'The Survivor movements leave a powerful Onchain trail behind.',
+    tooltip: 'Powerful...interesting choice of words, to say the least.',
+    classes: ['archer', 'assassin'],
+    explanation:'TODO',
+    tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
+    effect(level, user) {
+        const trail = {
+            create: (x, y, z, direction, source, scale = 1) => {
+                colorIndex = (colorIndex + 1) % rainbowColors.length;
+                const trailBullet = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.2 * scale*level, 0.2 * scale*level, 0.2 * scale*level),
+                    createNeonMaterial(rainbowColors[colorIndex], 2)
+                );
+                Object.assign(trailBullet.position, {x, y, z});
+                trailBullet.userData = {direction, creationTime: Date.now(), source};
+                trailBullet.castShadow = true;
+                scene.add(trailBullet);
+                bullets.push(trailBullet);
+            }
+        };
+
+        const scale = 1 + (level - 1) * 0.5;
+        this.update = () => trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
+        this.deactivate = () => this.active = false;
+        this.active = true;
+    },
+    thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+    level: 0
+},{
+    title: "Veil of Decentralization",
+    description: "Provides a shield that absorbs damage.",
+    tooltip: "Shrouded in decentralization. Can't touch this!",
+    classes: ["Validator", "Decentralization Trilemma Solver"],
+    explanation: "Validator: Ensures decentralization security. Decentralization Trilemma Solver: Balances decentralization aspects.",
+    tags: ["Defensive", "Support"],
+    effect(level, user) {
+        const veil = {
+            create: (x, y, z, direction, source, scale = 1) => {
+                colorIndex = (colorIndex + 1) % rainbowColors.length;
+                const trailBullet = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.2 * scale*level, 0.2 * scale*level, 0.2 * scale*level),
+                    createNeonMaterial(rainbowColors[colorIndex], 2)
+                );
+                Object.assign(trailBullet.position, {x, y, z});
+                trailBullet.userData = {direction, creationTime: Date.now(), source};
+                trailBullet.castShadow = true;
+                scene.add(trailBullet);
+                bullets.push(trailBullet);
+            }
+        };
+
+        const scale = 1 + (level - 1) * 0.5;
+        this.update = () => veil.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
+        this.deactivate = () => this.active = false;
+        this.active = true;
+    },
+    thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
+    level: 0,
+}
+];
+
+  const autoShooterParams = {
+      baseInterval: 2000,  // base interval for shooting in milliseconds
+      level: 1
+  };
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -64,7 +125,6 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
-// GUI
 const gui = new dat.GUI();
 const floorParams = {
     metalness: floorMaterial.metalness,
@@ -93,7 +153,6 @@ gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
     }
 });
 
-// Player
 const rainbowColors = [
     0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
 ];
@@ -112,6 +171,8 @@ const playerMaterial = createNeonMaterial(rainbowColors[colorIndex]);
 const player = new THREE.Mesh(playerGeometry, playerMaterial);
 player.castShadow = true;
 scene.add(player);
+
+const abilities = abilityTypes.map(type => new Ability(player, type));
 
 let playerHP = 10;
 let playerXP = 0;
@@ -137,9 +198,6 @@ playerLevelDisplay.style.color = 'white';
 document.body.appendChild(playerHPBar);
 document.body.appendChild(playerXPBar);
 document.body.appendChild(playerLevelDisplay);
-
-
-
 
 function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
@@ -217,7 +275,6 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-
 let countdown = 1800 * 60;
 const timerDisplay = document.createElement('div');
 timerDisplay.style.position = 'absolute';
@@ -232,8 +289,6 @@ function updateTimerDisplay() {
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
-
-
 
 camera.position.set(0, 15, 15);
 camera.lookAt(player.position);
@@ -260,19 +315,6 @@ let trailActive = false;
 let autoShooterActive = false;
 let drainerActive = false;
 
-const trail = {
-    create: function (x, y, z, direction, source) {
-        colorIndex = (colorIndex + 1) % rainbowColors.length;
-        const trailGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        const trailMaterial = createNeonMaterial(rainbowColors[colorIndex], 2);
-        const trailBullet = new THREE.Mesh(trailGeometry, trailMaterial);
-        trailBullet.position.set(x, y, z);
-        trailBullet.userData = { direction, creationTime: Date.now(), source };
-        trailBullet.castShadow = true;
-        scene.add(trailBullet);
-        bullets.push(trailBullet);
-    }
-};
 
 function createBullet(x, y, z, direction, source) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -356,11 +398,6 @@ function updatePlayerMovement() {
     });
 }
 
-function applyAbilityEffect(ability) {
-    if (!ability.active) {
-        ability.effect(ability.level);
-    }
-}
 let cameraAngle = 0;
 const cameraRadius = 20;
 const cameraHeight = 20;
@@ -628,58 +665,6 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-const abilities = [];
-const abilitiesLifetime = 10000;
-const abilitiesLifetimes = new Map();
-
-const autoShooterParams = {
-    baseInterval: 2000,  // base interval for shooting in milliseconds
-    level: 1
-};
-
-const abilityTypes = [
-    {
-        title: 'Onchain Trail',
-        description: 'The Survivor movements leave a powerful Onchain trail behind.',
-        tooltip: 'Powerful...interesting choice of words, to say the least.',
-        classes: ['archer', 'assassin'],
-        tags: ['Area Damage','Defensive','Miscellaneous'],
-        effect: function(level) {
-            this.level = level;
-            this.active = true;
-
-            this.update = () => {
-                const scale = 1 + (this.level - 1) * 0.5;
-                trail.create(player.position.x, player.position.y, player.position.z, new THREE.Vector3(0, 0, 0), player, scale);
-            };
-
-            this.deactivate = () => {
-                this.active = false;
-            };
-
-            setTimeout(() => this.deactivate(), abilitiesLifetime * this.level);
-        },
-        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        level: 1
-    },
-    {
-        title: 'AutoShooter',
-        description: 'Automatically shoots at the nearest enemy.',
-        tooltip: 'Auto Shooter',
-        classes: ['archer', 'assassin'],
-        effect: function(level) {
-            autoShooterParams.level = level;
-        },
-        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        level: 1
-    }
-];
-
-function applyAbilityEffect(ability) {
-    ability.effect(ability.level);
-}
-
-// Power-ups
 const powerUps = [];
 const powerUpLifetime = 10000;
 const powerUpLifetimes = new Map();
@@ -907,7 +892,7 @@ function showLevelUpUI() {
     cancelAnimationFrame(animationFrameId);
 
     for (let i = 0; i < 3; i++) {
-        const ability = abilityTypes[Math.floor(Math.random() * abilityTypes.length)];
+        const ability = abilities[Math.floor(Math.random() * abilities.length)];
 
         const button = document.createElement('button');
         button.style.width = '150px';
@@ -949,7 +934,7 @@ function showLevelUpUI() {
         button.onclick = () => {
             levelUpContainer.remove();
             ability.level = Math.min(ability.level + 1, 10);
-            applyAbilityEffect(ability);
+            ability.activate();
             isPaused = false;
             startSpawningEnemies();
             animate();
@@ -1020,12 +1005,7 @@ function animate() {
     updatePowerUps();
     composer.render();
 
-        // Update active abilities
-        abilityTypes.forEach(ability => {
-            if (ability.active && typeof ability.update === 'function') {
-                ability.update();
-            }
-        });
+    abilities.forEach(ability => ability.update());
 
     if (countdown > 0) {
         countdown--;
