@@ -28,20 +28,26 @@ const abilityTypes = [{
         const trail = {
             create: (x, y, z, direction, source, scale = 1) => {
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
-                const trailBullet = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2 * scale*level, 0.2 * scale*level, 0.2 * scale*level),
+                const trailStep = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.2 * scale, 0.2 * scale, 0.2 * scale),
                     createNeonMaterial(rainbowColors[colorIndex], 2)
                 );
-                Object.assign(trailBullet.position, {x, y, z});
-                trailBullet.userData = {direction, creationTime: Date.now(), source};
-                trailBullet.castShadow = true;
-                scene.add(trailBullet);
-                bullets.push(trailBullet);
+                Object.assign(trailStep.position, {x, y, z});
+                trailStep.userData = {direction, creationTime: Date.now(), source};
+                trailStep.castShadow = true;
+                scene.add(trailStep);
+                bullets.push(trailStep);
             }
         };
 
         const scale = level * 0.5;
-        this.update = () => trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
+        this.update = () => {
+            if (Date.now() - this.lastTrailTime > 500) { // Add delay of 500 milliseconds
+                this.lastTrailTime = Date.now();
+                trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
+            }
+        };
+        this.lastTrailTime = 0;
         this.deactivate = () => this.active = false;
         this.active = true;
     },
@@ -65,7 +71,7 @@ const abilityTypes = [{
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
                     transparent: true,
-                    opacity: 0.5,
+                    opacity: 0.1,
                     emissive: rainbowColors[colorIndex],
                     emissiveIntensity: 1
                 });
@@ -92,15 +98,6 @@ const abilityTypes = [{
         this.deactivate = veil.deactivate;
         this.active = true;
         veil.create();
-        setInterval(veil.create, 1000 * level); // Change color every second multiplied by level
-
-        // Shield effect: absorb 1 damage
-        user.absorbDamage = (damage) => {
-            if (damage > 0 && this.active) {
-                damage = Math.max(damage - 1, 0);
-            }
-            return damage;
-        };
     },
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
@@ -109,7 +106,7 @@ const abilityTypes = [{
 ];
 
   const autoShooterParams = {
-      baseInterval: 2000,  // base interval for shooting in milliseconds
+      baseInterval: 200,  // base interval for shooting in milliseconds
       level: 1
   };
 
@@ -165,12 +162,12 @@ gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = 
 
 const bloomParams = {
     strength: 1,
-    radius: 1,
+    radius: 0.1,
     threshold: 0.1
 };
-gui.add(bloomParams, 'strength', 0.0, 3.0).onChange(value => bloomPass.strength = value);
-gui.add(bloomParams, 'radius', 0.0, 1.0).onChange(value => bloomPass.radius = value);
-gui.add(bloomParams, 'threshold', 0.0, 1.0).onChange(value => bloomPass.threshold = value);
+gui.add(bloomParams, 'strength', 0.0, 1).onChange(value => bloomPass.strength = value);
+gui.add(bloomParams, 'radius', 0.0, 0.1).onChange(value => bloomPass.radius = value);
+gui.add(bloomParams, 'threshold', 0.0, 0.1).onChange(value => bloomPass.threshold = value);
 
 const enemyParams = { count: 50 };
 gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
@@ -202,7 +199,7 @@ scene.add(player);
 
 const abilities = abilityTypes.map(type => new Ability(player, type));
 
-let playerHP = 10;
+let playerHP = 1;
 let playerXP = 0;
 let playerLevel = 1;
 
@@ -221,7 +218,7 @@ playerXPBar.style.backgroundColor = 'blue';
 const playerLevelDisplay = document.createElement('div');
 playerLevelDisplay.style.position = 'absolute';
 playerLevelDisplay.style.fontSize = '20px';
-playerLevelDisplay.style.color = 'white';
+playerLevelDisplay.style.color = 'black';
 
 document.body.appendChild(playerHPBar);
 document.body.appendChild(playerXPBar);
@@ -255,7 +252,7 @@ function triggerGameOver() {
     gameOverScreen.style.left = '0';
     gameOverScreen.style.width = '100%';
     gameOverScreen.style.height = '100%';
-    gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0)';
     gameOverScreen.style.display = 'flex';
     gameOverScreen.style.flexDirection = 'column';
     gameOverScreen.style.justifyContent = 'center';
@@ -263,7 +260,7 @@ function triggerGameOver() {
     gameOverScreen.style.zIndex = '100';
 
     const title = document.createElement('div');
-    title.innerText = 'Game Over';
+    title.innerText = 'Liquidated.';
     title.style.fontSize = '40px';
     title.style.color = 'white';
     title.style.marginBottom = '20px';
@@ -274,7 +271,7 @@ function triggerGameOver() {
     tryAgainButton.style.fontSize = '20px';
     tryAgainButton.style.padding = '10px 20px';
     tryAgainButton.style.marginTop = '20px';
-    tryAgainButton.style.backgroundColor = 'white';
+    tryAgainButton.style.backgroundColor = 'black';
     tryAgainButton.style.border = '1px solid black';
     tryAgainButton.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
     tryAgainButton.style.display = 'flex';
@@ -282,16 +279,16 @@ function triggerGameOver() {
     tryAgainButton.style.alignItems = 'center';
 
     const img = document.createElement('img');
-    img.src = 'Media/Abilities/ONCHAINTRAIL.png'; // Add a relevant thumbnail for try again
-    img.style.width = '100px';
-    img.style.height = '100px';
+    img.src = 'Media/Abilities/LIQUIDATED.png'; // Add a relevant thumbnail for try again
+    img.style.width = '575px';
+    img.style.height = '250px';
     img.style.marginBottom = '10px';
 
     const description = document.createElement('div');
     description.innerText = 'Restart the game from the beginning.';
     description.style.fontSize = '12px';
     description.style.textAlign = 'center';
-
+    description.style.color = 'white';
     tryAgainButton.appendChild(img);
     tryAgainButton.appendChild(description);
 
@@ -337,12 +334,7 @@ const bullets = [];
 const enemies = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 200;
-const trailLifetime = 3000;
-
-let trailActive = false;
-let autoShooterActive = false;
-let drainerActive = false;
-
+const trailLifetime = 5000;
 
 function createBullet(x, y, z, direction, source) {
     colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -366,33 +358,11 @@ function cleanupBullets() {
             scene.remove(bullet);
             bullets.splice(i, 1);
         } else {
-            const ageRatio = (currentTime - bullet.userData.creationTime) / trailLifetime;
-            bullet.scale.set(1 - ageRatio, 1 - ageRatio, 1 - ageRatio);
+            //const ageRatio = (currentTime - bullet.userData.creationTime) / trailLifetime;
+           // bullet.scale.set(1 - ageRatio, 1 - ageRatio, 1 - ageRatio);
         }
     }
 }
-
-const particleGeometry = new THREE.BufferGeometry();
-const particleCount = 100;
-const particles = new Float32Array(particleCount * 3);
-
-for (let i = 0; i < particleCount; i++) {
-    particles[i * 3] = (Math.random() - 0.5) * 0.2;
-    particles[i * 3 + 1] = (Math.random() - 0.5) * 0.2;
-    particles[i * 3 + 2] = (Math.random() - 0.5) * 0.2;
-}
-
-particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
-
-const particleMaterial = new THREE.PointsMaterial({
-    color: 0xffff00,
-    size: 0.1,
-    transparent: true,
-    opacity: 0.8
-});
-
-const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-scene.add(particleSystem);
 
 function updatePlayerMovement() {
     const movementSpeed = 0.2;
@@ -415,7 +385,6 @@ function updatePlayerMovement() {
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
 
-        particleSystem.position.set(player.position.x, player.position.y, player.position.z);
     }
 
     scene.children.forEach(child => {
@@ -536,23 +505,21 @@ function handleEnemyShooting() {
     });
 }
 
-function createEnemy() {
+const createEnemy = () => {
     if (Math.random() < 0.5) {
         createShootingEnemy();
     } else {
-        const enemyGeometry = new THREE.BufferGeometry();
-        const enemyCount = 100;
-        const enemyParticles = new Float32Array(enemyCount * 3);
+        const radius = 0.5;
+        const height = 1;
+        const radialSegments = 32;
+        const heightSegments = 1;
+        const openEnded = false;
+        const thetaStart = 0;
+        const thetaLength = Math.PI * 2;
 
-        for (let i = 0; i < enemyCount; i++) {
-            enemyParticles[i * 3] = (Math.random() - 0.5) * 1;
-            enemyParticles[i * 3 + 1] = (Math.random() - 0.5) * 1;
-            enemyParticles[i * 3 + 2] = (Math.random() - 0.5) * 1;
-        }
-
-        enemyGeometry.setAttribute('position', new THREE.BufferAttribute(enemyParticles, 3));
-
-        const enemy = new THREE.Points(enemyGeometry, enemyMaterial);
+        const enemyGeometry = new THREE.ConeGeometry(radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength);
+        const enemyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
 
         const spawnDistance = 30;
         const angle = Math.random() * Math.PI * 2;
@@ -568,7 +535,8 @@ function createEnemy() {
         scene.add(enemy);
         enemies.push(enemy);
     }
-}
+};
+
 
 function createHPBar() {
     const hpBar = document.createElement('div');
@@ -582,25 +550,12 @@ function createHPBar() {
 }
 
 function dropItem(position) {
-    const randomChance = Math.random();
-    if (randomChance < 0.1) {
-        createPowerUp({
-            color: 0x800080,
-            type: 'drainer'
-        }, position);
-    } else if (randomChance < 0.2) {
-        const randomPowerUp = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-        createPowerUp(randomPowerUp, position);
-    } else {
-        const
-
- sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
         const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
         const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         xpSphere.position.copy(position);
         xpSphere.userData = { type: 'xpSphere' };
         scene.add(xpSphere);
-    }
 }
 
 function updateHPBar(hpBar, position, hp) {
@@ -671,7 +626,7 @@ function startSpawningEnemies() {
         if (enemies.length < enemyParams.count) {
             createEnemy();
         }
-    }, 1000);
+    }, 500);
 }
 
 function stopSpawningEnemies() {
@@ -684,7 +639,7 @@ const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
     1,
-    1,
+    0.1,
     0.1
 );
 
@@ -697,76 +652,6 @@ const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.inner
 const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
-
-const powerUps = [];
-const powerUpLifetime = 10000;
-
-const powerUpTypes = [
-    {
-        color: 0x800080,
-        type: 'drainer',
-        title: 'Drainer',
-        description: 'Attracts all XP balls to the player.',
-        tooltip: 'Drainer Power-Up',
-        classes: ['all'],
-        effect: () => {
-            scene.children.forEach(child => {
-                if (child.userData.type === 'xpSphere') {
-                    child.userData.attracted = true;
-                }
-            });
-            setTimeout(() => {
-                scene.children.forEach(child => {
-                    if (child.userData.type === 'xpSphere') {
-                        child.userData.attracted = false;
-                    }
-                });
-            }, abilitiesLifetime);
-        },
-        thumbnail: 'path/to/drainer_thumbnail.png',
-        level: 1
-    }
-];
-
-function createPowerUp(powerUp, position) {
-    const powerUpGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const powerUpMaterial = new THREE.MeshStandardMaterial({
-        color: powerUp.color,
-        emissive: powerUp.color,
-        emissiveIntensity: 1,
-        metalness: 0.5,
-        roughness: 0.3
-    });
-    const powerUpMesh = new THREE.Mesh(powerUpGeometry, powerUpMaterial);
-    powerUpMesh.position.set(position.x, position.y, position.z);
-    powerUpMesh.userData = { type: powerUp.type, creationTime: Date.now() };
-    powerUpMesh.castShadow = true;
-    scene.add(powerUpMesh);
-    powerUps.push(powerUpMesh);
-}
-
-function updatePowerUps() {
-    const currentTime = Date.now();
-    powerUps.forEach(powerUp => {
-        if (currentTime - powerUp.userData.creationTime > lifetime) {
-            scene.remove(powerUp);
-            powerUps.splice(powerUps.indexOf(powerUp), 1);
-        }
-    });
-}
-
-function checkPowerUpCollection() {
-    powerUps.forEach((powerUp, index) => {
-        if (player.position.distanceTo(powerUp.position) < 1) {
-            const powerUP = powerUpTypes.find(a => a.type === powerUp.userData.type);
-            if (powerUP) {
-                applyAbilityEffect(powerUP);
-            }
-            scene.remove(powerUp);
-            powerUps.splice(index, 1);
-        }
-    });
-}
 
 // Other functions
 function findClosestEnemy() {
@@ -860,7 +745,7 @@ function smoothPushBackEnemies() {
 function checkXPSphereCollection() {
     scene.children.forEach(child => {
         if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
-            playerXP += 20;
+            playerXP += 100;
             if (playerXP >= 100) {
                 playerLevel += 1;
                 playerXP = 0;
@@ -897,13 +782,13 @@ function showLevelUpUI() {
 
         const button = document.createElement('button');
         button.style.width = '150px';
-        button.style.height = '200px';
+        button.style.height = '250px';
         button.style.margin = '10px';
         button.style.display = 'flex';
         button.style.flexDirection = 'column';
         button.style.alignItems = 'center';
-        button.style.backgroundColor = 'white';
-        button.style.border = '1px solid black';
+        button.style.backgroundColor = 'black';
+        button.style.border = '1px solid white';
         button.style.padding = '10px';
         button.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
 
@@ -918,11 +803,13 @@ function showLevelUpUI() {
         title.style.fontSize = '16px';
         title.style.fontWeight = 'bold';
         title.style.marginBottom = '10px';
+        title.style.color = 'white';
 
         const description = document.createElement('div');
         description.innerText = ability.description;
         description.style.fontSize = '12px';
         description.style.textAlign = 'center';
+        description.style.color = 'white';
 
         const tooltipText = document.createElement('span');
         tooltipText.classList.add('tooltiptext');
@@ -999,15 +886,12 @@ function animate() {
     cleanupBullets();
     handleShooting();
     updateEnemies();
-    checkPowerUpCollection();
     autoShootClosestEnemy();
     checkXPSphereCollection();
     updatePlayerBars();
-    updatePowerUps();
     composer.render();
 
     abilities.forEach(ability => ability.update());
-
     if (countdown > 0) {
         countdown--;
         updateTimerDisplay();
