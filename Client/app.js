@@ -40,7 +40,7 @@ const abilityTypes = [{
             }
         };
 
-        const scale = level * 0.5;
+        const scale = level * 1;
         this.update = () => {
             if (Date.now() - this.lastTrailTime > 500) { // Add delay of 500 milliseconds
                 this.lastTrailTime = Date.now();
@@ -51,12 +51,13 @@ const abilityTypes = [{
         this.deactivate = () => this.active = false;
         this.active = true;
     },
+    effectinfo:'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
     level: 0
 },{
     title: "Veil of Decentralization",
-    description: "Provides a shield that absorbs damage.",
-    tooltip: "Shrouded in decentralization. Can't touch this!",
+    description: "The Survivor shrouds in decentralization, becoming elusive",
+    tooltip: "Can't touch this!",
     classes: ["Validator", "Decentralization Trilemma Solver"],
     explanation: "Validator: Ensures decentralization security. Decentralization Trilemma Solver: Balances decentralization aspects.",
     tags: ["Defensive", "Support"],
@@ -99,6 +100,7 @@ const abilityTypes = [{
         this.active = true;
         veil.create();
     },
+    effectinfo:'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
 }
@@ -161,13 +163,13 @@ gui.add(floorParams, 'roughness', 0, 1).onChange(value => floorMaterial.roughnes
 gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = value);
 
 const bloomParams = {
-    strength: 1,
+    strength: 3,
     radius: 0.1,
-    threshold: 0.1
+    threshold: 0
 };
-gui.add(bloomParams, 'strength', 0.0, 1).onChange(value => bloomPass.strength = value);
+gui.add(bloomParams, 'strength', 0.0, 3).onChange(value => bloomPass.strength = value);
 gui.add(bloomParams, 'radius', 0.0, 0.1).onChange(value => bloomPass.radius = value);
-gui.add(bloomParams, 'threshold', 0.0, 0.1).onChange(value => bloomPass.threshold = value);
+gui.add(bloomParams, 'threshold', 0.0, 0).onChange(value => bloomPass.threshold = value);
 
 const enemyParams = { count: 50 };
 gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
@@ -640,7 +642,7 @@ const bloomPass = new THREE.UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
     1,
     0.1,
-    0.1
+    0
 );
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
@@ -811,13 +813,22 @@ function showLevelUpUI() {
         description.style.textAlign = 'center';
         description.style.color = 'white';
 
+        const effectinfo = document.createElement('div');
+        effectinfo.innerText = 'Lvl ' + (ability.level+1) + ': ' + ability.effectinfo;
+        effectinfo.style.fontSize = '12px';
+        effectinfo.style.textAlign = 'center';
+        effectinfo.style.color = 'white';
+
         const tooltipText = document.createElement('span');
         tooltipText.classList.add('tooltiptext');
         tooltipText.innerText = `${ability.title}: ${ability.description}`;
 
         button.appendChild(img);
         button.appendChild(title);
+        if (ability.level==0)
         button.appendChild(description);
+        else
+        button.appendChild(effectinfo);
 
         button.onclick = () => {
             levelUpContainer.remove();
@@ -828,10 +839,10 @@ function showLevelUpUI() {
             animate();
             addAbilityToUI(ability);
         };
-
-        img.appendChild(tooltipText);
         buttons.push(button);
         levelUpContainer.appendChild(button);
+        linebreak = document.createElement("br");
+        levelUpContainer.appendChild(linebreak);
     }
 
     document.body.appendChild(levelUpContainer);
@@ -918,7 +929,7 @@ toggleUIButton.style.top = '60px';
 toggleUIButton.style.right = '10px';
 toggleUIButton.style.fontSize = '20px';
 toggleUIButton.style.padding = '10px 20px';
-document.body.appendChild(toggleUIButton);
+//document.body.appendChild(toggleUIButton);
 
 toggleUIButton.onclick = () => {
     uiVisible = !uiVisible;
