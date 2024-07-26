@@ -226,6 +226,39 @@ document.body.appendChild(playerHPBar);
 document.body.appendChild(playerXPBar);
 document.body.appendChild(playerLevelDisplay);
 
+const characterContainer = document.createElement('div');
+characterContainer.style.position = 'absolute';
+characterContainer.style.top = '10px';
+characterContainer.style.left = '10px';
+characterContainer.style.display = 'flex';
+characterContainer.style.alignItems = 'center';
+
+const characterImage = document.createElement('img');
+characterImage.src = 'Media/Characters/CharacterPhoto.png'; // Path to the character image
+characterImage.style.width = '50px';
+characterImage.style.height = '50px';
+characterImage.style.borderRadius = '50%'; // Circular crop
+characterImage.style.marginRight = '10px';
+
+const characterName = document.createElement('div');
+characterName.innerText = 'Character Name'; // Character name
+characterName.style.fontSize = '20px';
+characterName.style.color = 'white';
+
+characterContainer.appendChild(characterImage);
+characterContainer.appendChild(characterName);
+document.body.appendChild(characterContainer);
+
+
+const abilitiesContainer = document.createElement('div');
+abilitiesContainer.id = 'abilitiesContainer';
+abilitiesContainer.style.position = 'absolute';
+abilitiesContainer.style.bottom = '10px';
+abilitiesContainer.style.left = '10px';
+abilitiesContainer.style.display = 'flex';
+abilitiesContainer.style.flexDirection = 'column';
+document.body.appendChild(abilitiesContainer);
+
 function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
     playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
@@ -772,6 +805,7 @@ function showLevelUpUI() {
     levelUpContainer.style.justifyContent = 'center';
     levelUpContainer.style.alignItems = 'center';
     levelUpContainer.style.zIndex = '20';
+    levelUpContainer.style.flexDirection = 'column';
 
     const buttons = [];
 
@@ -850,11 +884,9 @@ function showLevelUpUI() {
 
 function addAbilityToUI(ability) {
     const abilityContainer = document.createElement('div');
-    abilityContainer.style.position = 'absolute';
-    abilityContainer.style.bottom = '10px';
-    abilityContainer.style.left = '10px';
+    abilityContainer.style.position = 'relative';
     abilityContainer.style.display = 'flex';
-    abilityContainer.style.flexDirection = 'column';
+    //abilityContainer.style.flexDirection = 'column';
     abilityContainer.style.alignItems = 'center';
     abilityContainer.style.margin = '5px';
     abilityContainer.classList.add('tooltip');
@@ -882,8 +914,9 @@ function addAbilityToUI(ability) {
     abilityContainer.appendChild(level);
     abilityContainer.appendChild(tooltipText);
 
-    document.body.appendChild(abilityContainer);
+    document.getElementById('abilitiesContainer').appendChild(abilityContainer);
 }
+
 
 let animationFrameId;
 
