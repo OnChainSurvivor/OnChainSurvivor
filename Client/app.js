@@ -269,22 +269,22 @@ metaMaskContainer.style.alignItems = 'center';
 metaMaskContainer.style.cursor = 'pointer';
 
 const metaMaskImage = document.createElement('img');
-metaMaskImage.src = 'Media/MetamaskLogo.png'; // Path to MetaMask logo
+metaMaskImage.src = 'Media/MetamaskLogo.png'; 
 metaMaskImage.style.width = '30px';
 metaMaskImage.style.height = '30px';
-metaMaskImage.style.marginRight = '10px';
+//metaMaskImage.style.marginRight = '10px';
 
 const metaMaskButton = document.createElement('button');
-metaMaskButton.innerText = 'Connect to MetaMask';
+metaMaskButton.innerText = '';
 metaMaskButton.style.fontSize = '14px';
-metaMaskButton.style.padding = '5px 10px';
-metaMaskButton.style.backgroundColor = 'black';
+metaMaskButton.style.padding = '5px 5px';
+metaMaskButton.style.backgroundColor = 'transparent';
 metaMaskButton.style.color = 'white';
 metaMaskButton.style.border = '1px solid white';
 metaMaskButton.style.borderRadius = '5px';
 
-metaMaskContainer.appendChild(metaMaskImage);
 metaMaskContainer.appendChild(metaMaskButton);
+metaMaskButton.appendChild(metaMaskImage);
 document.body.appendChild(metaMaskContainer);
 
 metaMaskButton.onclick = async () => {
@@ -297,14 +297,11 @@ metaMaskButton.onclick = async () => {
             const address = accounts[0];
             const balance = await web3.eth.getBalance(address);
             const ethBalance = web3.utils.fromWei(balance, 'ether');
+            // Store the address in localStorage
+            localStorage.setItem('metaMaskAddress', address);
 
             // Display the address and balance
-            metaMaskContainer.innerHTML = `
-                <div style="color: white; margin-right: 10px;">
-                    <div>Address: ${address}</div>
-                    <div>Balance: ${ethBalance} ETH</div>
-                </div>
-            `;
+            displayMetaMaskInfo(address, ethBalance);
         } catch (error) {
             if (error.code === 4902) {
                 alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
@@ -337,6 +334,8 @@ function updatePlayerBars() {
 }
 
 function triggerGameOver() {
+    isPaused = true;
+    clearInterval(spawnEnemiesInterval);
     cancelAnimationFrame(animationFrameId);
 
     const gameOverScreen = document.createElement('div');
@@ -386,7 +385,8 @@ function triggerGameOver() {
     tryAgainButton.appendChild(description);
 
     tryAgainButton.onclick = () => {
-        location.reload();
+        location.reload(true);
+        document.body.removeChild(gameOverScreen);
     };
 
     gameOverScreen.appendChild(tryAgainButton);
@@ -422,7 +422,6 @@ document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
 
-// Bullets and Enemies
 const bullets = [];
 const enemies = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
@@ -981,7 +980,6 @@ function addAbilityToUI(ability) {
     abilityContainer.appendChild(tooltipText);
 
     abilitiesContainer.insertBefore(abilityContainer, abilitiesContainer.firstChild);
-    //document.getElementById('abilitiesContainer').appendChild(abilityContainer);
 }
 
 let animationFrameId;
@@ -1050,4 +1048,25 @@ timerDisplay.style.display = 'none';
 scoreDisplay.style.display = 'none';
 toggleUIButton.innerText = 'Show UI';
 
+function displayMetaMaskInfo(address, ethBalance) {
+    metaMaskContainer.innerHTML = `
+        <div style="color: white; margin-right: 10px;">
+            <div>Address: ${address}</div>
+            <div>Balance: ${ethBalance} ETH</div>
+        </div>
+    `;
+}
+
+// Check if MetaMask address is stored in localStorage on page load
+window.addEventListener('load', async () => {
+    const storedAddress = localStorage.getItem('metaMaskAddress');
+    if (storedAddress) {
+        const web3 = new Web3(window.ethereum);
+        const balance = await web3.eth.getBalance(storedAddress);
+        const ethBalance = web3.utils.fromWei(balance, 'ether');
+        displayMetaMaskInfo(storedAddress, ethBalance);
+    }
+});
+
 animate();
+
