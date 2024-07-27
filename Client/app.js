@@ -259,6 +259,50 @@ abilitiesContainer.style.display = 'flex';
 //abilitiesContainer.style.flexDirection = 'column';
 document.body.appendChild(abilitiesContainer);
 
+
+
+const metaMaskContainer = document.createElement('div');
+metaMaskContainer.style.position = 'absolute';
+metaMaskContainer.style.top = '10px';
+metaMaskContainer.style.left = '50%';
+metaMaskContainer.style.transform = 'translateX(-50%)';
+metaMaskContainer.style.display = 'flex';
+metaMaskContainer.style.alignItems = 'center';
+metaMaskContainer.style.cursor = 'pointer';
+
+const metaMaskImage = document.createElement('img');
+metaMaskImage.src = 'Media/MetamaskLogo.png'; // Path to MetaMask logo
+metaMaskImage.style.width = '30px';
+metaMaskImage.style.height = '30px';
+metaMaskImage.style.marginRight = '10px';
+
+const metaMaskButton = document.createElement('button');
+metaMaskButton.innerText = 'Connect to MetaMask';
+metaMaskButton.style.fontSize = '14px';
+metaMaskButton.style.padding = '5px 10px';
+metaMaskButton.style.backgroundColor = 'black';
+metaMaskButton.style.color = 'white';
+metaMaskButton.style.border = '1px solid white';
+metaMaskButton.style.borderRadius = '5px';
+
+metaMaskContainer.appendChild(metaMaskImage);
+metaMaskContainer.appendChild(metaMaskButton);
+document.body.appendChild(metaMaskContainer);
+
+metaMaskButton.onclick = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+        const web3 = new Web3(window.ethereum);
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            console.log('Connected to MetaMask');
+        } catch (error) {
+            console.error('User rejected the request:', error);
+        }
+    } else {
+        console.error('MetaMask is not installed.');
+    }
+};
+
 function updatePlayerBars() {
     const vector = player.position.clone().project(camera);
     playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
