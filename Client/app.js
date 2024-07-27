@@ -241,7 +241,7 @@ characterImage.style.borderRadius = '50%'; // Circular crop
 characterImage.style.marginRight = '10px';
 
 const characterName = document.createElement('div');
-characterName.innerText = 'Onchain Survivor'; // Character name
+characterName.innerText = 'Onchain Survivor V0.0.9'; // Character name
 characterName.style.fontSize = '20px';
 characterName.style.color = 'white';
 
