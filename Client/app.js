@@ -234,14 +234,14 @@ characterContainer.style.display = 'flex';
 characterContainer.style.alignItems = 'center';
 
 const characterImage = document.createElement('img');
-characterImage.src = 'Media/Characters/CharacterPhoto.png'; // Path to the character image
+characterImage.src = 'Media/Classes/Onchain Survivor/MSURVIVOR.png'; // Path to the character image
 characterImage.style.width = '50px';
 characterImage.style.height = '50px';
 characterImage.style.borderRadius = '50%'; // Circular crop
 characterImage.style.marginRight = '10px';
 
 const characterName = document.createElement('div');
-characterName.innerText = 'Character Name'; // Character name
+characterName.innerText = 'Onchain Survivor'; // Character name
 characterName.style.fontSize = '20px';
 characterName.style.color = 'white';
 
@@ -256,7 +256,7 @@ abilitiesContainer.style.position = 'absolute';
 abilitiesContainer.style.bottom = '10px';
 abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
-abilitiesContainer.style.flexDirection = 'column';
+//abilitiesContainer.style.flexDirection = 'column';
 document.body.appendChild(abilitiesContainer);
 
 function updatePlayerBars() {
@@ -802,12 +802,21 @@ function showLevelUpUI() {
     levelUpContainer.style.height = '100%';
     levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     levelUpContainer.style.display = 'flex';
+    levelUpContainer.style.flexDirection = 'column';
     levelUpContainer.style.justifyContent = 'center';
     levelUpContainer.style.alignItems = 'center';
     levelUpContainer.style.zIndex = '20';
-    levelUpContainer.style.flexDirection = 'column';
 
-    const buttons = [];
+    const levelUpTitle = document.createElement('div');
+    levelUpTitle.innerText = 'LEVEL UP';
+    levelUpTitle.style.fontSize = '40px';
+    levelUpTitle.style.color = 'white';
+    levelUpTitle.style.marginBottom = '20px';
+    levelUpContainer.appendChild(levelUpTitle);
+
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.justifyContent = 'center';
 
     isPaused = true;
     clearInterval(spawnEnemiesInterval);
@@ -848,7 +857,7 @@ function showLevelUpUI() {
         description.style.color = 'white';
 
         const effectinfo = document.createElement('div');
-        effectinfo.innerText = 'Lvl ' + (ability.level+1) + ': ' + ability.effectinfo;
+        effectinfo.innerText = 'Lvl ' + (ability.level + 1) + ': ' + ability.effectinfo;
         effectinfo.style.fontSize = '12px';
         effectinfo.style.textAlign = 'center';
         effectinfo.style.color = 'white';
@@ -859,10 +868,10 @@ function showLevelUpUI() {
 
         button.appendChild(img);
         button.appendChild(title);
-        if (ability.level==0)
-        button.appendChild(description);
+        if (ability.level == 0)
+            button.appendChild(description);
         else
-        button.appendChild(effectinfo);
+            button.appendChild(effectinfo);
 
         button.onclick = () => {
             levelUpContainer.remove();
@@ -873,12 +882,11 @@ function showLevelUpUI() {
             animate();
             addAbilityToUI(ability);
         };
-        buttons.push(button);
-        levelUpContainer.appendChild(button);
-        linebreak = document.createElement("br");
-        levelUpContainer.appendChild(linebreak);
+
+        buttonsContainer.appendChild(button);
     }
 
+    levelUpContainer.appendChild(buttonsContainer);
     document.body.appendChild(levelUpContainer);
 }
 
@@ -886,7 +894,7 @@ function addAbilityToUI(ability) {
     const abilityContainer = document.createElement('div');
     abilityContainer.style.position = 'relative';
     abilityContainer.style.display = 'flex';
-    //abilityContainer.style.flexDirection = 'column';
+    abilityContainer.style.flexDirection = 'column';
     abilityContainer.style.alignItems = 'center';
     abilityContainer.style.margin = '5px';
     abilityContainer.classList.add('tooltip');
@@ -914,7 +922,8 @@ function addAbilityToUI(ability) {
     abilityContainer.appendChild(level);
     abilityContainer.appendChild(tooltipText);
 
-    document.getElementById('abilitiesContainer').appendChild(abilityContainer);
+    abilitiesContainer.insertBefore(abilityContainer, abilitiesContainer.firstChild);
+    //document.getElementById('abilitiesContainer').appendChild(abilityContainer);
 }
 
 
