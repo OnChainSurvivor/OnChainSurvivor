@@ -259,8 +259,6 @@ abilitiesContainer.style.display = 'flex';
 //abilitiesContainer.style.flexDirection = 'column';
 document.body.appendChild(abilitiesContainer);
 
-
-
 const metaMaskContainer = document.createElement('div');
 metaMaskContainer.style.position = 'absolute';
 metaMaskContainer.style.top = '10px';
@@ -290,16 +288,32 @@ metaMaskContainer.appendChild(metaMaskButton);
 document.body.appendChild(metaMaskContainer);
 
 metaMaskButton.onclick = async () => {
-    if (typeof window.ethereum !== 'undefined') {
+    if (window.ethereum) {
         const web3 = new Web3(window.ethereum);
         try {
+            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            console.log('Connected to MetaMask');
+            const accounts = await web3.eth.getAccounts();
+            const address = accounts[0];
+            const balance = await web3.eth.getBalance(address);
+            const ethBalance = web3.utils.fromWei(balance, 'ether');
+
+            // Display the address and balance
+            metaMaskContainer.innerHTML = `
+                <div style="color: white; margin-right: 10px;">
+                    <div>Address: ${address}</div>
+                    <div>Balance: ${ethBalance} ETH</div>
+                </div>
+            `;
         } catch (error) {
-            console.error('User rejected the request:', error);
+            if (error.code === 4902) {
+                alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+            } else {
+                console.error('Error:', error);
+            }
         }
     } else {
-        console.error('MetaMask is not installed.');
+        alert('MetaMask is not installed. Please install it to use this feature.');
     }
 };
 
@@ -969,7 +983,6 @@ function addAbilityToUI(ability) {
     abilitiesContainer.insertBefore(abilityContainer, abilitiesContainer.firstChild);
     //document.getElementById('abilitiesContainer').appendChild(abilityContainer);
 }
-
 
 let animationFrameId;
 
