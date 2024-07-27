@@ -17,6 +17,8 @@ class Ability {
     }
 }
 
+
+
 const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
@@ -56,7 +58,7 @@ const abilityTypes = [{
     level: 0
 },{
     title: "Veil of Decentralization",
-    description: "The Survivor shrouds in decentralization, becoming elusive",
+    description: "The Survivor shrouds in decentralization, becoming elusive.",
     tooltip: "Can't touch this!",
     classes: ["Validator", "Decentralization Trilemma Solver"],
     explanation: "Validator: Ensures decentralization security. Decentralization Trilemma Solver: Balances decentralization aspects.",
@@ -1052,7 +1054,6 @@ function displayMetaMaskInfo(address, ethBalance) {
     metaMaskContainer.innerHTML = `
         <div style="color: white; margin-right: 10px;">
             <div>Address: ${address}</div>
-            <div>Balance: ${ethBalance} ETH</div>
         </div>
     `;
 }
