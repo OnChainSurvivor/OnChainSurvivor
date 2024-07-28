@@ -16,7 +16,81 @@ class Ability {
         this.active && typeof this.effect.update === 'function' && this.effect.update();
     }
 }
+class Entity {
+    constructor(config) {
+        Object.assign(this, config);
+        this.abilities = [];
+        this.position = new THREE.Vector3(config.position?.x || 0, config.position?.y || 0, config.position?.z || 0);
+        this.mesh = new THREE.Mesh(config.geometry, config.material);
+        this.mesh.position.copy(this.position);
+        scene.add(this.mesh);
+        this.initAbilities(config.abilities);
+    }
 
+    initAbilities(abilitiesConfig) {
+        abilitiesConfig.forEach(abilityConfig => {
+            const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
+            if (abilityType) {
+                const ability = new Ability(this, { ...abilityType, level: abilityConfig.level });
+                this.addAbility(ability);
+                ability.activate();
+            }
+        });
+    }
+
+    addAbility(ability) {
+        this.abilities.push(ability);
+    }
+
+    activateAbility(index) {
+        if (this.abilities[index]) {
+            this.abilities[index].activate();
+        }
+    }
+
+    deactivateAbility(index) {
+        if (this.abilities[index]) {
+            this.abilities[index].deactivate();
+        }
+    }
+
+    updateAbilities() {
+        this.abilities.forEach(ability => {
+            if (typeof ability.update === 'function') {
+                ability.update();
+            }
+        });
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+
+    die() {
+        console.log(`${this.name} has been defeated.`);
+    }
+
+    move(direction) {
+        this.position.add(direction);
+        this.mesh.position.copy(this.position);
+    }
+}
+
+const rainbowColors = [
+    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
+];
+let colorIndex = 0;
+
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: emissiveIntensity,
+    metalness: 0.5,
+    roughness: 0.3
+});
 
 
 const abilityTypes = [{
@@ -109,10 +183,42 @@ const abilityTypes = [{
 
 ];
 
-  const autoShooterParams = {
-      baseInterval: 200,  // base interval for shooting in milliseconds
-      level: 1
-  };
+const entityTypes = [{
+    class: 'Onchain Survivor',
+    name: 'Survivor',
+    health: 1,
+    xp: 0,
+    evasion: 0,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
+    level: 0,
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material:0, //createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Onchain Trail', level: 1 },
+        { type: 'Veil of Decentralization', level: 1 }
+    ],
+    position: { x: 0, y: 0, z: 0 }
+},
+{
+    class: 'Enemy',
+    name: 'Basic',
+    health: 1,
+    xp: 0,
+    evasion: 0,
+    tags: ['enemy'],
+    thumbnail: 0,
+    level: 0,
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Onchain Trail', level: 1 },
+        { type: 'Veil of Decentralization', level: 1 }
+    ],
+    position: { x: 10, y: 0, z: 0 }
+}
+];
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -154,6 +260,14 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
+const enemyConfig = entityTypes.find(type => type.class === 'Enemy');
+const enemyBasic = new Entity(enemyConfig);
+
+  const autoShooterParams = {
+      baseInterval: 200,  // base interval for shooting in milliseconds
+      level: 1
+  };
+
 const gui = new dat.GUI();
 const floorParams = {
     metalness: floorMaterial.metalness,
@@ -178,22 +292,9 @@ gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
     while (enemies.length > enemyParams.count) {
         const enemy = enemies.pop();
         scene.remove(enemy);
-        document.body.removeChild(enemy.userData.hpBar);
     }
 });
 
-const rainbowColors = [
-    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
-];
-let colorIndex = 0;
-
-const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
-    color: color,
-    emissive: color,
-    emissiveIntensity: emissiveIntensity,
-    metalness: 0.5,
-    roughness: 0.3
-});
 
 const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
 const playerMaterial = createNeonMaterial(rainbowColors[colorIndex]);
@@ -207,50 +308,42 @@ let playerHP = 1;
 let playerXP = 0;
 let playerLevel = 1;
 
-const playerHPBar = document.createElement('div');
-playerHPBar.style.position = 'absolute';
-playerHPBar.style.width = '50px';
-playerHPBar.style.height = '10px';
-playerHPBar.style.backgroundColor = 'red';
 
-const playerXPBar = document.createElement('div');
-playerXPBar.style.position = 'absolute';
-playerXPBar.style.width = '50px';
-playerXPBar.style.height = '5px';
-playerXPBar.style.backgroundColor = 'blue';
-
-const playerLevelDisplay = document.createElement('div');
-playerLevelDisplay.style.position = 'absolute';
-playerLevelDisplay.style.fontSize = '20px';
-playerLevelDisplay.style.color = 'black';
-
-document.body.appendChild(playerHPBar);
-document.body.appendChild(playerXPBar);
-document.body.appendChild(playerLevelDisplay);
-
+// Updated player UI container
 const characterContainer = document.createElement('div');
 characterContainer.style.position = 'absolute';
 characterContainer.style.top = '10px';
 characterContainer.style.left = '10px';
 characterContainer.style.display = 'flex';
+//characterContainer.style.flexDirection = 'column';
 characterContainer.style.alignItems = 'center';
+characterContainer.style.backgroundColor = 'black';
+characterContainer.style.padding = '10px';
+characterContainer.style.borderRadius = '10px';
 
 const characterImage = document.createElement('img');
-characterImage.src = 'Media/Classes/Onchain Survivor/MSURVIVOR.png'; // Path to the character image
+characterImage.src = 'Media/Classes/Onchain Survivor/MSURVIVOR.png';
 characterImage.style.width = '50px';
 characterImage.style.height = '50px';
-characterImage.style.borderRadius = '50%'; // Circular crop
-characterImage.style.marginRight = '10px';
+characterImage.style.borderRadius = '50%';
+characterImage.style.marginBottom = '10px';
 
 const characterName = document.createElement('div');
-characterName.innerText = 'Onchain Survivor V0.0.9'; // Character name
+characterName.innerText = 'Onchain Survivor V0.0.9';
 characterName.style.fontSize = '20px';
 characterName.style.color = 'white';
+characterName.style.marginBottom = '10px';
 
 characterContainer.appendChild(characterImage);
 characterContainer.appendChild(characterName);
 document.body.appendChild(characterContainer);
 
+const playerLevelDisplay = document.createElement('div');
+playerLevelDisplay.style.position = 'absolute';
+playerLevelDisplay.style.fontSize = '20px';
+playerLevelDisplay.style.color = 'black';
+playerLevelDisplay.style.display = 'none';
+document.body.appendChild(playerLevelDisplay);
 
 const abilitiesContainer = document.createElement('div');
 abilitiesContainer.id = 'abilitiesContainer';
@@ -317,19 +410,6 @@ metaMaskButton.onclick = async () => {
 };
 
 function updatePlayerBars() {
-    const vector = player.position.clone().project(camera);
-    playerHPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
-    playerHPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
-    playerHPBar.style.width = `${playerHP * 5}px`;
-
-    playerXPBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
-    playerXPBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 10}px`;
-    playerXPBar.style.width = `${playerXP * 0.5}px`;
-
-    playerLevelDisplay.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth + 55}px`;
-    playerLevelDisplay.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight - 30}px`;
-    playerLevelDisplay.innerHTML = playerLevel;
-
     if (playerHP <= 0) {
         triggerGameOver();
     }
@@ -473,7 +553,6 @@ function updatePlayerMovement() {
         camera.getWorldDirection(cameraDirection);
         cameraDirection.y = 0;
         cameraDirection.normalize();
-
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
@@ -572,7 +651,7 @@ function createShootingEnemy() {
         0,
         player.position.z + offsetZ
     );
-    shootingEnemy.userData = { hp: 1, hpBar: createHPBar(), scoreValue: 50, isShootingEnemy: true };
+    shootingEnemy.userData = { hp: 1, scoreValue: 50, isShootingEnemy: true };
     scene.add(shootingEnemy);
     enemies.push(shootingEnemy);
 }
@@ -625,23 +704,11 @@ const createEnemy = () => {
             0,
             player.position.z + offsetZ
         );
-        enemy.userData = { hp: 2, hpBar: createHPBar(), scoreValue: 20 };
+        enemy.userData = { hp: 2, scoreValue: 20 };
         scene.add(enemy);
         enemies.push(enemy);
     }
 };
-
-
-function createHPBar() {
-    const hpBar = document.createElement('div');
-    hpBar.style.position = 'absolute';
-    hpBar.style.width = '50px';
-    hpBar.style.height = '5px';
-    hpBar.style.backgroundColor = 'red';
-    hpBar.style.display = 'none';
-    document.body.appendChild(hpBar);
-    return hpBar;
-}
 
 function dropItem(position) {
         const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
@@ -652,14 +719,10 @@ function dropItem(position) {
         scene.add(xpSphere);
 }
 
-function updateHPBar(hpBar, position, hp) {
-    const vector = position.clone().project(camera);
-    hpBar.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
-    hpBar.style.top = `${-(vector.y * 0.5 - 0.5) * window.innerHeight}px`;
-    hpBar.style.width = `${hp * 10}px`;
-}
-
 function updateEnemies() {
+    const basicdirection = new THREE.Vector3().subVectors(player.position, enemyBasic.position).normalize();
+    enemyBasic.move(basicdirection.multiplyScalar(0.05));
+    enemyBasic.updateAbilities();
     enemies.forEach(enemy => {
         if (enemy.userData.isShootingEnemy) {
             handleEnemyShooting();
@@ -686,14 +749,12 @@ function updateEnemies() {
             }
         });
 
-        updateHPBar(enemy.userData.hpBar, enemy.position, enemy.userData.hp);
 
         if (enemy.userData.hp <= 0) {
             score += enemy.userData.scoreValue;
             updateScoreDisplay();
             dropItem(enemy.position);
             scene.remove(enemy);
-            document.body.removeChild(enemy.userData.hpBar);
             enemies.splice(enemies.indexOf(enemy), 1);
         }
 
@@ -1018,38 +1079,6 @@ window.addEventListener('resize', () => {
     composer.setSize(window.innerWidth, window.innerHeight);
 }, false);
 
-
-let uiVisible = false;
-
-const toggleUIButton = document.createElement('button');
-toggleUIButton.innerText = 'Toggle UI';
-toggleUIButton.style.position = 'absolute';
-toggleUIButton.style.top = '60px';
-toggleUIButton.style.right = '10px';
-toggleUIButton.style.fontSize = '20px';
-toggleUIButton.style.padding = '10px 20px';
-//document.body.appendChild(toggleUIButton);
-
-toggleUIButton.onclick = () => {
-    uiVisible = !uiVisible;
-    playerHPBar.style.display = uiVisible ? 'block' : 'none';
-    playerXPBar.style.display = uiVisible ? 'block' : 'none';
-    playerLevelDisplay.style.display = uiVisible ? 'block' : 'none';
-    timerDisplay.style.display = uiVisible ? 'block' : 'none';
-    scoreDisplay.style.display = uiVisible ? 'block' : 'none';
-    enemies.forEach(enemy => {
-        enemy.userData.hpBar.style.display = uiVisible ? 'block' : 'none';
-    });
-    toggleUIButton.innerText = uiVisible ? 'Hide UI' : 'Show UI';
-};
-
-playerHPBar.style.display = 'none';
-playerXPBar.style.display = 'none';
-playerLevelDisplay.style.display = 'none';
-timerDisplay.style.display = 'none';
-scoreDisplay.style.display = 'none';
-toggleUIButton.innerText = 'Show UI';
-
 function displayMetaMaskInfo(address, ethBalance) {
     metaMaskContainer.innerHTML = `
         <div style="color: white; margin-right: 10px;">
@@ -1070,4 +1099,3 @@ window.addEventListener('load', async () => {
 });
 
 animate();
-
