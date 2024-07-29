@@ -16,14 +16,14 @@ class Ability {
         this.active && typeof this.effect.update === 'function' && this.effect.update();
     }
 }
-class Entity {
-    constructor(config) {
+class Entity extends THREE.Object3D {
+    constructor(config,position) {
+        super();
         Object.assign(this, config);
         this.abilities = [];
-        this.position = new THREE.Vector3(config.position?.x || 0, config.position?.y || 0, config.position?.z || 0);
         this.mesh = new THREE.Mesh(config.geometry, config.material);
-        this.mesh.position.copy(this.position);
-        scene.add(this.mesh);
+        this.add(this.mesh);
+        scene.add(this);
         this.initAbilities(config.abilities);
     }
 
@@ -75,8 +75,8 @@ class Entity {
 
     move(direction) {
         this.position.add(direction);
-        this.mesh.position.copy(this.position);
     }
+    
 }
 
 const rainbowColors = [
@@ -97,8 +97,8 @@ const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
-    classes: ['Data Analysts', 'Blockchain Enthusiasts', 'Trailblazers', 'Coders'],
-    explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, Trailblazers mark their path, and Coders find utility in the trail for debugging and tracking.',
+    classes: ['Data Analysts', 'Blockchain Enthusiasts', 'Coders'],
+    explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
         const trail = {
@@ -184,8 +184,8 @@ const abilityTypes = [{
 ];
 
 const entityTypes = [{
-    class: 'Onchain Survivor',
-    name: 'Survivor',
+    class: 'Survivor',
+    name: 'Onchain Survivor',
     health: 1,
     xp: 0,
     evasion: 0,
@@ -193,12 +193,11 @@ const entityTypes = [{
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     level: 0,
     geometry: new THREE.BoxGeometry(1, 1, 1),
-    material:0, //createNeonMaterial(rainbowColors[colorIndex]),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 1 },
-        { type: 'Veil of Decentralization', level: 1 }
+        { type: 'Veil of Decentralization', level: 3 }
     ],
-    position: { x: 0, y: 0, z: 0 }
 },
 {
     class: 'Enemy',
@@ -209,13 +208,28 @@ const entityTypes = [{
     tags: ['enemy'],
     thumbnail: 0,
     level: 0,
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    geometry: new THREE.BoxGeometry(1, 2, 1),
     material:createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 1 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
-    position: { x: 10, y: 0, z: 0 }
+},
+{
+    class: 'Enemy Trailing',
+    name: 'Basic',
+    health: 1,
+    xp: 0,
+    evasion: 0,
+    tags: ['enemy'],
+    thumbnail: 0,
+    level: 0,
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Onchain Trail', level: 5 },
+        { type: 'Veil of Decentralization', level: 1 }
+    ],
 }
 ];
 
@@ -260,11 +274,22 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
-const enemyConfig = entityTypes.find(type => type.class === 'Enemy');
-const enemyBasic = new Entity(enemyConfig);
+const spawnDistance = 15;
+const angle = Math.random() * Math.PI * 2;
+const offsetX = Math.cos(angle) * spawnDistance;
+const offsetZ = Math.sin(angle) * spawnDistance;
+
+const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
+
+const enemyBasic = new Entity(entityTypes.find(type => type.class === 'Enemy'));
+enemyBasic.position.set(
+    player.position.x + offsetX,
+    0,
+    player.position.z + offsetZ
+);
 
   const autoShooterParams = {
-      baseInterval: 200,  // base interval for shooting in milliseconds
+      baseInterval: 200,  
       level: 1
   };
 
@@ -295,12 +320,7 @@ gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
     }
 });
 
-
-const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
-const playerMaterial = createNeonMaterial(rainbowColors[colorIndex]);
-const player = new THREE.Mesh(playerGeometry, playerMaterial);
 player.castShadow = true;
-scene.add(player);
 
 const abilities = abilityTypes.map(type => new Ability(player, type));
 
@@ -392,10 +412,8 @@ metaMaskButton.onclick = async () => {
             const address = accounts[0];
             const balance = await web3.eth.getBalance(address);
             const ethBalance = web3.utils.fromWei(balance, 'ether');
-            // Store the address in localStorage
             localStorage.setItem('metaMaskAddress', address);
 
-            // Display the address and balance
             displayMetaMaskInfo(address, ethBalance);
         } catch (error) {
             if (error.code === 4902) {
@@ -453,7 +471,7 @@ function triggerGameOver() {
     tryAgainButton.style.alignItems = 'center';
 
     const img = document.createElement('img');
-    img.src = 'Media/Abilities/LIQUIDATED.png'; // Add a relevant thumbnail for try again
+    img.src = 'Media/Abilities/LIQUIDATED.png'; 
     img.style.width = '575px';
     img.style.height = '250px';
     img.style.marginBottom = '10px';
@@ -557,7 +575,7 @@ function updatePlayerMovement() {
         player.position.add(moveDirection.multiplyScalar(movementSpeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
-
+        player.updateAbilities();
     }
 
     scene.children.forEach(child => {
