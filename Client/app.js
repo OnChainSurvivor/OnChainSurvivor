@@ -16,6 +16,7 @@ class Ability {
         this.active && typeof this.effect.update === 'function' && this.effect.update();
     }
 }
+
 class Entity extends THREE.Object3D {
     constructor(config,position) {
         super();
@@ -62,6 +63,12 @@ class Entity extends THREE.Object3D {
         });
     }
 
+    deactivateAbilities() {
+        this.abilities.forEach(ability => {
+            ability.deactivate();
+        });
+    }
+
     takeDamage(amount) {
         this.health -= amount;
         if (this.health <= 0) {
@@ -70,7 +77,8 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
-        console.log(`${this.name} has been defeated.`);
+        this.deactivateAbilities();
+        scene.remove(this);
     }
 
     move(direction) {
@@ -101,6 +109,7 @@ const abilityTypes = [{
     explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
+        const trailBullets=[];
         const trail = {
             create: (x, y, z, direction, source, scale = 1) => {
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -112,19 +121,24 @@ const abilityTypes = [{
                 trailStep.userData = {direction, creationTime: Date.now(), source};
                 trailStep.castShadow = true;
                 scene.add(trailStep);
-                bullets.push(trailStep);
+                trailBullets.push(trailStep);
             }
         };
 
+        this.lastTrailTime = 0;
         const scale = level * 1;
         this.update = () => {
-            if (Date.now() - this.lastTrailTime > 500) { // Add delay of 500 milliseconds
+            if ((Date.now() - this.lastTrailTime > 500)&&(this.active)) {
                 this.lastTrailTime = Date.now();
                 trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
             }
         };
-        this.lastTrailTime = 0;
-        this.deactivate = () => this.active = false;
+        this.deactivate = ()=> {
+            this.active = false;
+            trailBullets.forEach(bullet => {
+                scene.remove(bullet);
+            });
+        };
         this.active = true;
     },
     effectinfo:'Trail size and frequency increase.',
@@ -170,7 +184,6 @@ const abilityTypes = [{
                 this.active = false;
             }
         };
-
         this.update = veil.update;
         this.deactivate = veil.deactivate;
         this.active = true;
@@ -428,7 +441,7 @@ metaMaskButton.onclick = async () => {
 };
 
 function updatePlayerBars() {
-    if (playerHP <= 0) {
+    if (player.health <= 0) {
         triggerGameOver();
     }
 }
@@ -751,6 +764,7 @@ function updateEnemies() {
 
         const enemyBox = new THREE.Box3().setFromObject(enemy);
         const playerBox = new THREE.Box3().setFromObject(player);
+        const enemyBasicBox = new THREE.Box3().setFromObject(enemyBasic);
 
         bullets.forEach(bullet => {
             const bulletBox = new THREE.Box3().setFromObject(bullet);
@@ -760,8 +774,14 @@ function updateEnemies() {
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
             if (playerBox.intersectsBox(bulletBox) && bullet.userData.source !== player) {
-                playerHP -= 1;
+                player.takeDamage(1);
+                //playerHP -= 1;
                 updatePlayerBars();
+                scene.remove(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+            }
+            if (enemyBasicBox.intersectsBox(bulletBox) && bullet.userData.source == player) {
+                enemyBasic.takeDamage(1);
                 scene.remove(bullet);
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
