@@ -1,6 +1,6 @@
 class Ability {
     constructor(user, config) {
-        Object.assign(this, { user, ...config, active: false });
+        Object.assign(this, {user, ...config, active: false});
     }
 
     activate() {
@@ -18,7 +18,7 @@ class Ability {
 }
 
 class Entity extends THREE.Object3D {
-    constructor(config, position) {
+    constructor(config,position) {
         super();
         Object.assign(this, config);
         this.abilities = [];
@@ -78,39 +78,15 @@ class Entity extends THREE.Object3D {
 
     die() {
         this.deactivateAbilities();
-        this.dropItem();
         scene.remove(this);
     }
 
     move(direction) {
         this.position.add(direction);
     }
-
-    detectCollisions() {
-        const thisBox = new THREE.Box3().setFromObject(this);
-        scene.children.forEach(child => {
-            if (child instanceof Entity && child !== this) {
-                const otherBox = new THREE.Box3().setFromObject(child);
-                if (thisBox.intersectsBox(otherBox)) {
-                    this.onCollision(child);
-                }
-            }
-        });
-    }
-
-    onCollision(otherEntity) {
-        // Placeholder for collision handling logic
-    }
-
-    dropItem() {
-        const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-        const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-        const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        xpSphere.position.copy(this.position);
-        xpSphere.userData = { type: 'xpSphere' };
-        scene.add(xpSphere);
-    }
+    
 }
+
 const rainbowColors = [
     0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
 ];
@@ -123,6 +99,8 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
     metalness: 0.5,
     roughness: 0.3
 });
+
+
 const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
@@ -131,7 +109,7 @@ const abilityTypes = [{
     explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
-        const trailBullets = [];
+        const trailBullets=[];
         const trail = {
             create: (x, y, z, direction, source, scale = 1) => {
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
@@ -139,8 +117,8 @@ const abilityTypes = [{
                     new THREE.BoxGeometry(0.2 * scale, 0.2 * scale, 0.2 * scale),
                     createNeonMaterial(rainbowColors[colorIndex], 2)
                 );
-                Object.assign(trailStep.position, { x, y, z });
-                trailStep.userData = { direction, creationTime: Date.now(), source, isTrail: true };
+                Object.assign(trailStep.position, {x, y, z});
+                trailStep.userData = {direction, creationTime: Date.now(), source};
                 trailStep.castShadow = true;
                 scene.add(trailStep);
                 trailBullets.push(trailStep);
@@ -150,38 +128,23 @@ const abilityTypes = [{
         this.lastTrailTime = 0;
         const scale = level * 1;
         this.update = () => {
-            if ((Date.now() - this.lastTrailTime > 500) && (this.active)) {
+            if ((Date.now() - this.lastTrailTime > 500)&&(this.active)) {
                 this.lastTrailTime = Date.now();
                 trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
             }
-
-            // Check collisions with trail
-            trailBullets.forEach(trailBullet => {
-                const trailBox = new THREE.Box3().setFromObject(trailBullet);
-                scene.children.forEach(child => {
-                    if (child instanceof Entity && child !== user) {
-                        const otherBox = new THREE.Box3().setFromObject(child);
-                        if (trailBox.intersectsBox(otherBox)) {
-                            child.takeDamage(1);  // Assuming trail damage is 1
-                        }
-                    }
-                });
-            });
         };
-        this.deactivate = () => {
+        this.deactivate = ()=> {
             this.active = false;
             trailBullets.forEach(bullet => {
                 scene.remove(bullet);
             });
-            trailBullets.length = 0; 
         };
         this.active = true;
     },
-    effectinfo: 'Trail size and frequency increase.',
+    effectinfo:'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
     level: 0
-},
-{
+},{
     title: "Veil of Decentralization",
     description: "The Survivor shrouds in decentralization, becoming elusive.",
     tooltip: "Can't touch this!",
@@ -226,83 +189,11 @@ const abilityTypes = [{
         this.active = true;
         veil.create();
     },
-    effectinfo: 'Veil trigger % UP.',
+    effectinfo:'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
-},
-{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.05,
-            homingSpeed: 0.1,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                scene.add(orb.mesh);
-            },
-            update: () => {
-                if (!orb.mesh) return;
-                
-                if (!orb.target) {
-                    // Orbit around the user
-                    const time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-
-                    // Find nearest enemy
-                    const potentialTargets = scene.children.filter(child => child instanceof Entity && child !== user && !user.tags.some(tag => child.tags.includes(tag)));
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            const distanceToCurrent = user.position.distanceTo(entity.position);
-                            const distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                } else {
-                    // Move towards the target
-                    const direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-
-                    // Check for collision with target
-                    const orbBox = new THREE.Box3().setFromObject(orb.mesh);
-                    const targetBox = new THREE.Box3().setFromObject(orb.target);
-                    if (orbBox.intersectsBox(targetBox)) {
-                        orb.target.takeDamage(1);  // Assuming orb damage is 1
-                        orb.target = null;  // Reset target
-                    }
-                }
-            },
-            deactivate: () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-                this.active = false;
-            }
-        };
-
-        this.update = orb.update;
-        this.deactivate = orb.deactivate;
-        this.active = true;
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
 }
+
 ];
 
 const entityTypes = [{
@@ -315,10 +206,10 @@ const entityTypes = [{
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     level: 0,
     geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 1 },
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Veil of Decentralization', level: 3 }
     ],
 },
 {
@@ -331,7 +222,7 @@ const entityTypes = [{
     thumbnail: 0,
     level: 0,
     geometry: new THREE.BoxGeometry(1, 2, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 1 },
         { type: 'Veil of Decentralization', level: 1 }
@@ -347,13 +238,14 @@ const entityTypes = [{
     thumbnail: 0,
     level: 0,
     geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
+    material:createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 5 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
 }
 ];
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -409,10 +301,10 @@ enemyBasic.position.set(
     player.position.z + offsetZ
 );
 
-const autoShooterParams = {
-    baseInterval: 200,
-    level: 1
-};
+  const autoShooterParams = {
+      baseInterval: 200,  
+      level: 1
+  };
 
 const gui = new dat.GUI();
 const floorParams = {
@@ -449,11 +341,14 @@ let playerHP = 1;
 let playerXP = 0;
 let playerLevel = 1;
 
+
+// Updated player UI container
 const characterContainer = document.createElement('div');
 characterContainer.style.position = 'absolute';
 characterContainer.style.top = '10px';
 characterContainer.style.left = '10px';
 characterContainer.style.display = 'flex';
+//characterContainer.style.flexDirection = 'column';
 characterContainer.style.alignItems = 'center';
 characterContainer.style.backgroundColor = 'black';
 characterContainer.style.padding = '10px';
@@ -489,6 +384,7 @@ abilitiesContainer.style.position = 'absolute';
 abilitiesContainer.style.bottom = '10px';
 abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
+//abilitiesContainer.style.flexDirection = 'column';
 document.body.appendChild(abilitiesContainer);
 
 const metaMaskContainer = document.createElement('div');
@@ -501,9 +397,10 @@ metaMaskContainer.style.alignItems = 'center';
 metaMaskContainer.style.cursor = 'pointer';
 
 const metaMaskImage = document.createElement('img');
-metaMaskImage.src = 'Media/MetamaskLogo.png';
+metaMaskImage.src = 'Media/MetamaskLogo.png'; 
 metaMaskImage.style.width = '30px';
 metaMaskImage.style.height = '30px';
+//metaMaskImage.style.marginRight = '10px';
 
 const metaMaskButton = document.createElement('button');
 metaMaskButton.innerText = '';
@@ -551,7 +448,7 @@ function updatePlayerBars() {
 
 function triggerGameOver() {
     isPaused = true;
-
+    clearInterval(spawnEnemiesInterval);
     cancelAnimationFrame(animationFrameId);
 
     const gameOverScreen = document.createElement('div');
@@ -587,7 +484,7 @@ function triggerGameOver() {
     tryAgainButton.style.alignItems = 'center';
 
     const img = document.createElement('img');
-    img.src = 'Media/Abilities/LIQUIDATED.png';
+    img.src = 'Media/Abilities/LIQUIDATED.png'; 
     img.style.width = '575px';
     img.style.height = '250px';
     img.style.marginBottom = '10px';
@@ -638,10 +535,39 @@ document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
 
+const bullets = [];
 const enemies = [];
 const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
 const shotInterval = 200;
 const trailLifetime = 5000;
+
+function createBullet(x, y, z, direction, source) {
+    colorIndex = (colorIndex + 1) % rainbowColors.length;
+    const bulletGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+    const bulletMaterial = createNeonMaterial(rainbowColors
+
+[colorIndex], 2);
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    bullet.position.set(x, y, z);
+    bullet.userData = { direction, creationTime: Date.now(), source };
+    bullet.castShadow = true;
+    scene.add(bullet);
+    bullets.push(bullet);
+}
+
+function cleanupBullets() {
+    const currentTime = Date.now();
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
+        if (currentTime - bullet.userData.creationTime > trailLifetime) {
+            scene.remove(bullet);
+            bullets.splice(i, 1);
+        } else {
+            //const ageRatio = (currentTime - bullet.userData.creationTime) / trailLifetime;
+           // bullet.scale.set(1 - ageRatio, 1 - ageRatio, 1 - ageRatio);
+        }
+    }
+}
 
 function updatePlayerMovement() {
     const movementSpeed = 0.2;
@@ -688,6 +614,45 @@ function updateCamera() {
     camera.lookAt(player.position);
 }
 
+function updateBullets() {
+    const playerBulletSpeed = 0.4;
+    const enemyBulletSpeed = 0.1;
+
+    bullets.forEach(bullet => {
+        const speed = bullet.userData.source === player ? playerBulletSpeed : enemyBulletSpeed;
+        bullet.position.add(bullet.userData.direction.clone().multiplyScalar(speed));
+    });
+}
+
+function handleShooting() {
+    const currentTime = Date.now();
+
+    const cameraRight = new THREE.Vector3();
+    const cameraUp = new THREE.Vector3();
+    const cameraForward = new THREE.Vector3();
+    camera.matrix.extractBasis(cameraRight, cameraUp, cameraForward);
+
+    const shootDirection = new THREE.Vector3();
+    if (keys.i) shootDirection.set(-cameraForward.x, 0, -cameraForward.z);
+    if (keys.k) shootDirection.set(cameraForward.x, 0, cameraForward.z);
+    if (keys.j) shootDirection.set(-cameraRight.x, 0, -cameraRight.z);
+    if (keys.l) shootDirection.set(cameraRight.x, 0, cameraRight.z);
+
+    if (shootDirection.length() > 0) {
+        shootDirection.normalize();
+        if (currentTime - lastShotTimes.i > shotInterval) {
+            createBullet(player.position.x, player.position.y, player.position.z, shootDirection, player);
+            lastShotTimes.i = currentTime;
+        }
+    }
+}
+
+const enemyMaterial = new THREE.PointsMaterial({
+    color: 0xff0000,
+    size: 0.3,
+    transparent: true,
+    opacity: 0.8
+});
 let score = 0;
 
 const scoreDisplay = document.createElement('div');
@@ -722,11 +687,73 @@ function createShootingEnemy() {
     enemies.push(shootingEnemy);
 }
 
+function createEnemyBullet(position, direction, enemy) {
+    const bulletGeometry = new THREE.SphereGeometry(0.5, 8, 8);
+    const bulletMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
+    bullet.position.copy(position);
+    bullet.userData = { direction: direction.clone(), creationTime: Date.now(), source: enemy };
+    scene.add(bullet);
+    bullets.push(bullet);
+}
+
+function handleEnemyShooting() {
+    const currentTime = Date.now();
+    enemies.forEach(enemy => {
+        if (!enemy.userData.isShootingEnemy) return;
+        if (currentTime - (enemy.userData.lastShotTime || 0) > shotInterval * 3) {
+            const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
+            createEnemyBullet(enemy.position, direction, enemy);
+            enemy.userData.lastShotTime = currentTime;
+        }
+    });
+}
+
+const createEnemy = () => {
+    if (Math.random() < 0.5) {
+        createShootingEnemy();
+    } else {
+        const radius = 0.5;
+        const height = 1;
+        const radialSegments = 32;
+        const heightSegments = 1;
+        const openEnded = false;
+        const thetaStart = 0;
+        const thetaLength = Math.PI * 2;
+
+        const enemyGeometry = new THREE.ConeGeometry(radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength);
+        const enemyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+        const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+
+        const spawnDistance = 30;
+        const angle = Math.random() * Math.PI * 2;
+        const offsetX = Math.cos(angle) * spawnDistance;
+        const offsetZ = Math.sin(angle) * spawnDistance;
+
+        enemy.position.set(
+            player.position.x + offsetX,
+            0,
+            player.position.z + offsetZ
+        );
+        enemy.userData = { hp: 2, scoreValue: 20 };
+        scene.add(enemy);
+        enemies.push(enemy);
+    }
+};
+
+function dropItem(position) {
+        const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+        const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+        const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        xpSphere.position.copy(position);
+        xpSphere.userData = { type: 'xpSphere' };
+        scene.add(xpSphere);
+}
+
 function updateEnemies() {
     const basicdirection = new THREE.Vector3().subVectors(player.position, enemyBasic.position).normalize();
     enemyBasic.move(basicdirection.multiplyScalar(0.05));
     enemyBasic.updateAbilities();
-    enemyBasic.detectCollisions();
     enemies.forEach(enemy => {
         if (enemy.userData.isShootingEnemy) {
             handleEnemyShooting();
@@ -738,6 +765,28 @@ function updateEnemies() {
         const enemyBox = new THREE.Box3().setFromObject(enemy);
         const playerBox = new THREE.Box3().setFromObject(player);
         const enemyBasicBox = new THREE.Box3().setFromObject(enemyBasic);
+
+        bullets.forEach(bullet => {
+            const bulletBox = new THREE.Box3().setFromObject(bullet);
+            if (enemyBox.intersectsBox(bulletBox) && bullet.userData.source == player) {
+                enemy.userData.hp -= 1;
+                scene.remove(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+            }
+            if (playerBox.intersectsBox(bulletBox) && bullet.userData.source !== player) {
+                player.takeDamage(1);
+                //playerHP -= 1;
+                updatePlayerBars();
+                scene.remove(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+            }
+            if (enemyBasicBox.intersectsBox(bulletBox) && bullet.userData.source == player) {
+                enemyBasic.takeDamage(1);
+                scene.remove(bullet);
+                bullets.splice(bullets.indexOf(bullet), 1);
+            }
+        });
+
 
         if (enemy.userData.hp <= 0) {
             score += enemy.userData.scoreValue;
@@ -753,6 +802,31 @@ function updateEnemies() {
         }
     });
 }
+
+
+function spawnEnemies() {
+    setInterval(() => {
+        if (enemies.length < enemyParams.count) {
+            createEnemy();
+        }
+    }, 100 );
+}
+
+let spawnEnemiesInterval;
+
+function startSpawningEnemies() {
+    spawnEnemiesInterval = setInterval(() => {
+        if (enemies.length < enemyParams.count) {
+            createEnemy();
+        }
+    }, 500);
+}
+
+function stopSpawningEnemies() {
+    clearInterval(spawnEnemiesInterval);
+}
+
+startSpawningEnemies();
 
 const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
@@ -772,6 +846,7 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
+// Other functions
 function findClosestEnemy() {
     let closestEnemy = null;
     let closestDistance = Infinity;
@@ -783,6 +858,22 @@ function findClosestEnemy() {
         }
     });
     return closestEnemy;
+}
+
+let lastAutoShootTime = 0;
+
+function autoShootClosestEnemy() {
+    const currentTime = Date.now();
+    const interval = autoShooterParams.baseInterval / autoShooterParams.level;
+
+    if (currentTime - lastAutoShootTime >= interval) {
+        const closestEnemy = findClosestEnemy();
+        if (closestEnemy) {
+            const direction = new THREE.Vector3().subVectors(closestEnemy.position, player.position).normalize();
+            createBullet(player.position.x, player.position.y, player.position.z, direction, player);
+            lastAutoShootTime = currentTime;
+        }
+    }
 }
 
 function emitShockwave() {
@@ -806,7 +897,9 @@ function emitShockwave() {
         const elapsed = Date.now() - startTime;
         const scale = 1 + (maxScale - 1) * (elapsed / duration);
         shockwave.scale.set(scale, scale, scale);
-        shockwave.material.opacity = 0.5 * (1 - elapsed / duration);
+        shockwave.material
+
+.opacity = 0.5 * (1 - elapsed / duration);
 
         if (elapsed < duration) {
             requestAnimationFrame(animateShockwave);
@@ -884,6 +977,7 @@ function showLevelUpUI() {
     buttonsContainer.style.justifyContent = 'center';
 
     isPaused = true;
+    clearInterval(spawnEnemiesInterval);
     cancelAnimationFrame(animationFrameId);
 
     for (let i = 0; i < 3; i++) {
@@ -942,6 +1036,7 @@ function showLevelUpUI() {
             ability.level = Math.min(ability.level + 1, 10);
             ability.activate();
             isPaused = false;
+            startSpawningEnemies();
             animate();
             addAbilityToUI(ability);
         };
@@ -996,7 +1091,11 @@ function animate() {
 
     updatePlayerMovement();
     updateCamera();
+    updateBullets();
+    cleanupBullets();
+    handleShooting();
     updateEnemies();
+    autoShootClosestEnemy();
     checkXPSphereCollection();
     updatePlayerBars();
     composer.render();
@@ -1026,6 +1125,7 @@ function displayMetaMaskInfo(address, ethBalance) {
     `;
 }
 
+// Check if MetaMask address is stored in localStorage on page load
 window.addEventListener('load', async () => {
     const storedAddress = localStorage.getItem('metaMaskAddress');
     if (storedAddress) {
