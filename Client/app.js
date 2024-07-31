@@ -68,7 +68,9 @@ class Entity extends THREE.Object3D {
     deactivateAbilities() {
         this.abilities.forEach(ability => {
             ability.deactivate();
+            ability = null;
         });
+        this.abilities.length = 0;
     }
 
     takeDamage(amount) {
@@ -77,9 +79,17 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
-        this.deactivateAbilities();
         this.dropItem();
+        this.deactivateAbilities();
         scene.remove(this);
+        for (let i = 0; i < scene.children.length; i++) {
+            if (scene.children[i] === this) {
+                scene.children.splice(i, 1);
+                break;
+            }
+        }
+        const enemyIndex = enemies.indexOf(this);
+        if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
     }
 
     move(direction) {
@@ -168,11 +178,8 @@ const abilityTypes = [{
             });
         };
         this.deactivate = () => {
-            trailBullets.forEach(bullet => {
-                scene.remove(bullet);
-            });
+            trailBullets.forEach(bullet => { scene.remove(bullet); });
             trailBullets.length = 0; 
-            scene.remove(this);
         };
     },
     effectinfo: 'Trail size and frequency increase.',
@@ -209,6 +216,7 @@ const abilityTypes = [{
                 if (veil.shield) veil.shield.position.copy(user.position);
             },
             deactivate: () => {
+                user.abilities.splice(user.abilities.indexOf(this), 1);
                 if (veil.shield) {
                     scene.remove(veil.shield);
                     veil.shield = null;
@@ -690,14 +698,19 @@ function createAbilityButton(ability, scale = 1, onClick) {
 
     const title = document.createElement('div');
     title.innerText = ability.title;
-    title.style.fontSize = `${16 * scale}px`;
+    title.style.fontSize = `${19 * scale}px`;
     title.style.fontWeight = 'bold';
     title.style.marginBottom = `${10 * scale}px`;
     title.style.color = 'white';
+    
+    lvl = ability.level    // Technical Debt
+    expl=ability.effectinfo;
+    if(scale==1)  lvl = ability.level+1 
+    if (lvl==1) expl = ability.description;    
 
     const effectinfo = document.createElement('div');
-    effectinfo.innerText = `Lvl ${ability.level}: ${ability.effectinfo}`;
-    effectinfo.style.fontSize = `${12 * scale}px`;
+    effectinfo.innerText = `Lvl ${lvl}: ${expl}`;
+    effectinfo.style.fontSize = `${15 * scale}px`;
     effectinfo.style.textAlign = 'center';
     effectinfo.style.color = 'white';
 
@@ -740,25 +753,20 @@ function showLevelUpUI() {
 
     for (let i = 0; i < 3; i++) {
         const abilityIndex = Math.floor(Math.random() * player.abilities.length);
-        const ability = player.abilities[abilityIndex];
-
-        const button = createAbilityButton(ability, 1, () => {
+        const button = createAbilityButton((player.abilities[abilityIndex]), 1, () => {
             levelUpContainer.remove();
-            ability.level + 1; 
+            player.abilities[abilityIndex].deactivate();
+            player.abilities[abilityIndex].level += 1; 
+            player.abilities[abilityIndex].activate();
             isPaused = false;
             startSpawningEnemies();
             animate();
-            addAbilityToUI(ability); 
+            abilitiesContainer.insertBefore(createAbilityButton(player.abilities[abilityIndex], 0.5), abilitiesContainer.firstChild);
         });
         buttonsContainer.appendChild(button);
     }
     levelUpContainer.appendChild(buttonsContainer);
     document.body.appendChild(levelUpContainer);
-}
-
-function addAbilityToUI(ability) {
-    const abilityContainer = createAbilityButton(ability, 0.5); // Adjust scale as needed for in-game UI
-    abilitiesContainer.insertBefore(abilityContainer, abilitiesContainer.firstChild);
 }
 
 let animationFrameId;
