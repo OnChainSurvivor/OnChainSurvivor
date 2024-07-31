@@ -4,16 +4,15 @@ class Ability {
     }
 
     activate() {
-        this.active = true;
         this.effect(this.level, this.user);
     }
 
     deactivate() {
-        this.active = false;
+        this.effect.deactivate();
     }
 
     update() {
-        this.active && typeof this.effect.update === 'function' && this.effect.update();
+        this.effect.update();
     }
 }
 
@@ -53,22 +52,16 @@ class Entity extends THREE.Object3D {
     }
 
     activateAbility(index) {
-        if (this.abilities[index]) {
-            this.abilities[index].activate();
-        }
+        if (this.abilities[index]) this.abilities[index].activate();
     }
 
     deactivateAbility(index) {
-        if (this.abilities[index]) {
-            this.abilities[index].deactivate();
-        }
+        if (this.abilities[index]) this.abilities[index].deactivate();
     }
 
     updateAbilities() {
         this.abilities.forEach(ability => {
-            if (typeof ability.update === 'function') {
-                ability.update();
-            }
+            ability.update();
         });
     }
 
@@ -80,9 +73,7 @@ class Entity extends THREE.Object3D {
 
     takeDamage(amount) {
         this.health -= amount;
-        if (this.health <= 0) {
-            this.die();
-        }
+        if (this.health <= 0) this.die();
     }
 
     die() {
@@ -100,9 +91,7 @@ class Entity extends THREE.Object3D {
         scene.children.forEach(child => {
             if (child instanceof Entity && child !== this) {
                 const otherBox = new THREE.Box3().setFromObject(child);
-                if (thisBox.intersectsBox(otherBox)) {
-                    this.onCollision(child);
-                }
+                if (thisBox.intersectsBox(otherBox)) this.onCollision(child);
             }
         });
     }
@@ -119,6 +108,11 @@ class Entity extends THREE.Object3D {
         xpSphere.userData = { type: 'xpSphere' };
         scene.add(xpSphere);
     }
+
+    innerUpdate() {
+            this.updateAbilities();
+            this.detectCollisions();
+     }
 }
 const rainbowColors = [
     0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
@@ -141,11 +135,12 @@ const abilityTypes = [{
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
         const trailBullets = [];
+        this.lastTrailTime = 0;
         const trail = {
-            create: (x, y, z, direction, source, scale = 1) => {
+            create: (x, y, z, direction, source) => {
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const trailStep = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2 * scale, 0.2 * scale, 0.2 * scale),
+                    new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level),
                     createNeonMaterial(rainbowColors[colorIndex], 2)
                 );
                 Object.assign(trailStep.position, { x, y, z });
@@ -155,16 +150,11 @@ const abilityTypes = [{
                 trailBullets.push(trailStep);
             }
         };
-
-        this.lastTrailTime = 0;
-        const scale = level * 1;
         this.update = () => {
-            if ((Date.now() - this.lastTrailTime > 500) && (this.active)) {
+            if ((Date.now() - this.lastTrailTime > 500)) {
                 this.lastTrailTime = Date.now();
-                trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user, scale);
+                trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user);
             }
-
-            // Check collisions with trail
             trailBullets.forEach(trailBullet => {
                 const trailBox = new THREE.Box3().setFromObject(trailBullet);
                 scene.children.forEach(child => {
@@ -178,13 +168,12 @@ const abilityTypes = [{
             });
         };
         this.deactivate = () => {
-            this.active = false;
             trailBullets.forEach(bullet => {
                 scene.remove(bullet);
             });
             trailBullets.length = 0; 
+            scene.remove(this);
         };
-        this.active = true;
     },
     effectinfo: 'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
@@ -201,9 +190,8 @@ const abilityTypes = [{
         const veil = {
             shield: null,
             create: () => {
-                if (veil.shield) {
-                    scene.remove(veil.shield);
-                }
+                if (veil.shield) scene.remove(veil.shield);
+
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -218,9 +206,7 @@ const abilityTypes = [{
                 scene.add(veil.shield);
             },
             update: () => {
-                if (veil.shield) {
-                    veil.shield.position.copy(user.position);
-                }
+                if (veil.shield) veil.shield.position.copy(user.position);
             },
             deactivate: () => {
                 if (veil.shield) {
@@ -263,7 +249,6 @@ const abilityTypes = [{
                 if (!orb.mesh) return;
                 
                 if (!orb.target) {
-                    // Orbit around the user
                     const time = Date.now() * orb.orbitSpeed;
                     orb.mesh.position.set(
                         user.position.x + Math.cos(time) * orb.orbitRadius,
@@ -271,7 +256,6 @@ const abilityTypes = [{
                         user.position.z + Math.sin(time) * orb.orbitRadius
                     );
 
-                    // Find nearest enemy
                     const potentialTargets = scene.children.filter(child => child instanceof Entity && child !== user && !user.tags.some(tag => child.tags.includes(tag)));
                     if (potentialTargets.length > 0) {
                         orb.target = potentialTargets.reduce((nearest, entity) => {
@@ -281,11 +265,9 @@ const abilityTypes = [{
                         });
                     }
                 } else {
-                    // Move towards the target
                     const direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
                     orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
 
-                    // Check for collision with target
                     const orbBox = new THREE.Box3().setFromObject(orb.mesh);
                     const targetBox = new THREE.Box3().setFromObject(orb.target);
                     if (orbBox.intersectsBox(targetBox)) {
@@ -318,6 +300,7 @@ const entityTypes = [{
     class: 'Survivor',
     name: 'Onchain Survivor',
     health: 1,
+    movementspeed:0.2,
     xp: 0,
     evasion: 0,
     tags: ['player'],
@@ -333,6 +316,7 @@ const entityTypes = [{
     class: 'Enemy',
     name: 'Basic',
     health: 1,
+    movementspeed:0.2,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -342,22 +326,6 @@ const entityTypes = [{
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
         { type: 'Onchain Trail', level: 1 },
-        { type: 'Veil of Decentralization', level: 1 }
-    ],
-},
-{
-    class: 'Enemy Trailing',
-    name: 'Basic',
-    health: 1,
-    xp: 0,
-    evasion: 0,
-    tags: ['enemy'],
-    thumbnail: 0,
-    level: 0,
-    geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
-    abilities: [
-        { type: 'Onchain Trail', level: 5 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
 }
@@ -404,7 +372,7 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 };
 
 const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
-const abilities = abilityTypes.map(type => new Ability(player, type));
+const enemies = [];
 let playerXP = 0;
 
 const characterContainer = document.createElement('div');
@@ -475,6 +443,15 @@ metaMaskButton.style.borderRadius = '5px';
 metaMaskContainer.appendChild(metaMaskButton);
 metaMaskButton.appendChild(metaMaskImage);
 document.body.appendChild(metaMaskContainer);
+
+
+function displayMetaMaskInfo(address, ethBalance) {
+    metaMaskContainer.innerHTML = `
+        <div style="color: white; margin-right: 10px;">
+            <div>Address: ${address}</div>
+        </div>
+    `;
+}
 
 metaMaskButton.onclick = async () => {
     if (window.ethereum) {
@@ -571,6 +548,7 @@ timerDisplay.style.color = 'white';
 document.body.appendChild(timerDisplay);
 
 function updateTimerDisplay() {
+    countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -590,16 +568,13 @@ document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
 
-const enemies = [];
-
 function updatePlayerMovement() {
-    const movementSpeed = 0.2;
     let direction = new THREE.Vector3();
 
-    if (keys.s) direction.z -= movementSpeed;
-    if (keys.w) direction.z += movementSpeed;
-    if (keys.a) direction.x += movementSpeed;
-    if (keys.d) direction.x -= movementSpeed;
+    if (keys.s) direction.z -= player.movementspeed;
+    if (keys.w) direction.z += player.movementspeed;
+    if (keys.a) direction.x += player.movementspeed;
+    if (keys.d) direction.x -= player.movementspeed;
 
     if (direction.length() > 0) {
         direction.normalize();
@@ -608,11 +583,22 @@ function updatePlayerMovement() {
         cameraDirection.y = 0;
         cameraDirection.normalize();
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
-        player.position.add(moveDirection.multiplyScalar(movementSpeed));
+        player.position.add(moveDirection.multiplyScalar(player.movementspeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
-        player.updateAbilities();
     }
+    player.innerUpdate();
+
+    scene.children.forEach(child => {
+        if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
+            playerXP += 100;
+            if (playerXP >= 100) {
+                playerXP = 0;
+                showLevelUpUI();
+            }
+            scene.remove(child);
+        }
+    });
 }
 
 let cameraAngle = 0;
@@ -630,34 +616,17 @@ function updateCamera() {
     camera.lookAt(player.position);
 }
 
-let score = 0;
-
-const scoreDisplay = document.createElement('div');
-scoreDisplay.style.position = 'absolute';
-scoreDisplay.style.top = '40px';
-scoreDisplay.style.right = '10px';
-scoreDisplay.style.fontSize = '20px';
-scoreDisplay.style.color = 'white';
-document.body.appendChild(scoreDisplay);
-
-function updateScoreDisplay() {
-    scoreDisplay.innerText = `Score: ${score}`;
-}
-
-
 function updateEnemies() {
     enemies.forEach(enemy => {
         const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
-        enemy.position.add(direction.multiplyScalar(0.02));
-        enemy.updateAbilities();
-        enemy.detectCollisions();
+        enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
+        enemy.innerUpdate();
     });
 }
 
 function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, numberOfEnemies = 3) {
     const spawnEnemy = () => {
         for (let i = 0; i < numberOfEnemies; i++) {
-            // Calculate random spawn position outside the field of view
             const angle = Math.random() * Math.PI * 2;
             const offsetX = Math.cos(angle) * spawnRadius;
             const offsetZ = Math.sin(angle) * spawnRadius;
@@ -668,20 +637,16 @@ function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, nu
                 player.position.z + offsetZ
             );
 
-            // Create a new enemy entity
             const enemyConfig = entityTypes.find(type => type.class === 'Enemy'); // Use the enemy type configuration
             const enemy = new Entity(enemyConfig);
 
-            // Set the spawn position
             enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
 
-            // Add the enemy to the scene
             scene.add(enemy);
             enemies.push(enemy);
         }
     };
 
-    // Set the spawning interval
     setInterval(spawnEnemy, spawnInterval);
 }
 
@@ -690,11 +655,7 @@ startSpawningEnemies(player);
 
 const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1,
-    0.1,
-    0
-);
+    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     minFilter: THREE.LinearFilter,
@@ -705,19 +666,6 @@ const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.inner
 const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
-
-function checkXPSphereCollection() {
-    scene.children.forEach(child => {
-        if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
-            playerXP += 100;
-            if (playerXP >= 100) {
-                playerXP = 0;
-                showLevelUpUI();
-            }
-            scene.remove(child);
-        }
-    });
-}
 
 let isPaused = false;
 
@@ -757,9 +705,7 @@ function createAbilityButton(ability, scale = 1, onClick) {
     button.appendChild(title);
     button.appendChild(effectinfo);
 
-    if (onClick) {
-        button.onclick = onClick;
-    }
+    if (onClick) button.onclick = onClick;
 
     return button;
 }
@@ -793,20 +739,19 @@ function showLevelUpUI() {
     cancelAnimationFrame(animationFrameId);
 
     for (let i = 0; i < 3; i++) {
-        const ability = abilities[Math.floor(Math.random() * abilities.length)];
+        const abilityIndex = Math.floor(Math.random() * player.abilities.length);
+        const ability = player.abilities[abilityIndex];
 
         const button = createAbilityButton(ability, 1, () => {
             levelUpContainer.remove();
-            ability.level = Math.min(ability.level + 1, 10);
-            ability.activate();
+            ability.level + 1; 
             isPaused = false;
             startSpawningEnemies();
             animate();
-            addAbilityToUI(ability);
+            addAbilityToUI(ability); 
         });
         buttonsContainer.appendChild(button);
     }
-
     levelUpContainer.appendChild(buttonsContainer);
     document.body.appendChild(levelUpContainer);
 }
@@ -818,29 +763,6 @@ function addAbilityToUI(ability) {
 
 let animationFrameId;
 
-function animate() {
-    if (isPaused) return;
-    animationFrameId = requestAnimationFrame(animate);
-
-    updatePlayerMovement();
-    updateCamera();
-    updateEnemies();
-    checkXPSphereCollection();
-    composer.render();
-
-    abilities.forEach(ability => ability.update());
-    if (countdown > 0) {
-        countdown--;
-        updateTimerDisplay();
-    } else {
-        triggerGameOver();
-    }
-
-    if (player.health <= 0) {
-        triggerGameOver();
-    }
-}
-
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -848,14 +770,6 @@ window.addEventListener('resize', () => {
     renderTarget.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
 }, false);
-
-function displayMetaMaskInfo(address, ethBalance) {
-    metaMaskContainer.innerHTML = `
-        <div style="color: white; margin-right: 10px;">
-            <div>Address: ${address}</div>
-        </div>
-    `;
-}
 
 window.addEventListener('load', async () => {
     const storedAddress = localStorage.getItem('metaMaskAddress');
@@ -866,5 +780,16 @@ window.addEventListener('load', async () => {
         displayMetaMaskInfo(storedAddress, ethBalance);
     }
 });
+
+function animate() {
+    if (isPaused) return;
+    animationFrameId = requestAnimationFrame(animate);
+    updatePlayerMovement();
+    updateCamera();
+    updateEnemies();
+    composer.render();
+    if (countdown > 0)  updateTimerDisplay();
+    if (player.health <= 0) triggerGameOver();
+}
 
 animate();
