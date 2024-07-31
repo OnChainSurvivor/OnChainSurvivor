@@ -30,11 +30,20 @@ class Entity extends THREE.Object3D {
 
     initAbilities(abilitiesConfig) {
         abilitiesConfig.forEach(abilityConfig => {
-            const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
-            if (abilityType) {
-                const ability = new Ability(this, { ...abilityType, level: abilityConfig.level });
-                this.addAbility(ability);
-                ability.activate();
+            const existingAbility = this.abilities.find(
+                ability => ability.title === abilityConfig.type
+            );
+
+            if (existingAbility) {
+                existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10); // Max level cap at 10
+                existingAbility.activate();  
+            } else {
+                const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
+                if (abilityType) {
+                    const newAbility = new Ability(this, { ...abilityType, level: abilityConfig.level });
+                    this.addAbility(newAbility);
+                    newAbility.activate();
+                }
             }
         });
     }
@@ -394,32 +403,7 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
-const spawnDistance = 15;
-const angle = Math.random() * Math.PI * 2;
-const offsetX = Math.cos(angle) * spawnDistance;
-const offsetZ = Math.sin(angle) * spawnDistance;
-
 const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
-
-const gui = new dat.GUI();
-const floorParams = {
-    metalness: floorMaterial.metalness,
-    roughness: floorMaterial.roughness,
-    opacity: floorMaterial.opacity
-};
-gui.add(floorParams, 'metalness', 0, 1).onChange(value => floorMaterial.metalness = value);
-gui.add(floorParams, 'roughness', 0, 1).onChange(value => floorMaterial.roughness = value);
-gui.add(floorParams, 'opacity', 0, 1).onChange(value => floorMaterial.opacity = value);
-
-const bloomParams = {
-    strength: 3,
-    radius: 0.1,
-    threshold: 0
-};
-gui.add(bloomParams, 'strength', 0.0, 3).onChange(value => bloomPass.strength = value);
-gui.add(bloomParams, 'radius', 0.0, 0.1).onChange(value => bloomPass.radius = value);
-gui.add(bloomParams, 'threshold', 0.0, 0).onChange(value => bloomPass.threshold = value);
-
 const abilities = abilityTypes.map(type => new Ability(player, type));
 let playerXP = 0;
 
@@ -737,6 +721,49 @@ function checkXPSphereCollection() {
 
 let isPaused = false;
 
+function createAbilityButton(ability, scale = 1, onClick) {
+    const button = document.createElement('button');
+    button.style.width = `${150 * scale}px`;
+    button.style.height = `${250 * scale}px`;
+    button.style.margin = '10px';
+    button.style.display = 'flex';
+    button.style.flexDirection = 'column';
+    button.style.alignItems = 'center';
+    button.style.backgroundColor = 'black';
+    button.style.border = '1px solid white';
+    button.style.padding = `${10 * scale}px`;
+    button.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+
+    const img = document.createElement('img');
+    img.src = ability.thumbnail;
+    img.style.width = `${100 * scale}px`;
+    img.style.height = `${100 * scale}px`;
+    img.style.marginBottom = `${10 * scale}px`;
+
+    const title = document.createElement('div');
+    title.innerText = ability.title;
+    title.style.fontSize = `${16 * scale}px`;
+    title.style.fontWeight = 'bold';
+    title.style.marginBottom = `${10 * scale}px`;
+    title.style.color = 'white';
+
+    const effectinfo = document.createElement('div');
+    effectinfo.innerText = `Lvl ${ability.level}: ${ability.effectinfo}`;
+    effectinfo.style.fontSize = `${12 * scale}px`;
+    effectinfo.style.textAlign = 'center';
+    effectinfo.style.color = 'white';
+
+    button.appendChild(img);
+    button.appendChild(title);
+    button.appendChild(effectinfo);
+
+    if (onClick) {
+        button.onclick = onClick;
+    }
+
+    return button;
+}
+
 function showLevelUpUI() {
     const levelUpContainer = document.createElement('div');
     levelUpContainer.style.top = '0';
@@ -768,63 +795,15 @@ function showLevelUpUI() {
     for (let i = 0; i < 3; i++) {
         const ability = abilities[Math.floor(Math.random() * abilities.length)];
 
-        const button = document.createElement('button');
-        button.style.width = '150px';
-        button.style.height = '250px';
-        button.style.margin = '10px';
-        button.style.display = 'flex';
-        button.style.flexDirection = 'column';
-        button.style.alignItems = 'center';
-        button.style.backgroundColor = 'black';
-        button.style.border = '1px solid white';
-        button.style.padding = '10px';
-        button.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
-
-        const img = document.createElement('img');
-        img.src = ability.thumbnail;
-        img.style.width = '100px';
-        img.style.height = '100px';
-        img.style.marginBottom = '10px';
-
-        const title = document.createElement('div');
-        title.innerText = ability.title;
-        title.style.fontSize = '16px';
-        title.style.fontWeight = 'bold';
-        title.style.marginBottom = '10px';
-        title.style.color = 'white';
-
-        const description = document.createElement('div');
-        description.innerText = ability.description;
-        description.style.fontSize = '12px';
-        description.style.textAlign = 'center';
-        description.style.color = 'white';
-
-        const effectinfo = document.createElement('div');
-        effectinfo.innerText = 'Lvl ' + (ability.level + 1) + ': ' + ability.effectinfo;
-        effectinfo.style.fontSize = '12px';
-        effectinfo.style.textAlign = 'center';
-        effectinfo.style.color = 'white';
-
-        const tooltipText = document.createElement('span');
-        tooltipText.classList.add('tooltiptext');
-        tooltipText.innerText = `${ability.title}: ${ability.description}`;
-
-        button.appendChild(img);
-        button.appendChild(title);
-        if (ability.level == 0)
-            button.appendChild(description);
-        else
-            button.appendChild(effectinfo);
-
-        button.onclick = () => {
+        const button = createAbilityButton(ability, 1, () => {
             levelUpContainer.remove();
             ability.level = Math.min(ability.level + 1, 10);
             ability.activate();
             isPaused = false;
+            startSpawningEnemies();
             animate();
             addAbilityToUI(ability);
-        };
-
+        });
         buttonsContainer.appendChild(button);
     }
 
@@ -833,37 +812,7 @@ function showLevelUpUI() {
 }
 
 function addAbilityToUI(ability) {
-    const abilityContainer = document.createElement('div');
-    abilityContainer.style.position = 'relative';
-    abilityContainer.style.display = 'flex';
-    abilityContainer.style.flexDirection = 'column';
-    abilityContainer.style.alignItems = 'center';
-    abilityContainer.style.margin = '5px';
-    abilityContainer.classList.add('tooltip');
-
-    const img = document.createElement('img');
-    img.src = ability.thumbnail;
-    img.style.width = '50px';
-    img.style.height = '50px';
-    img.style.marginBottom = '5px';
-
-    const level = document.createElement('div');
-    level.innerText = `Level ${ability.level}`;
-    level.style.fontSize = '12px';
-    level.style.fontWeight = 'bold';
-    level.style.color = 'white';
-    level.style.backgroundColor = 'black';
-    level.style.borderRadius = '5px';
-    level.style.padding = '2px 5px';
-
-    const tooltipText = document.createElement('span');
-    tooltipText.classList.add('tooltiptext');
-    tooltipText.innerText = ability.tooltip;
-
-    abilityContainer.appendChild(img);
-    abilityContainer.appendChild(level);
-    abilityContainer.appendChild(tooltipText);
-
+    const abilityContainer = createAbilityButton(ability, 0.5); // Adjust scale as needed for in-game UI
     abilitiesContainer.insertBefore(abilityContainer, abilitiesContainer.firstChild);
 }
 
