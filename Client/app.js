@@ -317,8 +317,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 1 },
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Onchain Trail', level: 1 }
     ],
 },
 {
@@ -402,18 +401,6 @@ const offsetZ = Math.sin(angle) * spawnDistance;
 
 const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
 
-const enemyBasic = new Entity(entityTypes.find(type => type.class === 'Enemy'));
-enemyBasic.position.set(
-    player.position.x + offsetX,
-    0,
-    player.position.z + offsetZ
-);
-
-const autoShooterParams = {
-    baseInterval: 200,
-    level: 1
-};
-
 const gui = new dat.GUI();
 const floorParams = {
     metalness: floorMaterial.metalness,
@@ -433,21 +420,8 @@ gui.add(bloomParams, 'strength', 0.0, 3).onChange(value => bloomPass.strength = 
 gui.add(bloomParams, 'radius', 0.0, 0.1).onChange(value => bloomPass.radius = value);
 gui.add(bloomParams, 'threshold', 0.0, 0).onChange(value => bloomPass.threshold = value);
 
-const enemyParams = { count: 50 };
-gui.add(enemyParams, 'count', 1, 50).step(1).onChange(() => {
-    while (enemies.length > enemyParams.count) {
-        const enemy = enemies.pop();
-        scene.remove(enemy);
-    }
-});
-
-player.castShadow = true;
-
 const abilities = abilityTypes.map(type => new Ability(player, type));
-
-let playerHP = 1;
 let playerXP = 0;
-let playerLevel = 1;
 
 const characterContainer = document.createElement('div');
 characterContainer.style.position = 'absolute';
@@ -543,12 +517,6 @@ metaMaskButton.onclick = async () => {
     }
 };
 
-function updatePlayerBars() {
-    if (player.health <= 0) {
-        triggerGameOver();
-    }
-}
-
 function triggerGameOver() {
     isPaused = true;
 
@@ -639,9 +607,6 @@ document.addEventListener('keyup', (event) => {
 });
 
 const enemies = [];
-const lastShotTimes = { i: 0, j: 0, k: 0, l: 0 };
-const shotInterval = 200;
-const trailLifetime = 5000;
 
 function updatePlayerMovement() {
     const movementSpeed = 0.2;
@@ -664,13 +629,6 @@ function updatePlayerMovement() {
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
         player.updateAbilities();
     }
-
-    scene.children.forEach(child => {
-        if (child.userData.type === 'xpSphere' && child.userData.attracted) {
-            const direction = new THREE.Vector3().subVectors(player.position, child.position).normalize();
-            child.position.add(direction.multiplyScalar(movementSpeed));
-        }
-    });
 }
 
 let cameraAngle = 0;
@@ -702,57 +660,49 @@ function updateScoreDisplay() {
     scoreDisplay.innerText = `Score: ${score}`;
 }
 
-function createShootingEnemy() {
-    const enemyGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const enemyMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-    const shootingEnemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
-
-    const spawnDistance = 15;
-    const angle = Math.random() * Math.PI * 2;
-    const offsetX = Math.cos(angle) * spawnDistance;
-    const offsetZ = Math.sin(angle) * spawnDistance;
-
-    shootingEnemy.position.set(
-        player.position.x + offsetX,
-        0,
-        player.position.z + offsetZ
-    );
-    shootingEnemy.userData = { hp: 1, scoreValue: 50, isShootingEnemy: true };
-    scene.add(shootingEnemy);
-    enemies.push(shootingEnemy);
-}
 
 function updateEnemies() {
-    const basicdirection = new THREE.Vector3().subVectors(player.position, enemyBasic.position).normalize();
-    enemyBasic.move(basicdirection.multiplyScalar(0.05));
-    enemyBasic.updateAbilities();
-    enemyBasic.detectCollisions();
     enemies.forEach(enemy => {
-        if (enemy.userData.isShootingEnemy) {
-            handleEnemyShooting();
-        }
-
         const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
         enemy.position.add(direction.multiplyScalar(0.02));
-
-        const enemyBox = new THREE.Box3().setFromObject(enemy);
-        const playerBox = new THREE.Box3().setFromObject(player);
-        const enemyBasicBox = new THREE.Box3().setFromObject(enemyBasic);
-
-        if (enemy.userData.hp <= 0) {
-            score += enemy.userData.scoreValue;
-            updateScoreDisplay();
-            dropItem(enemy.position);
-            scene.remove(enemy);
-            enemies.splice(enemies.indexOf(enemy), 1);
-        }
-
-        if (enemyBox.intersectsBox(playerBox)) {
-            playerHP -= 1;
-            updatePlayerBars();
-        }
+        enemy.updateAbilities();
+        enemy.detectCollisions();
     });
 }
+
+function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, numberOfEnemies = 3) {
+    const spawnEnemy = () => {
+        for (let i = 0; i < numberOfEnemies; i++) {
+            // Calculate random spawn position outside the field of view
+            const angle = Math.random() * Math.PI * 2;
+            const offsetX = Math.cos(angle) * spawnRadius;
+            const offsetZ = Math.sin(angle) * spawnRadius;
+
+            const spawnPosition = new THREE.Vector3(
+                player.position.x + offsetX,
+                player.position.y,
+                player.position.z + offsetZ
+            );
+
+            // Create a new enemy entity
+            const enemyConfig = entityTypes.find(type => type.class === 'Enemy'); // Use the enemy type configuration
+            const enemy = new Entity(enemyConfig);
+
+            // Set the spawn position
+            enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
+
+            // Add the enemy to the scene
+            scene.add(enemy);
+            enemies.push(enemy);
+        }
+    };
+
+    // Set the spawning interval
+    setInterval(spawnEnemy, spawnInterval);
+}
+
+
+startSpawningEnemies(player);
 
 const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
@@ -772,82 +722,11 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-function findClosestEnemy() {
-    let closestEnemy = null;
-    let closestDistance = Infinity;
-    enemies.forEach(enemy => {
-        const distance = player.position.distanceTo(enemy.position);
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestEnemy = enemy;
-        }
-    });
-    return closestEnemy;
-}
-
-function emitShockwave() {
-    const shockwaveGeometry = new THREE.RingGeometry(0.5, 1, 32);
-    const shockwaveMaterial = new THREE.MeshBasicMaterial({
-        color: 0xffff00,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.5
-    });
-    const shockwave = new THREE.Mesh(shockwaveGeometry, shockwaveMaterial);
-    shockwave.position.copy(player.position);
-    shockwave.rotation.x = -Math.PI / 2;
-    scene.add(shockwave);
-
-    const maxScale = 20;
-    const duration = 500;
-    const startTime = Date.now();
-
-    function animateShockwave() {
-        const elapsed = Date.now() - startTime;
-        const scale = 1 + (maxScale - 1) * (elapsed / duration);
-        shockwave.scale.set(scale, scale, scale);
-        shockwave.material.opacity = 0.5 * (1 - elapsed / duration);
-
-        if (elapsed < duration) {
-            requestAnimationFrame(animateShockwave);
-        } else {
-            scene.remove(shockwave);
-        }
-    }
-
-    animateShockwave();
-}
-
-function smoothPushBackEnemies() {
-    const pushDistance = 5;
-    const pushDuration = 6000;
-    const startPositions = enemies.map(enemy => enemy.position.clone());
-    const startTime = Date.now();
-
-    function animatePushBack() {
-        const elapsed = Date.now() - startTime;
-        const progress = elapsed / pushDuration;
-
-        enemies.forEach((enemy, index) => {
-            const pushDirection = new THREE.Vector3().subVectors(enemy.position, player.position).normalize();
-            const newPosition = startPositions[index].clone().add(pushDirection.multiplyScalar(pushDistance * progress));
-            enemy.position.copy(newPosition);
-        });
-
-        if (progress < 1) {
-            requestAnimationFrame(animatePushBack);
-        }
-    }
-
-    animatePushBack();
-}
-
 function checkXPSphereCollection() {
     scene.children.forEach(child => {
         if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
             playerXP += 100;
             if (playerXP >= 100) {
-                playerLevel += 1;
                 playerXP = 0;
                 showLevelUpUI();
             }
@@ -998,7 +877,6 @@ function animate() {
     updateCamera();
     updateEnemies();
     checkXPSphereCollection();
-    updatePlayerBars();
     composer.render();
 
     abilities.forEach(ability => ability.update());
@@ -1006,6 +884,10 @@ function animate() {
         countdown--;
         updateTimerDisplay();
     } else {
+        triggerGameOver();
+    }
+
+    if (player.health <= 0) {
         triggerGameOver();
     }
 }
