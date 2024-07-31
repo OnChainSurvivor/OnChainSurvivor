@@ -1,3 +1,16 @@
+const rainbowColors = [
+    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
+];
+let colorIndex = 0;
+
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: emissiveIntensity,
+    metalness: 0.5,
+    roughness: 0.3
+});
+
 class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config, active: false });
@@ -32,7 +45,6 @@ class Entity extends THREE.Object3D {
             const existingAbility = this.abilities.find(
                 ability => ability.title === abilityConfig.type
             );
-
             if (existingAbility) {
                 existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10); // Max level cap at 10
                 existingAbility.activate();  
@@ -74,6 +86,9 @@ class Entity extends THREE.Object3D {
     }
 
     takeDamage(amount) {
+        const evasionSuccess = Math.random() < (this.evasion / 100);
+        if (evasionSuccess) return;
+
         this.health -= amount;
         if (this.health <= 0) this.die();
     }
@@ -124,18 +139,6 @@ class Entity extends THREE.Object3D {
             this.detectCollisions();
      }
 }
-const rainbowColors = [
-    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
-];
-let colorIndex = 0;
-
-const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
-    color: color,
-    emissive: color,
-    emissiveIntensity: emissiveIntensity,
-    metalness: 0.5,
-    roughness: 0.3
-});
 const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
@@ -198,7 +201,7 @@ const abilityTypes = [{
             shield: null,
             create: () => {
                 if (veil.shield) scene.remove(veil.shield);
-
+                this.evasion=20+(3*level);
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -303,21 +306,19 @@ const abilityTypes = [{
     level: 0
 }
 ];
-
 const entityTypes = [{
     class: 'Survivor',
     name: 'Onchain Survivor',
     health: 1,
     movementspeed:0.2,
     xp: 0,
-    evasion: 0,
+    evasion: 100,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
-    level: 0,
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 1 }
+   
     ],
 },
 {
@@ -329,7 +330,6 @@ const entityTypes = [{
     evasion: 0,
     tags: ['enemy'],
     thumbnail: 0,
-    level: 0,
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
@@ -401,7 +401,7 @@ characterImage.style.borderRadius = '50%';
 characterImage.style.marginBottom = '10px';
 
 const characterName = document.createElement('div');
-characterName.innerText = 'Onchain Survivor V0.0.9';
+characterName.innerText = 'Onchain Survivor V0.0.10';
 characterName.style.fontSize = '20px';
 characterName.style.color = 'white';
 characterName.style.marginBottom = '10px';
@@ -452,7 +452,6 @@ metaMaskContainer.appendChild(metaMaskButton);
 metaMaskButton.appendChild(metaMaskImage);
 document.body.appendChild(metaMaskContainer);
 
-
 function displayMetaMaskInfo(address, ethBalance) {
     metaMaskContainer.innerHTML = `
         <div style="color: white; margin-right: 10px;">
@@ -488,9 +487,7 @@ metaMaskButton.onclick = async () => {
 
 function triggerGameOver() {
     isPaused = true;
-
     cancelAnimationFrame(animationFrameId);
-
     const gameOverScreen = document.createElement('div');
     gameOverScreen.style.position = 'absolute';
     gameOverScreen.style.top = '0';
@@ -541,7 +538,6 @@ function triggerGameOver() {
         location.reload(true);
         document.body.removeChild(gameOverScreen);
     };
-
     gameOverScreen.appendChild(tryAgainButton);
     document.body.appendChild(gameOverScreen);
 }
@@ -658,7 +654,6 @@ function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, nu
     setInterval(spawnEnemy, spawnInterval);
 }
 
-
 startSpawningEnemies(player);
 
 const renderScene = new THREE.RenderPass(scene, camera);
@@ -748,26 +743,37 @@ function showLevelUpUI() {
     buttonsContainer.style.display = 'flex';
     buttonsContainer.style.justifyContent = 'center';
 
-    isPaused = true;
-    cancelAnimationFrame(animationFrameId);
+    const availableAbilities = abilityTypes.filter(abilityType => {
+        return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
+    });
+
+    const allAbilities = [...player.abilities, ...availableAbilities];
 
     for (let i = 0; i < 3; i++) {
-        const abilityIndex = Math.floor(Math.random() * player.abilities.length);
-        const button = createAbilityButton((player.abilities[abilityIndex]), 1, () => {
+        const randomIndex = Math.floor(Math.random() * allAbilities.length);
+        const randomAbility = allAbilities[randomIndex];
+        const button = createAbilityButton(randomAbility, 1, () => {
             levelUpContainer.remove();
-            player.abilities[abilityIndex].deactivate();
-            player.abilities[abilityIndex].level += 1; 
-            player.abilities[abilityIndex].activate();
-            isPaused = false;
+            const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
+            if (existingAbility) {
+                existingAbility.deactivate();
+                existingAbility.level += 1;
+                existingAbility.activate();
+                abilitiesContainer.insertBefore(createAbilityButton(existingAbility, 0.5), abilitiesContainer.firstChild);
+            } else {
+                const newAbility = new Ability(player, { ...randomAbility, level: 1 });
+                player.addAbility(newAbility);
+                newAbility.activate();
+                abilitiesContainer.insertBefore(createAbilityButton(newAbility, 0.5), abilitiesContainer.firstChild);
+            }
             startSpawningEnemies();
-            animate();
-            abilitiesContainer.insertBefore(createAbilityButton(player.abilities[abilityIndex], 0.5), abilitiesContainer.firstChild);
         });
         buttonsContainer.appendChild(button);
     }
     levelUpContainer.appendChild(buttonsContainer);
     document.body.appendChild(levelUpContainer);
 }
+
 
 let animationFrameId;
 
@@ -789,6 +795,8 @@ window.addEventListener('load', async () => {
     }
 });
 
+let isAnimating = false;
+
 function animate() {
     if (isPaused) return;
     animationFrameId = requestAnimationFrame(animate);
@@ -799,5 +807,4 @@ function animate() {
     if (countdown > 0)  updateTimerDisplay();
     if (player.health <= 0) triggerGameOver();
 }
-
 animate();
