@@ -305,7 +305,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-       
+        { type: 'Onchain Trail', level: 5 }
     ],
 },
 {
@@ -666,7 +666,7 @@ function createAbilityButton(ability, scale = 1, onClick) {
     button.style.display = 'flex';
     button.style.flexDirection = 'column';
     button.style.alignItems = 'center';
-    button.style.backgroundColor = '#000';
+    button.style.backgroundColor = 'black';
 
     button.style.position = 'relative';
     button.style.overflow = 'hidden';
@@ -675,7 +675,7 @@ function createAbilityButton(ability, scale = 1, onClick) {
     button.style.fontFamily = 'Arial, sans-serif';
     button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
 
-    button.style.border = '2px solid';
+    button.style.border = '1.5px solid';
     button.style.borderImageSlice = 1;
     button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
     button.style.animation = 'rainbowBorder 5s linear infinite';
@@ -699,8 +699,10 @@ function createAbilityButton(ability, scale = 1, onClick) {
         element.style.backgroundClip = 'text';
         element.style.webkitBackgroundClip = 'text';
         element.style.backgroundSize = '200% 200%';
-        element.style.animation = 'rainbowText 5s linear infinite';
+        element.style.animation = 'rainbowText 7s linear infinite';
         element.style.textAlign = 'center';
+        //element.style.textShadow = '0 0 9px white, 0 0 4px gray'; 
+        //element.style.filter = 'blur(1px)';
     };
 
     const levelStars = document.createElement('div');
@@ -741,7 +743,7 @@ function createAbilityButton(ability, scale = 1, onClick) {
     button.appendChild(title);
     button.appendChild(levelStars);
     button.appendChild(effectinfo);
-    button.appendChild(foilEffect);
+    //button.appendChild(foilEffect);
 
     if (onClick) button.onclick = onClick;
     return button;
