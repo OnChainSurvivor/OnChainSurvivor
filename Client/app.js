@@ -46,7 +46,7 @@ class Entity extends THREE.Object3D {
                 ability => ability.title === abilityConfig.type
             );
             if (existingAbility) {
-                existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10); // Max level cap at 10
+                existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10);
                 existingAbility.activate();  
             } else {
                 const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
@@ -174,7 +174,7 @@ const abilityTypes = [{
                     if (child instanceof Entity && child !== user) {
                         const otherBox = new THREE.Box3().setFromObject(child);
                         if (trailBox.intersectsBox(otherBox)) {
-                            child.takeDamage(1);  // Assuming trail damage is 1
+                            child.takeDamage(1);  
                         }
                     }
                 });
@@ -214,23 +214,17 @@ const abilityTypes = [{
                 veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
                 veil.shield.position.copy(user.position);
                 scene.add(veil.shield);
-            },
-            update: () => {
+            }
+        };
+        this.update = () => {
                 if (veil.shield) veil.shield.position.copy(user.position);
-            },
-            deactivate: () => {
-                user.abilities.splice(user.abilities.indexOf(this), 1);
+        };
+        this.deactivate = () => {
                 if (veil.shield) {
                     scene.remove(veil.shield);
                     veil.shield = null;
                 }
-                this.active = false;
-            }
         };
-        this.update = veil.update;
-        this.deactivate = veil.deactivate;
-        this.active = true;
-        veil.create();
     },
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
@@ -255,10 +249,10 @@ const abilityTypes = [{
                 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
                 orb.mesh = new THREE.Mesh(geometry, material);
                 scene.add(orb.mesh);
-            },
-            update: () => {
+            }
+        };
+        this.update = () => {
                 if (!orb.mesh) return;
-                
                 if (!orb.target) {
                     const time = Date.now() * orb.orbitSpeed;
                     orb.mesh.position.set(
@@ -282,24 +276,17 @@ const abilityTypes = [{
                     const orbBox = new THREE.Box3().setFromObject(orb.mesh);
                     const targetBox = new THREE.Box3().setFromObject(orb.target);
                     if (orbBox.intersectsBox(targetBox)) {
-                        orb.target.takeDamage(1);  // Assuming orb damage is 1
-                        orb.target = null;  // Reset target
+                        orb.target.takeDamage(1);  
+                        orb.target = null;  
                     }
                 }
-            },
-            deactivate: () => {
+        };
+        this.deactivate = () => {
                 if (orb.mesh) {
                     scene.remove(orb.mesh);
                     orb.mesh = null;
                 }
-                this.active = false;
-            }
         };
-
-        this.update = orb.update;
-        this.deactivate = orb.deactivate;
-        this.active = true;
-        orb.create();
     },
     effectinfo: 'Orb damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
@@ -318,7 +305,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-   
+       
     ],
 },
 {
@@ -628,8 +615,9 @@ function updateEnemies() {
     });
 }
 
-function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, numberOfEnemies = 3) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 20, numberOfEnemies = 5) {
     const spawnEnemy = () => {
+        if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
             const angle = Math.random() * Math.PI * 2;
             const offsetX = Math.cos(angle) * spawnRadius;
@@ -641,7 +629,7 @@ function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, nu
                 player.position.z + offsetZ
             );
 
-            const enemyConfig = entityTypes.find(type => type.class === 'Enemy'); // Use the enemy type configuration
+            const enemyConfig = entityTypes.find(type => type.class === 'Enemy'); 
             const enemy = new Entity(enemyConfig);
 
             enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
@@ -650,10 +638,8 @@ function startSpawningEnemies(player, spawnInterval = 2000, spawnRadius = 20, nu
             enemies.push(enemy);
         }
     };
-
     setInterval(spawnEnemy, spawnInterval);
 }
-
 startSpawningEnemies(player);
 
 const renderScene = new THREE.RenderPass(scene, camera);
@@ -674,51 +660,103 @@ let isPaused = false;
 
 function createAbilityButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
-    button.style.width = `${150 * scale}px`;
-    button.style.height = `${250 * scale}px`;
+    button.style.width = `${200 * scale}px`;
+    button.style.height = `${300 * scale}px`;
     button.style.margin = '10px';
     button.style.display = 'flex';
     button.style.flexDirection = 'column';
     button.style.alignItems = 'center';
-    button.style.backgroundColor = 'black';
-    button.style.border = '1px solid white';
-    button.style.padding = `${10 * scale}px`;
-    button.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+    button.style.backgroundColor = '#000';
+
+    button.style.position = 'relative';
+    button.style.overflow = 'hidden';
+    button.style.padding = '0';
+    button.style.cursor = 'pointer';
+    button.style.fontFamily = 'Arial, sans-serif';
+    button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+
+    button.style.border = '2px solid';
+    button.style.borderImageSlice = 1;
+    button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+    button.style.animation = 'rainbowBorder 5s linear infinite';
+
+    const foilEffect = document.createElement('div');
+    foilEffect.style.position = 'absolute';
+    foilEffect.style.top = '0';
+    foilEffect.style.left = '0';
+    foilEffect.style.width = '100%';
+    foilEffect.style.height = '100%';
+    foilEffect.style.background = 'linear-gradient(135deg, rgba(192,192,192,0.5) 25%, rgba(255,255,255,0.1) 50%, rgba(192,192,192,0.5) 75%)';
+    foilEffect.style.opacity = '0.3';
+    foilEffect.style.pointerEvents = 'none';
+    foilEffect.style.backgroundSize = '300% 300%';
+    foilEffect.style.animation = 'foilShine 5s linear infinite';
+
+    const rainbowText = (element, fontSize) => {
+        element.style.fontSize = fontSize;
+        element.style.color = 'transparent';
+        element.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+        element.style.backgroundClip = 'text';
+        element.style.webkitBackgroundClip = 'text';
+        element.style.backgroundSize = '200% 200%';
+        element.style.animation = 'rainbowText 5s linear infinite';
+        element.style.textAlign = 'center';
+    };
+
+    const levelStars = document.createElement('div');
+    levelStars.style.display = 'flex';
+    levelStars.style.marginTop = '10px';
+    levelStars.style.marginBottom = '10px';
+    for (let i = 0; i < ability.level; i++) {
+        const star = document.createElement('img');
+        star.src = 'Media/Abilities/Star.png';
+        star.style.width = `${20 * scale}px`;
+        star.style.height = `${20 * scale}px`;
+        levelStars.appendChild(star);
+    }
 
     const img = document.createElement('img');
     img.src = ability.thumbnail;
-    img.style.width = `${100 * scale}px`;
-    img.style.height = `${100 * scale}px`;
-    img.style.marginBottom = `${10 * scale}px`;
+    img.style.width = `${150 * scale}px`;
+    img.style.height = `${150 * scale}px`;
 
     const title = document.createElement('div');
     title.innerText = ability.title;
-    title.style.fontSize = `${19 * scale}px`;
-    title.style.fontWeight = 'bold';
-    title.style.marginBottom = `${10 * scale}px`;
-    title.style.color = 'white';
-    
-    lvl = ability.level    // Technical Debt
-    expl=ability.effectinfo;
-    if(scale==1)  lvl = ability.level+1 
-    if (lvl==1) expl = ability.description;    
+    rainbowText(title, `${20 * scale}px`);  
+    title.style.padding = `${5 * scale}px 0`;
+
+    lvl = ability.level;
+    expl = ability.effectinfo;
+    if (scale == 1) lvl = ability.level + 1;
+    if (lvl == 1) expl = ability.description;
 
     const effectinfo = document.createElement('div');
     effectinfo.innerText = `Lvl ${lvl}: ${expl}`;
-    effectinfo.style.fontSize = `${15 * scale}px`;
-    effectinfo.style.textAlign = 'center';
-    effectinfo.style.color = 'white';
+    rainbowText(effectinfo, `${14 * scale}px`); 
+    effectinfo.style.padding = '10px';
+    effectinfo.style.textAlign = 'justify';
+    effectinfo.style.flexGrow = '1';
 
     button.appendChild(img);
     button.appendChild(title);
+    button.appendChild(levelStars);
     button.appendChild(effectinfo);
+    button.appendChild(foilEffect);
 
     if (onClick) button.onclick = onClick;
-
     return button;
 }
 
+function refreshAbilitiesDisplay() {
+    abilitiesContainer.innerHTML = '';
+    player.abilities.forEach(ability => {
+            console.log(ability);
+            abilitiesContainer.appendChild(createAbilityButton(ability, 0.3));
+    });
+}
+
 function showLevelUpUI() {
+    isPaused = true;
     const levelUpContainer = document.createElement('div');
     levelUpContainer.style.top = '0';
     levelUpContainer.style.left = '0';
@@ -733,7 +771,7 @@ function showLevelUpUI() {
     levelUpContainer.style.zIndex = '20';
 
     const levelUpTitle = document.createElement('div');
-    levelUpTitle.innerText = 'LEVEL UP';
+    levelUpTitle.innerText = 'Onchain Upgrade';
     levelUpTitle.style.fontSize = '40px';
     levelUpTitle.style.color = 'white';
     levelUpTitle.style.marginBottom = '20px';
@@ -759,14 +797,13 @@ function showLevelUpUI() {
                 existingAbility.deactivate();
                 existingAbility.level += 1;
                 existingAbility.activate();
-                abilitiesContainer.insertBefore(createAbilityButton(existingAbility, 0.5), abilitiesContainer.firstChild);
             } else {
                 const newAbility = new Ability(player, { ...randomAbility, level: 1 });
                 player.addAbility(newAbility);
                 newAbility.activate();
-                abilitiesContainer.insertBefore(createAbilityButton(newAbility, 0.5), abilitiesContainer.firstChild);
             }
-            startSpawningEnemies();
+            isPaused = false;
+            refreshAbilitiesDisplay();
         });
         buttonsContainer.appendChild(button);
     }
@@ -798,13 +835,16 @@ window.addEventListener('load', async () => {
 let isAnimating = false;
 
 function animate() {
-    if (isPaused) return;
+    if (!isPaused) {
+        updatePlayerMovement();
+        updateCamera();
+        updateEnemies();
+        updateTimerDisplay();
+    }
     animationFrameId = requestAnimationFrame(animate);
-    updatePlayerMovement();
-    updateCamera();
-    updateEnemies();
     composer.render();
     if (countdown > 0)  updateTimerDisplay();
     if (player.health <= 0) triggerGameOver();
 }
+refreshAbilitiesDisplay();
 animate();

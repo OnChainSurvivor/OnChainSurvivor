@@ -39,3 +39,27 @@ canvas {
     visibility: visible;
     opacity: 1;
 }
+
+@keyframes rainbowBorder {
+    0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
+    10% { border-image-source: linear-gradient(45deg, orange, yellow, green, blue, indigo, violet, red); }
+    20% { border-image-source: linear-gradient(45deg, yellow, green, blue, indigo, violet, red, orange); }
+    30% { border-image-source: linear-gradient(45deg, green, blue, indigo, violet, red, orange, yellow); }
+    40% { border-image-source: linear-gradient(45deg, blue, indigo, violet, red, orange, yellow, green); }
+    50% { border-image-source: linear-gradient(45deg, indigo, violet, red, orange, yellow, green, blue); }
+    60% { border-image-source: linear-gradient(45deg, violet, red, orange, yellow, green, blue, indigo); }
+    70% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
+    80% { border-image-source: linear-gradient(45deg, orange, yellow, green, blue, indigo, violet, red); }
+    90% { border-image-source: linear-gradient(45deg, yellow, green, blue, indigo, violet, red, orange); }
+    100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
+}
+
+@keyframes foilShine {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+@keyframes rainbowText {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 1000% 50%; }
+}
