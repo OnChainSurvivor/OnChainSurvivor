@@ -63,3 +63,12 @@ canvas {
     0% { background-position: 0% 50%; }
     100% { background-position: 1000% 50%; }
 }
+
+@keyframes spin3d {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(360deg);
+    }
+}

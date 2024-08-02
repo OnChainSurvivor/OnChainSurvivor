@@ -372,7 +372,7 @@ let playerXP = 0;
 
 const characterContainer = document.createElement('div');
 characterContainer.style.position = 'absolute';
-characterContainer.style.top = '10px';
+characterContainer.style.bottom = '10px';
 characterContainer.style.left = '10px';
 characterContainer.style.display = 'flex';
 characterContainer.style.alignItems = 'center';
@@ -406,11 +406,14 @@ document.body.appendChild(playerLevelDisplay);
 
 const abilitiesContainer = document.createElement('div');
 abilitiesContainer.id = 'abilitiesContainer';
-abilitiesContainer.style.position = 'absolute';
-abilitiesContainer.style.bottom = '10px';
+abilitiesContainer.style.top = '10px';
 abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
-document.body.appendChild(abilitiesContainer);
+
+characterContainer.appendChild(characterImage);
+characterContainer.appendChild(characterName);
+characterContainer.appendChild(abilitiesContainer);
+document.body.appendChild(characterContainer);
 
 const metaMaskContainer = document.createElement('div');
 metaMaskContainer.style.position = 'absolute';
@@ -658,6 +661,8 @@ composer.addPass(bloomPass);
 
 let isPaused = false;
 
+let wheelRotation = 0; //
+
 function createAbilityButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
     button.style.width = `${200 * scale}px`;
@@ -668,7 +673,11 @@ function createAbilityButton(ability, scale = 1, onClick) {
     button.style.alignItems = 'center';
     button.style.backgroundColor = 'black';
 
+    if (scale > 0.5)
+    button.style.position = 'absolute'; 
+    if (scale <= 0.5)
     button.style.position = 'relative';
+
     button.style.overflow = 'hidden';
     button.style.padding = '0';
     button.style.cursor = 'pointer';
@@ -738,9 +747,8 @@ function createAbilityButton(ability, scale = 1, onClick) {
     effectinfo.style.padding = '10px';
     effectinfo.style.textAlign = 'justify';
     effectinfo.style.flexGrow = '1';
-
-    button.appendChild(img);
     button.appendChild(title);
+    button.appendChild(img);
     button.appendChild(levelStars);
     button.appendChild(effectinfo);
     //button.appendChild(foilEffect);
@@ -751,64 +759,74 @@ function createAbilityButton(ability, scale = 1, onClick) {
 
 function refreshAbilitiesDisplay() {
     abilitiesContainer.innerHTML = '';
+    abilitiesContainer.style.display = 'flex'; // Ensures buttons are aligned in a row
+    abilitiesContainer.style.flexWrap = 'wrap'; // Allows wrapping if there are many buttons
+    abilitiesContainer.style.gap = '10px'; // Adds some space between buttons
+    
     player.abilities.forEach(ability => {
-            console.log(ability);
-            abilitiesContainer.appendChild(createAbilityButton(ability, 0.3));
+        const abilityButton = createAbilityButton(ability, 0.3);
+        abilityButton.style.flex = '0 1 auto'; // Ensure the buttons have a flexible width
+        abilitiesContainer.appendChild(abilityButton);
     });
 }
-
+    
 function showLevelUpUI() {
     isPaused = true;
     const levelUpContainer = document.createElement('div');
-    levelUpContainer.style.top = '0';
-    levelUpContainer.style.left = '0';
+    levelUpContainer.style.top = metaMaskContainer.style.top; 
+    levelUpContainer.style.left = metaMaskContainer.style.left;
+    levelUpContainer.style.transform = metaMaskContainer.style.transform;
     levelUpContainer.style.position = 'absolute';
-    levelUpContainer.style.width = '100%';
-    levelUpContainer.style.height = '100%';
-    levelUpContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    levelUpContainer.style.display = 'flex';
-    levelUpContainer.style.flexDirection = 'column';
-    levelUpContainer.style.justifyContent = 'center';
-    levelUpContainer.style.alignItems = 'center';
+    levelUpContainer.style.width = '50px';
+    levelUpContainer.style.height = '60px';
+    levelUpContainer.style.perspective = '5000px'; 
     levelUpContainer.style.zIndex = '20';
-
-    const levelUpTitle = document.createElement('div');
-    levelUpTitle.innerText = 'Onchain Upgrade';
-    levelUpTitle.style.fontSize = '40px';
-    levelUpTitle.style.color = 'white';
-    levelUpTitle.style.marginBottom = '20px';
-    levelUpContainer.appendChild(levelUpTitle);
+    levelUpContainer.style.display = 'flex';
+    levelUpContainer.style.alignItems = 'center';
 
     const buttonsContainer = document.createElement('div');
-    buttonsContainer.style.display = 'flex';
-    buttonsContainer.style.justifyContent = 'center';
+    buttonsContainer.style.position = 'relative';
+    buttonsContainer.style.width = '100%';
+    buttonsContainer.style.height = '100%';
+    buttonsContainer.style.transformStyle = 'preserve-3d';
+    buttonsContainer.style.animation = 'spin3d 3s infinite linear'; 
 
     const availableAbilities = abilityTypes.filter(abilityType => {
         return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
     });
 
     const allAbilities = [...player.abilities, ...availableAbilities];
+    const numberOfAbilities = 15; 
+    const angle = 360 / numberOfAbilities;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < numberOfAbilities; i++) {
         const randomIndex = Math.floor(Math.random() * allAbilities.length);
         const randomAbility = allAbilities[randomIndex];
-        const button = createAbilityButton(randomAbility, 1, () => {
-            levelUpContainer.remove();
-            const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
-            if (existingAbility) {
-                existingAbility.deactivate();
-                existingAbility.level += 1;
-                existingAbility.activate();
-            } else {
-                const newAbility = new Ability(player, { ...randomAbility, level: 1 });
-                player.addAbility(newAbility);
-                newAbility.activate();
-            }
-            isPaused = false;
-            refreshAbilitiesDisplay();
-        });
+        const button = createAbilityButton(randomAbility, .6);
+        const theta = i * angle;
+        button.style.transform = `rotateY(${theta}deg) translateZ(400px)`; 
         buttonsContainer.appendChild(button);
+
+        setTimeout(() => {
+            buttonsContainer.style.animation = ''; 
+            button.onclick = () => {
+                levelUpContainer.remove();
+                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
+                if (existingAbility) {
+                    existingAbility.deactivate();
+                    existingAbility.level += 1;
+                    existingAbility.activate();
+                } else {
+                    const newAbility = new Ability(player, { ...randomAbility, level: 1 });
+                    player.addAbility(newAbility);
+                    newAbility.activate();
+                }
+                refreshAbilitiesDisplay();
+                isPaused = false;
+            };
+        }, 3000); 
     }
+
     levelUpContainer.appendChild(buttonsContainer);
     document.body.appendChild(levelUpContainer);
 }
