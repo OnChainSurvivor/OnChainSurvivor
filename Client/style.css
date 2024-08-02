@@ -54,11 +54,6 @@ canvas {
     100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
 }
 
-@keyframes foilShine {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 0%; }
-}
 @keyframes rainbowText {
     0% { background-position: 0% 50%; }
     100% { background-position: 1000% 50%; }

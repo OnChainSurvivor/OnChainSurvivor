@@ -86,8 +86,15 @@ class Entity extends THREE.Object3D {
     }
 
     takeDamage(amount) {
+        if (this.evasionCooldown) return; 
+
         const evasionSuccess = Math.random() < (this.evasion / 100);
-        if (evasionSuccess) return;
+        if (evasionSuccess) {
+            console.log("EVADED");
+            this.evasionCooldown = true;  
+            setTimeout(() => this.evasionCooldown = false, 1000); 
+            return;
+        }
 
         this.health -= amount;
         if (this.health <= 0) this.die();
@@ -168,12 +175,14 @@ const abilityTypes = [{
                 this.lastTrailTime = Date.now();
                 trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user);
             }
-            trailBullets.forEach(trailBullet => {
+            trailBullets.forEach((trailBullet,index) => {
                 const trailBox = new THREE.Box3().setFromObject(trailBullet);
                 scene.children.forEach(child => {
-                    if (child instanceof Entity && child !== user) {
+                    if (child instanceof Entity && child.class !== user.class) {
                         const otherBox = new THREE.Box3().setFromObject(child);
                         if (trailBox.intersectsBox(otherBox)) {
+                            scene.remove(trailBullet); // Remove bullet after contact
+                            trailBullets.splice(index, 1); // Remove bullet from the array
                             child.takeDamage(1);  
                         }
                     }
@@ -198,10 +207,10 @@ const abilityTypes = [{
     tags: ["Defensive", "Support"],
     effect(level, user) {
         const veil = {
-            shield: null,
             create: () => {
                 if (veil.shield) scene.remove(veil.shield);
-                this.evasion=20+(3*level);
+                user.evasion += (3*level);
+                console.log(user.evasion);
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -221,10 +230,13 @@ const abilityTypes = [{
         };
         this.deactivate = () => {
                 if (veil.shield) {
+                    user.evasion -= (3*level);
                     scene.remove(veil.shield);
                     veil.shield = null;
                 }
         };
+
+        veil.create();
     },
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
@@ -299,7 +311,7 @@ const entityTypes = [{
     health: 1,
     movementspeed:0.2,
     xp: 0,
-    evasion: 100,
+    evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
@@ -320,7 +332,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 1 },
+        { type: 'Onchain Trail', level: 10 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
 }
@@ -588,7 +600,7 @@ function updatePlayerMovement() {
             playerXP += 100;
             if (playerXP >= 100) {
                 playerXP = 0;
-                showLevelUpUI();
+                LevelUp();
             }
             scene.remove(child);
         }
@@ -661,45 +673,23 @@ composer.addPass(bloomPass);
 
 let isPaused = false;
 
-let wheelRotation = 0; //
-
 function createAbilityButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
     button.style.width = `${200 * scale}px`;
-    button.style.height = `${300 * scale}px`;
     button.style.margin = '10px';
     button.style.display = 'flex';
     button.style.flexDirection = 'column';
     button.style.alignItems = 'center';
     button.style.backgroundColor = 'black';
-
-    if (scale > 0.5)
-    button.style.position = 'absolute'; 
-    if (scale <= 0.5)
-    button.style.position = 'relative';
-
     button.style.overflow = 'hidden';
     button.style.padding = '0';
     button.style.cursor = 'pointer';
     button.style.fontFamily = 'Arial, sans-serif';
     button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-
     button.style.border = '1.5px solid';
     button.style.borderImageSlice = 1;
     button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
     button.style.animation = 'rainbowBorder 5s linear infinite';
-
-    const foilEffect = document.createElement('div');
-    foilEffect.style.position = 'absolute';
-    foilEffect.style.top = '0';
-    foilEffect.style.left = '0';
-    foilEffect.style.width = '100%';
-    foilEffect.style.height = '100%';
-    foilEffect.style.background = 'linear-gradient(135deg, rgba(192,192,192,0.5) 25%, rgba(255,255,255,0.1) 50%, rgba(192,192,192,0.5) 75%)';
-    foilEffect.style.opacity = '0.3';
-    foilEffect.style.pointerEvents = 'none';
-    foilEffect.style.backgroundSize = '300% 300%';
-    foilEffect.style.animation = 'foilShine 5s linear infinite';
 
     const rainbowText = (element, fontSize) => {
         element.style.fontSize = fontSize;
@@ -710,14 +700,29 @@ function createAbilityButton(ability, scale = 1, onClick) {
         element.style.backgroundSize = '200% 200%';
         element.style.animation = 'rainbowText 7s linear infinite';
         element.style.textAlign = 'center';
-        //element.style.textShadow = '0 0 9px white, 0 0 4px gray'; 
-        //element.style.filter = 'blur(1px)';
     };
+
+    const title = document.createElement('div');
+    title.innerText = ability.title;
+    rainbowText(title, `${20 * scale}px`);  
+    title.style.height = `${3 * scale}em`; 
+    title.style.lineHeight = `${1.5 * scale}em`;
+    title.style.overflow = 'hidden';
+    title.style.textAlign = 'center'; 
+    title.style.display = 'flex';
+    title.style.alignItems = 'center';
+    title.style.justifyContent = 'center';
+    title.style.padding = `${5 * scale}px 0`;
+
+    const img = document.createElement('img');
+    img.src = ability.thumbnail;
+    img.style.width = `${150 * scale}px`;
+    img.style.height = `${150 * scale}px`;
 
     const levelStars = document.createElement('div');
     levelStars.style.display = 'flex';
-    levelStars.style.marginTop = '10px';
-    levelStars.style.marginBottom = '10px';
+    levelStars.style.marginTop = '1px';
+    levelStars.style.marginBottom = '1px';
     for (let i = 0; i < ability.level; i++) {
         const star = document.createElement('img');
         star.src = 'Media/Abilities/Star.png';
@@ -725,16 +730,6 @@ function createAbilityButton(ability, scale = 1, onClick) {
         star.style.height = `${20 * scale}px`;
         levelStars.appendChild(star);
     }
-
-    const img = document.createElement('img');
-    img.src = ability.thumbnail;
-    img.style.width = `${150 * scale}px`;
-    img.style.height = `${150 * scale}px`;
-
-    const title = document.createElement('div');
-    title.innerText = ability.title;
-    rainbowText(title, `${20 * scale}px`);  
-    title.style.padding = `${5 * scale}px 0`;
 
     lvl = ability.level;
     expl = ability.effectinfo;
@@ -744,14 +739,20 @@ function createAbilityButton(ability, scale = 1, onClick) {
     const effectinfo = document.createElement('div');
     effectinfo.innerText = `Lvl ${lvl}: ${expl}`;
     rainbowText(effectinfo, `${14 * scale}px`); 
-    effectinfo.style.padding = '10px';
-    effectinfo.style.textAlign = 'justify';
-    effectinfo.style.flexGrow = '1';
+    effectinfo.style.height = `${3 * scale}em`; // Ensure the title takes up two lines
+    effectinfo.style.lineHeight = `${1.5 * scale}em`; // Line height adjusted for two lines
+    effectinfo.style.overflow = 'hidden'; // Hide any overflowed text
+    effectinfo.style.textAlign = 'center'; // Center align the text horizontally
+    effectinfo.style.alignItems = 'center'; // Center align the text vertically
+    effectinfo.style.justifyContent = 'center';
+    effectinfo.style.padding = `${5 * scale}px 0`;
+    effectinfo.style.display = scale > 0.5 ? 'block' : 'none'; // Hide effect info if scale is low
+
     button.appendChild(title);
     button.appendChild(img);
     button.appendChild(levelStars);
     button.appendChild(effectinfo);
-    //button.appendChild(foilEffect);
+
 
     if (onClick) button.onclick = onClick;
     return button;
@@ -764,53 +765,19 @@ function refreshAbilitiesDisplay() {
     abilitiesContainer.style.gap = '10px'; 
     
     player.abilities.forEach(ability => {
-        const abilityButton = createAbilityButton(ability, 0.3);
+        const abilityButton = createAbilityButton(ability, .3);
         abilityButton.style.flex = '0 1 auto'; 
         abilitiesContainer.appendChild(abilityButton);
     });
 }
     
-function showLevelUpUI() {
-   // isPaused = true;
-    const levelUpContainer = document.createElement('div');
-    levelUpContainer.style.top = metaMaskContainer.style.top; 
-    levelUpContainer.style.left = metaMaskContainer.style.left;
-    levelUpContainer.style.transform = metaMaskContainer.style.transform;
-    levelUpContainer.style.position = 'absolute';
-    levelUpContainer.style.width = '50px';
-    levelUpContainer.style.height = '60px';
-    levelUpContainer.style.perspective = '5000px'; 
-    levelUpContainer.style.zIndex = '20';
-    levelUpContainer.style.display = 'flex';
-    levelUpContainer.style.alignItems = 'center';
-
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.style.position = 'relative';
-    buttonsContainer.style.width = '100%';
-    buttonsContainer.style.height = '100%';
-    buttonsContainer.style.transformStyle = 'preserve-3d';
-    buttonsContainer.style.animation = 'spin3d 3s infinite linear'; 
-
+function LevelUp() {
     const availableAbilities = abilityTypes.filter(abilityType => {
         return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
     });
-
     const allAbilities = [...player.abilities, ...availableAbilities];
-    const numberOfAbilities = 3; 
-    const angle = 360 / numberOfAbilities;
-
-    for (let i = 0; i < numberOfAbilities; i++) {
         const randomIndex = Math.floor(Math.random() * allAbilities.length);
         const randomAbility = allAbilities[randomIndex];
-        const button = createAbilityButton(randomAbility, .6);
-        const theta = i * angle;
-        button.style.transform = `rotateY(${theta}deg) translateZ(400px)`; 
-        buttonsContainer.appendChild(button);
-
-        setTimeout(() => {
-            buttonsContainer.style.animation = ''; 
-            button.onclick = () => {
-                levelUpContainer.remove();
                 const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
                 if (existingAbility) {
                     existingAbility.deactivate();
@@ -823,14 +790,7 @@ function showLevelUpUI() {
                 }
                 refreshAbilitiesDisplay();
                 isPaused = false;
-            };
-        }, 3000); 
-    }
-
-    levelUpContainer.appendChild(buttonsContainer);
-    document.body.appendChild(levelUpContainer);
 }
-
 
 let animationFrameId;
 
