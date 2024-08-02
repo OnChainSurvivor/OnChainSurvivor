@@ -796,7 +796,7 @@ function showLevelUpUI() {
     for (let i = 0; i < numberOfAbilities; i++) {
         const randomIndex = Math.floor(Math.random() * allAbilities.length);
         const randomAbility = allAbilities[randomIndex];
-        const buttonMesh = create3DButton(randomAbility, 0.5);
+        const buttonMesh = create3DButton(randomAbility, 5);
 
         const angle = i * angleStep;
         buttonMesh.position.set(
