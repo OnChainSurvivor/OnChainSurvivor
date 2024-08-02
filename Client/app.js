@@ -759,77 +759,94 @@ function createAbilityButton(ability, scale = 1, onClick) {
 
 function refreshAbilitiesDisplay() {
     abilitiesContainer.innerHTML = '';
-    abilitiesContainer.style.display = 'flex'; // Ensures buttons are aligned in a row
-    abilitiesContainer.style.flexWrap = 'wrap'; // Allows wrapping if there are many buttons
-    abilitiesContainer.style.gap = '10px'; // Adds some space between buttons
+    abilitiesContainer.style.display = 'flex'; 
+    abilitiesContainer.style.flexWrap = 'wrap'; 
+    abilitiesContainer.style.gap = '10px'; 
     
     player.abilities.forEach(ability => {
         const abilityButton = createAbilityButton(ability, 0.3);
-        abilityButton.style.flex = '0 1 auto'; // Ensure the buttons have a flexible width
+        abilityButton.style.flex = '0 1 auto'; 
         abilitiesContainer.appendChild(abilityButton);
     });
 }
-    
+function create3DButton(ability, scale = 1, onClick) {
+    const buttonTexture = new THREE.TextureLoader().load(ability.thumbnail);
+    const buttonMaterial = new THREE.MeshBasicMaterial({ map: buttonTexture, transparent: true });
+    const buttonGeometry = new THREE.PlaneGeometry(2 * scale, 3 * scale);
+    const buttonMesh = new THREE.Mesh(buttonGeometry, buttonMaterial);
+
+    buttonMesh.userData = { ability, onClick };
+
+    return buttonMesh;
+}
+
 function showLevelUpUI() {
     isPaused = true;
-    const levelUpContainer = document.createElement('div');
-    levelUpContainer.style.top = metaMaskContainer.style.top; 
-    levelUpContainer.style.left = metaMaskContainer.style.left;
-    levelUpContainer.style.transform = metaMaskContainer.style.transform;
-    levelUpContainer.style.position = 'absolute';
-    levelUpContainer.style.width = '50px';
-    levelUpContainer.style.height = '60px';
-    levelUpContainer.style.perspective = '5000px'; 
-    levelUpContainer.style.zIndex = '20';
-    levelUpContainer.style.display = 'flex';
-    levelUpContainer.style.alignItems = 'center';
-
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.style.position = 'relative';
-    buttonsContainer.style.width = '100%';
-    buttonsContainer.style.height = '100%';
-    buttonsContainer.style.transformStyle = 'preserve-3d';
-    buttonsContainer.style.animation = 'spin3d 3s infinite linear'; 
+    const levelUpGroup = new THREE.Group();
 
     const availableAbilities = abilityTypes.filter(abilityType => {
         return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
     });
 
     const allAbilities = [...player.abilities, ...availableAbilities];
-    const numberOfAbilities = 15; 
-    const angle = 360 / numberOfAbilities;
+    const numberOfAbilities = Math.min(15, allAbilities.length); // Max 15 abilities to show
+    const angleStep = (Math.PI * 2) / numberOfAbilities;
+    const radius = 5;
 
     for (let i = 0; i < numberOfAbilities; i++) {
         const randomIndex = Math.floor(Math.random() * allAbilities.length);
         const randomAbility = allAbilities[randomIndex];
-        const button = createAbilityButton(randomAbility, .6);
-        const theta = i * angle;
-        button.style.transform = `rotateY(${theta}deg) translateZ(400px)`; 
-        buttonsContainer.appendChild(button);
+        const buttonMesh = create3DButton(randomAbility, 0.5);
 
-        setTimeout(() => {
-            buttonsContainer.style.animation = ''; 
-            button.onclick = () => {
-                levelUpContainer.remove();
-                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
-                if (existingAbility) {
-                    existingAbility.deactivate();
-                    existingAbility.level += 1;
-                    existingAbility.activate();
-                } else {
-                    const newAbility = new Ability(player, { ...randomAbility, level: 1 });
-                    player.addAbility(newAbility);
-                    newAbility.activate();
-                }
-                refreshAbilitiesDisplay();
-                isPaused = false;
-            };
-        }, 3000); 
+        const angle = i * angleStep;
+        buttonMesh.position.set(
+            Math.cos(angle) * radius,
+            2,  // slightly above the ground level
+            Math.sin(angle) * radius
+        );
+
+        buttonMesh.lookAt(camera.position);
+        levelUpGroup.add(buttonMesh);
+
+        // Set up interaction
+        buttonMesh.userData.onClick = () => {
+            levelUpGroup.clear(); // Remove all buttons
+            const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
+            if (existingAbility) {
+                existingAbility.deactivate();
+                existingAbility.level += 1;
+                existingAbility.activate();
+            } else {
+                const newAbility = new Ability(player, { ...randomAbility, level: 1 });
+                player.addAbility(newAbility);
+                newAbility.activate();
+            }
+            refreshAbilitiesDisplay();
+            isPaused = false;
+        };
     }
 
-    levelUpContainer.appendChild(buttonsContainer);
-    document.body.appendChild(levelUpContainer);
+    scene.add(levelUpGroup);
+
+    // Raycaster for detecting button clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onClick = (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(levelUpGroup.children);
+
+        if (intersects.length > 0) {
+            intersects[0].object.userData.onClick();
+        }
+    };
+
+    window.addEventListener('click', onClick, { once: true });
 }
+
 
 
 let animationFrameId;
