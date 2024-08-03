@@ -129,7 +129,7 @@ class Entity extends THREE.Object3D {
     }
 
     onCollision(otherEntity) {
-        // Placeholder for collision handling logic
+        // To change for an engine 
     }
 
     dropItem() {
@@ -235,7 +235,6 @@ const abilityTypes = [{
                     veil.shield = null;
                 }
         };
-
         veil.create();
     },
     effectinfo: 'Veil trigger % UP.',
@@ -250,12 +249,13 @@ const abilityTypes = [{
     explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
     tags:["Offensive", "Burst Damage"],
     effect(level, user) {
+        this.lastHitTime=0;
         const orb = {
             mesh: null,
             target: null,
             orbitRadius: 2,
-            orbitSpeed: 0.05,
-            homingSpeed: 0.1,
+            orbitSpeed: 0.01,
+            homingSpeed: 0.2,
             create: () => {
                 const geometry = new THREE.SphereGeometry(0.3, 16, 16);
                 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
@@ -264,7 +264,6 @@ const abilityTypes = [{
             }
         };
         this.update = () => {
-                if (!orb.mesh) return;
                 if (!orb.target) {
                     const time = Date.now() * orb.orbitSpeed;
                     orb.mesh.position.set(
@@ -272,8 +271,10 @@ const abilityTypes = [{
                         user.position.y,
                         user.position.z + Math.sin(time) * orb.orbitRadius
                     );
-
-                    const potentialTargets = scene.children.filter(child => child instanceof Entity && child !== user && !user.tags.some(tag => child.tags.includes(tag)));
+                    if ((Date.now() - this.lastHitTime > 5000)) {
+                        console.log('TARGET');
+                    this.lastHitTime = Date.now();
+                    const potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                     if (potentialTargets.length > 0) {
                         orb.target = potentialTargets.reduce((nearest, entity) => {
                             const distanceToCurrent = user.position.distanceTo(entity.position);
@@ -281,6 +282,7 @@ const abilityTypes = [{
                             return distanceToCurrent < distanceToNearest ? entity : nearest;
                         });
                     }
+                     }
                 } else {
                     const direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
                     orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
@@ -299,6 +301,7 @@ const abilityTypes = [{
                     orb.mesh = null;
                 }
         };
+        orb.create();
     },
     effectinfo: 'Orb damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
@@ -317,7 +320,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 5 }
+        { type: 'Scalping Bot', level: 1 }
     ],
 },
 {
@@ -332,7 +335,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 10 },
+        { type: 'Onchain Trail', level: 1 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
 }
