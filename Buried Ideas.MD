@@ -613,3 +613,17 @@ A stronghold where validators maintain the blockchain. Defend the fortress and e
 8. **Arbitrage Bot**: Automated trading bot.
 9. **High-Speed Internet**: For faster transactions.
 10. **Cross-Exchange Monitor**: Keeping an eye on markets.
+
+# Survivors Backstory 
+A backtory for every survivor, being light hearted stories regarding of how they came to be. Maybe make a quadrant of all classes with funny data.
+
+# Meta Progress 
+display a ??? in the ability description, effects, titles, classes and so on, for the first time before they appear as a choice to the player, and as the game progresses or the user plays more of the game, he discovers or uncryps information.
+
+# Game modes
+
+**Blockchain mode**: All random classes and abilities, no pause option, 100% seamless play, destroy all bosses. 
+
+**Survivor mode**: Level up, choose your ability path between 3 skills each time . Survive  a fixed time to 30 minutes 30 minutes. 
+
+**Professional mode**: Select a class, each class has a predefined set of abilities , beat the final boss of each class.

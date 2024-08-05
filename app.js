@@ -271,8 +271,8 @@ const abilityTypes = [{
                         user.position.y,
                         user.position.z + Math.sin(time) * orb.orbitRadius
                     );
-                    if ((Date.now() - this.lastHitTime > 5000)) {
-                        console.log('TARGET');
+                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
+                    console.log('TARGET');
                     this.lastHitTime = Date.now();
                     const potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                     if (potentialTargets.length > 0) {
@@ -347,7 +347,6 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000, 1);
 document.body.appendChild(renderer.domElement);
-
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -429,6 +428,22 @@ characterContainer.appendChild(characterImage);
 characterContainer.appendChild(characterName);
 characterContainer.appendChild(abilitiesContainer);
 document.body.appendChild(characterContainer);
+
+let countdown = 1800 * 60;
+const timerDisplay = document.createElement('div');
+timerDisplay.style.position = 'absolute';
+timerDisplay.style.top = '10px';
+timerDisplay.style.right = '10px';
+timerDisplay.style.fontSize = '20px';
+timerDisplay.style.color = 'white';
+document.body.appendChild(timerDisplay);
+
+function updateTimerDisplay() {
+    countdown--;
+    const minutes = Math.floor(countdown / 60);
+    const seconds = countdown % 60;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
 
 const metaMaskContainer = document.createElement('div');
 metaMaskContainer.style.position = 'absolute';
@@ -547,21 +562,7 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-let countdown = 1800 * 60;
-const timerDisplay = document.createElement('div');
-timerDisplay.style.position = 'absolute';
-timerDisplay.style.top = '10px';
-timerDisplay.style.right = '10px';
-timerDisplay.style.fontSize = '20px';
-timerDisplay.style.color = 'white';
-document.body.appendChild(timerDisplay);
 
-function updateTimerDisplay() {
-    countdown--;
-    const minutes = Math.floor(countdown / 60);
-    const seconds = countdown % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
 
 camera.position.set(0, 15, 15);
 camera.lookAt(player.position);
@@ -738,6 +739,8 @@ function createAbilityButton(ability, scale = 1, onClick) {
     expl = ability.effectinfo;
     if (scale == 1) lvl = ability.level + 1;
     if (lvl == 1) expl = ability.description;
+
+    if (lvl == 10) lvl = "MAX";
 
     const effectinfo = document.createElement('div');
     effectinfo.innerText = `Lvl ${lvl}: ${expl}`;
