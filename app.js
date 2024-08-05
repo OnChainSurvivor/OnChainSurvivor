@@ -35,6 +35,7 @@ class Entity extends THREE.Object3D {
         Object.assign(this, config);
         this.abilities = [];
         this.mesh = new THREE.Mesh(config.geometry, config.material);
+        this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         this.add(this.mesh);
         scene.add(this);
         this.initAbilities(config.abilities);
@@ -101,6 +102,7 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
+        if (player.health <= 0) triggerGameOver();
         this.dropItem();
         this.deactivateAbilities();
         scene.remove(this);
@@ -112,20 +114,6 @@ class Entity extends THREE.Object3D {
         }
         const enemyIndex = enemies.indexOf(this);
         if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
-    }
-
-    move(direction) {
-        this.position.add(direction);
-    }
-
-    detectCollisions() {
-        const thisBox = new THREE.Box3().setFromObject(this);
-        scene.children.forEach(child => {
-            if (child instanceof Entity && child !== this) {
-                const otherBox = new THREE.Box3().setFromObject(child);
-                if (thisBox.intersectsBox(otherBox)) this.onCollision(child);
-            }
-        });
     }
 
     onCollision(otherEntity) {
@@ -141,10 +129,6 @@ class Entity extends THREE.Object3D {
         scene.add(xpSphere);
     }
 
-    innerUpdate() {
-            this.updateAbilities();
-            this.detectCollisions();
-     }
 }
 const abilityTypes = [{
     title: 'Onchain Trail',
@@ -250,6 +234,10 @@ const abilityTypes = [{
     tags:["Offensive", "Burst Damage"],
     effect(level, user) {
         this.lastHitTime=0;
+        let time = Date.now();
+        let potentialTargets= null;
+        let distanceToCurrent = null;
+        let distanceToNearest = null;
         const orb = {
             mesh: null,
             target: null,
@@ -265,20 +253,19 @@ const abilityTypes = [{
         };
         this.update = () => {
                 if (!orb.target) {
-                    const time = Date.now() * orb.orbitSpeed;
+                    time = Date.now() * orb.orbitSpeed;
                     orb.mesh.position.set(
                         user.position.x + Math.cos(time) * orb.orbitRadius,
                         user.position.y,
                         user.position.z + Math.sin(time) * orb.orbitRadius
                     );
                     if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    console.log('TARGET');
                     this.lastHitTime = Date.now();
-                    const potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
+                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                     if (potentialTargets.length > 0) {
                         orb.target = potentialTargets.reduce((nearest, entity) => {
-                            const distanceToCurrent = user.position.distanceTo(entity.position);
-                            const distanceToNearest = user.position.distanceTo(nearest.position);
+                            distanceToCurrent = user.position.distanceTo(entity.position);
+                            distanceToNearest = user.position.distanceTo(nearest.position);
                             return distanceToCurrent < distanceToNearest ? entity : nearest;
                         });
                     }
@@ -286,10 +273,8 @@ const abilityTypes = [{
                 } else {
                     const direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
                     orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-
                     const orbBox = new THREE.Box3().setFromObject(orb.mesh);
-                    const targetBox = new THREE.Box3().setFromObject(orb.target);
-                    if (orbBox.intersectsBox(targetBox)) {
+                    if (orbBox.intersectsBox(orb.target.boundingBox)) {
                         orb.target.takeDamage(1);  
                         orb.target = null;  
                     }
@@ -320,7 +305,7 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 10 }
     ],
 },
 {
@@ -432,7 +417,7 @@ document.body.appendChild(characterContainer);
 let countdown = 1800 * 60;
 const timerDisplay = document.createElement('div');
 timerDisplay.style.position = 'absolute';
-timerDisplay.style.top = '10px';
+timerDisplay.style.bottom = '10px';
 timerDisplay.style.right = '10px';
 timerDisplay.style.fontSize = '20px';
 timerDisplay.style.color = 'white';
@@ -596,8 +581,9 @@ function updatePlayerMovement() {
         player.position.add(moveDirection.multiplyScalar(player.movementspeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
+        player.boundingBox.setFromObject(player.mesh);
     }
-    player.innerUpdate();
+    player.updateAbilities();
 
     scene.children.forEach(child => {
         if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
@@ -630,7 +616,8 @@ function updateEnemies() {
     enemies.forEach(enemy => {
         const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
         enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
-        enemy.innerUpdate();
+        enemy.boundingBox.setFromObject(enemy.mesh);
+        enemy.updateAbilities();
     });
 }
 
@@ -818,8 +805,6 @@ window.addEventListener('load', async () => {
     }
 });
 
-let isAnimating = false;
-
 function animate() {
     if (!isPaused) {
         updatePlayerMovement();
@@ -830,7 +815,6 @@ function animate() {
     animationFrameId = requestAnimationFrame(animate);
     composer.render();
     if (countdown > 0)  updateTimerDisplay();
-    if (player.health <= 0) triggerGameOver();
 }
 refreshAbilitiesDisplay();
 animate();
