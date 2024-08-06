@@ -11,6 +11,10 @@ const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStand
     roughness: 0.3
 });
 
+const xpSpheres = []; 
+const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+
 class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config, active: false });
@@ -115,18 +119,12 @@ class Entity extends THREE.Object3D {
         const enemyIndex = enemies.indexOf(this);
         if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
     }
-
-    onCollision(otherEntity) {
-        // To change for an engine 
-    }
-
     dropItem() {
-        const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-        const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-        const xpSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
         xpSphere.position.copy(this.position);
-        xpSphere.userData = { type: 'xpSphere' };
+        xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere)
         scene.add(xpSphere);
+        xpSpheres.push(xpSphere);
     }
 
 }
@@ -138,23 +136,24 @@ const abilityTypes = [{
     explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
-        const trailSteps = [];
+        const trailBullets = [];
         this.lastTrailTime = 0;
-        let trail = {
-            mesh:null,
+        const trail = {
             create: () => {
-                const geometry = new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level);
-                const material = createNeonMaterial(rainbowColors[colorIndex], 2);
-                trail.mesh = new THREE.Mesh(geometry, material);
+                if (trailBullets.length >= level) {
+                    const oldestBullet = trailBullets.shift(); // Remove the first element (oldest)
+                    scene.remove(oldestBullet); // Remove it from the scene
+                }
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
-
-                Object.assign(trail.mesh.position,user.position);
-
-                trail.userData = { creationTime: Date.now(), user };
-                trail.castShadow = true;
-                trail.boundingBox = new THREE.Box3().setFromObject(trail.mesh);
-                scene.add(trail.mesh);
-                trailSteps.push(trail);
+                const trailStep = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level),
+                    createNeonMaterial(rainbowColors[colorIndex], 2)
+                );
+                trailStep.position.copy(user.position);
+                trailStep.castShadow = true;
+                scene.add(trailStep);
+                trailStep.trailBox = new THREE.Box3().setFromObject(trailStep);
+                trailBullets.push(trailStep);
             }
         };
         this.update = () => {
@@ -162,18 +161,17 @@ const abilityTypes = [{
                 this.lastTrailTime = Date.now();
                 trail.create();
             }
-            trailSteps.forEach((trailStep,index) => {
-               if (trailStep.boundingBox.intersectsBox(player.boundingBox)) {
-                   trailStep.mesh=null;
-                   scene.remove(trailStep.mesh); 
-                   trailSteps.splice(index, 1); 
-                   console.log("TODO: Get this deleted ");
-                }
-            });
+           // playerCollisionList.forEach((trailBullet,index) => {
+            //            if (trailBullet.trailBox.intersectsBox(other)) { // Make this generic in the future
+            //                scene.remove(trailBullet); 
+            //                trailBullets.splice(index, 1);
+            //                player.takeDamage(1);  
+            //            }
+           // });
         };
         this.deactivate = () => {
-            trailSteps.forEach(step => { scene.remove(step); });
-            trailSteps.length = 0; 
+            trailBullets.forEach(bullet => { scene.remove(bullet); });
+            trailBullets.length = 0; 
         };
     },
     effectinfo: 'Trail size and frequency increase.',
@@ -192,7 +190,6 @@ const abilityTypes = [{
             create: () => {
                 if (veil.shield) scene.remove(veil.shield);
                 user.evasion += (3*level);
-                console.log(user.evasion);
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -261,7 +258,7 @@ const abilityTypes = [{
                     );
                     if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
                     this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
+                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
                     if (potentialTargets.length > 0) {
                         orb.target = potentialTargets.reduce((nearest, entity) => {
                             distanceToCurrent = user.position.distanceTo(entity.position);
@@ -293,9 +290,12 @@ const abilityTypes = [{
     level: 0
 }
 ];
+
 const entityTypes = [{
     class: 'Survivor',
-    name: 'Onchain Survivor',
+    title: 'Onchain Survivor',
+    description:'The jack of all trades, adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
+    tooltip:'despite losing it all in the 2018 market crash, he kept grinding every day.',
     health: 1,
     movementspeed:0.2,
     xp: 0,
@@ -307,10 +307,11 @@ const entityTypes = [{
     abilities: [
         { type: 'Scalping Bot', level: 10 }
     ],
+    level:0,
 },
 {
     class: 'Enemy',
-    name: 'Basic',
+    title: 'Basic',
     health: 1,
     movementspeed:0.2,
     xp: 0,
@@ -323,6 +324,7 @@ const entityTypes = [{
         { type: 'Onchain Trail', level: 1 },
         { type: 'Veil of Decentralization', level: 1 }
     ],
+    level:0,
 }
 ];
 
@@ -367,7 +369,6 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 
 const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
 const enemies = [];
-let playerXP = 0;
 
 const characterContainer = document.createElement('div');
 characterContainer.style.position = 'absolute';
@@ -378,50 +379,37 @@ characterContainer.style.alignItems = 'center';
 characterContainer.style.backgroundColor = 'black';
 characterContainer.style.padding = '10px';
 characterContainer.style.borderRadius = '10px';
-
-const characterImage = document.createElement('img');
-characterImage.src = 'Media/Classes/Onchain Survivor/MSURVIVOR.png';
-characterImage.style.width = '50px';
-characterImage.style.height = '50px';
-characterImage.style.borderRadius = '50%';
-characterImage.style.marginBottom = '10px';
+characterContainer.style.flexDirection = 'column';
 
 const characterName = document.createElement('div');
-characterName.innerText = 'Onchain Survivor V0.0.10';
+characterName.innerText = 'V 0.0.11';
 characterName.style.fontSize = '20px';
 characterName.style.color = 'white';
 characterName.style.marginBottom = '10px';
 
-characterContainer.appendChild(characterImage);
 characterContainer.appendChild(characterName);
 document.body.appendChild(characterContainer);
-
-const playerLevelDisplay = document.createElement('div');
-playerLevelDisplay.style.position = 'absolute';
-playerLevelDisplay.style.fontSize = '20px';
-playerLevelDisplay.style.color = 'black';
-playerLevelDisplay.style.display = 'none';
-document.body.appendChild(playerLevelDisplay);
 
 const abilitiesContainer = document.createElement('div');
 abilitiesContainer.id = 'abilitiesContainer';
 abilitiesContainer.style.top = '10px';
 abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
+abilitiesContainer.style.flexDirection = 'column';
 
-characterContainer.appendChild(characterImage);
 characterContainer.appendChild(characterName);
 characterContainer.appendChild(abilitiesContainer);
 document.body.appendChild(characterContainer);
 
 let countdown = 1800 * 60;
-const timerDisplay = document.createElement('div');
-timerDisplay.style.position = 'absolute';
-timerDisplay.style.bottom = '10px';
-timerDisplay.style.right = '10px';
-timerDisplay.style.fontSize = '20px';
-timerDisplay.style.color = 'white';
-document.body.appendChild(timerDisplay);
+let timerDisplay = document.createElement('div');
+characterContainer.appendChild(timerDisplay);
+timerDisplay.style.position = 'relative';
+timerDisplay.style.marginTop = '10px';
+timerDisplay.style.fontSize = '16px';
+timerDisplay.style.color = 'white'; 
+timerDisplay.style.textAlign = 'center'; 
+
 
 function updateTimerDisplay() {
     countdown--;
@@ -430,6 +418,7 @@ function updateTimerDisplay() {
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
+function AddMetamaskModule() {
 const metaMaskContainer = document.createElement('div');
 metaMaskContainer.style.position = 'absolute';
 metaMaskContainer.style.top = '10px';
@@ -490,6 +479,18 @@ metaMaskButton.onclick = async () => {
     }
 };
 
+window.addEventListener('load', async () => {
+    const storedAddress = localStorage.getItem('metaMaskAddress');
+    if (storedAddress) {
+        const web3 = new Web3(window.ethereum);
+        const balance = await web3.eth.getBalance(storedAddress);
+        const ethBalance = web3.utils.fromWei(balance, 'ether');
+        displayMetaMaskInfo(storedAddress, ethBalance);
+    }
+});
+
+}
+
 function triggerGameOver() {
     isPaused = true;
     cancelAnimationFrame(animationFrameId);
@@ -547,8 +548,6 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-
-
 camera.position.set(0, 15, 15);
 camera.lookAt(player.position);
 
@@ -562,8 +561,6 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
-
-
 
 function updatePlayerMovement() {
     let direction = new THREE.Vector3();
@@ -587,84 +584,18 @@ function updatePlayerMovement() {
     }
     player.updateAbilities();
 
-    scene.children.forEach(child => {
-        if (child.userData.type === 'xpSphere' && player.position.distanceTo(child.position) < 1) {
-            playerXP += 100;
-            if (playerXP >= 100) {
-                playerXP = 0;
+    xpSpheres.forEach((xpSphere, index) => {
+        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
+            player.xp += 100;
+            if (player.xp >= 100) {
+                player.xp = 0;
                 LevelUp();
             }
-            scene.remove(child);
+            scene.remove(xpSphere);
+            xpSpheres.splice(index, 1); // Remove from the xpSpheres list
         }
     });
 }
-
-let isDragging = false;
-let joystickCenter = { x: 0, y: 0 };
-let currentPosition = { x: 0, y: 0 };
-let movementSpeed = 0.05; // Adjust as needed
-
-const onTouchStart = (event) => {
-    isDragging = true;
-    joystickCenter.x = event.touches[0].clientX;
-    joystickCenter.y = event.touches[0].clientY;
-};
-
-const onTouchMove = (event) => {
-    if (!isDragging) return;
-
-    // Get the current touch position
-    currentPosition.x = event.touches[0].clientX;
-    currentPosition.y = event.touches[0].clientY;
-
-    // Calculate the displacement from the center of the virtual joystick
-    const deltaX = currentPosition.x - joystickCenter.x;
-    const deltaY = currentPosition.y - joystickCenter.y;
-
-    // Normalize the movement to ensure consistent speed
-    const movementVector = new THREE.Vector3(deltaX, 0, deltaY).normalize();
-
-    // Apply movement to the player object
-    player.position.add(movementVector.multiplyScalar(movementSpeed));
-};
-
-const onTouchEnd = () => {
-    isDragging = false;
-};
-
-window.addEventListener('touchstart', onTouchStart);
-window.addEventListener('touchmove', onTouchMove);
-window.addEventListener('touchend', onTouchEnd);
-
-// For mouse controls (optional, works similar to touch)
-const onMouseDown = (event) => {
-    isDragging = true;
-    joystickCenter.x = event.clientX;
-    joystickCenter.y = event.clientY;
-};
-
-const onMouseMove = (event) => {
-    if (!isDragging) return;
-
-    currentPosition.x = event.clientX;
-    currentPosition.y = event.clientY;
-
-    const deltaX = currentPosition.x - joystickCenter.x;
-    const deltaY = currentPosition.y - joystickCenter.y;
-
-    const movementVector = new THREE.Vector3(deltaX, 0, deltaY).normalize();
-
-    player.position.add(movementVector.multiplyScalar(movementSpeed));
-};
-
-const onMouseUp = () => {
-    isDragging = false;
-};
-
-window.addEventListener('mousedown', onMouseDown);
-window.addEventListener('mousemove', onMouseMove);
-window.addEventListener('mouseup', onMouseUp);
-
 
 let cameraAngle = 0;
 const cameraRadius = 20;
@@ -731,9 +662,7 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-let isPaused = false;
-
-function createAbilityButton(ability, scale = 1, onClick) {
+function createButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
     button.style.width = `${200 * scale}px`;
     button.style.margin = '10px';
@@ -765,7 +694,7 @@ function createAbilityButton(ability, scale = 1, onClick) {
     const title = document.createElement('div');
     title.innerText = ability.title;
     rainbowText(title, `${20 * scale}px`);  
-    title.style.height = `${3 * scale}em`; 
+    title.style.height = `${2.5 * scale}em`; 
     title.style.lineHeight = `${1.5 * scale}em`;
     title.style.overflow = 'hidden';
     title.style.textAlign = 'center'; 
@@ -791,44 +720,38 @@ function createAbilityButton(ability, scale = 1, onClick) {
         levelStars.appendChild(star);
     }
 
-    lvl = ability.level;
-    expl = ability.effectinfo;
-    if (scale == 1) lvl = ability.level + 1;
-    if (lvl == 1) expl = ability.description;
-
-    if (lvl == 10) lvl = "MAX";
+    expl = ability.description;
+    if (ability.level != 0) expl = ability.effectinfo;
 
     const effectinfo = document.createElement('div');
-    effectinfo.innerText = `Lvl ${lvl}: ${expl}`;
+    effectinfo.innerText = `${expl}`;
     rainbowText(effectinfo, `${14 * scale}px`); 
-    effectinfo.style.height = `${3 * scale}em`; // Ensure the title takes up two lines
-    effectinfo.style.lineHeight = `${1.5 * scale}em`; // Line height adjusted for two lines
-    effectinfo.style.overflow = 'hidden'; // Hide any overflowed text
-    effectinfo.style.textAlign = 'center'; // Center align the text horizontally
-    effectinfo.style.alignItems = 'center'; // Center align the text vertically
+    effectinfo.style.height = `${5 * scale}em`; 
+    effectinfo.style.lineHeight = `${1.15 * scale}em`; 
+    effectinfo.style.overflow = 'hidden'; 
+    effectinfo.style.textAlign = 'center';
+    effectinfo.style.alignItems = 'center'; 
     effectinfo.style.justifyContent = 'center';
     effectinfo.style.padding = `${5 * scale}px 0`;
-    effectinfo.style.display = scale > 0.5 ? 'block' : 'none'; // Hide effect info if scale is low
+    effectinfo.style.display = scale > 0.5 ? 'block' : 'none'; 
 
     button.appendChild(title);
     button.appendChild(img);
     button.appendChild(levelStars);
     button.appendChild(effectinfo);
 
-
     if (onClick) button.onclick = onClick;
     return button;
 }
 
-function refreshAbilitiesDisplay() {
+function refreshDisplay() {
     abilitiesContainer.innerHTML = '';
-    abilitiesContainer.style.display = 'flex'; 
-    abilitiesContainer.style.flexWrap = 'wrap'; 
-    abilitiesContainer.style.gap = '10px'; 
-    
+    abilityButton = createButton(player, .3);
+    abilitiesContainer.appendChild(abilityButton);
+
     player.abilities.forEach(ability => {
-        const abilityButton = createAbilityButton(ability, .3);
-        abilityButton.style.flex = '0 1 auto'; 
+        const abilityButton = createButton(ability, .3);
+   
         abilitiesContainer.appendChild(abilityButton);
     });
 }
@@ -850,11 +773,9 @@ function LevelUp() {
                     player.addAbility(newAbility);
                     newAbility.activate();
                 }
-                refreshAbilitiesDisplay();
+                refreshDisplay();
                 isPaused = false;
 }
-
-let animationFrameId;
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -864,26 +785,56 @@ window.addEventListener('resize', () => {
     composer.setSize(window.innerWidth, window.innerHeight);
 }, false);
 
-window.addEventListener('load', async () => {
-    const storedAddress = localStorage.getItem('metaMaskAddress');
-    if (storedAddress) {
-        const web3 = new Web3(window.ethereum);
-        const balance = await web3.eth.getBalance(storedAddress);
-        const ethBalance = web3.utils.fromWei(balance, 'ether');
-        displayMetaMaskInfo(storedAddress, ethBalance);
-    }
-});
-
+let animationFrameId;
+let isPaused = true;
 function animate() {
     if (!isPaused) {
         updatePlayerMovement();
         updateCamera();
         updateEnemies();
         updateTimerDisplay();
+    } else {
+        if (keys.s) startGame();
+        if (keys.w) startGame();
+        if (keys.a) startGame();
+        if (keys.d) startGame();
     }
+
     animationFrameId = requestAnimationFrame(animate);
     composer.render();
-    if (countdown > 0)  updateTimerDisplay();
 }
-refreshAbilitiesDisplay();
+
+tutorial=true;
+
+function addTutorialModule(){
+    classContainer = document.createElement('div');
+    classContainer.style.position = 'absolute';
+    classContainer.style.top = '55%';
+    classContainer.style.left = '50%';
+    classContainer.style.transform = 'translateX(-50%)';
+    classContainer.style.display = 'flex';
+    classContainer.style.alignItems = 'center';
+
+    classAbilitiesContainer = document.createElement('div');
+
+    classContainer.appendChild(createButton(entityTypes[0], 1));
+    classContainer.appendChild(classAbilitiesContainer);
+
+    classAbilitiesContainer.appendChild(createButton(abilityTypes[0], 0.475));
+    classAbilitiesContainer.appendChild(createButton(abilityTypes[1], 0.475));
+    classAbilitiesContainer.appendChild(createButton(abilityTypes[2], 0.475));
+    document.body.appendChild(classContainer);
+}
+
+function startGame(){
+    if (tutorial) {
+        turotial=false;
+        classContainer.innerHTML = '';
+    }
+
+    isPaused=false;
+    AddMetamaskModule();
+    refreshDisplay();
+}
+addTutorialModule();
 animate();
