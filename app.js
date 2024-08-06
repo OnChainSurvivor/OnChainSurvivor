@@ -563,6 +563,8 @@ document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
 });
 
+
+
 function updatePlayerMovement() {
     let direction = new THREE.Vector3();
 
@@ -596,6 +598,73 @@ function updatePlayerMovement() {
         }
     });
 }
+
+let isDragging = false;
+let joystickCenter = { x: 0, y: 0 };
+let currentPosition = { x: 0, y: 0 };
+let movementSpeed = 0.05; // Adjust as needed
+
+const onTouchStart = (event) => {
+    isDragging = true;
+    joystickCenter.x = event.touches[0].clientX;
+    joystickCenter.y = event.touches[0].clientY;
+};
+
+const onTouchMove = (event) => {
+    if (!isDragging) return;
+
+    // Get the current touch position
+    currentPosition.x = event.touches[0].clientX;
+    currentPosition.y = event.touches[0].clientY;
+
+    // Calculate the displacement from the center of the virtual joystick
+    const deltaX = currentPosition.x - joystickCenter.x;
+    const deltaY = currentPosition.y - joystickCenter.y;
+
+    // Normalize the movement to ensure consistent speed
+    const movementVector = new THREE.Vector3(deltaX, 0, deltaY).normalize();
+
+    // Apply movement to the player object
+    player.position.add(movementVector.multiplyScalar(movementSpeed));
+};
+
+const onTouchEnd = () => {
+    isDragging = false;
+};
+
+window.addEventListener('touchstart', onTouchStart);
+window.addEventListener('touchmove', onTouchMove);
+window.addEventListener('touchend', onTouchEnd);
+
+// For mouse controls (optional, works similar to touch)
+const onMouseDown = (event) => {
+    isDragging = true;
+    joystickCenter.x = event.clientX;
+    joystickCenter.y = event.clientY;
+};
+
+const onMouseMove = (event) => {
+    if (!isDragging) return;
+
+    currentPosition.x = event.clientX;
+    currentPosition.y = event.clientY;
+
+    const deltaX = currentPosition.x - joystickCenter.x;
+    const deltaY = currentPosition.y - joystickCenter.y;
+
+    const movementVector = new THREE.Vector3(deltaX, 0, deltaY).normalize();
+
+    player.position.add(movementVector.multiplyScalar(movementSpeed));
+};
+
+const onMouseUp = () => {
+    isDragging = false;
+};
+
+window.addEventListener('mousedown', onMouseDown);
+window.addEventListener('mousemove', onMouseMove);
+window.addEventListener('mouseup', onMouseUp);
+
 
 let cameraAngle = 0;
 const cameraRadius = 20;
