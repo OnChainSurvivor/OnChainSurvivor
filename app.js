@@ -138,44 +138,42 @@ const abilityTypes = [{
     explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effect(level, user) {
-        const trailBullets = [];
+        const trailSteps = [];
         this.lastTrailTime = 0;
-        const trail = {
-            create: (x, y, z, direction, source) => {
+        let trail = {
+            mesh:null,
+            create: () => {
+                const geometry = new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level);
+                const material = createNeonMaterial(rainbowColors[colorIndex], 2);
+                trail.mesh = new THREE.Mesh(geometry, material);
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
-                const trailStep = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level),
-                    createNeonMaterial(rainbowColors[colorIndex], 2)
-                );
-                Object.assign(trailStep.position, { x, y, z });
-                trailStep.userData = { direction, creationTime: Date.now(), source, isTrail: true };
-                trailStep.castShadow = true;
-                scene.add(trailStep);
-                trailBullets.push(trailStep);
+
+                Object.assign(trail.mesh.position,user.position);
+
+                trail.userData = { creationTime: Date.now(), user };
+                trail.castShadow = true;
+                trail.boundingBox = new THREE.Box3().setFromObject(trail.mesh);
+                scene.add(trail.mesh);
+                trailSteps.push(trail);
             }
         };
         this.update = () => {
             if ((Date.now() - this.lastTrailTime > 500)) {
                 this.lastTrailTime = Date.now();
-                trail.create(user.position.x, user.position.y, user.position.z, new THREE.Vector3(0, 0, 0), user);
+                trail.create();
             }
-            trailBullets.forEach((trailBullet,index) => {
-                const trailBox = new THREE.Box3().setFromObject(trailBullet);
-                scene.children.forEach(child => {
-                    if (child instanceof Entity && child.class !== user.class) {
-                        const otherBox = new THREE.Box3().setFromObject(child);
-                        if (trailBox.intersectsBox(otherBox)) {
-                            scene.remove(trailBullet); // Remove bullet after contact
-                            trailBullets.splice(index, 1); // Remove bullet from the array
-                            child.takeDamage(1);  
-                        }
-                    }
-                });
+            trailSteps.forEach((trailStep,index) => {
+               if (trailStep.boundingBox.intersectsBox(player.boundingBox)) {
+                   trailStep.mesh=null;
+                   scene.remove(trailStep.mesh); 
+                   trailSteps.splice(index, 1); 
+                   console.log("TODO: Get this deleted ");
+                }
             });
         };
         this.deactivate = () => {
-            trailBullets.forEach(bullet => { scene.remove(bullet); });
-            trailBullets.length = 0; 
+            trailSteps.forEach(step => { scene.remove(step); });
+            trailSteps.length = 0; 
         };
     },
     effectinfo: 'Trail size and frequency increase.',
@@ -238,6 +236,7 @@ const abilityTypes = [{
         let potentialTargets= null;
         let distanceToCurrent = null;
         let distanceToNearest = null;
+        let direction= null;
         const orb = {
             mesh: null,
             target: null,
@@ -248,6 +247,7 @@ const abilityTypes = [{
                 const geometry = new THREE.SphereGeometry(0.3, 16, 16);
                 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
                 orb.mesh = new THREE.Mesh(geometry, material);
+                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
                 scene.add(orb.mesh);
             }
         };
@@ -269,12 +269,12 @@ const abilityTypes = [{
                             return distanceToCurrent < distanceToNearest ? entity : nearest;
                         });
                     }
-                     }
+                    }
                 } else {
-                    const direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
+                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
                     orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    const orbBox = new THREE.Box3().setFromObject(orb.mesh);
-                    if (orbBox.intersectsBox(orb.target.boundingBox)) {
+                    orb.boundingBox.setFromObject(orb.mesh);
+                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
                         orb.target.takeDamage(1);  
                         orb.target = null;  
                     }
