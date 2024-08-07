@@ -294,7 +294,7 @@ const abilityTypes = [{
 const entityTypes = [{
     class: 'Survivor',
     title: 'Onchain Survivor',
-    description:'The jack of all trades, adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
+    description:'The jack of all trades (lol), adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
     tooltip:'despite losing it all in the 2018 market crash, he kept grinding every day.',
     health: 1,
     movementspeed:0.2,
@@ -305,7 +305,9 @@ const entityTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 10 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 1 },
+        { type: 'Veil of Decentralization', level: 1 }
     ],
     level:0,
 },
@@ -381,13 +383,6 @@ characterContainer.style.padding = '10px';
 characterContainer.style.borderRadius = '10px';
 characterContainer.style.flexDirection = 'column';
 
-const characterName = document.createElement('div');
-characterName.innerText = 'V 0.0.11';
-characterName.style.fontSize = '20px';
-characterName.style.color = 'white';
-characterName.style.marginBottom = '10px';
-
-characterContainer.appendChild(characterName);
 document.body.appendChild(characterContainer);
 
 const abilitiesContainer = document.createElement('div');
@@ -397,7 +392,6 @@ abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
 abilitiesContainer.style.flexDirection = 'column';
 
-characterContainer.appendChild(characterName);
 characterContainer.appendChild(abilitiesContainer);
 document.body.appendChild(characterContainer);
 
@@ -419,75 +413,7 @@ function updateTimerDisplay() {
 }
 
 function AddMetamaskModule() {
-const metaMaskContainer = document.createElement('div');
-metaMaskContainer.style.position = 'absolute';
-metaMaskContainer.style.top = '10px';
-metaMaskContainer.style.left = '50%';
-metaMaskContainer.style.transform = 'translateX(-50%)';
-metaMaskContainer.style.display = 'flex';
-metaMaskContainer.style.alignItems = 'center';
-metaMaskContainer.style.cursor = 'pointer';
 
-const metaMaskImage = document.createElement('img');
-metaMaskImage.src = 'Media/MetamaskLogo.png';
-metaMaskImage.style.width = '30px';
-metaMaskImage.style.height = '30px';
-
-const metaMaskButton = document.createElement('button');
-metaMaskButton.innerText = '';
-metaMaskButton.style.fontSize = '14px';
-metaMaskButton.style.padding = '5px 5px';
-metaMaskButton.style.backgroundColor = 'transparent';
-metaMaskButton.style.color = 'white';
-metaMaskButton.style.border = '1px solid white';
-metaMaskButton.style.borderRadius = '5px';
-
-metaMaskContainer.appendChild(metaMaskButton);
-metaMaskButton.appendChild(metaMaskImage);
-document.body.appendChild(metaMaskContainer);
-
-function displayMetaMaskInfo(address, ethBalance) {
-    metaMaskContainer.innerHTML = `
-        <div style="color: white; margin-right: 10px;">
-            <div>Address: ${address}</div>
-        </div>
-    `;
-}
-
-metaMaskButton.onclick = async () => {
-    if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        try {
-            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            const address = accounts[0];
-            const balance = await web3.eth.getBalance(address);
-            const ethBalance = web3.utils.fromWei(balance, 'ether');
-            localStorage.setItem('metaMaskAddress', address);
-
-            displayMetaMaskInfo(address, ethBalance);
-        } catch (error) {
-            if (error.code === 4902) {
-                alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-            } else {
-                console.error('Error:', error);
-            }
-        }
-    } else {
-        alert('MetaMask is not installed. Please install it to use this feature.');
-    }
-};
-
-window.addEventListener('load', async () => {
-    const storedAddress = localStorage.getItem('metaMaskAddress');
-    if (storedAddress) {
-        const web3 = new Web3(window.ethereum);
-        const balance = await web3.eth.getBalance(storedAddress);
-        const ethBalance = web3.utils.fromWei(balance, 'ether');
-        displayMetaMaskInfo(storedAddress, ethBalance);
-    }
-});
 
 }
 
@@ -662,10 +588,21 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
+const rainbowText = (element, fontSize) => {
+    element.style.fontSize = fontSize;
+    element.style.color = 'transparent';
+    element.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+    element.style.backgroundClip = 'text';
+    element.style.webkitBackgroundClip = 'text';
+    element.style.backgroundSize = '200% 200%';
+    element.style.animation = 'rainbowText 7s linear infinite';
+    element.style.textAlign = 'center';
+};
+
 function createButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
     button.style.width = `${200 * scale}px`;
-    button.style.margin = '10px';
+    button.style.margin = '5px';
     button.style.display = 'flex';
     button.style.flexDirection = 'column';
     button.style.alignItems = 'center';
@@ -680,16 +617,8 @@ function createButton(ability, scale = 1, onClick) {
     button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
     button.style.animation = 'rainbowBorder 5s linear infinite';
 
-    const rainbowText = (element, fontSize) => {
-        element.style.fontSize = fontSize;
-        element.style.color = 'transparent';
-        element.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-        element.style.backgroundClip = 'text';
-        element.style.webkitBackgroundClip = 'text';
-        element.style.backgroundSize = '200% 200%';
-        element.style.animation = 'rainbowText 7s linear infinite';
-        element.style.textAlign = 'center';
-    };
+ 
+    button.title = ability.tooltip;
 
     const title = document.createElement('div');
     title.innerText = ability.title;
@@ -804,9 +733,25 @@ function animate() {
     composer.render();
 }
 
-tutorial=true;
+mainMenu=true;
+let classContainer;
+function addMainMenu(){
+    titleContainer = document.createElement('div');
+    titleContainer.style.position = 'absolute';
+    titleContainer.style.top = '10px';
+    titleContainer.style.left = '50%';
+    titleContainer.style.transform = 'translateX(-50%)';
+    titleContainer.style.display = 'flex';
+    titleContainer.style.alignItems = 'center';
 
-function addTutorialModule(){
+    const Title = document.createElement('div');
+    Title.innerText = '🔗🏆\nOnchain \n Survivor';
+    Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
+    rainbowText(Title, `55px`); 
+
+    document.body.appendChild(titleContainer);
+    titleContainer.appendChild(Title);
+
     classContainer = document.createElement('div');
     classContainer.style.position = 'absolute';
     classContainer.style.top = '55%';
@@ -815,26 +760,127 @@ function addTutorialModule(){
     classContainer.style.display = 'flex';
     classContainer.style.alignItems = 'center';
 
+    function handleButtonClick(clickedEntity) {
+        classContainer.innerHTML = '';  
+        classContainer.appendChild(createButton(clickedEntity, 1, () => handleButtonClick(clickedEntity))); 
+        classContainer.appendChild(classAbilitiesContainer);
+
+        classAbilitiesContainer.innerHTML = '';
+        entities.forEach(entity => {
+            if (entity !== clickedEntity) { 
+                classAbilitiesContainer.appendChild(createButton(entity, 0.475, () => handleButtonClick(entity)));
+            }
+        });
+    }
+
+    const entities = [
+        entityTypes[0],   
+        abilityTypes[1],   
+        abilityTypes[2],   
+        abilityTypes[0]  
+    ];
+
     classAbilitiesContainer = document.createElement('div');
 
-    classContainer.appendChild(createButton(entityTypes[0], 1));
+    classContainer.appendChild(createButton(entities[0], 1, () => handleButtonClick(entities[0])));
     classContainer.appendChild(classAbilitiesContainer);
 
-    classAbilitiesContainer.appendChild(createButton(abilityTypes[0], 0.475));
-    classAbilitiesContainer.appendChild(createButton(abilityTypes[1], 0.475));
-    classAbilitiesContainer.appendChild(createButton(abilityTypes[2], 0.475));
+    entities.slice(1).forEach(entity => {
+        classAbilitiesContainer.appendChild(createButton(entity, 0.475, () => handleButtonClick(entity)));
+    });
     document.body.appendChild(classContainer);
+
+    const versionContainer = document.createElement('div');
+    versionContainer.style.position = 'absolute';
+    versionContainer.style.bottom = '1px';
+    versionContainer.style.right = '10px';
+    versionContainer.style.display = 'flex';
+    versionContainer.style.alignItems = 'center';
+    versionContainer.style.backgroundColor = 'black';
+    versionContainer.style.padding = '1px';
+    versionContainer.style.borderRadius = '10px';
+    versionContainer.style.flexDirection = 'column';
+
+    const versionTitle = document.createElement('div');
+    versionTitle.innerText = '🔗🏆 v0.0.11';
+    versionTitle.style.fontSize = '10px';
+    versionTitle.style.color = 'white';
+    versionTitle.title = 'who even keeps track of these';
+
+    const metaMaskImage = document.createElement('img');
+    metaMaskImage.src = 'Media/MetamaskLogo.png';
+    metaMaskImage.style.width = '30px';
+    metaMaskImage.style.height = '30px';
+    
+    const metaMaskButton = document.createElement('button');
+    metaMaskButton.innerText = '';
+    metaMaskButton.style.fontSize = '14px';
+    metaMaskButton.style.padding = '3px 3px';
+    metaMaskButton.style.backgroundColor = 'transparent';
+    metaMaskButton.style.color = 'white';
+    metaMaskButton.style.border = '1px solid white';
+    metaMaskButton.style.borderRadius = '5px';
+    metaMaskButton.title = 'wen update';
+
+    metaMaskButton.appendChild(metaMaskImage);
+   function displayMetaMaskInfo(address, ethBalance) {
+        metaMaskContainer.innerHTML = `
+           <div style="color: white; margin-right: 10px;">
+                <div>Address: ${address}</div>
+           </div>
+        `;
+    }
+    
+    metaMaskButton.onclick = async () => {
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const address = accounts[0];
+                const balance = await web3.eth.getBalance(address);
+                const ethBalance = web3.utils.fromWei(balance, 'ether');
+                localStorage.setItem('metaMaskAddress', address);
+    
+                displayMetaMaskInfo(address, ethBalance);
+            } catch (error) {
+                if (error.code === 4902) {
+                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                } else {
+                    console.error('Error:', error);
+                }
+            }
+        } else {
+            alert('MetaMask is not installed. Please install it to use this feature.');
+        }
+    };
+    
+    window.addEventListener('load', async () => {
+        const storedAddress = localStorage.getItem('metaMaskAddress');
+        if (storedAddress) {
+            const web3 = new Web3(window.ethereum);
+            const balance = await web3.eth.getBalance(storedAddress);
+            const ethBalance = web3.utils.fromWei(balance, 'ether');
+            displayMetaMaskInfo(storedAddress, ethBalance);
+        }
+    });
+
+    versionContainer.appendChild(metaMaskButton);
+    versionContainer.appendChild(versionTitle);
+    document.body.appendChild(versionContainer);
 }
 
 function startGame(){
-    if (tutorial) {
-        turotial=false;
+    if (mainMenu) {
+        mainMenu=false;
         classContainer.innerHTML = '';
+        titleContainer.innerHTML = '';
     }
 
     isPaused=false;
     AddMetamaskModule();
     refreshDisplay();
 }
-addTutorialModule();
+addMainMenu();
 animate();
