@@ -1,6 +1,4 @@
-const rainbowColors = [
-    0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3
-];
+const rainbowColors = [ 0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3 ];
 let colorIndex = 0;
 
 const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
@@ -32,7 +30,6 @@ class Ability {
         this.effect.update();
     }
 }
-
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
@@ -290,8 +287,7 @@ const abilityTypes = [{
     level: 0
 }
 ];
-
-const entityTypes = [{
+const playerTypes = [{
     class: 'Survivor',
     title: 'Onchain Survivor',
     description:'The jack of all trades (lol), adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
@@ -310,8 +306,9 @@ const entityTypes = [{
         { type: 'Veil of Decentralization', level: 1 }
     ],
     level:0,
-},
-{
+}
+];
+const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
@@ -369,7 +366,7 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
-const player = new Entity(entityTypes.find(type => type.class === 'Survivor'));
+const player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 const enemies = [];
 
 const characterContainer = document.createElement('div');
@@ -403,18 +400,11 @@ timerDisplay.style.marginTop = '10px';
 timerDisplay.style.fontSize = '16px';
 timerDisplay.style.color = 'white'; 
 timerDisplay.style.textAlign = 'center'; 
-
-
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
-
-function AddMetamaskModule() {
-
-
 }
 
 function triggerGameOver() {
@@ -518,7 +508,7 @@ function updatePlayerMovement() {
                 LevelUp();
             }
             scene.remove(xpSphere);
-            xpSpheres.splice(index, 1); // Remove from the xpSpheres list
+            xpSpheres.splice(index, 1);
         }
     });
 }
@@ -547,7 +537,7 @@ function updateEnemies() {
     });
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 20, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
@@ -561,7 +551,7 @@ function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 20, nu
                 player.position.z + offsetZ
             );
 
-            const enemyConfig = entityTypes.find(type => type.class === 'Enemy'); 
+            const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
             const enemy = new Entity(enemyConfig);
 
             enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
@@ -734,7 +724,7 @@ function animate() {
 }
 
 mainMenu=true;
-let classContainer;
+
 function addMainMenu(){
     titleContainer = document.createElement('div');
     titleContainer.style.position = 'absolute';
@@ -743,52 +733,76 @@ function addMainMenu(){
     titleContainer.style.transform = 'translateX(-50%)';
     titleContainer.style.display = 'flex';
     titleContainer.style.alignItems = 'center';
-
+    titleContainer.style.flexDirection = 'column';
     const Title = document.createElement('div');
-    Title.innerText = '🔗🏆\nOnchain \n Survivor';
+    Title.innerText = '🔗🏆\nOnchain Survivor';
     Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
     rainbowText(Title, `55px`); 
-
-    document.body.appendChild(titleContainer);
+    const subTitle = document.createElement('div');
+    subTitle.innerText = 'Can you survive 5 minutes?';
+    subTitle.title='lazy subtitle too btw'
+    rainbowText(subTitle, `20px`); 
+    const instructionsSubTitle = document.createElement('div');
+    instructionsSubTitle.innerText = 'Move to start !';
+    instructionsSubTitle.title='lazy subtitle too btw'
+    rainbowText(instructionsSubTitle, `16px`); 
     titleContainer.appendChild(Title);
-
+    titleContainer.appendChild(subTitle);
+    titleContainer.appendChild(instructionsSubTitle);
+    document.body.appendChild(titleContainer);
+    menuContainer = document.createElement('div');
+    menuContainer.style.position = 'absolute';
+    menuContainer.style.bottom = '1px';
+    menuContainer.style.left = '50%';
+    menuContainer.style.transform = 'translateX(-50%)';
+    menuContainer.style.display = 'flex';
+    menuContainer.style.alignItems = 'center';
+    titleContainer.style.flexDirection = 'column';
     classContainer = document.createElement('div');
-    classContainer.style.position = 'absolute';
-    classContainer.style.top = '55%';
-    classContainer.style.left = '50%';
-    classContainer.style.transform = 'translateX(-50%)';
-    classContainer.style.display = 'flex';
-    classContainer.style.alignItems = 'center';
-
+    const classSubTitle = document.createElement('div');
+    classSubTitle.innerText = '🏆 Class 🏆';
+    classSubTitle.title='lazy subtitle too btw'
+    rainbowText(classSubTitle, `15px`); 
+    classContainer.appendChild(classSubTitle);
     function handleButtonClick(clickedEntity) {
-        classContainer.innerHTML = '';  
-        classContainer.appendChild(createButton(clickedEntity, 1, () => handleButtonClick(clickedEntity))); 
-        classContainer.appendChild(classAbilitiesContainer);
-
-        classAbilitiesContainer.innerHTML = '';
-        entities.forEach(entity => {
-            if (entity !== clickedEntity) { 
-                classAbilitiesContainer.appendChild(createButton(entity, 0.475, () => handleButtonClick(entity)));
-            }
-        });
+        //classContainer.innerHTML = '';  
+        //classContainer.appendChild(createButton(clickedEntity, 1, () => handleButtonClick(clickedEntity))); 
+        //classContainer.appendChild(classAbilitiesContainer);
+        //classAbilitiesContainer.innerHTML = '';
+        //entities.forEach(entity => {
+        //    if (entity !== clickedEntity) { 
+        //        classAbilitiesContainer.appendChild(createButton(entity, 0.499, () => handleButtonClick(entity)));
+        //    }
+       // });
     }
-
     const entities = [
-        entityTypes[0],   
-        abilityTypes[1],   
-        abilityTypes[2],   
-        abilityTypes[0]  
+        playerTypes[0],    
+        abilityTypes[1]
     ];
-
+    menuContainer.appendChild(classContainer);
+    classContainer.appendChild(createButton(entities[0], 0.8, () => handleButtonClick(entities[0])));
     classAbilitiesContainer = document.createElement('div');
-
-    classContainer.appendChild(createButton(entities[0], 1, () => handleButtonClick(entities[0])));
-    classContainer.appendChild(classAbilitiesContainer);
-
+    const abilitiesSubTitle = document.createElement('div');
+    abilitiesSubTitle.innerText = '⚔️ Ability ⚔️';
+    abilitiesSubTitle.title='lazy subtitle too btw'
+    rainbowText(abilitiesSubTitle, `15px`); 
+    classAbilitiesContainer.appendChild(abilitiesSubTitle);
     entities.slice(1).forEach(entity => {
-        classAbilitiesContainer.appendChild(createButton(entity, 0.475, () => handleButtonClick(entity)));
+        classAbilitiesContainer.appendChild(createButton(entity, 0.8, () => handleButtonClick(entity)));
     });
-    document.body.appendChild(classContainer);
+    classContainer.appendChild(classAbilitiesContainer);
+    worldContainer = document.createElement('div');
+    const worldSubTitle = document.createElement('div');
+    worldSubTitle.innerText = '🔗 World 🔗';
+    worldSubTitle.title='lazy subtitle too btw'
+    rainbowText(worldSubTitle, `15px`); 
+    worldContainer.appendChild(worldSubTitle);
+    worldContainer.appendChild(createButton(entities[0], .8, () => handleButtonClick(entities[0])));
+    menuContainer.appendChild(classContainer);
+    menuContainer.appendChild(classAbilitiesContainer);
+    menuContainer.appendChild(worldContainer);
+    document.body.appendChild(menuContainer);
+
 
     const versionContainer = document.createElement('div');
     versionContainer.style.position = 'absolute';
@@ -800,18 +814,14 @@ function addMainMenu(){
     versionContainer.style.padding = '1px';
     versionContainer.style.borderRadius = '10px';
     versionContainer.style.flexDirection = 'column';
-
     const versionTitle = document.createElement('div');
-    versionTitle.innerText = '🔗🏆 v0.0.11';
-    versionTitle.style.fontSize = '10px';
-    versionTitle.style.color = 'white';
+    versionTitle.innerText = 'v0.0.11';
+    rainbowText(versionTitle, `11px`); 
     versionTitle.title = 'who even keeps track of these';
-
     const metaMaskImage = document.createElement('img');
     metaMaskImage.src = 'Media/MetamaskLogo.png';
     metaMaskImage.style.width = '30px';
     metaMaskImage.style.height = '30px';
-    
     const metaMaskButton = document.createElement('button');
     metaMaskButton.innerText = '';
     metaMaskButton.style.fontSize = '14px';
@@ -874,12 +884,11 @@ function addMainMenu(){
 function startGame(){
     if (mainMenu) {
         mainMenu=false;
-        classContainer.innerHTML = '';
+        menuContainer.innerHTML = '';
         titleContainer.innerHTML = '';
     }
 
     isPaused=false;
-    AddMetamaskModule();
     refreshDisplay();
 }
 addMainMenu();
