@@ -327,6 +327,17 @@ const enemyTypes = [{
 }
 ];
 
+const worldTypes = [{
+    class: 'World',
+    title: 'Ethereumverse',
+    description:'An open futuristic, digital landscape where data flows freely. Forever. 12 seconds at a time thought. ',
+    tooltip:'0.043 💀',
+    tags: ['world'],
+    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    level:0,
+}
+];
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -777,7 +788,8 @@ function addMainMenu(){
     }
     const entities = [
         playerTypes[0],    
-        abilityTypes[1]
+        abilityTypes[1],
+        worldTypes[0]
     ];
     menuContainer.appendChild(classContainer);
     classContainer.appendChild(createButton(entities[0], 0.8, () => handleButtonClick(entities[0])));
@@ -787,9 +799,9 @@ function addMainMenu(){
     abilitiesSubTitle.title='lazy subtitle too btw'
     rainbowText(abilitiesSubTitle, `15px`); 
     classAbilitiesContainer.appendChild(abilitiesSubTitle);
-    entities.slice(1).forEach(entity => {
-        classAbilitiesContainer.appendChild(createButton(entity, 0.8, () => handleButtonClick(entity)));
-    });
+
+        classAbilitiesContainer.appendChild(createButton(entities[1], 0.8, () => handleButtonClick(entity)));
+
     classContainer.appendChild(classAbilitiesContainer);
     worldContainer = document.createElement('div');
     const worldSubTitle = document.createElement('div');
@@ -797,7 +809,7 @@ function addMainMenu(){
     worldSubTitle.title='lazy subtitle too btw'
     rainbowText(worldSubTitle, `15px`); 
     worldContainer.appendChild(worldSubTitle);
-    worldContainer.appendChild(createButton(entities[0], .8, () => handleButtonClick(entities[0])));
+    worldContainer.appendChild(createButton(entities[2], .8, () => handleButtonClick(entities[0])));
     menuContainer.appendChild(classContainer);
     menuContainer.appendChild(classAbilitiesContainer);
     menuContainer.appendChild(worldContainer);
