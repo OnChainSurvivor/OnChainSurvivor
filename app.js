@@ -343,9 +343,9 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000, 1);
-document.body.appendChild(renderer.domElement);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
@@ -745,6 +745,7 @@ function addMainMenu(){
     titleContainer.style.display = 'flex';
     titleContainer.style.alignItems = 'center';
     titleContainer.style.flexDirection = 'column';
+    titleContainer.classList.add('fade-in'); // Apply fade-in class
     const Title = document.createElement('div');
     Title.innerText = '🔗🏆\nOnchain Survivor';
     Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
@@ -768,6 +769,7 @@ function addMainMenu(){
     menuContainer.style.transform = 'translateX(-50%)';
     menuContainer.style.display = 'flex';
     menuContainer.style.alignItems = 'center';
+    menuContainer.classList.add('fade-in'); // Apply fade-in class
     titleContainer.style.flexDirection = 'column';
     classContainer = document.createElement('div');
     const classSubTitle = document.createElement('div');
@@ -891,17 +893,40 @@ function addMainMenu(){
     versionContainer.appendChild(metaMaskButton);
     versionContainer.appendChild(versionTitle);
     document.body.appendChild(versionContainer);
+     // Trigger the fade-in effect after appending the elements to the DOM
+     setTimeout(() => {
+        titleContainer.classList.add('show');
+        menuContainer.classList.add('show');
+    }, 10); // Short delay to ensure the elements are rendered before the transition starts
+
 }
 
-function startGame(){
+function startGame() {
     if (mainMenu) {
-        mainMenu=false;
-        menuContainer.innerHTML = '';
-        titleContainer.innerHTML = '';
+        mainMenu = false;
+
+        // Apply the fade-out class to the containers
+        menuContainer.classList.add('fade-out');
+        titleContainer.classList.add('fade-out');
+
+        // Wait for the fade-out transition to complete before removing elements
+        setTimeout(() => {
+            menuContainer.classList.add('hide'); // Add the hide class to trigger fade-out
+            titleContainer.classList.add('hide');
+            
+            // Remove the elements from the DOM after the transition
+            setTimeout(() => {
+                menuContainer.innerHTML = '';
+                titleContainer.innerHTML = '';
+                menuContainer.classList.remove('fade-out', 'hide');
+                titleContainer.classList.remove('fade-out', 'hide');
+            }, 1500); // This should match the duration of the transition
+        }, 10); // Short delay to ensure the transition starts
     }
 
-    isPaused=false;
+    isPaused = false;
     refreshDisplay();
 }
+
 addMainMenu();
 animate();
