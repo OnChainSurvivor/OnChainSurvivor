@@ -672,7 +672,7 @@ function createButton(ability, scale = 1, onClick) {
     effectinfo.style.alignItems = 'center'; 
     effectinfo.style.justifyContent = 'center';
     effectinfo.style.padding = `${5 * scale}px 0`;
-    effectinfo.style.display = scale > 0.5 ? 'block' : 'none'; 
+    effectinfo.style.display = scale > 0.751 ? 'block' : 'none'; 
 
     button.appendChild(title);
     button.appendChild(img);
@@ -755,58 +755,54 @@ function animate() {
 }
 
 mainMenu=true;
+const isMobile = window.innerWidth <= 600;
 
 function addMainMenu(){
     titleContainer = document.createElement('div');
     titleContainer.style.position = 'absolute';
-    titleContainer.style.top = '10px';
+    titleContainer.style.top = '25px';
     titleContainer.style.left = '50%';
     titleContainer.style.transform = 'translateX(-50%)';
     titleContainer.style.display = 'flex';
     titleContainer.style.alignItems = 'center';
     titleContainer.style.flexDirection = 'column';
-    titleContainer.classList.add('fade-in'); // Apply fade-in class
+    titleContainer.classList.add('fade-in'); 
     const Title = document.createElement('div');
-    Title.innerText = '🔗🏆\nOnchain Survivor';
+    Title.innerText = '🔗🏆\nOnchain Survivor';  
     Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
-    rainbowText(Title, `55px`); 
     const subTitle = document.createElement('div');
     subTitle.innerText = 'Can you survive 5 minutes?';
     subTitle.title='lazy subtitle too btw'
-    rainbowText(subTitle, `20px`); 
     const instructionsSubTitle = document.createElement('div');
     instructionsSubTitle.innerText = 'Move to start !';
     instructionsSubTitle.title='lazy subtitle too btw'
-    rainbowText(instructionsSubTitle, `16px`); 
+
+    rainbowText(Title, isMobile ? '10vw' : '6vw'); 
+    rainbowText(subTitle, isMobile ? '4vw' : '2vw'); 
+    rainbowText(instructionsSubTitle, isMobile ? '4vw' : '2vw'); 
     titleContainer.appendChild(Title);
     titleContainer.appendChild(subTitle);
     titleContainer.appendChild(instructionsSubTitle);
     document.body.appendChild(titleContainer);
+
+
     menuContainer = document.createElement('div');
     menuContainer.style.position = 'absolute';
-    menuContainer.style.bottom = '1px';
+    menuContainer.style.bottom = '25px';
     menuContainer.style.left = '50%';
     menuContainer.style.transform = 'translateX(-50%)';
     menuContainer.style.display = 'flex';
     menuContainer.style.alignItems = 'center';
-    menuContainer.classList.add('fade-in'); // Apply fade-in class
+    menuContainer.classList.add('fade-in'); 
     titleContainer.style.flexDirection = 'column';
     classContainer = document.createElement('div');
     const classSubTitle = document.createElement('div');
     classSubTitle.innerText = '🏆 Class 🏆';
     classSubTitle.title='lazy subtitle too btw'
-    rainbowText(classSubTitle, `15px`); 
-    classContainer.appendChild(classSubTitle);
+    rainbowText(classSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
+    
     function handleButtonClick(clickedEntity) {
-        //classContainer.innerHTML = '';  
-        //classContainer.appendChild(createButton(clickedEntity, 1, () => handleButtonClick(clickedEntity))); 
-        //classContainer.appendChild(classAbilitiesContainer);
-        //classAbilitiesContainer.innerHTML = '';
-        //entities.forEach(entity => {
-        //    if (entity !== clickedEntity) { 
-        //        classAbilitiesContainer.appendChild(createButton(entity, 0.499, () => handleButtonClick(entity)));
-        //    }
-       // });
+        //Menu
     }
     const entities = [
         playerTypes[0],    
@@ -814,33 +810,34 @@ function addMainMenu(){
         worldTypes[0]
     ];
     menuContainer.appendChild(classContainer);
-    classContainer.appendChild(createButton(entities[0], 0.49, () => handleButtonClick(entities[0])));
+    classContainer.appendChild(createButton(entities[0], 0.7, () => handleButtonClick(entities[0])));
+    classContainer.appendChild(classSubTitle);
     classAbilitiesContainer = document.createElement('div');
     const abilitiesSubTitle = document.createElement('div');
     abilitiesSubTitle.innerText = '⚔️ Ability ⚔️';
     abilitiesSubTitle.title='lazy subtitle too btw'
-    rainbowText(abilitiesSubTitle, `15px`); 
-    classAbilitiesContainer.appendChild(abilitiesSubTitle);
+    rainbowText(abilitiesSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
 
-        classAbilitiesContainer.appendChild(createButton(entities[1], 0.49, () => handleButtonClick(entity)));
+    classAbilitiesContainer.appendChild(createButton(entities[1], 0.7, () => handleButtonClick(entity)));
+    classAbilitiesContainer.appendChild(abilitiesSubTitle);
 
     classContainer.appendChild(classAbilitiesContainer);
     worldContainer = document.createElement('div');
     const worldSubTitle = document.createElement('div');
     worldSubTitle.innerText = '🔗 World 🔗';
     worldSubTitle.title='lazy subtitle too btw'
-    rainbowText(worldSubTitle, `15px`); 
+    rainbowText(worldSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
+
+    worldContainer.appendChild(createButton(entities[2], .7, () => handleButtonClick(entities[0])));
     worldContainer.appendChild(worldSubTitle);
-    worldContainer.appendChild(createButton(entities[2], .49, () => handleButtonClick(entities[0])));
     menuContainer.appendChild(classContainer);
     menuContainer.appendChild(classAbilitiesContainer);
     menuContainer.appendChild(worldContainer);
     document.body.appendChild(menuContainer);
 
-
     const versionContainer = document.createElement('div');
     versionContainer.style.position = 'absolute';
-    versionContainer.style.bottom = '1px';
+    versionContainer.style.top = '1px';
     versionContainer.style.right = '10px';
     versionContainer.style.display = 'flex';
     versionContainer.style.alignItems = 'center';
@@ -850,7 +847,7 @@ function addMainMenu(){
     versionContainer.style.flexDirection = 'column';
     const versionTitle = document.createElement('div');
     versionTitle.innerText = 'v0.0.11';
-    rainbowText(versionTitle, `11px`); 
+    rainbowText(versionTitle,isMobile ? '3vw' : '1vw'); 
     versionTitle.title = 'who even keeps track of these';
     const metaMaskImage = document.createElement('img');
     metaMaskImage.src = 'Media/MetamaskLogo.png';
@@ -909,39 +906,86 @@ function addMainMenu(){
             displayMetaMaskInfo(storedAddress, ethBalance);
         }
     });
+    
+    const loadingContainer = document.createElement('div');
+    loadingContainer.id = 'loadingContainer';
+    loadingContainer.style.position = 'relative';
+    loadingContainer.style.width = '100%'; 
+    loadingContainer.style.height = '10px';
+    loadingContainer.style.backgroundColor = 'black';
+    loadingContainer.style.boxSizing = 'border-box';
+    loadingContainer.style.border = '0.5px solid'; 
+    loadingContainer.style.borderImageSlice = 1;
+    loadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
 
-    versionContainer.appendChild(metaMaskButton);
+    const loadingBar = document.createElement('div');
+    loadingBar.id = 'loadingBar';
+    loadingBar.style.width = '0';
+    loadingBar.style.height = '100%';
+    loadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+    loadingBar.style.backgroundSize = '400% 400%';
+    loadingBar.style.animation = 'rainbow 5s linear infinite';
+
+    const loadingText = document.createElement('div');
+    loadingText.id = 'loadingText';
+    loadingText.style.color = 'white';
+  
+    loadingContainer.appendChild(loadingBar);
     versionContainer.appendChild(versionTitle);
+    versionContainer.appendChild(metaMaskButton);
+    versionContainer.appendChild(loadingContainer);
+    versionContainer.appendChild(loadingText);
+
     document.body.appendChild(versionContainer);
-     // Trigger the fade-in effect after appending the elements to the DOM
      setTimeout(() => {
         titleContainer.classList.add('show');
         menuContainer.classList.add('show');
-    }, 10); // Short delay to ensure the elements are rendered before the transition starts
-
+    }, 10); 
 }
+
+function updateLoadingBar(currentAmount) {
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingText = document.getElementById('loadingText');
+    const goal = 1000000; 
+    const percentage = (currentAmount / goal) * 100;
+    loadingBar.style.width = percentage + '%';
+    loadingText.innerText ='🏆\n'+percentage.toFixed(2) + '%';
+}
+
+function simulateLoading() {
+    let currentAmount = 0;
+    const increment = 10000; 
+    const loadingInterval = setInterval(() => {
+        if (currentAmount >= 1000000) {
+          //TODO
+        } else {
+            currentAmount += increment;
+            updateLoadingBar(currentAmount);
+        }
+    }, 50); 
+}
+
+simulateLoading();
+
 
 function startGame() {
     if (mainMenu) {
         mainMenu = false;
 
-        // Apply the fade-out class to the containers
         menuContainer.classList.add('fade-out');
         titleContainer.classList.add('fade-out');
 
-        // Wait for the fade-out transition to complete before removing elements
         setTimeout(() => {
             menuContainer.classList.add('hide'); // Add the hide class to trigger fade-out
             titleContainer.classList.add('hide');
-            
-            // Remove the elements from the DOM after the transition
+
             setTimeout(() => {
                 menuContainer.innerHTML = '';
                 titleContainer.innerHTML = '';
                 menuContainer.classList.remove('fade-out', 'hide');
                 titleContainer.classList.remove('fade-out', 'hide');
-            }, 1500); // This should match the duration of the transition
-        }, 10); // Short delay to ensure the transition starts
+            }, 1500);
+        }, 10); 
     }
 
     isPaused = false;
