@@ -814,7 +814,7 @@ function addMainMenu(){
         worldTypes[0]
     ];
     menuContainer.appendChild(classContainer);
-    classContainer.appendChild(createButton(entities[0], 0.8, () => handleButtonClick(entities[0])));
+    classContainer.appendChild(createButton(entities[0], 0.49, () => handleButtonClick(entities[0])));
     classAbilitiesContainer = document.createElement('div');
     const abilitiesSubTitle = document.createElement('div');
     abilitiesSubTitle.innerText = '⚔️ Ability ⚔️';
@@ -830,8 +830,8 @@ function addMainMenu(){
     worldSubTitle.innerText = '🔗 World 🔗';
     worldSubTitle.title='lazy subtitle too btw'
     rainbowText(worldSubTitle, `15px`); 
-    classAbilitiesContainer.appendChild(worldSubTitle);
-    classAbilitiesContainer.appendChild(createButton(entities[2], .49, () => handleButtonClick(entities[0])));
+    worldContainer.appendChild(worldSubTitle);
+    worldContainer.appendChild(createButton(entities[2], .49, () => handleButtonClick(entities[0])));
     menuContainer.appendChild(classContainer);
     menuContainer.appendChild(classAbilitiesContainer);
     menuContainer.appendChild(worldContainer);
