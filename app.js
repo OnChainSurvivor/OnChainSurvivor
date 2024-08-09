@@ -822,7 +822,7 @@ function addMainMenu(){
     rainbowText(abilitiesSubTitle, `15px`); 
     classAbilitiesContainer.appendChild(abilitiesSubTitle);
 
-        classAbilitiesContainer.appendChild(createButton(entities[1], 0.8, () => handleButtonClick(entity)));
+        classAbilitiesContainer.appendChild(createButton(entities[1], 0.49, () => handleButtonClick(entity)));
 
     classContainer.appendChild(classAbilitiesContainer);
     worldContainer = document.createElement('div');
@@ -830,8 +830,8 @@ function addMainMenu(){
     worldSubTitle.innerText = '🔗 World 🔗';
     worldSubTitle.title='lazy subtitle too btw'
     rainbowText(worldSubTitle, `15px`); 
-    worldContainer.appendChild(worldSubTitle);
-    worldContainer.appendChild(createButton(entities[2], .8, () => handleButtonClick(entities[0])));
+    classAbilitiesContainer.appendChild(worldSubTitle);
+    classAbilitiesContainer.appendChild(createButton(entities[2], .49, () => handleButtonClick(entities[0])));
     menuContainer.appendChild(classContainer);
     menuContainer.appendChild(classAbilitiesContainer);
     menuContainer.appendChild(worldContainer);
