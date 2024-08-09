@@ -75,3 +75,21 @@ canvas {
 .fade-out.hide {
     opacity: 0;
 }
+
+
+html, body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#survivorCanvas, #survivorZone, html, body {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+

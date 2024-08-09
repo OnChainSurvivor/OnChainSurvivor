@@ -340,12 +340,21 @@ const worldTypes = [{
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000, 1);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+const canvas = document.getElementById('survivorCanvas');
+const renderer = new THREE.WebGLRenderer({ canvas });
+
+function updateRendererSize() {
+    const dpr = window.devicePixelRatio || 1;
+    renderer.setPixelRatio(dpr);
+    const rect = canvas.getBoundingClientRect();
+    renderer.setSize(rect.width, rect.height);
+    camera.aspect = rect.width / rect.height;
+    camera.updateProjectionMatrix();
+}
+
+updateRendererSize();
+
+window.addEventListener('resize', updateRendererSize);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
@@ -717,20 +726,31 @@ window.addEventListener('resize', () => {
 
 let animationFrameId;
 let isPaused = true;
-function animate() {
-    if (!isPaused) {
-        updatePlayerMovement();
-        updateCamera();
-        updateEnemies();
-        updateTimerDisplay();
-    } else {
-        if (keys.s) startGame();
-        if (keys.w) startGame();
-        if (keys.a) startGame();
-        if (keys.d) startGame();
-    }
 
+// Initialize the Three.js clock
+const clock = new THREE.Clock();
+
+const fixedTimeStep = 1 / 60; // ~0.01667 seconds per update
+let accumulatedTime = 0;
+let deltaTime;
+function animate() {
     animationFrameId = requestAnimationFrame(animate);
+    deltaTime = clock.getDelta();
+    accumulatedTime += deltaTime;
+    while (accumulatedTime >= fixedTimeStep) {
+        if (!isPaused) {
+            updatePlayerMovement();
+            updateCamera();
+            updateEnemies();
+            updateTimerDisplay();
+        } else {
+            if (keys.s) startGame();
+            if (keys.w) startGame();
+            if (keys.a) startGame();
+            if (keys.d) startGame();
+        }
+        accumulatedTime -= fixedTimeStep;
+    }
     composer.render();
 }
 
