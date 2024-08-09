@@ -389,32 +389,33 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 const player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 const enemies = [];
 
-const characterContainer = document.createElement('div');
-characterContainer.style.position = 'absolute';
-characterContainer.style.bottom = '10px';
-characterContainer.style.left = '10px';
-characterContainer.style.display = 'flex';
-characterContainer.style.alignItems = 'center';
-characterContainer.style.backgroundColor = 'black';
-characterContainer.style.padding = '10px';
-characterContainer.style.borderRadius = '10px';
-characterContainer.style.flexDirection = 'column';
+const gameStateContainer = document.createElement('div');
+gameStateContainer.style.position = 'absolute';
+gameStateContainer.style.bottom = '10px';
+gameStateContainer.style.left = '50%';
+gameStateContainer.style.transform = 'translateX(-50%)';
+gameStateContainer.style.display = 'flex';
+gameStateContainer.style.alignItems = 'center';
+gameStateContainer.style.backgroundColor = 'black';
+gameStateContainer.style.padding = '10px';
+gameStateContainer.style.borderRadius = '10px';
+gameStateContainer.style.flexDirection = 'column';
 
-document.body.appendChild(characterContainer);
+document.body.appendChild(gameStateContainer);
 
 const abilitiesContainer = document.createElement('div');
 abilitiesContainer.id = 'abilitiesContainer';
 abilitiesContainer.style.top = '10px';
 abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
-abilitiesContainer.style.flexDirection = 'column';
+//abilitiesContainer.style.flexDirection = 'column';
 
-characterContainer.appendChild(abilitiesContainer);
-document.body.appendChild(characterContainer);
+gameStateContainer.appendChild(abilitiesContainer);
+document.body.appendChild(gameStateContainer);
 
 let countdown = 1800 * 60;
 let timerDisplay = document.createElement('div');
-characterContainer.appendChild(timerDisplay);
+gameStateContainer.appendChild(timerDisplay);
 timerDisplay.style.position = 'relative';
 timerDisplay.style.marginTop = '10px';
 timerDisplay.style.fontSize = '16px';
@@ -612,7 +613,7 @@ const rainbowText = (element, fontSize) => {
 function createButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
     button.style.width = `${200 * scale}px`;
-    button.style.margin = '5px';
+    button.style.margin = '3px';
     button.style.display = 'flex';
     button.style.flexDirection = 'column';
     button.style.alignItems = 'center';
@@ -622,12 +623,11 @@ function createButton(ability, scale = 1, onClick) {
     button.style.cursor = 'pointer';
     button.style.fontFamily = 'Arial, sans-serif';
     button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-    button.style.border = '1.5px solid';
+    button.style.border = '1px solid';
     button.style.borderImageSlice = 1;
     button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
     button.style.animation = 'rainbowBorder 5s linear infinite';
 
- 
     button.title = ability.tooltip;
 
     const title = document.createElement('div');
@@ -641,7 +641,7 @@ function createButton(ability, scale = 1, onClick) {
     title.style.alignItems = 'center';
     title.style.justifyContent = 'center';
     title.style.padding = `${5 * scale}px 0`;
-
+    //title.style.display = scale > 0.31 ? 'block' : 'none'; 
     const img = document.createElement('img');
     img.src = ability.thumbnail;
     img.style.width = `${150 * scale}px`;
@@ -693,6 +693,7 @@ function refreshDisplay() {
    
         abilitiesContainer.appendChild(abilityButton);
     });
+    abilitiesContainer.appendChild(createButton(worldTypes[0],.3));
 }
     
 function LevelUp() {
@@ -771,20 +772,16 @@ function addMainMenu(){
     Title.innerText = '🔗🏆\nOnchain Survivor';  
     Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
     const subTitle = document.createElement('div');
-    subTitle.innerText = 'Can you survive 5 minutes?';
+    subTitle.innerText = 'Can you survive 5 minutes?  Move to Start!';
     subTitle.title='lazy subtitle too btw'
-    const instructionsSubTitle = document.createElement('div');
-    instructionsSubTitle.innerText = 'Move to start !';
-    instructionsSubTitle.title='lazy subtitle too btw'
 
     rainbowText(Title, isMobile ? '10vw' : '6vw'); 
     rainbowText(subTitle, isMobile ? '4vw' : '2vw'); 
-    rainbowText(instructionsSubTitle, isMobile ? '4vw' : '2vw'); 
+ 
     titleContainer.appendChild(Title);
     titleContainer.appendChild(subTitle);
-    titleContainer.appendChild(instructionsSubTitle);
-    document.body.appendChild(titleContainer);
 
+    document.body.appendChild(titleContainer);
 
     menuContainer = document.createElement('div');
     menuContainer.style.position = 'absolute';
@@ -845,6 +842,7 @@ function addMainMenu(){
     versionContainer.style.padding = '1px';
     versionContainer.style.borderRadius = '10px';
     versionContainer.style.flexDirection = 'column';
+    versionContainer.classList.add('fade-in'); 
     const versionTitle = document.createElement('div');
     versionTitle.innerText = 'v0.0.11';
     rainbowText(versionTitle,isMobile ? '3vw' : '1vw'); 
@@ -862,51 +860,8 @@ function addMainMenu(){
     metaMaskButton.style.border = '1px solid white';
     metaMaskButton.style.borderRadius = '5px';
     metaMaskButton.title = 'wen update';
-
     metaMaskButton.appendChild(metaMaskImage);
-   function displayMetaMaskInfo(address, ethBalance) {
-        metaMaskContainer.innerHTML = `
-           <div style="color: white; margin-right: 10px;">
-                <div>Address: ${address}</div>
-           </div>
-        `;
-    }
-    
-    metaMaskButton.onclick = async () => {
-        if (window.ethereum) {
-            const web3 = new Web3(window.ethereum);
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const address = accounts[0];
-                const balance = await web3.eth.getBalance(address);
-                const ethBalance = web3.utils.fromWei(balance, 'ether');
-                localStorage.setItem('metaMaskAddress', address);
-    
-                displayMetaMaskInfo(address, ethBalance);
-            } catch (error) {
-                if (error.code === 4902) {
-                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-                } else {
-                    console.error('Error:', error);
-                }
-            }
-        } else {
-            alert('MetaMask is not installed. Please install it to use this feature.');
-        }
-    };
-    
-    window.addEventListener('load', async () => {
-        const storedAddress = localStorage.getItem('metaMaskAddress');
-        if (storedAddress) {
-            const web3 = new Web3(window.ethereum);
-            const balance = await web3.eth.getBalance(storedAddress);
-            const ethBalance = web3.utils.fromWei(balance, 'ether');
-            displayMetaMaskInfo(storedAddress, ethBalance);
-        }
-    });
-    
+ 
     const loadingContainer = document.createElement('div');
     loadingContainer.id = 'loadingContainer';
     loadingContainer.style.position = 'relative';
@@ -933,13 +888,57 @@ function addMainMenu(){
     loadingContainer.appendChild(loadingBar);
     versionContainer.appendChild(versionTitle);
     versionContainer.appendChild(metaMaskButton);
-    versionContainer.appendChild(loadingContainer);
-    versionContainer.appendChild(loadingText);
 
-    document.body.appendChild(versionContainer);
+    function displayMetaMaskInfo(address, ethBalance) {
+        versionContainer.appendChild(loadingContainer);
+        versionContainer.appendChild(loadingText);
+            metaMaskContainer.innerHTML = `
+               <div style="color: white; margin-right: 10px;">
+                    <div>Address: ${address}</div>
+               </div>
+            `;
+        }
+        
+        metaMaskButton.onclick = async () => {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    const address = accounts[0];
+                    const balance = await web3.eth.getBalance(address);
+                    const ethBalance = web3.utils.fromWei(balance, 'ether');
+                    localStorage.setItem('metaMaskAddress', address);
+        
+                    displayMetaMaskInfo(address, ethBalance);
+                } catch (error) {
+                    if (error.code === 4902) {
+                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                    } else {
+                        console.error('Error:', error);
+                    }
+                }
+            } else {
+                alert('MetaMask is not installed. Please install it to use this feature.');
+            }
+        };
+        
+        window.addEventListener('load', async () => {
+            const storedAddress = localStorage.getItem('metaMaskAddress');
+            if (storedAddress) {
+                const web3 = new Web3(window.ethereum);
+                const balance = await web3.eth.getBalance(storedAddress);
+                const ethBalance = web3.utils.fromWei(balance, 'ether');
+                displayMetaMaskInfo(storedAddress, ethBalance);
+            }
+        });
+
+        document.body.appendChild(versionContainer);
      setTimeout(() => {
         titleContainer.classList.add('show');
         menuContainer.classList.add('show');
+        versionContainer.classList.add('show');
     }, 10); 
 }
 

@@ -28,7 +28,7 @@ canvas {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    bottom: 125%; /* Position the tooltip above the button */
+    bottom: 125%;
     left: 50%;
     margin-left: -100px;
     opacity: 0;
@@ -75,6 +75,15 @@ canvas {
 .fade-out.hide {
     opacity: 0;
 }
+
+.top-container{
+position : 'absolute';
+top : '25px';
+left : '50%';
+transform : 'translateX(-50%)';
+display : 'flex';
+}
+
 
 
 html, body {
