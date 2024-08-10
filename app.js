@@ -1,17 +1,50 @@
-const rainbowColors = [ 0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3 ];
-let colorIndex = 0;
+/*---------------------------------------------------------------------------
+                              Constants
+---------------------------------------------------------------------------*/
 
-const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
-    color: color,
-    emissive: color,
-    emissiveIntensity: emissiveIntensity,
-    metalness: 0.5,
-    roughness: 0.3
-});
+const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
+let colorIndex = 0;
 
 const xpSpheres = []; 
 const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
 const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+
+/*---------------------------------------------------------------------------
+                              Utility Functions
+---------------------------------------------------------------------------*/
+
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
+    color,
+    emissive: color,
+    emissiveIntensity,
+    metalness: 0.5,
+    roughness: 0.3
+});
+
+const dropXpSphere = (position) => {
+    const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
+    xpSphere.position.copy(position);
+    xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere);
+    scene.add(xpSphere);
+    xpSpheres.push(xpSphere);
+};
+
+const handleEntityDeath = (entity, enemies) => {
+    if (player.health <= 0) triggerGameOver();
+    dropXpSphere(entity.position);
+    entity.deactivateAbilities();
+    scene.remove(entity);
+
+    const index = scene.children.indexOf(entity);
+    if (index > -1) scene.children.splice(index, 1);
+
+    const enemyIndex = enemies.indexOf(entity);
+    if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+};
+
+/*---------------------------------------------------------------------------
+                              Classes
+---------------------------------------------------------------------------*/
 
 class Ability {
     constructor(user, config) {
@@ -30,6 +63,7 @@ class Ability {
         this.effect.update();
     }
 }
+
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
@@ -44,12 +78,10 @@ class Entity extends THREE.Object3D {
 
     initAbilities(abilitiesConfig) {
         abilitiesConfig.forEach(abilityConfig => {
-            const existingAbility = this.abilities.find(
-                ability => ability.title === abilityConfig.type
-            );
+            const existingAbility = this.abilities.find(ability => ability.title === abilityConfig.type);
             if (existingAbility) {
                 existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10);
-                existingAbility.activate();  
+                existingAbility.activate();
             } else {
                 const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
                 if (abilityType) {
@@ -66,35 +98,30 @@ class Entity extends THREE.Object3D {
     }
 
     activateAbility(index) {
-        if (this.abilities[index]) this.abilities[index].activate();
+        this.abilities[index]?.activate();
     }
 
     deactivateAbility(index) {
-        if (this.abilities[index]) this.abilities[index].deactivate();
+        this.abilities[index]?.deactivate();
     }
 
     updateAbilities() {
-        this.abilities.forEach(ability => {
-            ability.update();
-        });
+        this.abilities.forEach(ability => ability.update());
     }
 
     deactivateAbilities() {
-        this.abilities.forEach(ability => {
-            ability.deactivate();
-            ability = null;
-        });
+        this.abilities.forEach(ability => ability.deactivate());
         this.abilities.length = 0;
     }
 
     takeDamage(amount) {
-        if (this.evasionCooldown) return; 
+        if (this.evasionCooldown) return;
 
         const evasionSuccess = Math.random() < (this.evasion / 100);
         if (evasionSuccess) {
             console.log("EVADED");
-            this.evasionCooldown = true;  
-            setTimeout(() => this.evasionCooldown = false, 1000); 
+            this.evasionCooldown = true;
+            setTimeout(() => this.evasionCooldown = false, 1000);
             return;
         }
 
@@ -103,28 +130,16 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
-        if (player.health <= 0) triggerGameOver();
-        this.dropItem();
-        this.deactivateAbilities();
-        scene.remove(this);
-        for (let i = 0; i < scene.children.length; i++) {
-            if (scene.children[i] === this) {
-                scene.children.splice(i, 1);
-                break;
-            }
-        }
-        const enemyIndex = enemies.indexOf(this);
-        if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+        handleEntityDeath(this, enemies);
     }
-    dropItem() {
-        const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
-        xpSphere.position.copy(this.position);
-        xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere)
-        scene.add(xpSphere);
-        xpSpheres.push(xpSphere);
-    }
-
 }
+
+/*---------------------------------------------------------------------------
+                              Initialization/Usage
+---------------------------------------------------------------------------*/
+
+// Code that initializes or uses the classes goes here
+
 const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
@@ -331,7 +346,7 @@ const worldTypes = [{
     class: 'World',
     title: 'Ethereumverse',
     description:'An open futuristic, digital landscape where data flows freely. Forever. 12 seconds at a time thought. ',
-    tooltip:'0.043 💀',
+    tooltip:'0.04 💀',
     tags: ['world'],
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     level:0,
@@ -390,25 +405,12 @@ const player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 const enemies = [];
 
 const gameStateContainer = document.createElement('div');
-gameStateContainer.style.position = 'absolute';
-gameStateContainer.style.bottom = '10px';
-gameStateContainer.style.left = '50%';
-gameStateContainer.style.transform = 'translateX(-50%)';
-gameStateContainer.style.display = 'flex';
-gameStateContainer.style.alignItems = 'center';
-gameStateContainer.style.backgroundColor = 'black';
-gameStateContainer.style.padding = '10px';
-gameStateContainer.style.borderRadius = '10px';
-gameStateContainer.style.flexDirection = 'column';
+gameStateContainer.classList.add('bottom-container'); 
 
 document.body.appendChild(gameStateContainer);
 
 const abilitiesContainer = document.createElement('div');
-abilitiesContainer.id = 'abilitiesContainer';
-abilitiesContainer.style.top = '10px';
-abilitiesContainer.style.left = '10px';
 abilitiesContainer.style.display = 'flex';
-//abilitiesContainer.style.flexDirection = 'column';
 
 gameStateContainer.appendChild(abilitiesContainer);
 document.body.appendChild(gameStateContainer);
@@ -416,11 +418,9 @@ document.body.appendChild(gameStateContainer);
 let countdown = 1800 * 60;
 let timerDisplay = document.createElement('div');
 gameStateContainer.appendChild(timerDisplay);
-timerDisplay.style.position = 'relative';
-timerDisplay.style.marginTop = '10px';
 timerDisplay.style.fontSize = '16px';
 timerDisplay.style.color = 'white'; 
-timerDisplay.style.textAlign = 'center'; 
+
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
@@ -601,13 +601,7 @@ composer.addPass(bloomPass);
 
 const rainbowText = (element, fontSize) => {
     element.style.fontSize = fontSize;
-    element.style.color = 'transparent';
-    element.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-    element.style.backgroundClip = 'text';
-    element.style.webkitBackgroundClip = 'text';
-    element.style.backgroundSize = '200% 200%';
-    element.style.animation = 'rainbowText 7s linear infinite';
-    element.style.textAlign = 'center';
+    element.classList.add('rainbow-text'); 
 };
 
 function createButton(ability, scale = 1, onClick) {
@@ -725,132 +719,93 @@ window.addEventListener('resize', () => {
     composer.setSize(window.innerWidth, window.innerHeight);
 }, false);
 
-let animationFrameId;
-let isPaused = true;
 
-// Initialize the Three.js clock
-const clock = new THREE.Clock();
+/*---------------------------------------------------------------------------
+                                UI UTILITIES 
+---------------------------------------------------------------------------*/
+let mainMenu=true;
 
-const fixedTimeStep = 1 / 60; // ~0.01667 seconds per update
-let accumulatedTime = 0;
-let deltaTime;
-function animate() {
-    animationFrameId = requestAnimationFrame(animate);
-    deltaTime = clock.getDelta();
-    accumulatedTime += deltaTime;
-    while (accumulatedTime >= fixedTimeStep) {
-        if (!isPaused) {
-            updatePlayerMovement();
-            updateCamera();
-            updateEnemies();
-            updateTimerDisplay();
-        } else {
-            if (keys.s) startGame();
-            if (keys.w) startGame();
-            if (keys.a) startGame();
-            if (keys.d) startGame();
-        }
-        accumulatedTime -= fixedTimeStep;
-    }
-    composer.render();
-}
-
-mainMenu=true;
 const isMobile = window.innerWidth <= 600;
 
-function addMainMenu(){
-    titleContainer = document.createElement('div');
-    titleContainer.style.position = 'absolute';
-    titleContainer.style.top = '25px';
-    titleContainer.style.left = '50%';
-    titleContainer.style.transform = 'translateX(-50%)';
-    titleContainer.style.display = 'flex';
-    titleContainer.style.alignItems = 'center';
-    titleContainer.style.flexDirection = 'column';
-    titleContainer.classList.add('fade-in'); 
-    const Title = document.createElement('div');
-    Title.innerText = '🔗🏆\nOnchain Survivor';  
-    Title.title='laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀'
-    const subTitle = document.createElement('div');
-    subTitle.innerText = 'Can you survive 5 minutes?  Move to Start!';
-    subTitle.title='lazy subtitle too btw'
+function createTitleElement(text, title, fontSize) {
+    const element = document.createElement('div');
+    element.innerText = text;
+    element.title = title;
+    rainbowText(element, fontSize);
+    return element;
+}
 
-    rainbowText(Title, isMobile ? '10vw' : '6vw'); 
-    rainbowText(subTitle, isMobile ? '4vw' : '2vw'); 
- 
-    titleContainer.appendChild(Title);
-    titleContainer.appendChild(subTitle);
+function createContainer(classNames = [], styles = {}) {
+    const container = document.createElement('div');
+    classNames.forEach(className => container.classList.add(className));
+    Object.assign(container.style, styles);
+    return container;
+}
 
-    document.body.appendChild(titleContainer);
-
-    menuContainer = document.createElement('div');
-    menuContainer.style.position = 'absolute';
-    menuContainer.style.bottom = '25px';
-    menuContainer.style.left = '50%';
-    menuContainer.style.transform = 'translateX(-50%)';
-    menuContainer.style.display = 'flex';
-    menuContainer.style.alignItems = 'center';
-    menuContainer.classList.add('fade-in'); 
-    titleContainer.style.flexDirection = 'column';
-    classContainer = document.createElement('div');
-    const classSubTitle = document.createElement('div');
-    classSubTitle.innerText = '🏆 Class 🏆';
-    classSubTitle.title='lazy subtitle too btw'
-    rainbowText(classSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
-    
     function handleButtonClick(clickedEntity) {
         //Menu
     }
+
     const entities = [
         playerTypes[0],    
         abilityTypes[1],
         worldTypes[0]
     ];
-    menuContainer.appendChild(classContainer);
+
+/*---------------------------------------------------------------------------
+                                    TITLE 
+---------------------------------------------------------------------------*/
+    const titleContainer = createContainer(['top-container', 'fade-in']);
+
+    const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+    titleContainer.appendChild(mainTitle);
+
+    const subTitle = createTitleElement('Can you survive 5 minutes? Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+    titleContainer.appendChild(subTitle);
+
+    document.body.appendChild(titleContainer);
+
+/*---------------------------------------------------------------------------
+                                    MENU 
+---------------------------------------------------------------------------*/
+    const menuContainer = createContainer(['bottom-container', 'fade-in']);
+    const menuButtonsContainer = createContainer([], { display: 'flex' });
+    menuContainer.appendChild(menuButtonsContainer);
+
+    classContainer = document.createElement('div');
+    const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    menuButtonsContainer.appendChild(classContainer);
     classContainer.appendChild(createButton(entities[0], 0.7, () => handleButtonClick(entities[0])));
     classContainer.appendChild(classSubTitle);
-    classAbilitiesContainer = document.createElement('div');
-    const abilitiesSubTitle = document.createElement('div');
-    abilitiesSubTitle.innerText = '⚔️ Ability ⚔️';
-    abilitiesSubTitle.title='lazy subtitle too btw'
-    rainbowText(abilitiesSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
+    menuButtonsContainer.appendChild(classContainer);
 
+    classAbilitiesContainer = document.createElement('div');
+    const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
     classAbilitiesContainer.appendChild(createButton(entities[1], 0.7, () => handleButtonClick(entity)));
     classAbilitiesContainer.appendChild(abilitiesSubTitle);
-
     classContainer.appendChild(classAbilitiesContainer);
-    worldContainer = document.createElement('div');
-    const worldSubTitle = document.createElement('div');
-    worldSubTitle.innerText = '🔗 World 🔗';
-    worldSubTitle.title='lazy subtitle too btw'
-    rainbowText(worldSubTitle, isMobile ? '4.5vw' : '1.5vw'); 
+    menuButtonsContainer.appendChild(classAbilitiesContainer);
 
+    worldContainer = document.createElement('div');
+    const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
     worldContainer.appendChild(createButton(entities[2], .7, () => handleButtonClick(entities[0])));
     worldContainer.appendChild(worldSubTitle);
-    menuContainer.appendChild(classContainer);
-    menuContainer.appendChild(classAbilitiesContainer);
-    menuContainer.appendChild(worldContainer);
+    menuButtonsContainer.appendChild(worldContainer);
+
     document.body.appendChild(menuContainer);
 
-    const versionContainer = document.createElement('div');
-    versionContainer.style.position = 'absolute';
-    versionContainer.style.top = '1px';
-    versionContainer.style.right = '10px';
-    versionContainer.style.display = 'flex';
-    versionContainer.style.alignItems = 'center';
-    versionContainer.style.backgroundColor = 'black';
-    versionContainer.style.padding = '1px';
-    versionContainer.style.borderRadius = '10px';
-    versionContainer.style.flexDirection = 'column';
-    versionContainer.classList.add('fade-in'); 
-    const versionTitle = document.createElement('div');
-    versionTitle.innerText = 'v0.0.11';
-    rainbowText(versionTitle,isMobile ? '3vw' : '1vw'); 
-    versionTitle.title = 'who even keeps track of these';
+/*---------------------------------------------------------------------------
+                                    WEB3 
+---------------------------------------------------------------------------*/
+   
+    const versionContainer = createContainer(['fade-in', 'top-container'], { left: '95%' });
+    const versionTitle = createTitleElement('v0.0.11', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
+   
     const metaMaskImage = document.createElement('img');
     metaMaskImage.src = 'Media/MetamaskLogo.png';
     metaMaskImage.style.width = '30px';
     metaMaskImage.style.height = '30px';
+
     const metaMaskButton = document.createElement('button');
     metaMaskButton.innerText = '';
     metaMaskButton.style.fontSize = '14px';
@@ -923,7 +878,7 @@ function addMainMenu(){
                 alert('MetaMask is not installed. Please install it to use this feature.');
             }
         };
-        
+
         window.addEventListener('load', async () => {
             const storedAddress = localStorage.getItem('metaMaskAddress');
             if (storedAddress) {
@@ -940,7 +895,7 @@ function addMainMenu(){
         menuContainer.classList.add('show');
         versionContainer.classList.add('show');
     }, 10); 
-}
+
 
 function updateLoadingBar(currentAmount) {
     const loadingBar = document.getElementById('loadingBar');
@@ -964,10 +919,9 @@ function simulateLoading() {
     }, 50); 
 }
 
-simulateLoading();
+//simulateLoading();
 
-
-function startGame() {
+function resumeGame() {
     if (mainMenu) {
         mainMenu = false;
 
@@ -991,5 +945,38 @@ function startGame() {
     refreshDisplay();
 }
 
-addMainMenu();
+/*---------------------------------------------------------------------------
+                              Animation Loop 
+---------------------------------------------------------------------------*/
+
+let animationFrameId;
+let isPaused = true;
+const clock = new THREE.Clock();
+const fixedTimeStep = 1 / 60;
+let accumulatedTime = 0;
+let deltaTime;
+
+function animate() {
+    animationFrameId = requestAnimationFrame(animate);
+
+    deltaTime = clock.getDelta();
+    accumulatedTime += deltaTime;
+
+    while (accumulatedTime >= fixedTimeStep) {
+        if (!isPaused) {
+            updatePlayerMovement();
+            updateCamera();
+            updateEnemies();
+            updateTimerDisplay();
+        } else {
+            if (keys.s) resumeGame();
+            if (keys.w) resumeGame();
+            if (keys.a) resumeGame();
+            if (keys.d) resumeGame();
+        }
+        accumulatedTime -= fixedTimeStep;
+    }
+    composer.render();
+}
+
 animate();

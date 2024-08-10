@@ -83,7 +83,7 @@ Follow these steps to set up Onchain Survivor on your local machine:
 ## 🎮How to Survive🎮
 
 -   **Select to Survive as guest or with your own NFT**
--   **Join a Room**: Enter an address and click "Join Room" to connect with other survivor.
+-   **Join a run**: Enter an address and click "Join Room" to connect with other survivor.
 -   **Move Your survivor**: Use the arrow keys to move your character around the 3D environment.
 -   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time.
 
