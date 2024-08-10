@@ -138,8 +138,6 @@ class Entity extends THREE.Object3D {
                               Initialization/Usage
 ---------------------------------------------------------------------------*/
 
-// Code that initializes or uses the classes goes here
-
 const abilityTypes = [{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
