@@ -130,6 +130,6 @@ This NFT is purely a digital collectible for fans and people who enjoy the AI Ar
 
 Have questions? Feel free to reach out!
 
--   **Twitter**:  [@ChainSurvivor](https://twitter.com/chainsurvivor)
+-   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
 
 Thank you for visiting our repository! We hope you enjoy Onchain Survivor as much as we enjoy developing it. Happy surviving! 🌍🎮
