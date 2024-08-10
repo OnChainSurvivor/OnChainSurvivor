@@ -135,7 +135,7 @@ class Entity extends THREE.Object3D {
 }
 
 /*---------------------------------------------------------------------------
-                              Initialization/Usage
+                              Ability Blueprints
 ---------------------------------------------------------------------------*/
 
 const abilityTypes = [{
@@ -300,6 +300,11 @@ const abilityTypes = [{
     level: 0
 }
 ];
+
+/*---------------------------------------------------------------------------
+                              Class Blueprints
+---------------------------------------------------------------------------*/
+
 const playerTypes = [{
     class: 'Survivor',
     title: 'Onchain Survivor',
@@ -321,6 +326,11 @@ const playerTypes = [{
     level:0,
 }
 ];
+
+/*---------------------------------------------------------------------------
+                              Enemy Blueprints
+---------------------------------------------------------------------------*/
+
 const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
@@ -340,6 +350,10 @@ const enemyTypes = [{
 }
 ];
 
+/*---------------------------------------------------------------------------
+                              World Blueprints
+---------------------------------------------------------------------------*/
+
 const worldTypes = [{
     class: 'World',
     title: 'Ethereumverse',
@@ -351,11 +365,14 @@ const worldTypes = [{
 }
 ];
 
+/*---------------------------------------------------------------------------
+                              World Controller
+---------------------------------------------------------------------------*/
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas });
-
 function updateRendererSize() {
     const dpr = window.devicePixelRatio || 1;
     renderer.setPixelRatio(dpr);
@@ -364,7 +381,6 @@ function updateRendererSize() {
     camera.aspect = rect.width / rect.height;
     camera.updateProjectionMatrix();
 }
-
 updateRendererSize();
 
 window.addEventListener('resize', updateRendererSize);
@@ -399,12 +415,142 @@ floor.onBeforeRender = (renderer, scene, camera) => {
     floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
 };
 
+camera.position.set(0, 15, 15);
+//camera.lookAt(player.position);
+
+/*---------------------------------------------------------------------------
+                              Player Controller
+---------------------------------------------------------------------------*/
+
 const player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
+
+const keys = {};
+['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
+
+document.addEventListener('keydown', (event) => {
+    if (keys.hasOwnProperty(event.key)) keys[event.key] = true;
+});
+
+document.addEventListener('keyup', (event) => {
+    if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
+});
+
+function updatePlayerMovement() {
+    let direction = new THREE.Vector3();
+
+    if (keys.s) direction.z -= player.movementspeed;
+    if (keys.w) direction.z += player.movementspeed;
+    if (keys.a) direction.x += player.movementspeed;
+    if (keys.d) direction.x -= player.movementspeed;
+
+    if (direction.length() > 0) {
+        direction.normalize();
+        const cameraDirection = new THREE.Vector3();
+        camera.getWorldDirection(cameraDirection);
+        cameraDirection.y = 0;
+        cameraDirection.normalize();
+        const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
+        player.position.add(moveDirection.multiplyScalar(player.movementspeed));
+        const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+        player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
+        player.boundingBox.setFromObject(player.mesh);
+    }
+    player.updateAbilities();
+
+    xpSpheres.forEach((xpSphere, index) => {
+        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
+            player.xp += 100;
+            if (player.xp >= 100) {
+                player.xp = 0;
+                LevelUp();
+            }
+            scene.remove(xpSphere);
+            xpSpheres.splice(index, 1);
+        }
+    });
+}
+
+let cameraAngle = 0;
+const cameraRadius = 20;
+const cameraHeight = 20;
+const cameraRotationSpeed = 0.05;
+
+function updateCamera() {
+    if (keys.u) cameraAngle -= cameraRotationSpeed;
+    if (keys.o) cameraAngle += cameraRotationSpeed;
+
+    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
+    camera.position.set(cameraX, cameraHeight, cameraZ);
+    camera.lookAt(player.position);
+}
+
+/*---------------------------------------------------------------------------
+                              Enemies Controller
+---------------------------------------------------------------------------*/
+
 const enemies = [];
+
+function updateEnemies() {
+    enemies.forEach(enemy => {
+        const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
+        enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
+        enemy.boundingBox.setFromObject(enemy.mesh);
+        enemy.updateAbilities();
+    });
+}
+
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, numberOfEnemies = 5) {
+    const spawnEnemy = () => {
+        if(isPaused) return;
+        for (let i = 0; i < numberOfEnemies; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const offsetX = Math.cos(angle) * spawnRadius;
+            const offsetZ = Math.sin(angle) * spawnRadius;
+
+            const spawnPosition = new THREE.Vector3(
+                player.position.x + offsetX,
+                player.position.y,
+                player.position.z + offsetZ
+            );
+
+            const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
+            const enemy = new Entity(enemyConfig);
+
+            enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
+
+            scene.add(enemy);
+            enemies.push(enemy);
+        }
+    };
+    setInterval(spawnEnemy, spawnInterval);
+}
+startSpawningEnemies(player);
+
+
+const renderScene = new THREE.RenderPass(scene, camera);
+const bloomPass = new THREE.UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
+
+const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    format: THREE.RGBAFormat,
+    encoding: THREE.sRGBEncoding,
+});
+const composer = new THREE.EffectComposer(renderer, renderTarget);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+
+const rainbowText = (element, fontSize) => {
+    element.style.fontSize = fontSize;
+    element.classList.add('rainbow-text'); 
+};
+
+
 
 const gameStateContainer = document.createElement('div');
 gameStateContainer.classList.add('bottom-container'); 
-
 document.body.appendChild(gameStateContainer);
 
 const abilitiesContainer = document.createElement('div');
@@ -483,124 +629,6 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-camera.position.set(0, 15, 15);
-camera.lookAt(player.position);
-
-const keys = {};
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
-
-document.addEventListener('keydown', (event) => {
-    if (keys.hasOwnProperty(event.key)) keys[event.key] = true;
-});
-
-document.addEventListener('keyup', (event) => {
-    if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
-});
-
-function updatePlayerMovement() {
-    let direction = new THREE.Vector3();
-
-    if (keys.s) direction.z -= player.movementspeed;
-    if (keys.w) direction.z += player.movementspeed;
-    if (keys.a) direction.x += player.movementspeed;
-    if (keys.d) direction.x -= player.movementspeed;
-
-    if (direction.length() > 0) {
-        direction.normalize();
-        const cameraDirection = new THREE.Vector3();
-        camera.getWorldDirection(cameraDirection);
-        cameraDirection.y = 0;
-        cameraDirection.normalize();
-        const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
-        player.position.add(moveDirection.multiplyScalar(player.movementspeed));
-        const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-        player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
-        player.boundingBox.setFromObject(player.mesh);
-    }
-    player.updateAbilities();
-
-    xpSpheres.forEach((xpSphere, index) => {
-        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
-            player.xp += 100;
-            if (player.xp >= 100) {
-                player.xp = 0;
-                LevelUp();
-            }
-            scene.remove(xpSphere);
-            xpSpheres.splice(index, 1);
-        }
-    });
-}
-
-let cameraAngle = 0;
-const cameraRadius = 20;
-const cameraHeight = 20;
-const cameraRotationSpeed = 0.05;
-
-function updateCamera() {
-    if (keys.u) cameraAngle -= cameraRotationSpeed;
-    if (keys.o) cameraAngle += cameraRotationSpeed;
-
-    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
-    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
-    camera.position.set(cameraX, cameraHeight, cameraZ);
-    camera.lookAt(player.position);
-}
-
-function updateEnemies() {
-    enemies.forEach(enemy => {
-        const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
-        enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
-        enemy.boundingBox.setFromObject(enemy.mesh);
-        enemy.updateAbilities();
-    });
-}
-
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, numberOfEnemies = 5) {
-    const spawnEnemy = () => {
-        if(isPaused) return;
-        for (let i = 0; i < numberOfEnemies; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const offsetX = Math.cos(angle) * spawnRadius;
-            const offsetZ = Math.sin(angle) * spawnRadius;
-
-            const spawnPosition = new THREE.Vector3(
-                player.position.x + offsetX,
-                player.position.y,
-                player.position.z + offsetZ
-            );
-
-            const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
-            const enemy = new Entity(enemyConfig);
-
-            enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
-
-            scene.add(enemy);
-            enemies.push(enemy);
-        }
-    };
-    setInterval(spawnEnemy, spawnInterval);
-}
-startSpawningEnemies(player);
-
-const renderScene = new THREE.RenderPass(scene, camera);
-const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
-
-const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    format: THREE.RGBAFormat,
-    encoding: THREE.sRGBEncoding,
-});
-const composer = new THREE.EffectComposer(renderer, renderTarget);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
-
-const rainbowText = (element, fontSize) => {
-    element.style.fontSize = fontSize;
-    element.classList.add('rainbow-text'); 
-};
 
 function createButton(ability, scale = 1, onClick) {
     const button = document.createElement('button');
