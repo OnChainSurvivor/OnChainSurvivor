@@ -153,8 +153,8 @@ const abilityTypes = [{
         const trail = {
             create: () => {
                 if (trailBullets.length >= level) {
-                    const oldestBullet = trailBullets.shift(); // Remove the first element (oldest)
-                    scene.remove(oldestBullet); // Remove it from the scene
+                    const oldestBullet = trailBullets.shift(); 
+                    scene.remove(oldestBullet); 
                 }
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const trailStep = new THREE.Mesh(
@@ -614,6 +614,29 @@ startSpawningEnemies(player);
         worldTypes[0]
     ];
 
+    function attachHoverEffect(button, entity) {
+        button.addEventListener('mouseenter', () => {
+            console.log('Hovered over:', entity.title);
+            const scaledButton = createButton(entity, 1);
+            scaledButton.style.position = 'fixed';
+            scaledButton.style.top = '50%';
+            scaledButton.style.left = '50%';
+            scaledButton.style.transform = 'translate(-50%, -50%)';
+            scaledButton.style.zIndex = '1000';
+            scaledButton.style.pointerEvents = 'none'; 
+            document.body.appendChild(scaledButton);
+    
+            const removeScaledButton = () => {
+                console.log('Mouse left:', entity.title);
+                if (scaledButton) {
+                    document.body.removeChild(scaledButton);
+                }
+            };
+    
+            button.addEventListener('mouseleave', removeScaledButton, { once: true });
+        });
+    }
+
     function createButton(ability, scale = 1, onClick) {
         const button = document.createElement('button');
         button.style.width = `${200 * scale}px`;
@@ -645,7 +668,6 @@ startSpawningEnemies(player);
         title.style.alignItems = 'center';
         title.style.justifyContent = 'center';
         title.style.padding = `${5 * scale}px 0`;
-        //title.style.display = scale > 0.31 ? 'block' : 'none'; 
         const img = document.createElement('img');
         img.src = ability.thumbnail;
         img.style.width = `${150 * scale}px`;
@@ -684,6 +706,9 @@ startSpawningEnemies(player);
         button.appendChild(effectinfo);
     
         if (onClick) button.onclick = onClick;
+
+        attachHoverEffect(button, ability); 
+    
         return button;
     }
     
@@ -742,7 +767,7 @@ startSpawningEnemies(player);
 ---------------------------------------------------------------------------*/
    
     const web3Container = createContainer(['fade-in', 'top-container'], { left: '95%' });
-    const versionTitle = createTitleElement('v0.0.11', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
+    const versionTitle = createTitleElement('v0.0.12', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
    
     const metaMaskImage = document.createElement('img');
     metaMaskImage.src = 'Media/MetamaskLogo.png';
@@ -897,6 +922,38 @@ function refreshDisplay() {
     document.body.appendChild(gameStateContainer);
 
     setTimeout(() => { gameStateContainer.classList.add('show'); }, 10); 
+
+    abilitiesContainer.addEventListener('mouseenter', (event) => {
+        if (event.target.tagName === 'BUTTON') {
+            const hoveredButton = event.target;
+            const entityTitle = hoveredButton.title;
+    
+            const entity = player.abilities.find(ability => ability.title === entityTitle) ||
+                           abilityTypes.find(ability => ability.title === entityTitle) ||
+                           playerTypes.find(type => type.title === entityTitle) ||
+                           worldTypes.find(world => world.title === entityTitle);
+    
+            if (entity) {
+                const scaledButton = createButton(entity, 1);
+                scaledButton.style.position = 'fixed';
+                scaledButton.style.top = '50%';
+                scaledButton.style.left = '50%';
+                scaledButton.style.transform = 'translate(-50%, -50%)';
+                scaledButton.style.zIndex = '1000';
+                scaledButton.style.pointerEvents = 'none';
+                document.body.appendChild(scaledButton);
+    
+                const removeScaledButton = () => {
+                    if (scaledButton) {
+                        document.body.removeChild(scaledButton);
+                    }
+                };
+    
+                hoveredButton.addEventListener('mouseleave', removeScaledButton, { once: true });
+            }
+        }
+    }, true); 
+
 }
 
 /*---------------------------------------------------------------------------
