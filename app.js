@@ -604,10 +604,6 @@ startSpawningEnemies(player);
         return container;
     }
 
-    function handleButtonClick(clickedEntity) {
-        //Menu
-    }
-
     const entities = [
         playerTypes[0],    
         abilityTypes[1],
@@ -740,20 +736,20 @@ startSpawningEnemies(player);
     classContainer = document.createElement('div');
     const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
     menuButtonsContainer.appendChild(classContainer);
-    classContainer.appendChild(createButton(entities[0], 0.7, () => handleButtonClick(entities[0])));
+    classContainer.appendChild(createButton(entities[0], 0.7));
     classContainer.appendChild(classSubTitle);
     menuButtonsContainer.appendChild(classContainer);
 
     classAbilityContainer = document.createElement('div');
     const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    classAbilityContainer.appendChild(createButton(entities[1], 0.7, () => handleButtonClick(entity)));
+    classAbilityContainer.appendChild(createButton(entities[1], 0.7));
     classAbilityContainer.appendChild(abilitiesSubTitle);
     classContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
 
     worldContainer = document.createElement('div');
     const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    worldContainer.appendChild(createButton(entities[2], .7, () => handleButtonClick(entities[0])));
+    worldContainer.appendChild(createButton(entities[2], .7));
     worldContainer.appendChild(worldSubTitle);
     menuButtonsContainer.appendChild(worldContainer);
 
@@ -761,6 +757,63 @@ startSpawningEnemies(player);
     document.body.appendChild(menuContainer);
 
     setTimeout(() => { menuContainer.classList.add('show');}, 10); 
+
+    menuButtonsContainer.childNodes.forEach(button => {
+        button.addEventListener('click', () => {
+            if (button === classContainer) {
+                createPopUpMenu(playerTypes, button);
+            } else if (button === classAbilityContainer) {
+                createPopUpMenu(abilityTypes, button);
+            } else if (button === worldContainer) {
+                createPopUpMenu(worldTypes, button);
+            }
+        });
+    });
+
+/*---------------------------------------------------------------------------
+                        Select NFT Menu
+---------------------------------------------------------------------------*/
+
+    function createPopUpMenu(entityList, buttonToUpdate) {
+        const popUpContainer = document.createElement('div');
+        popUpContainer.style.position = 'fixed';
+        popUpContainer.style.top = '50%';
+        popUpContainer.style.left = '50%';
+        popUpContainer.style.transform = 'translate(-50%, -50%)';
+        popUpContainer.style.zIndex = '1001';
+        popUpContainer.style.backgroundColor = '#fff';
+        popUpContainer.style.padding = '20px';
+        popUpContainer.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+        popUpContainer.style.display = 'grid';
+        popUpContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(100px, 1fr))';
+        popUpContainer.style.gap = '10px';
+        popUpContainer.style.maxWidth = '80vw';
+        popUpContainer.style.maxHeight = '80vh';
+        popUpContainer.style.overflowY = 'auto';
+    
+        const closeButton = document.createElement('button');
+        closeButton.innerText = 'Close';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '10px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.onclick = () => document.body.removeChild(popUpContainer);
+        popUpContainer.appendChild(closeButton);
+    
+        entityList.forEach(entity => {
+            const itemButton = createButton(entity, 0.5);
+            itemButton.onclick = () => {
+                buttonToUpdate.innerHTML = '';
+                const newButton = createButton(entity, 0.7);
+                buttonToUpdate.appendChild(newButton);
+    
+                document.body.removeChild(popUpContainer);
+            };
+            popUpContainer.appendChild(itemButton);
+        });
+    
+        document.body.appendChild(popUpContainer);
+    }
 
 /*---------------------------------------------------------------------------
                                     WEB3 Menu
@@ -1078,5 +1131,4 @@ function animate() {
     }
     composer.render();
 }
-
 animate();
