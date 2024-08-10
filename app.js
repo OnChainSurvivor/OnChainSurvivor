@@ -9,6 +9,8 @@ const xpSpheres = [];
 const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
 const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
 
+let mainMenuContainers = [];
+
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -383,6 +385,22 @@ function updateRendererSize() {
 }
 updateRendererSize();
 
+const renderScene = new THREE.RenderPass(scene, camera);
+const bloomPass = new THREE.UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
+
+const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    format: THREE.RGBAFormat,
+    encoding: THREE.sRGBEncoding,
+});
+const composer = new THREE.EffectComposer(renderer, renderTarget);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+
+
+
 window.addEventListener('resize', updateRendererSize);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -418,6 +436,14 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 camera.position.set(0, 15, 15);
 //camera.lookAt(player.position);
 
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderTarget.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+}, false);
+
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
@@ -444,6 +470,7 @@ function updatePlayerMovement() {
     if (keys.d) direction.x -= player.movementspeed;
 
     if (direction.length() > 0) {
+        isPaused = false;
         direction.normalize();
         const cameraDirection = new THREE.Vector3();
         camera.getWorldDirection(cameraDirection);
@@ -454,6 +481,9 @@ function updatePlayerMovement() {
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
         player.boundingBox.setFromObject(player.mesh);
+    }
+    else{
+        isPaused = true;
     }
     player.updateAbilities();
 
@@ -483,6 +513,27 @@ function updateCamera() {
     const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
     camera.position.set(cameraX, cameraHeight, cameraZ);
     camera.lookAt(player.position);
+}
+
+function LevelUp() {
+    const availableAbilities = abilityTypes.filter(abilityType => {
+        return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
+    });
+    const allAbilities = [...player.abilities, ...availableAbilities];
+        const randomIndex = Math.floor(Math.random() * allAbilities.length);
+        const randomAbility = allAbilities[randomIndex];
+                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
+                if (existingAbility) {
+                    existingAbility.deactivate();
+                    existingAbility.level += 1;
+                    existingAbility.activate();
+                } else {
+                    const newAbility = new Ability(player, { ...randomAbility, level: 1 });
+                    player.addAbility(newAbility);
+                    newAbility.activate();
+                }
+                refreshDisplay();
+                isPaused = false;
 }
 
 /*---------------------------------------------------------------------------
@@ -527,43 +578,295 @@ function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, nu
 }
 startSpawningEnemies(player);
 
+/*---------------------------------------------------------------------------
+                                UI UTILITIES 
+---------------------------------------------------------------------------*/
+    let mainMenu=true;
+    const isMobile = window.innerWidth <= 600;
 
-const renderScene = new THREE.RenderPass(scene, camera);
-const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
+    const rainbowText = (element, fontSize) => {
+        element.style.fontSize = fontSize;
+        element.classList.add('rainbow-text'); 
+    };
 
-const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    format: THREE.RGBAFormat,
-    encoding: THREE.sRGBEncoding,
-});
-const composer = new THREE.EffectComposer(renderer, renderTarget);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
+    function createTitleElement(text, title, fontSize) {
+        const element = document.createElement('div');
+        element.innerText = text;
+        element.title = title;
+        rainbowText(element, fontSize);
+        return element;
+    }
 
-const rainbowText = (element, fontSize) => {
-    element.style.fontSize = fontSize;
-    element.classList.add('rainbow-text'); 
-};
+    function createContainer(classNames = [], styles = {}) {
+        const container = document.createElement('div');
+        classNames.forEach(className => container.classList.add(className));
+        Object.assign(container.style, styles);
+        return container;
+    }
+
+    function handleButtonClick(clickedEntity) {
+        //Menu
+    }
+
+    const entities = [
+        playerTypes[0],    
+        abilityTypes[1],
+        worldTypes[0]
+    ];
+
+    function createButton(ability, scale = 1, onClick) {
+        const button = document.createElement('button');
+        button.style.width = `${200 * scale}px`;
+        button.style.margin = '3px';
+        button.style.display = 'flex';
+        button.style.flexDirection = 'column';
+        button.style.alignItems = 'center';
+        button.style.backgroundColor = 'black';
+        button.style.overflow = 'hidden';
+        button.style.padding = '0';
+        button.style.cursor = 'pointer';
+        button.style.fontFamily = 'Arial, sans-serif';
+        button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+        button.style.border = '1px solid';
+        button.style.borderImageSlice = 1;
+        button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+        button.style.animation = 'rainbowBorder 5s linear infinite';
+    
+        button.title = ability.tooltip;
+    
+        const title = document.createElement('div');
+        title.innerText = ability.title;
+        rainbowText(title, `${20 * scale}px`);  
+        title.style.height = `${2.5 * scale}em`; 
+        title.style.lineHeight = `${1.5 * scale}em`;
+        title.style.overflow = 'hidden';
+        title.style.textAlign = 'center'; 
+        title.style.display = 'flex';
+        title.style.alignItems = 'center';
+        title.style.justifyContent = 'center';
+        title.style.padding = `${5 * scale}px 0`;
+        //title.style.display = scale > 0.31 ? 'block' : 'none'; 
+        const img = document.createElement('img');
+        img.src = ability.thumbnail;
+        img.style.width = `${150 * scale}px`;
+        img.style.height = `${150 * scale}px`;
+    
+        const levelStars = document.createElement('div');
+        levelStars.style.display = 'flex';
+        levelStars.style.marginTop = '1px';
+        levelStars.style.marginBottom = '1px';
+        for (let i = 0; i < ability.level; i++) {
+            const star = document.createElement('img');
+            star.src = 'Media/Abilities/Star.png';
+            star.style.width = `${20 * scale}px`;
+            star.style.height = `${20 * scale}px`;
+            levelStars.appendChild(star);
+        }
+    
+        expl = ability.description;
+        if (ability.level != 0) expl = ability.effectinfo;
+    
+        const effectinfo = document.createElement('div');
+        effectinfo.innerText = `${expl}`;
+        rainbowText(effectinfo, `${14 * scale}px`); 
+        effectinfo.style.height = `${5 * scale}em`; 
+        effectinfo.style.lineHeight = `${1.15 * scale}em`; 
+        effectinfo.style.overflow = 'hidden'; 
+        effectinfo.style.textAlign = 'center';
+        effectinfo.style.alignItems = 'center'; 
+        effectinfo.style.justifyContent = 'center';
+        effectinfo.style.padding = `${5 * scale}px 0`;
+        effectinfo.style.display = scale > 0.751 ? 'block' : 'none'; 
+    
+        button.appendChild(title);
+        button.appendChild(img);
+        button.appendChild(levelStars);
+        button.appendChild(effectinfo);
+    
+        if (onClick) button.onclick = onClick;
+        return button;
+    }
+    
+/*---------------------------------------------------------------------------
+                                GAME TITLE 
+---------------------------------------------------------------------------*/
+
+    const titleContainer = createContainer(['top-container', 'fade-in']);
+
+    const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+    titleContainer.appendChild(mainTitle);
+
+    const subTitle = createTitleElement('Can you survive 5 minutes? Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+    titleContainer.appendChild(subTitle);
+
+    mainMenuContainers.push(titleContainer);
+    document.body.appendChild(titleContainer);
+
+    setTimeout(() => { titleContainer.classList.add('show'); }, 10); 
+
+/*---------------------------------------------------------------------------
+                                   GAME MENU
+---------------------------------------------------------------------------*/
+
+    const menuContainer = createContainer(['bottom-container', 'fade-in']);
+    const menuButtonsContainer = createContainer([], { display: 'flex' });
+    menuContainer.appendChild(menuButtonsContainer);
+
+    classContainer = document.createElement('div');
+    const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    menuButtonsContainer.appendChild(classContainer);
+    classContainer.appendChild(createButton(entities[0], 0.7, () => handleButtonClick(entities[0])));
+    classContainer.appendChild(classSubTitle);
+    menuButtonsContainer.appendChild(classContainer);
+
+    classAbilityContainer = document.createElement('div');
+    const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    classAbilityContainer.appendChild(createButton(entities[1], 0.7, () => handleButtonClick(entity)));
+    classAbilityContainer.appendChild(abilitiesSubTitle);
+    classContainer.appendChild(classAbilityContainer);
+    menuButtonsContainer.appendChild(classAbilityContainer);
+
+    worldContainer = document.createElement('div');
+    const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    worldContainer.appendChild(createButton(entities[2], .7, () => handleButtonClick(entities[0])));
+    worldContainer.appendChild(worldSubTitle);
+    menuButtonsContainer.appendChild(worldContainer);
+
+    mainMenuContainers.push(menuContainer);
+    document.body.appendChild(menuContainer);
+
+    setTimeout(() => { menuContainer.classList.add('show');}, 10); 
+
+/*---------------------------------------------------------------------------
+                                    WEB3 Menu
+---------------------------------------------------------------------------*/
+   
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '95%' });
+    const versionTitle = createTitleElement('v0.0.11', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
+   
+    const metaMaskImage = document.createElement('img');
+    metaMaskImage.src = 'Media/MetamaskLogo.png';
+    metaMaskImage.style.width = '30px';
+    metaMaskImage.style.height = '30px';
+
+    const metaMaskButton = document.createElement('button');
+    metaMaskButton.innerText = '';
+    metaMaskButton.style.fontSize = '14px';
+    metaMaskButton.style.padding = '3px 3px';
+    metaMaskButton.style.backgroundColor = 'transparent';
+    metaMaskButton.style.color = 'white';
+    metaMaskButton.style.border = '1px solid white';
+    metaMaskButton.style.borderRadius = '5px';
+    metaMaskButton.title = 'wen update';
+    metaMaskButton.appendChild(metaMaskImage);
+ 
+    const loadingContainer = document.createElement('div');
+    loadingContainer.id = 'loadingContainer';
+    loadingContainer.style.position = 'relative';
+    loadingContainer.style.width = '100%'; 
+    loadingContainer.style.height = '10px';
+    loadingContainer.style.backgroundColor = 'black';
+    loadingContainer.style.boxSizing = 'border-box';
+    loadingContainer.style.border = '0.5px solid'; 
+    loadingContainer.style.borderImageSlice = 1;
+    loadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+
+    const loadingBar = document.createElement('div');
+    loadingBar.id = 'loadingBar';
+    loadingBar.style.width = '0';
+    loadingBar.style.height = '100%';
+    loadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+    loadingBar.style.backgroundSize = '400% 400%';
+    loadingBar.style.animation = 'rainbow 5s linear infinite';
+
+    const loadingText = document.createElement('div');
+    loadingText.id = 'loadingText';
+    loadingText.style.color = 'white';
+  
+    loadingContainer.appendChild(loadingBar);
+    web3Container.appendChild(versionTitle);
+    web3Container.appendChild(metaMaskButton);
+
+    function displayMetaMaskInfo(address, ethBalance) {
+        web3Container.appendChild(loadingContainer);
+        web3Container.appendChild(loadingText);
+            metaMaskContainer.innerHTML = `
+               <div style="color: white; margin-right: 10px;">
+                    <div>Address: ${address}</div>
+               </div>
+            `;
+        }
+        
+        metaMaskButton.onclick = async () => {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    const address = accounts[0];
+                    const balance = await web3.eth.getBalance(address);
+                    const ethBalance = web3.utils.fromWei(balance, 'ether');
+                    localStorage.setItem('metaMaskAddress', address);
+        
+                    displayMetaMaskInfo(address, ethBalance);
+                } catch (error) {
+                    if (error.code === 4902) {
+                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                    } else {
+                        console.error('Error:', error);
+                    }
+                }
+            } else {
+                alert('MetaMask is not installed. Please install it to use this feature.');
+            }
+        };
+
+        window.addEventListener('load', async () => {
+            const storedAddress = localStorage.getItem('metaMaskAddress');
+            if (storedAddress) {
+                const web3 = new Web3(window.ethereum);
+                const balance = await web3.eth.getBalance(storedAddress);
+                const ethBalance = web3.utils.fromWei(balance, 'ether');
+                displayMetaMaskInfo(storedAddress, ethBalance);
+            }
+        });
+        mainMenuContainers.push(web3Container);
+        document.body.appendChild(web3Container);
+
+    setTimeout(() => { web3Container.classList.add('show'); }, 10); 
 
 
+function updateLoadingBar(currentAmount) {
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingText = document.getElementById('loadingText');
+    const goal = 1000000; 
+    const percentage = (currentAmount / goal) * 100;
+    loadingBar.style.width = percentage + '%';
+    loadingText.innerText ='🏆\n'+percentage.toFixed(2) + '%';
+}
 
-const gameStateContainer = document.createElement('div');
-gameStateContainer.classList.add('bottom-container'); 
-document.body.appendChild(gameStateContainer);
+function simulateLoading() {
+    let currentAmount = 0;
+    const increment = 10000; 
+    const loadingInterval = setInterval(() => {
+        if (currentAmount >= 1000000) {
+          //TODO
+        } else {
+            currentAmount += increment;
+            updateLoadingBar(currentAmount);
+        }
+    }, 50); 
+}
 
-const abilitiesContainer = document.createElement('div');
-abilitiesContainer.style.display = 'flex';
+//simulateLoading();
 
-gameStateContainer.appendChild(abilitiesContainer);
-document.body.appendChild(gameStateContainer);
+/*---------------------------------------------------------------------------
+                                   IN-GAME UI 
+---------------------------------------------------------------------------*/
 
-let countdown = 1800 * 60;
-let timerDisplay = document.createElement('div');
-gameStateContainer.appendChild(timerDisplay);
-timerDisplay.style.fontSize = '16px';
-timerDisplay.style.color = 'white'; 
+let countdown = 500 * 60;
+const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '3vw' : '1.5vw');
 
 function updateTimerDisplay() {
     countdown--;
@@ -571,6 +874,34 @@ function updateTimerDisplay() {
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
+
+function refreshDisplay() {
+
+    const gameStateContainer = createContainer(['bottom-container','fade-in'],{ display: 'flex' });
+    document.body.appendChild(gameStateContainer);
+    const abilitiesContainer = createContainer([], { display: 'flex' });
+    gameStateContainer.appendChild(abilitiesContainer);
+    gameStateContainer.appendChild(timerDisplay);
+    
+    abilitiesContainer.innerHTML = '';
+    abilityButton = createButton(player, .3);
+    abilitiesContainer.appendChild(abilityButton);
+
+    player.abilities.forEach(ability => {
+        const abilityButton = createButton(ability, .3);
+        abilitiesContainer.appendChild(abilityButton);
+    });
+
+    abilitiesContainer.appendChild(createButton(worldTypes[0],.3));
+
+    document.body.appendChild(gameStateContainer);
+
+    setTimeout(() => { gameStateContainer.classList.add('show'); }, 10); 
+}
+
+/*---------------------------------------------------------------------------
+                                   GAME OVER UI
+---------------------------------------------------------------------------*/
 
 function triggerGameOver() {
     isPaused = true;
@@ -629,346 +960,33 @@ function triggerGameOver() {
     document.body.appendChild(gameOverScreen);
 }
 
-
-function createButton(ability, scale = 1, onClick) {
-    const button = document.createElement('button');
-    button.style.width = `${200 * scale}px`;
-    button.style.margin = '3px';
-    button.style.display = 'flex';
-    button.style.flexDirection = 'column';
-    button.style.alignItems = 'center';
-    button.style.backgroundColor = 'black';
-    button.style.overflow = 'hidden';
-    button.style.padding = '0';
-    button.style.cursor = 'pointer';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-    button.style.border = '1px solid';
-    button.style.borderImageSlice = 1;
-    button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-    button.style.animation = 'rainbowBorder 5s linear infinite';
-
-    button.title = ability.tooltip;
-
-    const title = document.createElement('div');
-    title.innerText = ability.title;
-    rainbowText(title, `${20 * scale}px`);  
-    title.style.height = `${2.5 * scale}em`; 
-    title.style.lineHeight = `${1.5 * scale}em`;
-    title.style.overflow = 'hidden';
-    title.style.textAlign = 'center'; 
-    title.style.display = 'flex';
-    title.style.alignItems = 'center';
-    title.style.justifyContent = 'center';
-    title.style.padding = `${5 * scale}px 0`;
-    //title.style.display = scale > 0.31 ? 'block' : 'none'; 
-    const img = document.createElement('img');
-    img.src = ability.thumbnail;
-    img.style.width = `${150 * scale}px`;
-    img.style.height = `${150 * scale}px`;
-
-    const levelStars = document.createElement('div');
-    levelStars.style.display = 'flex';
-    levelStars.style.marginTop = '1px';
-    levelStars.style.marginBottom = '1px';
-    for (let i = 0; i < ability.level; i++) {
-        const star = document.createElement('img');
-        star.src = 'Media/Abilities/Star.png';
-        star.style.width = `${20 * scale}px`;
-        star.style.height = `${20 * scale}px`;
-        levelStars.appendChild(star);
-    }
-
-    expl = ability.description;
-    if (ability.level != 0) expl = ability.effectinfo;
-
-    const effectinfo = document.createElement('div');
-    effectinfo.innerText = `${expl}`;
-    rainbowText(effectinfo, `${14 * scale}px`); 
-    effectinfo.style.height = `${5 * scale}em`; 
-    effectinfo.style.lineHeight = `${1.15 * scale}em`; 
-    effectinfo.style.overflow = 'hidden'; 
-    effectinfo.style.textAlign = 'center';
-    effectinfo.style.alignItems = 'center'; 
-    effectinfo.style.justifyContent = 'center';
-    effectinfo.style.padding = `${5 * scale}px 0`;
-    effectinfo.style.display = scale > 0.751 ? 'block' : 'none'; 
-
-    button.appendChild(title);
-    button.appendChild(img);
-    button.appendChild(levelStars);
-    button.appendChild(effectinfo);
-
-    if (onClick) button.onclick = onClick;
-    return button;
-}
-
-function refreshDisplay() {
-    abilitiesContainer.innerHTML = '';
-    abilityButton = createButton(player, .3);
-    abilitiesContainer.appendChild(abilityButton);
-
-    player.abilities.forEach(ability => {
-        const abilityButton = createButton(ability, .3);
-   
-        abilitiesContainer.appendChild(abilityButton);
-    });
-    abilitiesContainer.appendChild(createButton(worldTypes[0],.3));
-}
-    
-function LevelUp() {
-    const availableAbilities = abilityTypes.filter(abilityType => {
-        return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
-    });
-    const allAbilities = [...player.abilities, ...availableAbilities];
-        const randomIndex = Math.floor(Math.random() * allAbilities.length);
-        const randomAbility = allAbilities[randomIndex];
-                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
-                if (existingAbility) {
-                    existingAbility.deactivate();
-                    existingAbility.level += 1;
-                    existingAbility.activate();
-                } else {
-                    const newAbility = new Ability(player, { ...randomAbility, level: 1 });
-                    player.addAbility(newAbility);
-                    newAbility.activate();
-                }
-                refreshDisplay();
-                isPaused = false;
-}
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderTarget.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
-}, false);
-
-
 /*---------------------------------------------------------------------------
-                                UI UTILITIES 
+                                    GAMESTATE CONTROLLER  
 ---------------------------------------------------------------------------*/
-let mainMenu=true;
 
-const isMobile = window.innerWidth <= 600;
-
-function createTitleElement(text, title, fontSize) {
-    const element = document.createElement('div');
-    element.innerText = text;
-    element.title = title;
-    rainbowText(element, fontSize);
-    return element;
-}
-
-function createContainer(classNames = [], styles = {}) {
-    const container = document.createElement('div');
-    classNames.forEach(className => container.classList.add(className));
-    Object.assign(container.style, styles);
-    return container;
-}
-
-    function handleButtonClick(clickedEntity) {
-        //Menu
-    }
-
-    const entities = [
-        playerTypes[0],    
-        abilityTypes[1],
-        worldTypes[0]
-    ];
-
-/*---------------------------------------------------------------------------
-                                    TITLE 
----------------------------------------------------------------------------*/
-    const titleContainer = createContainer(['top-container', 'fade-in']);
-
-    const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
-    titleContainer.appendChild(mainTitle);
-
-    const subTitle = createTitleElement('Can you survive 5 minutes? Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-    titleContainer.appendChild(subTitle);
-
-    document.body.appendChild(titleContainer);
-
-/*---------------------------------------------------------------------------
-                                    MENU 
----------------------------------------------------------------------------*/
-    const menuContainer = createContainer(['bottom-container', 'fade-in']);
-    const menuButtonsContainer = createContainer([], { display: 'flex' });
-    menuContainer.appendChild(menuButtonsContainer);
-
-    classContainer = document.createElement('div');
-    const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    menuButtonsContainer.appendChild(classContainer);
-    classContainer.appendChild(createButton(entities[0], 0.7, () => handleButtonClick(entities[0])));
-    classContainer.appendChild(classSubTitle);
-    menuButtonsContainer.appendChild(classContainer);
-
-    classAbilitiesContainer = document.createElement('div');
-    const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    classAbilitiesContainer.appendChild(createButton(entities[1], 0.7, () => handleButtonClick(entity)));
-    classAbilitiesContainer.appendChild(abilitiesSubTitle);
-    classContainer.appendChild(classAbilitiesContainer);
-    menuButtonsContainer.appendChild(classAbilitiesContainer);
-
-    worldContainer = document.createElement('div');
-    const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    worldContainer.appendChild(createButton(entities[2], .7, () => handleButtonClick(entities[0])));
-    worldContainer.appendChild(worldSubTitle);
-    menuButtonsContainer.appendChild(worldContainer);
-
-    document.body.appendChild(menuContainer);
-
-/*---------------------------------------------------------------------------
-                                    WEB3 
----------------------------------------------------------------------------*/
-   
-    const versionContainer = createContainer(['fade-in', 'top-container'], { left: '95%' });
-    const versionTitle = createTitleElement('v0.0.11', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
-   
-    const metaMaskImage = document.createElement('img');
-    metaMaskImage.src = 'Media/MetamaskLogo.png';
-    metaMaskImage.style.width = '30px';
-    metaMaskImage.style.height = '30px';
-
-    const metaMaskButton = document.createElement('button');
-    metaMaskButton.innerText = '';
-    metaMaskButton.style.fontSize = '14px';
-    metaMaskButton.style.padding = '3px 3px';
-    metaMaskButton.style.backgroundColor = 'transparent';
-    metaMaskButton.style.color = 'white';
-    metaMaskButton.style.border = '1px solid white';
-    metaMaskButton.style.borderRadius = '5px';
-    metaMaskButton.title = 'wen update';
-    metaMaskButton.appendChild(metaMaskImage);
- 
-    const loadingContainer = document.createElement('div');
-    loadingContainer.id = 'loadingContainer';
-    loadingContainer.style.position = 'relative';
-    loadingContainer.style.width = '100%'; 
-    loadingContainer.style.height = '10px';
-    loadingContainer.style.backgroundColor = 'black';
-    loadingContainer.style.boxSizing = 'border-box';
-    loadingContainer.style.border = '0.5px solid'; 
-    loadingContainer.style.borderImageSlice = 1;
-    loadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-
-    const loadingBar = document.createElement('div');
-    loadingBar.id = 'loadingBar';
-    loadingBar.style.width = '0';
-    loadingBar.style.height = '100%';
-    loadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-    loadingBar.style.backgroundSize = '400% 400%';
-    loadingBar.style.animation = 'rainbow 5s linear infinite';
-
-    const loadingText = document.createElement('div');
-    loadingText.id = 'loadingText';
-    loadingText.style.color = 'white';
-  
-    loadingContainer.appendChild(loadingBar);
-    versionContainer.appendChild(versionTitle);
-    versionContainer.appendChild(metaMaskButton);
-
-    function displayMetaMaskInfo(address, ethBalance) {
-        versionContainer.appendChild(loadingContainer);
-        versionContainer.appendChild(loadingText);
-            metaMaskContainer.innerHTML = `
-               <div style="color: white; margin-right: 10px;">
-                    <div>Address: ${address}</div>
-               </div>
-            `;
-        }
-        
-        metaMaskButton.onclick = async () => {
-            if (window.ethereum) {
-                const web3 = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await web3.eth.getAccounts();
-                    const address = accounts[0];
-                    const balance = await web3.eth.getBalance(address);
-                    const ethBalance = web3.utils.fromWei(balance, 'ether');
-                    localStorage.setItem('metaMaskAddress', address);
-        
-                    displayMetaMaskInfo(address, ethBalance);
-                } catch (error) {
-                    if (error.code === 4902) {
-                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-                    } else {
-                        console.error('Error:', error);
-                    }
-                }
-            } else {
-                alert('MetaMask is not installed. Please install it to use this feature.');
-            }
-        };
-
-        window.addEventListener('load', async () => {
-            const storedAddress = localStorage.getItem('metaMaskAddress');
-            if (storedAddress) {
-                const web3 = new Web3(window.ethereum);
-                const balance = await web3.eth.getBalance(storedAddress);
-                const ethBalance = web3.utils.fromWei(balance, 'ether');
-                displayMetaMaskInfo(storedAddress, ethBalance);
-            }
-        });
-
-        document.body.appendChild(versionContainer);
-     setTimeout(() => {
-        titleContainer.classList.add('show');
-        menuContainer.classList.add('show');
-        versionContainer.classList.add('show');
-    }, 10); 
-
-
-function updateLoadingBar(currentAmount) {
-    const loadingBar = document.getElementById('loadingBar');
-    const loadingText = document.getElementById('loadingText');
-    const goal = 1000000; 
-    const percentage = (currentAmount / goal) * 100;
-    loadingBar.style.width = percentage + '%';
-    loadingText.innerText ='🏆\n'+percentage.toFixed(2) + '%';
-}
-
-function simulateLoading() {
-    let currentAmount = 0;
-    const increment = 10000; 
-    const loadingInterval = setInterval(() => {
-        if (currentAmount >= 1000000) {
-          //TODO
-        } else {
-            currentAmount += increment;
-            updateLoadingBar(currentAmount);
-        }
-    }, 50); 
-}
-
-//simulateLoading();
+let isPaused = true;
+let isMainMenu = true;
 
 function resumeGame() {
-    if (mainMenu) {
-        mainMenu = false;
 
-        menuContainer.classList.add('fade-out');
-        titleContainer.classList.add('fade-out');
+    if (isPaused) {
+        isPaused = false;
+        refreshDisplay();
+    }
+    
 
+    if(isMainMenu){
+        mainMenuContainers.forEach(container => { container.classList.add('fade-out'); })
         setTimeout(() => {
-            menuContainer.classList.add('hide'); // Add the hide class to trigger fade-out
-            titleContainer.classList.add('hide');
-
+            mainMenuContainers.forEach(container => { container.classList.add('hide'); })
             setTimeout(() => {
-                menuContainer.innerHTML = '';
-                titleContainer.innerHTML = '';
-                menuContainer.classList.remove('fade-out', 'hide');
-                titleContainer.classList.remove('fade-out', 'hide');
+                mainMenuContainers.forEach(container => {
+                    container.innerHTML = '';
+                    container.classList.remove('fade-out', 'hide');
+                })
             }, 1500);
         }, 10); 
     }
-
-    isPaused = false;
-    refreshDisplay();
 }
 
 /*---------------------------------------------------------------------------
@@ -976,7 +994,6 @@ function resumeGame() {
 ---------------------------------------------------------------------------*/
 
 let animationFrameId;
-let isPaused = true;
 const clock = new THREE.Clock();
 const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
