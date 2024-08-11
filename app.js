@@ -1708,18 +1708,20 @@ function createPopUpMenu(entityList, buttonToUpdate) {
     gridContainer.style.gap = '20px'; // Space between buttons
     popUpContainer.appendChild(gridContainer);
 
-    // Populate the grid with items
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
        // itemButton.style.margin = '0 auto'; // Center the button
        // itemButton.style.width = 'calc(100% - 40px)'; // Adjust width to fit grid, considering padding
-        //itemButton.style.height = 'auto'; // Set a fixed height for consistency
+       //itemButton.style.height = 'auto'; // Set a fixed height for consistency
         itemButton.style.display = 'block'; // Ensure the button takes full width
 
         itemButton.onclick = () => {
             buttonToUpdate.innerHTML = '';
             const newButton = createButton(entity, 0.7);
             buttonToUpdate.appendChild(newButton);
+            const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+            buttonToUpdate.appendChild(abilitiesSubTitle);
+
             document.body.removeChild(popUpContainer);
         };
         gridContainer.appendChild(itemButton);
