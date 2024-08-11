@@ -1686,7 +1686,7 @@ function createPopUpMenu(entityList, buttonToUpdate) {
     popUpContainer.appendChild(titleContainer);
 
     const title = document.createElement('div');
-    title.innerText = 'Select an Option';
+    title.innerText = 'Select a NFT';
     title.style.color = 'white';
     title.style.fontSize = '20px';
     titleContainer.appendChild(title);
@@ -1700,9 +1700,9 @@ function createPopUpMenu(entityList, buttonToUpdate) {
     // Create the grid container for buttons
     const gridContainer = document.createElement('div');
     gridContainer.style.display = 'grid';
-    
+
     gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)'; // Two buttons per row
-    if(ismobile)
+    if(isMobile)
     gridContainer.style.gridTemplateColumns = 'repeat(1, 1fr)'; // 1 buttons per row
 
     gridContainer.style.gap = '20px'; // Space between buttons
