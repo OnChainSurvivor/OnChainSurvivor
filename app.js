@@ -1651,11 +1651,11 @@ startSpawningEnemies(player);
     menuButtonsContainer.childNodes.forEach(button => {
         button.addEventListener('click', () => {
             if (button === classContainer) {
-                createPopUpMenu(playerTypes, button);
+                createPopUpMenu(playerTypes, button,classSubTitle);
             } else if (button === classAbilityContainer) {
-                createPopUpMenu(abilityTypes, button);
+                createPopUpMenu(abilityTypes, button,abilitiesSubTitle);
             } else if (button === worldContainer) {
-                createPopUpMenu(worldTypes, button);
+                createPopUpMenu(worldTypes, button,worldSubTitle);
             }
         });
     });
@@ -1664,7 +1664,7 @@ startSpawningEnemies(player);
                         Select NFT Menu
 ---------------------------------------------------------------------------*/
 
-function createPopUpMenu(entityList, buttonToUpdate) {
+function createPopUpMenu(entityList, buttonToUpdate,buttonsubTitle) {
     // Create the pop-up container
     const popUpContainer = createContainer(['top-container', 'fade-in']);
     popUpContainer.style.position = 'fixed';
@@ -1719,8 +1719,7 @@ function createPopUpMenu(entityList, buttonToUpdate) {
             buttonToUpdate.innerHTML = '';
             const newButton = createButton(entity, 0.7);
             buttonToUpdate.appendChild(newButton);
-            const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-            buttonToUpdate.appendChild(abilitiesSubTitle);
+            buttonToUpdate.appendChild(buttonsubTitle);
 
             document.body.removeChild(popUpContainer);
         };
