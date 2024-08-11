@@ -1592,6 +1592,7 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
+        if(scale !== 1)
         attachHoverEffect(button, ability); 
     
         return button;
@@ -1699,7 +1700,11 @@ function createPopUpMenu(entityList, buttonToUpdate) {
     // Create the grid container for buttons
     const gridContainer = document.createElement('div');
     gridContainer.style.display = 'grid';
+    
     gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)'; // Two buttons per row
+    if(ismobile)
+    gridContainer.style.gridTemplateColumns = 'repeat(1, 1fr)'; // 1 buttons per row
+
     gridContainer.style.gap = '20px'; // Space between buttons
     popUpContainer.appendChild(gridContainer);
 
