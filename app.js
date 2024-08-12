@@ -1495,30 +1495,30 @@ startSpawningEnemies(player);
     ];
 
     function attachHoverEffect(button, entity) {
-        button.addEventListener('mouseenter', () => {
+        button.addEventListener('pointerenter', () => {
             const fullButtonContainer = createContainer(['fade-in']);
             document.body.appendChild(fullButtonContainer);
             
             console.log('Hovered over:', entity.title);
             const scaledButton = createButton(entity, 1);
             scaledButton.style.position = 'fixed';
-            scaledButton.style.top = '50%';
+            scaledButton.style.top = '-100%';
             scaledButton.style.left = '50%';
             scaledButton.style.transform = 'translate(-50%, -50%)';
             scaledButton.style.zIndex = '2000';
             scaledButton.style.pointerEvents = 'none'; 
+            menuContainer.appendChild(fullButtonContainer);
             fullButtonContainer.appendChild(scaledButton);
     
             const removeScaledButton = () => {
                 console.log('Mouse left:', entity.title);
                 if (scaledButton) {
-                    document.body.removeChild(fullButtonContainer);
+                    menuContainer.removeChild(fullButtonContainer);
                 }
             };
             setTimeout(() => { fullButtonContainer.classList.add('show'); }, 10);
     
-            button.addEventListener('mouseleave', removeScaledButton, { once: true });
-            button.addEventListener('click', removeScaledButton, { once: true });
+            button.addEventListener('pointerleave', removeScaledButton, { once: true });
         });
     }
 
@@ -1592,10 +1592,8 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
-        if(scale !== 1 && !isMobile)
+      //  if(scale !== 1 && !isMobile)
         attachHoverEffect(button, ability); 
-
-        
 
         return button;
     }
