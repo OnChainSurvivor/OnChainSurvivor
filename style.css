@@ -80,6 +80,7 @@ canvas {
 
 .fade-out {
     opacity: 1;
+    pointer-events: none;
     transition: opacity 1s ease-out;
 }
 
@@ -103,6 +104,16 @@ canvas {
     left : 50%;
     transform : translateX(-50%);
     display : flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.center-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
     align-items: center;
     flex-direction: column;
 }

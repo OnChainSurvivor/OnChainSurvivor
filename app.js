@@ -1,4 +1,12 @@
 /*---------------------------------------------------------------------------
+                              Global Variables
+---------------------------------------------------------------------------*/
+
+let player;
+let ability;
+let world ;
+
+/*---------------------------------------------------------------------------
                               Constants
 ---------------------------------------------------------------------------*/
 
@@ -8,8 +16,6 @@ let colorIndex = 0;
 const xpSpheres = []; 
 const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
 const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-
-let mainMenuContainers = [];
 
 /*---------------------------------------------------------------------------
                               Utility Functions
@@ -1255,6 +1261,8 @@ const worldTypes = [{
                               World Controller
 ---------------------------------------------------------------------------*/
 
+//world= New Entity()
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
@@ -1331,9 +1339,10 @@ window.addEventListener('resize', () => {
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
+ player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 
-const player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
-
+ ability = abilityTypes[0] ;
+ world = worldTypes[0];
 const keys = {};
 ['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
 
@@ -1367,7 +1376,7 @@ function updatePlayerMovement() {
         player.boundingBox.setFromObject(player.mesh);
     }
     else{
-        isPaused = true;
+
     }
     player.updateAbilities();
 
@@ -1419,6 +1428,89 @@ function LevelUp() {
                 refreshDisplay();
                 isPaused = false;
 }
+function createVirtualJoystick() {
+    const joystickContainer = document.createElement('div');
+    joystickContainer.style.position = 'absolute';
+    joystickContainer.style.bottom = '20px';
+    joystickContainer.style.left = '20px';
+    joystickContainer.style.width = '100px';
+    joystickContainer.style.height = '100px';
+    joystickContainer.style.background = 'rgba(0, 0, 0, 0.5)';
+    joystickContainer.style.borderRadius = '50%';
+    joystickContainer.style.touchAction = 'none'; // Disable default touch actions
+    document.body.appendChild(joystickContainer);
+
+    const joystick = document.createElement('div');
+    joystick.style.width = '60px';
+    joystick.style.height = '60px';
+    joystick.style.background = 'rgba(255, 255, 255, 0.8)';
+    joystick.style.borderRadius = '50%';
+    joystick.style.position = 'absolute';
+    joystick.style.top = '50%';
+    joystick.style.left = '50%';
+    joystick.style.transform = 'translate(-50%, -50%)';
+    joystickContainer.appendChild(joystick);
+
+    let joystickActive = false;
+    let joystickStartX, joystickStartY;
+    let joystickDeltaX = 0;
+    let joystickDeltaY = 0;
+
+    joystickContainer.addEventListener('touchstart', (e) => {
+        joystickActive = true;
+        joystickStartX = e.touches[0].clientX;
+        joystickStartY = e.touches[0].clientY;
+    });
+
+    joystickContainer.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+
+        const touch = e.touches[0];
+        joystickDeltaX = touch.clientX - joystickStartX;
+        joystickDeltaY = touch.clientY - joystickStartY;
+
+        const maxDistance = joystickContainer.clientWidth / 2;
+        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
+        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
+
+        const x = distance * Math.cos(angle);
+        const y = distance * Math.sin(angle);
+
+        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
+
+        // Update player movement
+        const normalizedX = x / maxDistance;
+        const normalizedY = y / maxDistance;
+        updatePlayerMovementFromJoystick(normalizedX, -normalizedY);
+    });
+
+    joystickContainer.addEventListener('touchend', () => {
+        joystickActive = false;
+        joystick.style.transform = 'translate(-50%, -50%)';
+        updatePlayerMovementFromJoystick(0, 0); // Stop player movement
+    });
+
+    function updatePlayerMovementFromJoystick(x, y) {
+        let direction = new THREE.Vector3(x, 0, y);
+
+        if (direction.length() > 0) {
+            direction.normalize();
+            const cameraDirection = new THREE.Vector3();
+            camera.getWorldDirection(cameraDirection);
+            cameraDirection.y = 0;
+            cameraDirection.normalize();
+            const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
+            player.position.add(moveDirection.multiplyScalar(player.movementspeed));
+            const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+            player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
+            player.boundingBox.setFromObject(player.mesh);
+        }
+        player.updateAbilities();
+    }
+}
+
+// Call the function to create the virtual joystick
+createVirtualJoystick();
 
 /*---------------------------------------------------------------------------
                               Enemies Controller
@@ -1496,9 +1588,12 @@ startSpawningEnemies(player);
 
     function attachHoverEffect(button, entity) {
         button.addEventListener('pointerenter', () => {
-            const fullButtonContainer = createContainer(['fade-in']);
-            document.body.appendChild(fullButtonContainer);
             
+            centerUI.innerHTML='';
+            centerUI = createContainer(['center-container', 'fade-in']);
+            document.body.appendChild(centerUI);
+
+
             console.log('Hovered over:', entity.title);
             const scaledButton = createButton(entity, 1);
             scaledButton.style.position = 'fixed';
@@ -1507,16 +1602,16 @@ startSpawningEnemies(player);
             scaledButton.style.transform = 'translate(-50%, -50%)';
             scaledButton.style.zIndex = '2000';
             scaledButton.style.pointerEvents = 'none'; 
-            menuContainer.appendChild(fullButtonContainer);
-            fullButtonContainer.appendChild(scaledButton);
-    
+            centerUI.appendChild(scaledButton);
+          
             const removeScaledButton = () => {
                 console.log('Mouse left:', entity.title);
                 if (scaledButton) {
-                    menuContainer.removeChild(fullButtonContainer);
+                    centerUI.removeChild(scaledButton);
                 }
             };
-            setTimeout(() => { fullButtonContainer.classList.add('show'); }, 10);
+
+            setTimeout(() => { centerUI.classList.add('show'); }, 10);
     
             button.addEventListener('pointerleave', removeScaledButton, { once: true });
         });
@@ -1598,83 +1693,112 @@ startSpawningEnemies(player);
         return button;
     }
     
+
+/*---------------------------------------------------------------------------
+                                Main Menu UI 
+---------------------------------------------------------------------------*/
+
+    let mainMenuContainers= []
+
+    let topUI = createContainer(['top-container', 'fade-in']);
+    document.body.appendChild(topUI);
+    
+    let centerUI = createContainer(['center-container', 'fade-in']);
+    document.body.appendChild(centerUI);
+    
+    let botUI = createContainer(['bottom-container', 'fade-in']);
+    document.body.appendChild(botUI);
+    
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
 
-    const titleContainer = createContainer(['top-container', 'fade-in']);
+    function createGameTitle(){
+        topUI.innerHTML='';
+        topUI = createContainer(['top-container', 'fade-in']);
+        document.body.appendChild(topUI);
 
-    const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
-    titleContainer.appendChild(mainTitle);
+        const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+        topUI.appendChild(mainTitle);
+        const subTitle = createTitleElement('Can you survive 5 minutes?', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        topUI.appendChild(subTitle);
+        setTimeout(() => {topUI.classList.add('show'); }, 10); 
+    };
 
-    const subTitle = createTitleElement('Can you survive 5 minutes? Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-    titleContainer.appendChild(subTitle);
-
-    mainMenuContainers.push(titleContainer);
-    document.body.appendChild(titleContainer);
-
-    setTimeout(() => { titleContainer.classList.add('show'); }, 10); 
+    createGameTitle();
 
 /*---------------------------------------------------------------------------
-                                   GAME MENU
+                                MAIN MENU
 ---------------------------------------------------------------------------*/
 
-    const menuContainer = createContainer(['bottom-container', 'fade-in']);
-    const menuButtonsContainer = createContainer([], { display: 'flex' });
-    menuContainer.appendChild(menuButtonsContainer);
+    function createGameMenu(){
 
-    classContainer = document.createElement('div');
-    const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    menuButtonsContainer.appendChild(classContainer);
-    classContainer.appendChild(createButton(entities[0], 0.7));
-    classContainer.appendChild(classSubTitle);
-    menuButtonsContainer.appendChild(classContainer);
+        botUI.innerHTML='';
+        botUI = createContainer(['bottom-container', 'fade-in']);
+        document.body.appendChild(botUI);
 
-    classAbilityContainer = document.createElement('div');
-    const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    classAbilityContainer.appendChild(createButton(entities[1], 0.7));
-    classAbilityContainer.appendChild(abilitiesSubTitle);
-    classContainer.appendChild(classAbilityContainer);
-    menuButtonsContainer.appendChild(classAbilityContainer);
+        const menuButtonsContainer = createContainer([], { display: 'flex' });
+        classContainer = document.createElement('div');
+        const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        menuButtonsContainer.appendChild(classContainer);
+        classContainer.appendChild(createButton(player, 0.7));
+        classContainer.appendChild(classSubTitle);
+        menuButtonsContainer.appendChild(classContainer);
+        classAbilityContainer = document.createElement('div');
+        const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        classAbilityContainer.appendChild(createButton(ability, 0.7));
+        classAbilityContainer.appendChild(abilitiesSubTitle);
+        classContainer.appendChild(classAbilityContainer);
+        menuButtonsContainer.appendChild(classAbilityContainer);
+        worldContainer = document.createElement('div');
+        const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        worldContainer.appendChild(createButton(world, .7));
+        worldContainer.appendChild(worldSubTitle);
+        menuButtonsContainer.appendChild(worldContainer);
 
-    worldContainer = document.createElement('div');
-    const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    worldContainer.appendChild(createButton(entities[2], .7));
-    worldContainer.appendChild(worldSubTitle);
-    menuButtonsContainer.appendChild(worldContainer);
+        botUI.appendChild(menuButtonsContainer);
+        setTimeout(() => { botUI.classList.add('show');}, 10); 
 
-    mainMenuContainers.push(menuContainer);
-    document.body.appendChild(menuContainer);
+        menuButtonsContainer.childNodes.forEach(button => {
+            button.addEventListener('click', () => {
 
-    setTimeout(() => { menuContainer.classList.add('show');}, 10); 
+                if (button === classContainer) {
+                    createNFTMenu(playerTypes, "Survivor");
+                } else if (button === classAbilityContainer) {
+                    createNFTMenu(abilityTypes, "Ability");
+                } else if (button === worldContainer) {
+                    createNFTMenu(worldTypes, "World");
+                }
 
-    menuButtonsContainer.childNodes.forEach(button => {
-        button.addEventListener('click', () => {
-            if (button === classContainer) {
-                createPopUpMenu(playerTypes, button,classSubTitle);
-            } else if (button === classAbilityContainer) {
-                createPopUpMenu(abilityTypes, button,abilitiesSubTitle);
-            } else if (button === worldContainer) {
-                createPopUpMenu(worldTypes, button,worldSubTitle);
-            }
+                botUI.classList.add('fade-out'); 
+                setTimeout(() => { botUI.classList.add('hide'); }, 10);
+            });
         });
-    });
+    };
+
+    createGameMenu()
 
 /*---------------------------------------------------------------------------
                         Select NFT Menu
 ---------------------------------------------------------------------------*/
 
-function createPopUpMenu(entityList, buttonToUpdate, buttonsubTitle) {
-    const popUpContainer = createContainer(['top-container', 'fade-in']);
+function createNFTMenu(entityList,type) {
+
+    centerUI.innerHTML='';
+    centerUI = createContainer(['center-container', 'fade-in']);
+    document.body.appendChild(centerUI);
+
+    const popUpContainer = createContainer([],);
     popUpContainer.style.position = 'fixed';
     popUpContainer.style.zIndex = '1001';
     popUpContainer.style.backgroundColor = 'black';
-    popUpContainer.style.width = '75%';
-    popUpContainer.style.height = '95%';
+    popUpContainer.style.height = `${window.innerHeight * 0.99}px`;
+    popUpContainer.style.width = `${window.innerWidth * 0.99}px`;
+    popUpContainer.style.transform = 'translate(0%, -50%)';
     popUpContainer.style.border = '.5px solid';
     popUpContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
     popUpContainer.style.borderImageSlice = 1;
-    popUpContainer.style.padding = '20px';
+  
     popUpContainer.style.boxSizing = 'border-box';
     popUpContainer.style.overflowY = 'auto';
     popUpContainer.style.animation = 'rainbow-border 5s linear infinite';
@@ -1685,33 +1809,48 @@ function createPopUpMenu(entityList, buttonToUpdate, buttonsubTitle) {
     titleContainer.style.alignItems = 'center';
     titleContainer.style.marginBottom = '20px';
     titleContainer.style.flexDirection = 'column';
-    popUpContainer.appendChild(titleContainer);
-    const title = createTitleElement('Choose your NFT', '', isMobile ? '4.5vw' : '1.5vw');
+    const title = createTitleElement('Choose your '+ type+' NFT !', '', isMobile ? '10vw' : '6vw');
     titleContainer.appendChild(title);
-    titleContainer.appendChild(buttonToUpdate.childNodes[1].cloneNode(true));
 
     const gridContainer = document.createElement('div');
     gridContainer.style.display = 'grid';
-    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    if (isMobile) gridContainer.style.gridTemplateColumns = 'repeat(1, 1fr)';
-    gridContainer.style.gap = '20px';
-    popUpContainer.appendChild(gridContainer);
+   
+    const gridTemplateColumns = `repeat(2, auto)`;
+    gridContainer.style.justifyContent = 'center'; 
+ 
+    gridContainer.style.margin = '0 auto';
+    gridContainer.style.gridTemplateColumns = gridTemplateColumns;
 
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
         itemButton.style.display = 'block';
         itemButton.onclick = () => {
-            buttonToUpdate.innerHTML = '';
-            const newButton = createButton(entity, 0.7);
-            buttonToUpdate.appendChild(newButton);
-            buttonToUpdate.appendChild(buttonsubTitle);
-            document.body.removeChild(popUpContainer);
+
+            if (type === "Survivor") {
+            player.deactivateAbilities();
+            scene.remove(player);
+            player = new Entity(playerTypes.find(type => type === entity));
+            }
+
+            if (type ==="Ability") {
+            ability=entity
+            }
+            if (type === "World"){
+            world=entity
+            }
+
+            centerUI.classList.add('fade-out'); 
+            setTimeout(() => { centerUI.classList.add('hide'); }, 10);
+
+            createGameMenu();
         };
         gridContainer.appendChild(itemButton);
     });
+    popUpContainer.appendChild(titleContainer);
+    popUpContainer.appendChild(gridContainer);
 
-    document.body.appendChild(popUpContainer);
-    setTimeout(() => { popUpContainer.classList.add('show'); }, 10);
+    centerUI.appendChild(popUpContainer);
+    setTimeout(() => { centerUI.classList.add('show'); }, 10);
 }
 
 /*---------------------------------------------------------------------------
@@ -1851,12 +1990,13 @@ function updateTimerDisplay() {
 }
 
 function refreshDisplay() {
+    botUI.innerHTML='';
+    botUI = createContainer(['bottom-container', 'fade-in']);
+    document.body.appendChild(botUI);
 
-    const gameStateContainer = createContainer(['bottom-container','fade-in'],{ display: 'flex' });
-    document.body.appendChild(gameStateContainer);
     const abilitiesContainer = createContainer([], { display: 'flex' });
-    gameStateContainer.appendChild(abilitiesContainer);
-    gameStateContainer.appendChild(timerDisplay);
+    botUI.appendChild(abilitiesContainer);
+    botUI.appendChild(timerDisplay);
     
     abilitiesContainer.innerHTML = '';
     abilityButton = createButton(player, .3);
@@ -1867,15 +2007,14 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(abilityButton);
     });
 
-    abilitiesContainer.appendChild(createButton(worldTypes[0],.3));
+    abilitiesContainer.appendChild(createButton(ability,.3));
+    abilitiesContainer.appendChild(createButton(world,.3));
 
-    document.body.appendChild(gameStateContainer);
-
-    setTimeout(() => { gameStateContainer.classList.add('show'); }, 10); 
+    setTimeout(() => { botUI.classList.add('show'); }, 10); 
 
 }
 /*---------------------------------------------------------------------------
-                                   GAME OVER UI
+                                 GAME OVER UI
 ---------------------------------------------------------------------------*/
 
 function triggerGameOver() {
@@ -1946,11 +2085,14 @@ function resumeGame() {
 
     if (isPaused) {
         isPaused = false;
-        refreshDisplay();
     }
     
+    if(isMainMenu){ 
+    isMainMenu = false;
+    mainMenuContainers.push(topUI);
+    mainMenuContainers.push(centerUI);
+    mainMenuContainers.push(botUI);
 
-    if(isMainMenu){
         mainMenuContainers.forEach(container => { container.classList.add('fade-out'); })
         setTimeout(() => {
             mainMenuContainers.forEach(container => { container.classList.add('hide'); })
@@ -1961,6 +2103,7 @@ function resumeGame() {
                 })
             }, 1500);
         }, 10); 
+        setTimeout(() => { refreshDisplay() }, 1050);
     }
 }
 
