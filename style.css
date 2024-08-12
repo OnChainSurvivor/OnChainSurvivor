@@ -41,17 +41,17 @@ canvas {
 }
 
 @keyframes rainbowBorder {
-    0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
-    10% { border-image-source: linear-gradient(45deg, orange, yellow, green, blue, indigo, violet, red); }
-    20% { border-image-source: linear-gradient(45deg, yellow, green, blue, indigo, violet, red, orange); }
-    30% { border-image-source: linear-gradient(45deg, green, blue, indigo, violet, red, orange, yellow); }
-    40% { border-image-source: linear-gradient(45deg, blue, indigo, violet, red, orange, yellow, green); }
-    50% { border-image-source: linear-gradient(45deg, indigo, violet, red, orange, yellow, green, blue); }
-    60% { border-image-source: linear-gradient(45deg, violet, red, orange, yellow, green, blue, indigo); }
-    70% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
-    80% { border-image-source: linear-gradient(45deg, orange, yellow, green, blue, indigo, violet, red); }
-    90% { border-image-source: linear-gradient(45deg, yellow, green, blue, indigo, violet, red, orange); }
-    100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet); }
+    0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
+    10% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
+    20% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
+    30% { border-image-source: linear-gradient(45deg, green, deepskyblue, blueviolet, violet, red, orange, yellow); }
+    40% { border-image-source: linear-gradient(45deg, deepskyblue, blueviolet, violet, red, orange, yellow, green); }
+    50% { border-image-source: linear-gradient(45deg, blueviolet, violet, red, orange, yellow, green, deepskyblue); }
+    60% { border-image-source: linear-gradient(45deg, violet, red, orange, yellow, green, deepskyblue, blueviolet); }
+    70% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
+    80% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
+    90% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
+    100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
 }
 
 @keyframes rainbowText {
@@ -61,7 +61,7 @@ canvas {
 
 .rainbow-text {
     color: transparent;
-    background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     background-clip: text;
     -webkit-background-clip: text;
     background-size: 200% 200%;

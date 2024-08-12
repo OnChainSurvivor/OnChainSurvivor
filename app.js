@@ -1592,9 +1592,11 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
-        if(scale !== 1)
+        if(scale !== 1 && !isMobile)
         attachHoverEffect(button, ability); 
-    
+
+        
+
         return button;
     }
     
