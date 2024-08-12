@@ -1592,7 +1592,7 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
-      //  if(scale !== 1 && !isMobile)
+        if(scale <=.3)
         attachHoverEffect(button, ability); 
 
         return button;
@@ -1664,71 +1664,54 @@ startSpawningEnemies(player);
                         Select NFT Menu
 ---------------------------------------------------------------------------*/
 
-function createPopUpMenu(entityList, buttonToUpdate,buttonsubTitle) {
-    // Create the pop-up container
+function createPopUpMenu(entityList, buttonToUpdate, buttonsubTitle) {
     const popUpContainer = createContainer(['top-container', 'fade-in']);
     popUpContainer.style.position = 'fixed';
     popUpContainer.style.zIndex = '1001';
     popUpContainer.style.backgroundColor = 'black';
     popUpContainer.style.width = '75%';
     popUpContainer.style.height = '95%';
-    popUpContainer.style.border = '1px solid white';
-    popUpContainer.style.padding = '20px';  // Add padding for spacing
+    popUpContainer.style.border = '.5px solid';
+    popUpContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+    popUpContainer.style.borderImageSlice = 1;
+    popUpContainer.style.padding = '20px';
     popUpContainer.style.boxSizing = 'border-box';
     popUpContainer.style.overflowY = 'auto';
+    popUpContainer.style.animation = 'rainbow-border 5s linear infinite';
 
-    // Create the title and close button container
     const titleContainer = document.createElement('div');
     titleContainer.style.display = 'flex';
     titleContainer.style.justifyContent = 'space-between';
     titleContainer.style.alignItems = 'center';
-    titleContainer.style.marginBottom = '10px'; // Space between title and grid
+    titleContainer.style.marginBottom = '20px';
+    titleContainer.style.flexDirection = 'column';
     popUpContainer.appendChild(titleContainer);
-
-    const title = document.createElement('div');
-    title.innerText = 'Select a NFT';
-    title.style.color = 'white';
-    title.style.fontSize = '20px';
+    const title = createTitleElement('Choose your NFT', '', isMobile ? '4.5vw' : '1.5vw');
     titleContainer.appendChild(title);
+    titleContainer.appendChild(buttonToUpdate.childNodes[1].cloneNode(true));
 
-    const closeButton = document.createElement('button');
-    closeButton.innerText = 'Close';
-    closeButton.style.cursor = 'pointer';
-    closeButton.onclick = () => document.body.removeChild(popUpContainer);
-    titleContainer.appendChild(closeButton);
-
-    // Create the grid container for buttons
     const gridContainer = document.createElement('div');
     gridContainer.style.display = 'grid';
-
-    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)'; // Two buttons per row
-    if(isMobile)
-    gridContainer.style.gridTemplateColumns = 'repeat(1, 1fr)'; // 1 buttons per row
-
-    gridContainer.style.gap = '20px'; // Space between buttons
+    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    if (isMobile) gridContainer.style.gridTemplateColumns = 'repeat(1, 1fr)';
+    gridContainer.style.gap = '20px';
     popUpContainer.appendChild(gridContainer);
 
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
-       // itemButton.style.margin = '0 auto'; // Center the button
-       // itemButton.style.width = 'calc(100% - 40px)'; // Adjust width to fit grid, considering padding
-       //itemButton.style.height = 'auto'; // Set a fixed height for consistency
-        itemButton.style.display = 'block'; // Ensure the button takes full width
-
+        itemButton.style.display = 'block';
         itemButton.onclick = () => {
             buttonToUpdate.innerHTML = '';
             const newButton = createButton(entity, 0.7);
             buttonToUpdate.appendChild(newButton);
             buttonToUpdate.appendChild(buttonsubTitle);
-
             document.body.removeChild(popUpContainer);
         };
         gridContainer.appendChild(itemButton);
     });
 
-    // Append the pop-up menu to the body
     document.body.appendChild(popUpContainer);
-    setTimeout(() => { popUpContainer.classList.add('show'); }, 10); 
+    setTimeout(() => { popUpContainer.classList.add('show'); }, 10);
 }
 
 /*---------------------------------------------------------------------------
@@ -1736,8 +1719,7 @@ function createPopUpMenu(entityList, buttonToUpdate,buttonsubTitle) {
 ---------------------------------------------------------------------------*/
    
     const web3Container = createContainer(['fade-in', 'top-container'], { left: '95%' });
-    const versionTitle = createTitleElement('v0.0.12', 'who even keeps track of these', isMobile ? '3vw' : '1vw');
-   
+
     const metaMaskImage = document.createElement('img');
     metaMaskImage.src = 'Media/MetamaskLogo.png';
     metaMaskImage.style.width = '30px';
@@ -1778,7 +1760,6 @@ function createPopUpMenu(entityList, buttonToUpdate,buttonsubTitle) {
     loadingText.style.color = 'white';
   
     loadingContainer.appendChild(loadingBar);
-    web3Container.appendChild(versionTitle);
     web3Container.appendChild(metaMaskButton);
 
     function displayMetaMaskInfo(address, ethBalance) {
