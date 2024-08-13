@@ -1211,9 +1211,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 1 },
-        { type: 'Veil of Decentralization', level: 1 }
+        { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
 }
@@ -1446,24 +1444,20 @@ function updateCamera() {
 
 function LevelUp() {
     canMove= false;
+    isPaused = true;
+
     const availableAbilities = abilityTypes.filter(abilityType => {
         return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
     });
     const allAbilities = [...player.abilities, ...availableAbilities];
-        const randomIndex = Math.floor(Math.random() * allAbilities.length);
-        const randomAbility = allAbilities[randomIndex];
-                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === randomAbility.title);
-                if (existingAbility) {
-                    existingAbility.deactivate();
-                    existingAbility.level += 1;
-                    existingAbility.activate();
-                } else {
-                    const newAbility = new Ability(player, { ...randomAbility, level: 1 });
-                    player.addAbility(newAbility);
-                    newAbility.activate();
-                }
-                refreshDisplay();
-                isPaused = false;
+
+        const upgradeOptions = [];
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+
+        createChooseMenu(upgradeOptions, "Upgrade! Choose 1:","Upgrade");
 }
 
     const joystickContainer = document.createElement('div');
@@ -1718,11 +1712,13 @@ startSpawningEnemies(player);
         levelStars.style.display = 'flex';
         levelStars.style.marginTop = '1px';
         levelStars.style.marginBottom = '1px';
+        levelStars.style.alignItems = 'center'; 
+        levelStars.style.justifyContent = 'center';
         for (let i = 0; i < ability.level; i++) {
             const star = document.createElement('img');
             star.src = 'Media/Abilities/Star.png';
-            star.style.width = `${20 * scale}px`;
-            star.style.height = `${20 * scale}px`;
+            star.style.width = `${25 * scale}px`;
+            star.style.height = `${25 * scale}px`;
             levelStars.appendChild(star);
         }
     
@@ -1731,15 +1727,15 @@ startSpawningEnemies(player);
     
         const effectinfo = document.createElement('div');
         effectinfo.innerText = `${expl}`;
-        rainbowText(effectinfo, `${14 * scale}px`); 
+        rainbowText(effectinfo, `${14.5 * scale}px`); 
         effectinfo.style.height = `${5 * scale}em`; 
-        effectinfo.style.lineHeight = `${1.15 * scale}em`; 
+        effectinfo.style.lineHeight = `${1 * scale}em`; 
         effectinfo.style.overflow = 'hidden'; 
         effectinfo.style.textAlign = 'center';
         effectinfo.style.alignItems = 'center'; 
         effectinfo.style.justifyContent = 'center';
-        effectinfo.style.padding = `${5 * scale}px 0`;
-        effectinfo.style.display = scale > 0.751 ? 'block' : 'none'; 
+        effectinfo.style.padding = `${5 * scale}px`;
+        effectinfo.style.display = scale > 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
     
         button.appendChild(title);
         button.appendChild(img);
@@ -1748,8 +1744,8 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
-        if(scale <=.3 && isPaused)
-        attachHoverEffect(button, ability); 
+        //if(scale <=.3 && isPaused)
+        // attachHoverEffect(button, ability); 
 
         return button;
     }
@@ -1824,11 +1820,11 @@ startSpawningEnemies(player);
                 canMove=false;
 
                 if (button === classContainer) {
-                    createNFTMenu(playerTypes, "Survivor");
+                    createChooseMenu(playerTypes, "Choose your Survivor 🏆 NFT!","Survivor");
                 } else if (button === classAbilityContainer) {
-                    createNFTMenu(abilityTypes, "Ability");
+                    createChooseMenu(abilityTypes, "Choose your Ability ⚔️ NFT!","Ability");
                 } else if (button === worldContainer) {
-                    createNFTMenu(worldTypes, "World");
+                    createChooseMenu(worldTypes, "Choose your Chain 🔗 NFT! ","World");
                 }
 
                 botUI.classList.add('fade-out'); 
@@ -1840,10 +1836,10 @@ startSpawningEnemies(player);
     createGameMenu()
 
 /*---------------------------------------------------------------------------
-                        Select NFT Menu
+                        Generic Choose Menu
 ---------------------------------------------------------------------------*/
 
-function createNFTMenu(entityList,type) {
+function createChooseMenu(entityList,text,type) {
 
     centerUI.innerHTML='';
     centerUI = createContainer(['center-container', 'fade-in']);
@@ -1870,7 +1866,7 @@ function createNFTMenu(entityList,type) {
     titleContainer.style.alignItems = 'center';
     titleContainer.style.marginBottom = '20px';
     titleContainer.style.flexDirection = 'column';
-    const title = createTitleElement('Choose your '+ type+' NFT !', '', isMobile ? '10vw' : '6vw');
+    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw');
     titleContainer.appendChild(title);
 
     const gridContainer = document.createElement('div');
@@ -1891,19 +1887,34 @@ function createNFTMenu(entityList,type) {
             player.deactivateAbilities();
             scene.remove(player);
             player = new Entity(playerTypes.find(type => type === entity));
+            createGameMenu();
             }
 
             if (type ==="Ability") {
             ability=entity
+            createGameMenu();
             }
             if (type === "World"){
             world=entity
+            createGameMenu();
+            }
+
+            if (type === "Upgrade"){
+                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
+                if (existingAbility) {
+                    existingAbility.deactivate();
+                    existingAbility.level += 1;
+                    existingAbility.activate();
+                } else {
+                    const newAbility = new Ability(player, { ...entity, level: 1 });
+                    player.addAbility(newAbility);
+                    newAbility.activate();
+                }
+                refreshDisplay();
             }
 
             centerUI.classList.add('fade-out'); 
             setTimeout(() => { centerUI.classList.add('hide'); }, 10);
-
-            createGameMenu();
         };
         gridContainer.appendChild(itemButton);
     });
