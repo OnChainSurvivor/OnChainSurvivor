@@ -1194,7 +1194,7 @@ const abilityTypes = [{
 ];
 
 /*---------------------------------------------------------------------------
-                              Class Blueprints
+                              Survivor Class Blueprints
 ---------------------------------------------------------------------------*/
 
 const playerTypes = [{
@@ -1289,8 +1289,6 @@ const composer = new THREE.EffectComposer(renderer, renderTarget);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-
-
 window.addEventListener('resize', updateRendererSize);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -1332,6 +1330,7 @@ camera.position.set(0, 15, 15);
     });
 
     const refractionCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+
     scene.add(refractionCamera);
 
     const octahedronGeometry = new THREE.OctahedronGeometry(1);
@@ -1373,8 +1372,8 @@ window.addEventListener('resize', () => {
 ---------------------------------------------------------------------------*/
  player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 
- ability = abilityTypes[0] ;
- world = worldTypes[0];
+ability = abilityTypes[0] ;
+world = worldTypes[0];
 const keys = {};
 let canMove = true;
 ['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
@@ -1710,8 +1709,6 @@ startSpawningEnemies(player);
     
         const levelStars = document.createElement('div');
         levelStars.style.display = 'flex';
-        levelStars.style.marginTop = '1px';
-        levelStars.style.marginBottom = '1px';
         levelStars.style.alignItems = 'center'; 
         levelStars.style.justifyContent = 'center';
         for (let i = 0; i < ability.level; i++) {
@@ -1836,7 +1833,7 @@ startSpawningEnemies(player);
     createGameMenu()
 
 /*---------------------------------------------------------------------------
-                        Generic Choose Menu
+                        Generic Choose NFT Menu
 ---------------------------------------------------------------------------*/
 
 function createChooseMenu(entityList,text,type) {
@@ -2079,8 +2076,8 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(abilityButton);
     });
 
-    abilitiesContainer.appendChild(createButton(ability,.3));
-    abilitiesContainer.appendChild(createButton(world,.3));
+   // abilitiesContainer.appendChild(createButton(ability,.3));    //
+   // abilitiesContainer.appendChild(createButton(world,.3));      // NO longer needed in AI 
 
     setTimeout(() => { botUI.classList.add('show'); }, 10); 
 
@@ -2176,6 +2173,17 @@ function resumeGame() {
             }, 1500);
         }, 10); 
         setTimeout(() => { refreshDisplay() }, 1050);
+
+        const existingAbility = player.abilities.find(playerAbility => playerAbility.title === ability.title);
+        if (existingAbility) {
+            existingAbility.deactivate();
+            existingAbility.level += 1;
+            existingAbility.activate();
+        } else {
+            const newAbility = new Ability(player, { ...ability, level: 1 });
+            player.addAbility(newAbility);
+            newAbility.activate();
+        }
     }
 }
 
