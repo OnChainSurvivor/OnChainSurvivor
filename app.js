@@ -1326,7 +1326,41 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 };
 
 camera.position.set(0, 15, 15);
-//camera.lookAt(player.position);
+
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024, {
+        format: THREE.RGBAFormat,
+        generateMipmaps: true,
+        minFilter: THREE.LinearMipmapLinearFilter
+    });
+
+    const refractionCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+    scene.add(refractionCamera);
+
+    const octahedronGeometry = new THREE.OctahedronGeometry(1);
+    octahedronGeometry.scale(5, 7.5, 5); 
+
+    
+    const diamondMaterial = new THREE.MeshPhongMaterial({
+        envMap: refractionCamera.renderTarget.texture,
+        refractionRatio: 0.98,
+        reflectivity: 0.9,
+        color: 'white',
+        transparent: true,
+        opacity: 0.9,
+        shininess: 100,
+        specular: 0xffffff
+    });
+    
+    // bounces: { value: 3, min: 0, max: 8, step: 1 },
+    // aberrationStrength: { value: 0.1, min: 0, max: 0.1, step: 0.01 },
+    // ior: { value: 2.75, min: 0, max: 10 },
+    //  fresnel: { value: 1, min: 0, max: 1 },
+    
+    const octahedronMesh = new THREE.Mesh(octahedronGeometry, diamondMaterial);
+    scene.add(octahedronMesh);
+
+
+camera.lookAt(octahedronMesh.position);
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -1344,6 +1378,7 @@ window.addEventListener('resize', () => {
  ability = abilityTypes[0] ;
  world = worldTypes[0];
 const keys = {};
+let canMove = true;
 ['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
 
 document.addEventListener('keydown', (event) => {
@@ -1355,6 +1390,7 @@ document.addEventListener('keyup', (event) => {
 });
 
 function updatePlayerMovement() {
+    if(!canMove) return;
     let direction = new THREE.Vector3();
 
     if (keys.s) direction.z -= player.movementspeed;
@@ -1409,6 +1445,7 @@ function updateCamera() {
 }
 
 function LevelUp() {
+    canMove= false;
     const availableAbilities = abilityTypes.filter(abilityType => {
         return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
     });
@@ -1428,15 +1465,15 @@ function LevelUp() {
                 refreshDisplay();
                 isPaused = false;
 }
-function createVirtualJoystick() {
+
     const joystickContainer = document.createElement('div');
     joystickContainer.style.position = 'absolute';
     joystickContainer.style.width = '100px';
     joystickContainer.style.height = '100px';
     joystickContainer.style.borderRadius = '50%';
     joystickContainer.style.touchAction = 'none';
-    joystickContainer.style.pointerEvents = 'none'; // Prevent interaction when inactive
-    joystickContainer.style.visibility = 'hidden'; // Invisible when inactive
+    joystickContainer.style.pointerEvents = 'none'; 
+    joystickContainer.style.visibility = 'hidden'; 
     document.body.appendChild(joystickContainer);
 
     const joystick = document.createElement('div');
@@ -1472,27 +1509,28 @@ function createVirtualJoystick() {
     }
 
     function updateJoystickDirection(normalizedX, normalizedY) {
-        // Reset all keys before setting new directions
+        if(!canMove) return;
         keys.w = keys.a = keys.s = keys.d = false;
         
-        if (normalizedY > 0.5) keys.w = true; // Forward
-        if (normalizedY < -0.5) keys.s = true; // Backward
-        if (normalizedX < -0.5) keys.a = true; // Left
-        if (normalizedX > 0.5) keys.d = true; // Right
+        if (normalizedY > 0.5) keys.w = true; 
+        if (normalizedY < -0.5) keys.s = true; 
+        if (normalizedX < -0.5) keys.a = true;
+        if (normalizedX > 0.5) keys.d = true; 
     }
 
     document.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'BUTTON') return; // Do not activate if clicking a button
+        if(!canMove) return;
         activateJoystick(e.clientX, e.clientY);
     });
 
     document.addEventListener('touchstart', (e) => {
-        if (e.target.tagName === 'BUTTON') return; // Do not activate if touching a button
+        if(!canMove) return; 
         activateJoystick(e.touches[0].clientX, e.touches[0].clientY);
     });
 
     document.addEventListener('mousemove', (e) => {
         if (!joystickActive) return;
+        if(!canMove) return;
 
         const joystickDeltaX = e.clientX - joystickStartX;
         const joystickDeltaY = e.clientY - joystickStartY;
@@ -1534,13 +1572,6 @@ function createVirtualJoystick() {
 
     document.addEventListener('mouseup', deactivateJoystick);
     document.addEventListener('touchend', deactivateJoystick);
-
-
-}
-
-// Call the function to create the virtual joystick
-createVirtualJoystick();
-
 
 /*---------------------------------------------------------------------------
                               Enemies Controller
@@ -1717,13 +1748,12 @@ startSpawningEnemies(player);
     
         if (onClick) button.onclick = onClick;
 
-        if(scale <=.3)
+        if(scale <=.3 && isPaused)
         attachHoverEffect(button, ability); 
 
         return button;
     }
     
-
 /*---------------------------------------------------------------------------
                                 Main Menu UI 
 ---------------------------------------------------------------------------*/
@@ -1791,6 +1821,7 @@ startSpawningEnemies(player);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
+                canMove=false;
 
                 if (button === classContainer) {
                     createNFTMenu(playerTypes, "Survivor");
@@ -1855,7 +1886,7 @@ function createNFTMenu(entityList,type) {
         const itemButton = createButton(entity, 1);
         itemButton.style.display = 'block';
         itemButton.onclick = () => {
-
+            canMove=true;
             if (type === "Survivor") {
             player.deactivateAbilities();
             scene.remove(player);
@@ -2160,6 +2191,7 @@ function animate() {
             updateEnemies();
             updateTimerDisplay();
         } else {
+            if(!canMove) return;
             if (keys.s) resumeGame();
             if (keys.w) resumeGame();
             if (keys.a) resumeGame();
@@ -2167,6 +2199,14 @@ function animate() {
         }
         accumulatedTime -= fixedTimeStep;
     }
+ 
+
+    octahedronMesh.rotation.y += 0.01;
+    octahedronMesh.visible = false;
+    refractionCamera.update(renderer, scene);
+    octahedronMesh.visible = true;
+  
     composer.render();
+
 }
 animate();
