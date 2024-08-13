@@ -1431,13 +1431,12 @@ function LevelUp() {
 function createVirtualJoystick() {
     const joystickContainer = document.createElement('div');
     joystickContainer.style.position = 'absolute';
-    joystickContainer.style.bottom = '20px';
-    joystickContainer.style.left = '20px';
     joystickContainer.style.width = '100px';
     joystickContainer.style.height = '100px';
-    joystickContainer.style.background = 'rgba(0, 0, 0, 0.5)';
     joystickContainer.style.borderRadius = '50%';
-    joystickContainer.style.touchAction = 'none'; // Disable default touch actions
+    joystickContainer.style.touchAction = 'none';
+    joystickContainer.style.pointerEvents = 'none'; // Prevent interaction when inactive
+    joystickContainer.style.visibility = 'hidden'; // Invisible when inactive
     document.body.appendChild(joystickContainer);
 
     const joystick = document.createElement('div');
@@ -1453,21 +1452,50 @@ function createVirtualJoystick() {
 
     let joystickActive = false;
     let joystickStartX, joystickStartY;
-    let joystickDeltaX = 0;
-    let joystickDeltaY = 0;
 
-    joystickContainer.addEventListener('touchstart', (e) => {
+    function activateJoystick(x, y) {
+        joystickContainer.style.left = `${x - joystickContainer.clientWidth / 2}px`;
+        joystickContainer.style.top = `${y - joystickContainer.clientHeight / 2}px`;
+        joystickContainer.style.pointerEvents = 'auto';
+        joystickContainer.style.visibility = 'visible';
+        joystickStartX = x;
+        joystickStartY = y;
         joystickActive = true;
-        joystickStartX = e.touches[0].clientX;
-        joystickStartY = e.touches[0].clientY;
+    }
+
+    function deactivateJoystick() {
+        joystickActive = false;
+        joystickContainer.style.pointerEvents = 'none';
+        joystickContainer.style.visibility = 'hidden';
+        joystick.style.transform = 'translate(-50%, -50%)';
+        keys.w = keys.a = keys.s = keys.d = false; // Reset all keys when joystick is released
+    }
+
+    function updateJoystickDirection(normalizedX, normalizedY) {
+        // Reset all keys before setting new directions
+        keys.w = keys.a = keys.s = keys.d = false;
+        
+        if (normalizedY > 0.5) keys.w = true; // Forward
+        if (normalizedY < -0.5) keys.s = true; // Backward
+        if (normalizedX < -0.5) keys.a = true; // Left
+        if (normalizedX > 0.5) keys.d = true; // Right
+    }
+
+    document.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'BUTTON') return; // Do not activate if clicking a button
+        activateJoystick(e.clientX, e.clientY);
     });
 
-    joystickContainer.addEventListener('touchmove', (e) => {
+    document.addEventListener('touchstart', (e) => {
+        if (e.target.tagName === 'BUTTON') return; // Do not activate if touching a button
+        activateJoystick(e.touches[0].clientX, e.touches[0].clientY);
+    });
+
+    document.addEventListener('mousemove', (e) => {
         if (!joystickActive) return;
 
-        const touch = e.touches[0];
-        joystickDeltaX = touch.clientX - joystickStartX;
-        joystickDeltaY = touch.clientY - joystickStartY;
+        const joystickDeltaX = e.clientX - joystickStartX;
+        const joystickDeltaY = e.clientY - joystickStartY;
 
         const maxDistance = joystickContainer.clientWidth / 2;
         const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
@@ -1478,39 +1506,41 @@ function createVirtualJoystick() {
 
         joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
 
-        // Update player movement
         const normalizedX = x / maxDistance;
         const normalizedY = y / maxDistance;
-        updatePlayerMovementFromJoystick(normalizedX, -normalizedY);
+        updateJoystickDirection(normalizedX, -normalizedY);
     });
 
-    joystickContainer.addEventListener('touchend', () => {
-        joystickActive = false;
-        joystick.style.transform = 'translate(-50%, -50%)';
-        updatePlayerMovementFromJoystick(0, 0); // Stop player movement
+    document.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+
+        const touch = e.touches[0];
+        const joystickDeltaX = touch.clientX - joystickStartX;
+        const joystickDeltaY = touch.clientY - joystickStartY;
+
+        const maxDistance = joystickContainer.clientWidth / 2;
+        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
+        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
+
+        const x = distance * Math.cos(angle);
+        const y = distance * Math.sin(angle);
+
+        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
+
+        const normalizedX = x / maxDistance;
+        const normalizedY = y / maxDistance;
+        updateJoystickDirection(normalizedX, -normalizedY);
     });
 
-    function updatePlayerMovementFromJoystick(x, y) {
-        let direction = new THREE.Vector3(x, 0, y);
+    document.addEventListener('mouseup', deactivateJoystick);
+    document.addEventListener('touchend', deactivateJoystick);
 
-        if (direction.length() > 0) {
-            direction.normalize();
-            const cameraDirection = new THREE.Vector3();
-            camera.getWorldDirection(cameraDirection);
-            cameraDirection.y = 0;
-            cameraDirection.normalize();
-            const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
-            player.position.add(moveDirection.multiplyScalar(player.movementspeed));
-            const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-            player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
-            player.boundingBox.setFromObject(player.mesh);
-        }
-        player.updateAbilities();
-    }
+
 }
 
 // Call the function to create the virtual joystick
 createVirtualJoystick();
+
 
 /*---------------------------------------------------------------------------
                               Enemies Controller
