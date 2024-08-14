@@ -1260,7 +1260,6 @@ const worldTypes = [{
 ---------------------------------------------------------------------------*/
 
 //world= New Entity()
-
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
@@ -1277,7 +1276,7 @@ updateRendererSize();
 
 const renderScene = new THREE.RenderPass(scene, camera);
 const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight), 1, 0.1, 0);
+    new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.1);
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     minFilter: THREE.LinearFilter,
@@ -1291,11 +1290,11 @@ composer.addPass(bloomPass);
 
 window.addEventListener('resize', updateRendererSize);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(10, 10, 10);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+directionalLight.position.set(-30, -30, -30);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
@@ -1323,41 +1322,49 @@ floor.onBeforeRender = (renderer, scene, camera) => {
 
 camera.position.set(0, 15, 15);
 
-    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024, {
-        format: THREE.RGBAFormat,
-        generateMipmaps: true,
-        minFilter: THREE.LinearMipmapLinearFilter
-    });
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024, {
+    format: THREE.RGBAFormat,
+    generateMipmaps: true,
+    minFilter: THREE.LinearMipmapLinearFilter
+});
 
-    const refractionCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+const refractionCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+scene.add(refractionCamera);
 
-    scene.add(refractionCamera);
+const octahedronGeometry = new THREE.OctahedronGeometry(1);
+octahedronGeometry.scale(5, 7, 5); 
 
-    const octahedronGeometry = new THREE.OctahedronGeometry(1);
-    octahedronGeometry.scale(5, 7.5, 5); 
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+const envTexture = new THREE.TextureLoader().load('https://onchainsurvivor.pages.dev/Media/ENVTEXTURE.png', texture => {
+    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    pmremGenerator.dispose();
+    scene.environment = envMap;
+    //scene.background = envMap;
+})
+        const diamondMaterial = new THREE.MeshPhysicalMaterial({
+    envMap: null, // Updated later with environment map
+    reflectivity: 0.9,
+    roughness: 0,
+    metalness: 1,
+    clearcoat: 0.13,
+    clearcoatRoughness: 0.1,
+    transmission: 0.82, // Full transmission for refraction
+    ior: 2.75, // Index of refraction
+    thickness: 10, // Thickness of the material
+    sheen: 1,
+    color: new THREE.Color('white')
+});
 
-    
-    const diamondMaterial = new THREE.MeshPhongMaterial({
-        envMap: refractionCamera.renderTarget.texture,
-        refractionRatio: 0.98,
-        reflectivity: 0.9,
-        color: 'white',
-        transparent: true,
-        opacity: 0.9,
-        shininess: 100,
-        specular: 0xffffff
-    });
-    
-    // bounces: { value: 3, min: 0, max: 8, step: 1 },
-    // aberrationStrength: { value: 0.1, min: 0, max: 0.1, step: 0.01 },
-    // ior: { value: 2.75, min: 0, max: 10 },
-    //  fresnel: { value: 1, min: 0, max: 1 },
-    
-    const octahedronMesh = new THREE.Mesh(octahedronGeometry, diamondMaterial);
-    scene.add(octahedronMesh);
 
 
-camera.lookAt(octahedronMesh.position);
+        const octahedronMesh = new THREE.Mesh(octahedronGeometry, diamondMaterial);
+        scene.add(octahedronMesh);
+
+        const octahedronMesh2 = new THREE.Mesh(octahedronGeometry, diamondMaterial);
+        scene.add(octahedronMesh2);
+
+camera.lookAt(octahedronMesh2.position);
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -2220,8 +2227,9 @@ function animate() {
     }
  
 
-    octahedronMesh.rotation.y += 0.01;
-    octahedronMesh.visible = false;
+    octahedronMesh.rotation.x -= 0.005;
+    octahedronMesh2.rotation.x += 0.005;
+   octahedronMesh.visible = false;
     refractionCamera.update(renderer, scene);
     octahedronMesh.visible = true;
   
