@@ -1427,3 +1427,12 @@ if (typeof Stats !== 'undefined') {
     console.error('Stats.js is not loaded or available.');
   }
     */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }, function(error) {
+        console.log('Service Worker registration failed:', error);
+      });
+    });
+  }  
