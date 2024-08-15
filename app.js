@@ -146,7 +146,8 @@ class Entity extends THREE.Object3D {
                               Ability Blueprints
 ---------------------------------------------------------------------------*/
 
-const abilityTypes = [{
+const abilityTypes = [
+    {
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
@@ -158,13 +159,13 @@ const abilityTypes = [{
         this.lastTrailTime = 0;
         const trail = {
             create: () => {
-                if (trailBullets.length >= level) {
+                if (trailBullets.length >= (7+(level*2))) {
                     const oldestBullet = trailBullets.shift(); 
                     scene.remove(oldestBullet); 
                 }
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const trailStep = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2 * level, 0.2 * level, 0.2 * level),
+                    new THREE.BoxGeometry(0.2 , 0.2 , 0.2 ),
                     createNeonMaterial(rainbowColors[colorIndex], 2)
                 );
                 trailStep.position.copy(user.position);
@@ -175,7 +176,7 @@ const abilityTypes = [{
             }
         };
         this.update = () => {
-            if ((Date.now() - this.lastTrailTime > 500)) {
+            if ((Date.now() - this.lastTrailTime > 25)) {
                 this.lastTrailTime = Date.now();
                 trail.create();
             }
@@ -306,890 +307,6 @@ const abilityTypes = [{
     effectinfo: 'Orb damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
     level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-},{
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
-    effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
-            create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
-            }
-        };
-        this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
-        };
-        this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-        };
-        orb.create();
-    },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
 }
 ];
 
@@ -1211,7 +328,8 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level:7 }
     ],
     level:0,
 }
@@ -1233,8 +351,7 @@ const enemyTypes = [{
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 1 },
-        { type: 'Veil of Decentralization', level: 1 }
+
     ],
     level:0,
 }
@@ -1355,8 +472,6 @@ const envTexture = new THREE.TextureLoader().load('https://onchainsurvivor.pages
     sheen: 1,
     color: new THREE.Color('white')
 });
-
-
 
         const octahedronMesh = new THREE.Mesh(octahedronGeometry, diamondMaterial);
         scene.add(octahedronMesh);
@@ -1641,19 +756,12 @@ startSpawningEnemies(player);
         return container;
     }
 
-    const entities = [
-        playerTypes[0],    
-        abilityTypes[1],
-        worldTypes[0]
-    ];
-
     function attachHoverEffect(button, entity) {
         button.addEventListener('pointerenter', () => {
             
             centerUI.innerHTML='';
             centerUI = createContainer(['center-container', 'fade-in']);
             document.body.appendChild(centerUI);
-
 
             console.log('Hovered over:', entity.title);
             const scaledButton = createButton(entity, 1);
@@ -1758,8 +866,7 @@ startSpawningEnemies(player);
                                 Main Menu UI 
 ---------------------------------------------------------------------------*/
 
-    let mainMenuContainers= []
-
+ 
     let topUI = createContainer(['top-container', 'fade-in']);
     document.body.appendChild(topUI);
     
@@ -1769,6 +876,24 @@ startSpawningEnemies(player);
     let botUI = createContainer(['bottom-container', 'fade-in']);
     document.body.appendChild(botUI);
     
+    function addContainerUI(container,location,uiElements){
+
+        container.innerHTML='';
+        container = createContainer([location, 'fade-in']);
+
+        uiElements.forEach(element => {
+            container.appendChild(element);
+        });
+
+        document.body.appendChild(container);
+        setTimeout(() => {container.classList.add('show'); }, 10);
+    }    
+
+    function hideContainerUI(container){
+        container.classList.add('fade-out'); 
+        setTimeout(() => { container.classList.add('hide'); }, 10);
+    }
+
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
@@ -1777,12 +902,11 @@ startSpawningEnemies(player);
         topUI.innerHTML='';
         topUI = createContainer(['top-container', 'fade-in']);
         document.body.appendChild(topUI);
-
         const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         topUI.appendChild(mainTitle);
-        const subTitle = createTitleElement('Can you survive 5 minutes?', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('Can you survive? Move to begin', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         topUI.appendChild(subTitle);
-        setTimeout(() => {topUI.classList.add('show'); }, 10); 
+        setTimeout(() => {topUI.classList.add('show'); }, 10);
     };
 
     createGameTitle();
@@ -1831,8 +955,7 @@ startSpawningEnemies(player);
                     createChooseMenu(worldTypes, "Choose your Chain 🔗 NFT! ","World");
                 }
 
-                botUI.classList.add('fade-out'); 
-                setTimeout(() => { botUI.classList.add('hide'); }, 10);
+                hideContainerUI(botUI);
             });
         });
     };
@@ -1917,8 +1040,7 @@ function createChooseMenu(entityList,text,type) {
                 refreshDisplay();
             }
 
-            centerUI.classList.add('fade-out'); 
-            setTimeout(() => { centerUI.classList.add('hide'); }, 10);
+            hideContainerUI(centerUI);
         };
         gridContainer.appendChild(itemButton);
     });
@@ -2021,7 +1143,7 @@ function createChooseMenu(entityList,text,type) {
                 displayMetaMaskInfo(storedAddress, ethBalance);
             }
         });
-        mainMenuContainers.push(web3Container);
+        
         document.body.appendChild(web3Container);
 
     setTimeout(() => { web3Container.classList.add('show'); }, 10); 
@@ -2056,7 +1178,7 @@ function simulateLoading() {
 ---------------------------------------------------------------------------*/
 
 let countdown = 500 * 60;
-const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '3vw' : '1.5vw');
+const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 
 function updateTimerDisplay() {
     countdown--;
@@ -2070,9 +1192,14 @@ function refreshDisplay() {
     botUI = createContainer(['bottom-container', 'fade-in']);
     document.body.appendChild(botUI);
 
+    topUI.innerHTML='';
+    topUI = createContainer(['top-container', 'fade-in']);
+    document.body.appendChild(topUI);
+
     const abilitiesContainer = createContainer([], { display: 'flex' });
+    topUI.appendChild(timerDisplay);
     botUI.appendChild(abilitiesContainer);
-    botUI.appendChild(timerDisplay);
+
     
     abilitiesContainer.innerHTML = '';
     abilityButton = createButton(player, .3);
@@ -2083,11 +1210,8 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(abilityButton);
     });
 
-   // abilitiesContainer.appendChild(createButton(ability,.3));    //
-   // abilitiesContainer.appendChild(createButton(world,.3));      // NO longer needed in AI 
-
     setTimeout(() => { botUI.classList.add('show'); }, 10); 
-
+    setTimeout(() => { topUI.classList.add('show'); }, 10); 
 }
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
@@ -2164,22 +1288,15 @@ function resumeGame() {
     }
     
     if(isMainMenu){ 
-    isMainMenu = false;
-    mainMenuContainers.push(topUI);
-    mainMenuContainers.push(centerUI);
-    mainMenuContainers.push(botUI);
 
-        mainMenuContainers.forEach(container => { container.classList.add('fade-out'); })
-        setTimeout(() => {
-            mainMenuContainers.forEach(container => { container.classList.add('hide'); })
-            setTimeout(() => {
-                mainMenuContainers.forEach(container => {
-                    container.innerHTML = '';
-                    container.classList.remove('fade-out', 'hide');
-                })
-            }, 1500);
-        }, 10); 
-        setTimeout(() => { refreshDisplay() }, 1050);
+    scene.remove(octahedronMesh2);
+    octahedronMesh.rotation.x = 0;
+    isMainMenu = false;
+    hideContainerUI(topUI);
+    hideContainerUI(centerUI);
+    hideContainerUI(botUI);
+
+    setTimeout(() => { refreshDisplay() }, 1050);
 
         const existingAbility = player.abilities.find(playerAbility => playerAbility.title === ability.title);
         if (existingAbility) {
@@ -2226,14 +1343,87 @@ function animate() {
         accumulatedTime -= fixedTimeStep;
     }
  
-
+    if(isMainMenu){
     octahedronMesh.rotation.x -= 0.005;
     octahedronMesh2.rotation.x += 0.005;
-   octahedronMesh.visible = false;
-    refractionCamera.update(renderer, scene);
-    octahedronMesh.visible = true;
-  
+    }else{
+    octahedronMesh.rotation.y += 0.005;
+    }
     composer.render();
 
 }
 animate();
+
+
+/*
+const gui = new dat.GUI();
+
+// Ambient Light
+const ambientLightFolder = gui.addFolder('Ambient Light');
+ambientLightFolder.add(ambientLight, 'intensity', 0, 2, 0.1);
+
+// Directional Light
+const directionalLightFolder = gui.addFolder('Directional Light');
+directionalLightFolder.add(directionalLight, 'intensity', 0, 5, 0.1);
+directionalLightFolder.add(directionalLight.position, 'x', -50, 50, 1);
+directionalLightFolder.add(directionalLight.position, 'y', -50, 50, 1);
+directionalLightFolder.add(directionalLight.position, 'z', -50, 50, 1);
+
+// Floor Material
+const floorMaterialFolder = gui.addFolder('Floor Material');
+floorMaterialFolder.add(floorMaterial, 'metalness', 0, 1, 0.01);
+floorMaterialFolder.add(floorMaterial, 'roughness', 0, 1, 0.01);
+floorMaterialFolder.add(floorMaterial, 'opacity', 0, 1, 0.01);
+floorMaterialFolder.addColor(floorMaterial, 'color');
+
+// Octahedron Material (Diamond)
+const diamondMaterialFolder = gui.addFolder('Diamond Material');
+diamondMaterialFolder.add(diamondMaterial, 'reflectivity', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'roughness', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'metalness', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'clearcoat', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'clearcoatRoughness', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'sheen', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'transmission', 0, 1, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'ior', 1, 2.5, 0.01);
+diamondMaterialFolder.add(diamondMaterial, 'thickness', 0, 10, 0.1);
+diamondMaterialFolder.addColor(diamondMaterial, 'specularColor');
+
+// Bloom Pass
+const bloomPassFolder = gui.addFolder('Bloom Effect');
+bloomPassFolder.add(bloomPass, 'strength', 0, 3, 0.1);
+bloomPassFolder.add(bloomPass, 'radius', 0, 1, 0.01);
+bloomPassFolder.add(bloomPass, 'threshold', 0, 1, 0.01);
+
+// GUI folders open by default
+ambientLightFolder.open();
+directionalLightFolder.open();
+floorMaterialFolder.open();
+diamondMaterialFolder.open();
+bloomPassFolder.open();
+
+
+
+if (typeof Stats !== 'undefined') {
+    const div = document.createElement('div');
+    div.style.position = 'fixed';
+    div.style.top = '0px';
+    div.style.left = '0px';
+    div.style.cursor = 'pointer';
+    div.style.opacity = '0.9';
+    div.style.zIndex = '10000';
+    const stats = new Stats();
+    stats.showPanel(0); 
+    div.appendChild(stats.dom);
+  
+    document.body.appendChild(div);
+  
+    function updateStats() {
+        stats.update();
+        requestAnimationFrame(updateStats);
+    }
+    requestAnimationFrame(updateStats);
+  } else {
+    console.error('Stats.js is not loaded or available.');
+  }
+    */
