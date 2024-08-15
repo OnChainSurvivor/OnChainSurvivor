@@ -453,12 +453,13 @@ octahedronGeometry.scale(5, 7, 5);
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
-const envTexture = new THREE.TextureLoader().load('https://onchainsurvivor.pages.dev/Media/ENVTEXTURE.png', texture => {
+
+const envTexture = new THREE.TextureLoader().load('Media/ENVTEXTURE.png', texture => {
     const envMap = pmremGenerator.fromEquirectangular(texture).texture;
     pmremGenerator.dispose();
     scene.environment = envMap;
     //scene.background = envMap;
-})
+});
         const diamondMaterial = new THREE.MeshPhysicalMaterial({
     envMap: null, // Updated later with environment map
     reflectivity: 0.9,
