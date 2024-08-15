@@ -181,7 +181,7 @@ const abilityTypes = [
                 trail.create();
             }
            // playerCollisionList.forEach((trailBullet,index) => {
-            //            if (trailBullet.trailBox.intersectsBox(other)) { // Make this generic in the future
+            //            if (trailBullet.trailBox.intersectsBox(other)) { 
             //                scene.remove(trailBullet); 
             //                trailBullets.splice(index, 1);
             //                player.takeDamage(1);  
@@ -277,7 +277,7 @@ const abilityTypes = [
                     );
                     if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
                     this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);// TO OPTIMIZE
+                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                     if (potentialTargets.length > 0) {
                         orb.target = potentialTargets.reduce((nearest, entity) => {
                             distanceToCurrent = user.position.distanceTo(entity.position);
@@ -328,8 +328,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level:7 }
+        { type: 'Scalping Bot', level: 9 }
     ],
     level:0,
 }
@@ -461,15 +460,15 @@ const envTexture = new THREE.TextureLoader().load('Media/ENVTEXTURE.png', textur
     //scene.background = envMap;
 });
         const diamondMaterial = new THREE.MeshPhysicalMaterial({
-    envMap: null, // Updated later with environment map
+    envMap: null, 
     reflectivity: 0.9,
     roughness: 0,
     metalness: 1,
     clearcoat: 0.13,
     clearcoatRoughness: 0.1,
-    transmission: 0.82, // Full transmission for refraction
-    ior: 2.75, // Index of refraction
-    thickness: 10, // Thickness of the material
+    transmission: 0.82,
+    ior: 2.75, 
+    thickness: 10,
     sheen: 1,
     color: new THREE.Color('white')
 });
@@ -568,18 +567,37 @@ function LevelUp() {
     canMove= false;
     isPaused = true;
 
-    const availableAbilities = abilityTypes.filter(abilityType => {
-        return !player.abilities.some(playerAbility => playerAbility.title === abilityType.title);
-    });
-    const allAbilities = [...player.abilities, ...availableAbilities];
+const availableAbilities = abilityTypes.filter(abilityType => {
+    return !player.abilities.some(playerAbility => 
+        playerAbility.title === abilityType.title && playerAbility.level >9 
+    );
+});
 
-        const upgradeOptions = [];
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+const filteredAvailableAbilities = availableAbilities.filter(abilityType => {
+    return !player.abilities.some(playerAbility => 
+        playerAbility.title === abilityType.title
+    );
+});
 
-        createChooseMenu(upgradeOptions, "Upgrade! Choose 1:","Upgrade");
+const allAbilities = [...player.abilities.filter(ability => ability.level < 10), ...filteredAvailableAbilities];
+const allPlayerAbilities = player.abilities.filter(ability => ability.level < 10);
+
+const upgradeOptions = [];
+if (allPlayerAbilities && allPlayerAbilities.length > 0) 
+upgradeOptions.push(allPlayerAbilities[Math.floor(Math.random() * allPlayerAbilities.length)]);
+
+if (allAbilities && allAbilities.length > 0){
+    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]); 
+}
+
+if (upgradeOptions && upgradeOptions.length > 0){
+    // TODO Everything is maxxed up, Class update? ability evolution?
+}
+
+createChooseMenu(upgradeOptions, "Upgrade! Choose 1:", "Upgrade");
+
 }
 
     const joystickContainer = document.createElement('div');
@@ -621,7 +639,7 @@ function LevelUp() {
         joystickContainer.style.pointerEvents = 'none';
         joystickContainer.style.visibility = 'hidden';
         joystick.style.transform = 'translate(-50%, -50%)';
-        keys.w = keys.a = keys.s = keys.d = false; // Reset all keys when joystick is released
+        keys.w = keys.a = keys.s = keys.d = false; 
     }
 
     function updateJoystickDirection(normalizedX, normalizedY) {
@@ -814,7 +832,7 @@ startSpawningEnemies(player);
         title.style.lineHeight = `${1.5 * scale}em`;
         title.style.overflow = 'hidden';
         title.style.textAlign = 'center'; 
-        title.style.display = scale > 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
+        title.style.display = scale > 0.751 ? 'flex' : 'none';  
         title.style.alignItems = 'center';
         title.style.justifyContent = 'center';
         title.style.padding = `${5 * scale}px 0`;
@@ -831,13 +849,13 @@ startSpawningEnemies(player);
         titlelvl.style.lineHeight = `${1.5 * scale}em`;
         titlelvl.style.overflow = 'hidden';
         titlelvl.style.textAlign = 'center'; 
-        titlelvl.style.display = scale < 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
+        titlelvl.style.display = scale < 0.751 ? 'flex' : 'none';
         titlelvl.style.alignItems = 'center';
         titlelvl.style.justifyContent = 'center';
         titlelvl.style.padding = `${5 * scale}px 0`;
 
         const levelStars = document.createElement('div');
-        levelStars.style.display = scale < 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
+        levelStars.style.display = scale < 0.751 ? 'flex' : 'none';
         levelStars.style.alignItems = 'center'; 
         levelStars.style.justifyContent = 'center';
         for (let i = 0; i < ability.level; i++) {
@@ -861,7 +879,7 @@ startSpawningEnemies(player);
         effectinfo.style.alignItems = 'center'; 
         effectinfo.style.justifyContent = 'center';
         effectinfo.style.padding = `${5 * scale}px`;
-        effectinfo.style.display = scale > 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
+        effectinfo.style.display = scale > 0.751 ? 'flex' : 'none'; 
     
         button.appendChild(title);
         button.appendChild(img);
@@ -870,7 +888,6 @@ startSpawningEnemies(player);
         
         if (onClick) button.onclick = onClick;
 
-        //if(scale <=.3 && isPaused)
         // attachHoverEffect(button, ability); 
 
         return button;
@@ -917,7 +934,7 @@ startSpawningEnemies(player);
         document.body.appendChild(topUI);
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         topUI.appendChild(mainTitle);
-        const subTitle = createTitleElement('Can you survive? Move to begin', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('Can you survive? Move to Practice', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         topUI.appendChild(subTitle);
         setTimeout(() => {topUI.classList.add('show'); }, 10);
     };
@@ -1367,79 +1384,6 @@ function animate() {
 }
 animate();
 
-
-/*
-const gui = new dat.GUI();
-
-// Ambient Light
-const ambientLightFolder = gui.addFolder('Ambient Light');
-ambientLightFolder.add(ambientLight, 'intensity', 0, 2, 0.1);
-
-// Directional Light
-const directionalLightFolder = gui.addFolder('Directional Light');
-directionalLightFolder.add(directionalLight, 'intensity', 0, 5, 0.1);
-directionalLightFolder.add(directionalLight.position, 'x', -50, 50, 1);
-directionalLightFolder.add(directionalLight.position, 'y', -50, 50, 1);
-directionalLightFolder.add(directionalLight.position, 'z', -50, 50, 1);
-
-// Floor Material
-const floorMaterialFolder = gui.addFolder('Floor Material');
-floorMaterialFolder.add(floorMaterial, 'metalness', 0, 1, 0.01);
-floorMaterialFolder.add(floorMaterial, 'roughness', 0, 1, 0.01);
-floorMaterialFolder.add(floorMaterial, 'opacity', 0, 1, 0.01);
-floorMaterialFolder.addColor(floorMaterial, 'color');
-
-// Octahedron Material (Diamond)
-const diamondMaterialFolder = gui.addFolder('Diamond Material');
-diamondMaterialFolder.add(diamondMaterial, 'reflectivity', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'roughness', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'metalness', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'clearcoat', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'clearcoatRoughness', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'sheen', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'transmission', 0, 1, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'ior', 1, 2.5, 0.01);
-diamondMaterialFolder.add(diamondMaterial, 'thickness', 0, 10, 0.1);
-diamondMaterialFolder.addColor(diamondMaterial, 'specularColor');
-
-// Bloom Pass
-const bloomPassFolder = gui.addFolder('Bloom Effect');
-bloomPassFolder.add(bloomPass, 'strength', 0, 3, 0.1);
-bloomPassFolder.add(bloomPass, 'radius', 0, 1, 0.01);
-bloomPassFolder.add(bloomPass, 'threshold', 0, 1, 0.01);
-
-// GUI folders open by default
-ambientLightFolder.open();
-directionalLightFolder.open();
-floorMaterialFolder.open();
-diamondMaterialFolder.open();
-bloomPassFolder.open();
-
-
-
-if (typeof Stats !== 'undefined') {
-    const div = document.createElement('div');
-    div.style.position = 'fixed';
-    div.style.top = '0px';
-    div.style.left = '0px';
-    div.style.cursor = 'pointer';
-    div.style.opacity = '0.9';
-    div.style.zIndex = '10000';
-    const stats = new Stats();
-    stats.showPanel(0); 
-    div.appendChild(stats.dom);
-  
-    document.body.appendChild(div);
-  
-    function updateStats() {
-        stats.update();
-        requestAnimationFrame(updateStats);
-    }
-    requestAnimationFrame(updateStats);
-  } else {
-    console.error('Stats.js is not loaded or available.');
-  }
-    */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
       navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
