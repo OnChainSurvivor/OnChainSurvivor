@@ -818,11 +818,24 @@ startSpawningEnemies(player);
         title.style.alignItems = 'center';
         title.style.justifyContent = 'center';
         title.style.padding = `${5 * scale}px 0`;
+
         const img = document.createElement('img');
         img.src = ability.thumbnail;
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
-    
+
+        const titlelvl = document.createElement('div');
+        titlelvl.innerText = 'LVL : 0'; 
+        rainbowText(titlelvl, `${20 * scale}px`);  
+        titlelvl.style.height = `${2.5 * scale}em`; 
+        titlelvl.style.lineHeight = `${1.5 * scale}em`;
+        titlelvl.style.overflow = 'hidden';
+        titlelvl.style.textAlign = 'center'; 
+        titlelvl.style.display = scale < 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
+        titlelvl.style.alignItems = 'center';
+        titlelvl.style.justifyContent = 'center';
+        titlelvl.style.padding = `${5 * scale}px 0`;
+
         const levelStars = document.createElement('div');
         levelStars.style.display = scale < 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
         levelStars.style.alignItems = 'center'; 
@@ -830,8 +843,8 @@ startSpawningEnemies(player);
         for (let i = 0; i < ability.level; i++) {
             const star = document.createElement('img');
             star.src = 'Media/Abilities/STAR.png';
-            star.style.width = `${40 * scale}px`;
-            star.style.height = `${40 * scale}px`;
+            star.style.width = `${20 * scale}px`;
+            star.style.height = `${20 * scale}px`;
             levelStars.appendChild(star);
         }
     
@@ -853,7 +866,7 @@ startSpawningEnemies(player);
         button.appendChild(title);
         button.appendChild(img);
         button.appendChild(effectinfo);
-        //button.appendChild(levelStars);
+        button.appendChild(levelStars); 
         
         if (onClick) button.onclick = onClick;
 
@@ -867,7 +880,6 @@ startSpawningEnemies(player);
                                 Main Menu UI 
 ---------------------------------------------------------------------------*/
 
- 
     let topUI = createContainer(['top-container', 'fade-in']);
     document.body.appendChild(topUI);
     
@@ -903,7 +915,7 @@ startSpawningEnemies(player);
         topUI.innerHTML='';
         topUI = createContainer(['top-container', 'fade-in']);
         document.body.appendChild(topUI);
-        const mainTitle = createTitleElement('🔗🏆\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+        const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         topUI.appendChild(mainTitle);
         const subTitle = createTitleElement('Can you survive? Move to begin', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         topUI.appendChild(subTitle);
@@ -926,18 +938,18 @@ startSpawningEnemies(player);
         classContainer = document.createElement('div');
         const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
         menuButtonsContainer.appendChild(classContainer);
-        classContainer.appendChild(createButton(player, 0.7));
+        classContainer.appendChild(createButton(player, isMobile ? 0.6 : 0.75));
         classContainer.appendChild(classSubTitle);
         menuButtonsContainer.appendChild(classContainer);
         classAbilityContainer = document.createElement('div');
         const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        classAbilityContainer.appendChild(createButton(ability, 0.7));
+        classAbilityContainer.appendChild(createButton(ability,isMobile ? 0.6 : 0.75));
         classAbilityContainer.appendChild(abilitiesSubTitle);
         classContainer.appendChild(classAbilityContainer);
         menuButtonsContainer.appendChild(classAbilityContainer);
         worldContainer = document.createElement('div');
         const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        worldContainer.appendChild(createButton(world, .7));
+        worldContainer.appendChild(createButton(world, isMobile ? 0.6 : 0.75));
         worldContainer.appendChild(worldSubTitle);
         menuButtonsContainer.appendChild(worldContainer);
 
@@ -1203,7 +1215,7 @@ function refreshDisplay() {
 
     
     abilitiesContainer.innerHTML = '';
-    abilityButton = createButton(player, .3);
+    abilityButton = createButton(player, .35);
     abilitiesContainer.appendChild(abilityButton);
 
     player.abilities.forEach(ability => {
