@@ -147,7 +147,7 @@ class Entity extends THREE.Object3D {
 ---------------------------------------------------------------------------*/
 
 const abilityTypes = [
-    {
+ {
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
@@ -813,7 +813,7 @@ startSpawningEnemies(player);
         title.style.lineHeight = `${1.5 * scale}em`;
         title.style.overflow = 'hidden';
         title.style.textAlign = 'center'; 
-        title.style.display = 'flex';
+        title.style.display = scale > 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
         title.style.alignItems = 'center';
         title.style.justifyContent = 'center';
         title.style.padding = `${5 * scale}px 0`;
@@ -823,14 +823,14 @@ startSpawningEnemies(player);
         img.style.height = `${150 * scale}px`;
     
         const levelStars = document.createElement('div');
-        levelStars.style.display = 'flex';
+        levelStars.style.display = scale < 0.751 ? 'flex' : 'none';   // Was BLOCK: NONE
         levelStars.style.alignItems = 'center'; 
         levelStars.style.justifyContent = 'center';
         for (let i = 0; i < ability.level; i++) {
             const star = document.createElement('img');
-            star.src = 'Media/Abilities/Star.png';
-            star.style.width = `${25 * scale}px`;
-            star.style.height = `${25 * scale}px`;
+            star.src = 'Media/Abilities/STAR.png';
+            star.style.width = `${40 * scale}px`;
+            star.style.height = `${40 * scale}px`;
             levelStars.appendChild(star);
         }
     
@@ -851,9 +851,9 @@ startSpawningEnemies(player);
     
         button.appendChild(title);
         button.appendChild(img);
-        button.appendChild(levelStars);
         button.appendChild(effectinfo);
-    
+        //button.appendChild(levelStars);
+        
         if (onClick) button.onclick = onClick;
 
         //if(scale <=.3 && isPaused)
