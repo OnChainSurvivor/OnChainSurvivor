@@ -1159,6 +1159,7 @@ function createChooseMenu(entityList,text,type) {
 
         itemButton.onclick = () => {
             if (type === "Upgrade"){
+                entity.isLocked=false;
                 const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
                 if (existingAbility) {
                     existingAbility.deactivate();
