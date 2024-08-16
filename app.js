@@ -238,6 +238,7 @@ const abilityTypes = [
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
+    isLocked: true,
 },
 {
     title: "Scalping Bot",
@@ -331,6 +332,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: false,
 },{
     class: 'Survivor',
     title: 'Onchain Survivoress',
@@ -348,6 +350,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: false,
 },{
     class: 'Survivor',
     title: 'Influencer',
@@ -365,6 +368,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: true,
 },
 {
     class: 'Survivor',
@@ -383,6 +387,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: true,
 },{
     class: 'Survivor',
     title: 'Validator',
@@ -400,6 +405,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: true,
 },{
     class: 'Survivor',
     title: 'Validator',
@@ -417,6 +423,7 @@ const playerTypes = [{
         { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
+    isLocked: true,
 },
 ];
 
@@ -462,6 +469,7 @@ const worldTypes = [{
     tags: ['world'], 
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     level:0,
+    isLocked: true,
 }
 ];
 
@@ -899,7 +907,7 @@ startSpawningEnemies(player);
         });
     }
 
-    function createButton(ability, scale = 1, onClick) {
+    function createButton(dataType, scale = 1, onClick) {
         const button = document.createElement('button');
         button.style.width = `${200 * scale}px`;
         button.style.margin = '3px';
@@ -917,10 +925,10 @@ startSpawningEnemies(player);
         button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
         button.style.animation = 'rainbowBorder 5s linear infinite';
     
-        button.title = ability.tooltip;
+        button.title = dataType.tooltip;
     
         const title = document.createElement('div');
-        title.innerText = ability.title;
+        title.innerText = dataType.title;
         rainbowText(title, `${20 * scale}px`);  
         title.style.height = `${2.5 * scale}em`; 
         title.style.lineHeight = `${1.5 * scale}em`;
@@ -932,7 +940,7 @@ startSpawningEnemies(player);
         title.style.padding = `${5 * scale}px 0`;
 
         const img = document.createElement('img');
-        img.src = ability.thumbnail;
+        img.src = dataType.thumbnail;
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
 
@@ -952,7 +960,7 @@ startSpawningEnemies(player);
         levelStars.style.display = scale < 0.751 ? 'flex' : 'none';
         levelStars.style.alignItems = 'center'; 
         levelStars.style.justifyContent = 'center';
-        for (let i = 0; i < ability.level; i++) {
+        for (let i = 0; i < dataType.level; i++) {
             const star = document.createElement('img');
             star.src = 'Media/Abilities/STAR.png';
             star.style.width = `${20 * scale}px`;
@@ -960,8 +968,8 @@ startSpawningEnemies(player);
             levelStars.appendChild(star);
         }
     
-        expl = ability.description;
-        if (ability.level != 0) expl = ability.effectinfo;
+        expl = dataType.description;
+        if (dataType.level != 0) expl = dataType.effectinfo;
     
         const effectinfo = document.createElement('div');
         effectinfo.innerText = `${expl}`;
@@ -980,9 +988,24 @@ startSpawningEnemies(player);
         button.appendChild(effectinfo);
         button.appendChild(levelStars); 
         
+
         if (onClick) button.onclick = onClick;
 
-        // attachHoverEffect(button, ability); 
+        // attachHoverEffect(button, dataType); 
+
+        if(dataType.isLocked){
+        button.style.color = 'gray';
+        button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
+        button.style.cursor = 'not-allowed';
+        button.style.opacity = '0.5';
+        title.style.color = 'gray';
+        titlelvl.style.color = 'gray';
+        effectinfo.style.color = 'gray';
+        button.style.animation = 'none';
+        img.style.filter = 'grayscale(100%)';
+        levelStars.style.filter = 'grayscale(100%)';
+        }
+
 
         return button;
     }
@@ -1132,8 +1155,25 @@ function createChooseMenu(entityList,text,type) {
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
         itemButton.style.display = 'block';
+        gridContainer.appendChild(itemButton);
+
         itemButton.onclick = () => {
-            canMove=true;
+            if (type === "Upgrade"){
+                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
+                if (existingAbility) {
+                    existingAbility.deactivate();
+                    existingAbility.level += 1;
+                    existingAbility.activate();
+                } else {
+                    const newAbility = new Ability(player, { ...entity, level: 1 });
+                    player.addAbility(newAbility);
+                    newAbility.activate();
+                } 
+                refreshDisplay();
+                hideContainerUI(centerUI);
+                canMove=true;
+            }
+            if (entity.isLocked) return;
             if (type === "Survivor") {
             player.deactivateAbilities();
             scene.remove(player);
@@ -1148,23 +1188,9 @@ function createChooseMenu(entityList,text,type) {
             world=entity
             createGameMenu();
             }
-            if (type === "Upgrade"){
-                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
-                if (existingAbility) {
-                    existingAbility.deactivate();
-                    existingAbility.level += 1;
-                    existingAbility.activate();
-                } else {
-                    const newAbility = new Ability(player, { ...entity, level: 1 });
-                    player.addAbility(newAbility);
-                    newAbility.activate();
-                }
-                refreshDisplay();
-            }
+            canMove=true;
             hideContainerUI(centerUI);
         };
-
-        gridContainer.appendChild(itemButton);
     });
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
