@@ -328,10 +328,96 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 9 }
+        { type: 'Scalping Bot', level: 1 }
     ],
     level:0,
-}
+},{
+    class: 'Survivor',
+    title: 'Onchain Survivoress',
+    description: 'The jill of all trades (lol), adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
+    tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Scalping Bot', level: 1 }
+    ],
+    level:0,
+},{
+    class: 'Survivor',
+    title: 'Influencer',
+    description: 'Influencers have a huge following and can move markets with a single well timed post online. Tends to lean the vain side.',
+    tooltip: 'Some say he has more hidden wallets than *******.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Influencer/MINFLUENCER.jpg',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Scalping Bot', level: 1 }
+    ],
+    level:0,
+},
+{
+    class: 'Survivor',
+    title: 'Influencer',
+    description: 'Influencers have the ability to stand out in a crowded digital space. She has built her reputation from scratch',
+    tooltip: 'Some say she has more hidden wallets than *******.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Influencer/FINFLUENCER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Scalping Bot', level: 1 }
+    ],
+    level:0,
+},{
+    class: 'Survivor',
+    title: 'Validator',
+    description: 'Ensures the integrity of the blockchain by validating transactions. Validators have abilities that focus on defense and support.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Validator/MVALIDATOR.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Scalping Bot', level: 1 }
+    ],
+    level:0,
+},{
+    class: 'Survivor',
+    title: 'Validator',
+    description: 'Ensures the integrity of the blockchain by validating transactions. Validators have abilities that focus on defense and support.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Validator/FVALIDATOR.jpg',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    abilities: [
+        { type: 'Scalping Bot', level: 1 }
+    ],
+    level:0,
+},
 ];
 
 /*---------------------------------------------------------------------------
@@ -367,6 +453,14 @@ const worldTypes = [{
     tooltip:'0.04 💀',
     tags: ['world'],
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    level:0,
+},{
+    class: 'World',
+    title: 'Digital Goldland',
+    description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes here are made and lost in the blink of an eye.',
+    tooltip:'15.000 U S D O L L A R S 💀',
+    tags: ['world'], 
+    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     level:0,
 }
 ];
@@ -934,7 +1028,7 @@ startSpawningEnemies(player);
         document.body.appendChild(topUI);
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         topUI.appendChild(mainTitle);
-        const subTitle = createTitleElement('Can you survive? Move to Practice', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('Can you survive? Move to start', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         topUI.appendChild(subTitle);
         setTimeout(() => {topUI.classList.add('show'); }, 10);
     };
@@ -1046,7 +1140,6 @@ function createChooseMenu(entityList,text,type) {
             player = new Entity(playerTypes.find(type => type === entity));
             createGameMenu();
             }
-
             if (type ==="Ability") {
             ability=entity
             createGameMenu();
@@ -1055,7 +1148,6 @@ function createChooseMenu(entityList,text,type) {
             world=entity
             createGameMenu();
             }
-
             if (type === "Upgrade"){
                 const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
                 if (existingAbility) {
@@ -1069,9 +1161,9 @@ function createChooseMenu(entityList,text,type) {
                 }
                 refreshDisplay();
             }
-
             hideContainerUI(centerUI);
         };
+
         gridContainer.appendChild(itemButton);
     });
     popUpContainer.appendChild(titleContainer);
@@ -1208,6 +1300,7 @@ function simulateLoading() {
 ---------------------------------------------------------------------------*/
 
 let countdown = 500 * 60;
+const modeDisplay = createTitleElement('Practice Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 
 function updateTimerDisplay() {
@@ -1227,6 +1320,7 @@ function refreshDisplay() {
     document.body.appendChild(topUI);
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
+    topUI.appendChild(modeDisplay);
     topUI.appendChild(timerDisplay);
     botUI.appendChild(abilitiesContainer);
 
