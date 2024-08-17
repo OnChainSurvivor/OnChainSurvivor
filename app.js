@@ -107,7 +107,11 @@ const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
 let deltaTime;
 
-const isMobile = window.innerWidth <= 600;
+const isMobile = window.innerWidth <= 650;
+
+let cameraAngle = 0;
+const cameraRadius = 20;
+const cameraHeight = 20;
 
 /*---------------------------------------------------------------------------
                               Constants
@@ -152,7 +156,6 @@ const handleEntityDeath = (entity, enemies) => {
     const enemyIndex = enemies.indexOf(entity);
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
-
 
 /*---------------------------------------------------------------------------
                               Ability Blueprints
@@ -341,7 +344,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: false,
@@ -359,7 +371,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: false,
@@ -377,7 +398,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: true,
@@ -396,7 +426,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: true,
@@ -414,7 +453,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: true,
@@ -432,7 +480,16 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Scalping Bot', level: 1 }
+        { type: 'Scalping Bot', level: 1 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Onchain Trail', level: 0  },
+        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
+        { type: 'Onchain Trail', level: 0 }, 
+        { type: 'Veil of Decentralization', level: 0 }
     ],
     level:0,
     isLocked: true,
@@ -660,6 +717,12 @@ function updatePlayerMovement() {
     else{
 
     }
+
+    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
+    camera.position.set(cameraX, cameraHeight, cameraZ);
+    camera.lookAt(player.position);
+
     player.updateAbilities();
 
     xpSpheres.forEach((xpSphere, index) => {
@@ -675,56 +738,37 @@ function updatePlayerMovement() {
     });
 }
 
-let cameraAngle = 0;
-const cameraRadius = 20;
-const cameraHeight = 20;
-const cameraRotationSpeed = 0.05;
-
-function updateCamera() {
-    if (keys.u) cameraAngle -= cameraRotationSpeed;
-    if (keys.o) cameraAngle += cameraRotationSpeed;
-
-    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
-    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
-    camera.position.set(cameraX, cameraHeight, cameraZ);
-    camera.lookAt(player.position);
-}
-
 function LevelUp() {
     canMove= false;
     isPaused = true;
 
-const availableAbilities = abilityTypes.filter(abilityType => {
-    return !player.abilities.some(playerAbility => 
-        playerAbility.title === abilityType.title && playerAbility.level >9 
-    );
-});
+    const availableAbilities = abilityTypes.filter(abilityType => {
+        return !player.abilities.some(playerAbility => 
+            playerAbility.title === abilityType.title && playerAbility.level >9 
+        );
+    });
 
-const filteredAvailableAbilities = availableAbilities.filter(abilityType => {
-    return !player.abilities.some(playerAbility => 
-        playerAbility.title === abilityType.title
-    );
-});
+    const filteredAvailableAbilities = availableAbilities.filter(abilityType => {
+        return !player.abilities.some(playerAbility => 
+            playerAbility.title === abilityType.title
+        );
+    });
 
-const allAbilities = [...player.abilities.filter(ability => ability.level < 10), ...filteredAvailableAbilities];
-const allPlayerAbilities = player.abilities.filter(ability => ability.level < 10);
+    const allAbilities = [...player.abilities.filter(ability => ability.level < 10), ...filteredAvailableAbilities];
+    const allPlayerAbilities = player.abilities.filter(ability => ability.level < 10);
 
-const upgradeOptions = [];
-if (allPlayerAbilities && allPlayerAbilities.length > 0) 
-upgradeOptions.push(allPlayerAbilities[Math.floor(Math.random() * allPlayerAbilities.length)]);
-
-if (allAbilities && allAbilities.length > 0){
-    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-    upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]); 
-}
-
-if (upgradeOptions && upgradeOptions.length > 0){
-    // TODO Everything is maxxed up, Class update? ability evolution?
-}
-
-createChooseMenu(upgradeOptions, "Upgrade! Choose 1:", "Upgrade");
-
+    const upgradeOptions = [];
+    if (allPlayerAbilities && allPlayerAbilities.length > 0) 
+    upgradeOptions.push(allPlayerAbilities[Math.floor(Math.random() * allPlayerAbilities.length)]);
+    if (allAbilities && allAbilities.length > 0){
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
+        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]); 
+    }
+    if (upgradeOptions && upgradeOptions.length > 0){
+        // TODO Everything is maxxed up, Class update? ability evolution?
+    }
+    createChooseMenu(upgradeOptions, "Upgrade! Choose 1:", "Upgrade");
 }
 
     const joystickContainer = document.createElement('div');
@@ -1012,7 +1056,8 @@ startSpawningEnemies(player);
 
         if (onClick) button.onclick = onClick;
 
-        // attachHoverEffect(button, dataType); 
+       //  if(scale== 0.55)
+        //attachHoverEffect(button, dataType); 
 
         if(dataType.isLocked){
         button.style.color = 'gray';
@@ -1067,7 +1112,7 @@ startSpawningEnemies(player);
         topUI = createContainer(['top-container', 'fade-in']);
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         mainTitle.onclick = function() {
-            window.open('https://x.com/OnChainSurvivor', '_blank'); // Opens in a new tab
+            window.open('https://x.com/OnChainSurvivor', '_blank'); b
         };
         topUI.appendChild(mainTitle);
         const subTitle = createTitleElement('Can you survive? Move to start', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
@@ -1209,7 +1254,25 @@ function createChooseMenu(entityList,text,type) {
             canMove=true;
             hideContainerUI(centerUI);
         };
-    });
+        // APEX
+        if (type === "Survivor") {
+            const abilitiesOfClassContainer = document.createElement('div');
+            abilitiesOfClassContainer.style.display = 'grid';
+            abilitiesOfClassContainer.style.justifyContent = 'center'; 
+            abilitiesOfClassContainer.style.margin = '0 auto'; 
+            abilitiesOfClassContainer.style.gridTemplateColumns = 'repeat(2, auto)'; 
+
+            createTitleElement()
+            entity.abilities.forEach(survivorAbility => {
+                const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
+                if (existingAbility) {
+                    const itemButton = createButton(existingAbility, 0.33); 
+                    abilitiesOfClassContainer.appendChild(itemButton);
+                }
+            });
+            gridContainer.appendChild(abilitiesOfClassContainer);
+            }
+    }); 
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
 
@@ -1366,7 +1429,7 @@ function refreshDisplay() {
     topUI.appendChild(timerDisplay);
     botUI.appendChild(abilitiesContainer);
 
-    
+
     abilitiesContainer.innerHTML = '';
     abilityButton = createButton(player, .35);
     abilitiesContainer.appendChild(abilityButton);
@@ -1482,7 +1545,6 @@ function animate() {
     while (accumulatedTime >= fixedTimeStep) {
         if (!isPaused) {
             updatePlayerMovement();
-            updateCamera();
             updateEnemies();
             updateTimerDisplay();
         } else {
