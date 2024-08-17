@@ -1,56 +1,4 @@
 /*---------------------------------------------------------------------------
-                              Global Variables
----------------------------------------------------------------------------*/
-
-let player;
-let ability;
-let world ;
-
-/*---------------------------------------------------------------------------
-                              Constants
----------------------------------------------------------------------------*/
-
-const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
-let colorIndex = 0;
-
-const xpSpheres = []; 
-const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
-const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-
-/*---------------------------------------------------------------------------
-                              Utility Functions
----------------------------------------------------------------------------*/
-
-const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
-    color,
-    emissive: color,
-    emissiveIntensity,
-    metalness: 0.5,
-    roughness: 0.3
-});
-
-const dropXpSphere = (position) => {
-    const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
-    xpSphere.position.copy(position);
-    xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere);
-    scene.add(xpSphere);
-    xpSpheres.push(xpSphere);
-};
-
-const handleEntityDeath = (entity, enemies) => {
-    if (player.health <= 0) triggerGameOver();
-    dropXpSphere(entity.position);
-    entity.deactivateAbilities();
-    scene.remove(entity);
-
-    const index = scene.children.indexOf(entity);
-    if (index > -1) scene.children.splice(index, 1);
-
-    const enemyIndex = enemies.indexOf(entity);
-    if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
-};
-
-/*---------------------------------------------------------------------------
                               Classes
 ---------------------------------------------------------------------------*/
 
@@ -141,6 +89,70 @@ class Entity extends THREE.Object3D {
         handleEntityDeath(this, enemies);
     }
 }
+
+/*---------------------------------------------------------------------------
+                              Global Variables
+---------------------------------------------------------------------------*/
+
+let player;
+let ability;
+let world;
+
+let isPaused = true;
+let isMainMenu = true;
+
+let animationFrameId;
+const clock = new THREE.Clock();
+const fixedTimeStep = 1 / 60;
+let accumulatedTime = 0;
+let deltaTime;
+
+const isMobile = window.innerWidth <= 600;
+
+/*---------------------------------------------------------------------------
+                              Constants
+---------------------------------------------------------------------------*/
+
+const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
+let colorIndex = 0;
+
+const xpSpheres = []; 
+const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+
+/*---------------------------------------------------------------------------
+                              Utility Functions
+---------------------------------------------------------------------------*/
+
+const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
+    color,
+    emissive: color,
+    emissiveIntensity,
+    metalness: 0.5,
+    roughness: 0.3
+});
+
+const dropXpSphere = (position) => {
+    const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
+    xpSphere.position.copy(position);
+    xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere);
+    scene.add(xpSphere);
+    xpSpheres.push(xpSphere);
+};
+
+const handleEntityDeath = (entity, enemies) => {
+    if (player.health <= 0) triggerGameOver();
+    dropXpSphere(entity.position);
+    entity.deactivateAbilities();
+    scene.remove(entity);
+
+    const index = scene.children.indexOf(entity);
+    if (index > -1) scene.children.splice(index, 1);
+
+    const enemyIndex = enemies.indexOf(entity);
+    if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+};
+
 
 /*---------------------------------------------------------------------------
                               Ability Blueprints
@@ -312,7 +324,7 @@ const abilityTypes = [
 ];
 
 /*---------------------------------------------------------------------------
-                              Survivor Class Blueprints
+                              Survivor Class Blueprint
 ---------------------------------------------------------------------------*/
 
 const playerTypes = [{
@@ -452,7 +464,6 @@ const enemyTypes = [{
 /*---------------------------------------------------------------------------
                               World Blueprints
 ---------------------------------------------------------------------------*/
-
 const worldTypes = [{
     class: 'World',
     title: 'Ethereumverse',
@@ -461,7 +472,102 @@ const worldTypes = [{
     tags: ['world'],
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     level:0,
-},{
+    setup: function(scene, camera, renderer) {
+
+        this.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        scene.add(this.ambientLight);
+
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        this.directionalLight.position.set(-30, -30, -30);
+        this.directionalLight.castShadow = true;
+        scene.add(this.directionalLight)
+
+        this.renderScene = new THREE.RenderPass(scene, camera);
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.01);  //2,1,0.1
+        composer.addPass(this.renderScene);
+        composer.addPass(this.bloomPass);
+
+        this.floorGeometry = new THREE.PlaneGeometry(1, 1);
+        this.floorMaterial = new THREE.MeshStandardMaterial({
+            color: 0xaaaaaa,
+            metalness: 0.9,
+            roughness: 0.1,
+            transparent: true,
+            opacity: 0.8,
+            side: THREE.DoubleSide
+        });
+        this.floor = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
+        this.floor.rotation.x = -Math.PI / 2;
+        this.floor.position.y = -0.5;
+        this.floor.receiveShadow = true;
+        scene.add(this.floor);
+        
+        this.floor.onBeforeRender = (renderer, scene, camera) => {
+            const distance = 1000;
+            const cameraDirection = camera.getWorldDirection(new THREE.Vector3());
+            const floorPosition = camera.position.clone().add(cameraDirection.multiplyScalar(distance));
+            this.floor.position.set(floorPosition.x, this.floor.position.y, floorPosition.z);
+        };
+        
+        camera.position.set(0, 15, 15);
+    
+        this.octahedronGeometry = new THREE.OctahedronGeometry(1);
+        this.octahedronGeometry.scale(5, 7, 5); 
+        
+        this.pmremGenerator = new THREE.PMREMGenerator(renderer);
+        this.pmremGenerator.compileEquirectangularShader();
+        
+        this.envTexture = new THREE.TextureLoader().load('Media/ENVTEXTURE.png', texture => {
+            this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
+            this.pmremGenerator.dispose();
+            scene.environment = this.envMap; 
+        });
+        
+        this.diamondMaterial = new THREE.MeshPhysicalMaterial({
+            envMap: null, 
+            reflectivity: 0.9,
+            roughness: 0,
+            metalness: 1,
+            clearcoat: 0.13,
+            clearcoatRoughness: 0.1,
+            transmission: 0.82,
+            ior: 2.75, 
+            thickness: 10,
+            sheen: 1,
+            color: new THREE.Color('white')
+        });
+        
+    this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.diamondMaterial);
+    scene.add(this.octahedronMesh);   
+    this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.diamondMaterial);
+    scene.add(this.octahedronMesh2);
+        
+
+    camera.lookAt(this.octahedronMesh2.position);
+    },
+    update: function(scene, camera, renderer) {
+        if(isMainMenu){
+            this.octahedronMesh.rotation.x -= 0.005;
+            this.octahedronMesh2.rotation.x += 0.005;
+        }else{
+            this.octahedronMesh.rotation.y += 0.005;
+        }
+    },
+    resumeGame: function(){
+        scene.remove(world.octahedronMesh2);
+        this.octahedronMesh.rotation.x = 0;
+    },
+    cleanUp: function(scene) {
+        scene.remove(this.ambientLight);
+        scene.remove(this.directionalLight);
+        
+        this.ambientLight.dispose && this.ambientLight.dispose();
+        this.directionalLight.dispose && this.directionalLight.dispose();
+        
+        this.composer && this.composer.passes.forEach(pass => pass.dispose && pass.dispose());
+        this.composer = null;
+    }
+}, {
     class: 'World',
     title: 'Digital Goldland',
     description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes here are made and lost in the blink of an eye.',
@@ -472,29 +578,16 @@ const worldTypes = [{
     isLocked: true,
 }
 ];
-
 /*---------------------------------------------------------------------------
-                              World Controller
+                              Scene Controller
 ---------------------------------------------------------------------------*/
-
-//world= New Entity()
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas });
-function updateRendererSize() {
-    const dpr = window.devicePixelRatio || 1;
-    renderer.setPixelRatio(dpr);
-    const rect = canvas.getBoundingClientRect();
-    renderer.setSize(rect.width, rect.height);
-    camera.aspect = rect.width / rect.height;
-    camera.updateProjectionMatrix();
-}
-updateRendererSize();
-
-const renderScene = new THREE.RenderPass(scene, camera);
-const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.1);
+renderer.setPixelRatio(window.devicePixelRatio || 1);
+const dpr = window.devicePixelRatio || 1;
+const rect = canvas.getBoundingClientRect();
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     minFilter: THREE.LinearFilter,
@@ -502,102 +595,34 @@ const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.inner
     format: THREE.RGBAFormat,
     encoding: THREE.sRGBEncoding,
 });
-const composer = new THREE.EffectComposer(renderer, renderTarget);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
+const composer = new THREE.EffectComposer(renderer,renderTarget);
 
-window.addEventListener('resize', updateRendererSize);
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-directionalLight.position.set(-30, -30, -30);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-const floorGeometry = new THREE.PlaneGeometry(1, 1);
-const floorMaterial = new THREE.MeshStandardMaterial({
-    color: 0xaaaaaa,
-    metalness: 0.9,
-    roughness: 0.1,
-    transparent: true,
-    opacity: 0.8,
-    side: THREE.DoubleSide
-});
-const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.5;
-floor.receiveShadow = true;
-scene.add(floor);
-
-floor.onBeforeRender = (renderer, scene, camera) => {
-    const distance = 1000;
-    const cameraDirection = camera.getWorldDirection(new THREE.Vector3());
-    const floorPosition = camera.position.clone().add(cameraDirection.multiplyScalar(distance));
-    floor.position.set(floorPosition.x, floor.position.y, floorPosition.z);
-};
-
-camera.position.set(0, 15, 15);
-
-const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024, {
-    format: THREE.RGBAFormat,
-    generateMipmaps: true,
-    minFilter: THREE.LinearMipmapLinearFilter
-});
-
-const refractionCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
-scene.add(refractionCamera);
-
-const octahedronGeometry = new THREE.OctahedronGeometry(1);
-octahedronGeometry.scale(5, 7, 5); 
-
-const pmremGenerator = new THREE.PMREMGenerator(renderer);
-pmremGenerator.compileEquirectangularShader();
-
-const envTexture = new THREE.TextureLoader().load('Media/ENVTEXTURE.png', texture => {
-    const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-    pmremGenerator.dispose();
-    scene.environment = envMap;
-    //scene.background = envMap;
-});
-        const diamondMaterial = new THREE.MeshPhysicalMaterial({
-    envMap: null, 
-    reflectivity: 0.9,
-    roughness: 0,
-    metalness: 1,
-    clearcoat: 0.13,
-    clearcoatRoughness: 0.1,
-    transmission: 0.82,
-    ior: 2.75, 
-    thickness: 10,
-    sheen: 1,
-    color: new THREE.Color('white')
-});
-
-        const octahedronMesh = new THREE.Mesh(octahedronGeometry, diamondMaterial);
-        scene.add(octahedronMesh);
-
-        const octahedronMesh2 = new THREE.Mesh(octahedronGeometry, diamondMaterial);
-        scene.add(octahedronMesh2);
-
-camera.lookAt(octahedronMesh2.position);
-
-window.addEventListener('resize', () => {
+//Technical debt: Make the UI Elements, divs and containers Adaptable. 
+function updateRendererSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderTarget.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
-}, false);
+}
+
+window.addEventListener('resize', updateRendererSize);
+updateRendererSize();
+
+/*---------------------------------------------------------------------------
+                              World Controller
+---------------------------------------------------------------------------*/
+
+world = worldTypes[0];
+
+world.setup(scene,camera,renderer);
 
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
- player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
+player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
 
 ability = abilityTypes[0] ;
-world = worldTypes[0];
 const keys = {};
 let canMove = true;
 ['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
@@ -854,8 +879,6 @@ startSpawningEnemies(player);
 /*---------------------------------------------------------------------------
                                 UI UTILITIES 
 ---------------------------------------------------------------------------*/
-    let mainMenu=true;
-    const isMobile = window.innerWidth <= 600;
 
     const rainbowText = (element, fontSize) => {
         element.style.fontSize = fontSize;
@@ -874,6 +897,7 @@ startSpawningEnemies(player);
         const container = document.createElement('div');
         classNames.forEach(className => container.classList.add(className));
         Object.assign(container.style, styles);
+        document.body.appendChild(container);
         return container;
     }
 
@@ -882,9 +906,6 @@ startSpawningEnemies(player);
             
             centerUI.innerHTML='';
             centerUI = createContainer(['center-container', 'fade-in']);
-            document.body.appendChild(centerUI);
-
-            console.log('Hovered over:', entity.title);
             const scaledButton = createButton(entity, 1);
             scaledButton.style.position = 'fixed';
             scaledButton.style.top = '-100%';
@@ -1015,13 +1036,10 @@ startSpawningEnemies(player);
 ---------------------------------------------------------------------------*/
 
     let topUI = createContainer(['top-container', 'fade-in']);
-    document.body.appendChild(topUI);
     
     let centerUI = createContainer(['center-container', 'fade-in']);
-    document.body.appendChild(centerUI);
-    
+
     let botUI = createContainer(['bottom-container', 'fade-in']);
-    document.body.appendChild(botUI);
     
     function addContainerUI(container,location,uiElements){
 
@@ -1032,7 +1050,6 @@ startSpawningEnemies(player);
             container.appendChild(element);
         });
 
-        document.body.appendChild(container);
         setTimeout(() => {container.classList.add('show'); }, 10);
     }    
 
@@ -1048,8 +1065,10 @@ startSpawningEnemies(player);
     function createGameTitle(){
         topUI.innerHTML='';
         topUI = createContainer(['top-container', 'fade-in']);
-        document.body.appendChild(topUI);
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+        mainTitle.onclick = function() {
+            window.open('https://x.com/OnChainSurvivor', '_blank'); // Opens in a new tab
+        };
         topUI.appendChild(mainTitle);
         const subTitle = createTitleElement('Can you survive? Move to start', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         topUI.appendChild(subTitle);
@@ -1066,7 +1085,6 @@ startSpawningEnemies(player);
 
         botUI.innerHTML='';
         botUI = createContainer(['bottom-container', 'fade-in']);
-        document.body.appendChild(botUI);
 
         const menuButtonsContainer = createContainer([], { display: 'flex' });
         classContainer = document.createElement('div');
@@ -1117,7 +1135,6 @@ function createChooseMenu(entityList,text,type) {
 
     centerUI.innerHTML='';
     centerUI = createContainer(['center-container', 'fade-in']);
-    document.body.appendChild(centerUI);
 
     const popUpContainer = createContainer([],);
     popUpContainer.style.position = 'fixed';
@@ -1340,11 +1357,9 @@ function updateTimerDisplay() {
 function refreshDisplay() {
     botUI.innerHTML='';
     botUI = createContainer(['bottom-container', 'fade-in']);
-    document.body.appendChild(botUI);
 
     topUI.innerHTML='';
     topUI = createContainer(['top-container', 'fade-in']);
-    document.body.appendChild(topUI);
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
     topUI.appendChild(modeDisplay);
@@ -1429,9 +1444,6 @@ function triggerGameOver() {
                                     GAMESTATE CONTROLLER  
 ---------------------------------------------------------------------------*/
 
-let isPaused = true;
-let isMainMenu = true;
-
 function resumeGame() {
 
     if (isPaused) {
@@ -1440,8 +1452,7 @@ function resumeGame() {
     
     if(isMainMenu){ 
 
-    scene.remove(octahedronMesh2);
-    octahedronMesh.rotation.x = 0;
+    world.resumeGame();
     isMainMenu = false;
     hideContainerUI(topUI);
     hideContainerUI(centerUI);
@@ -1461,16 +1472,6 @@ function resumeGame() {
         }
     }
 }
-
-/*---------------------------------------------------------------------------
-                              Animation Loop 
----------------------------------------------------------------------------*/
-
-let animationFrameId;
-const clock = new THREE.Clock();
-const fixedTimeStep = 1 / 60;
-let accumulatedTime = 0;
-let deltaTime;
 
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
@@ -1493,17 +1494,17 @@ function animate() {
         }
         accumulatedTime -= fixedTimeStep;
     }
- 
-    if(isMainMenu){
-    octahedronMesh.rotation.x -= 0.005;
-    octahedronMesh2.rotation.x += 0.005;
-    }else{
-    octahedronMesh.rotation.y += 0.005;
-    }
-    composer.render();
 
+    world.update();
+    composer.render();
 }
+
 animate();
+
+
+/*---------------------------------------------------------------------------
+                            Service Worker for PWA
+---------------------------------------------------------------------------*/
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
