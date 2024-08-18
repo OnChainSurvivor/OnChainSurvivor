@@ -29,15 +29,21 @@ class Entity extends THREE.Object3D {
         this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         this.add(this.mesh);
         scene.add(this);
+        this.possibleAbilities = new Map();
         this.initAbilities(config.abilities);
     }
 
     initAbilities(abilitiesConfig) {
         abilitiesConfig.forEach(abilityConfig => {
+            const vabilityType = abilityTypes.find(type => type.title === abilityConfig.type);
+            if (vabilityType) {
+                this.possibleAbilities.set(abilityConfig.type, { ...vabilityType, level: abilityConfig.level });
+            }
+            if (abilityConfig.level===0) return;
             const existingAbility = this.abilities.find(ability => ability.title === abilityConfig.type);
             if (existingAbility) {
-                existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10);
-                existingAbility.activate();
+               existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10);
+               existingAbility.activate();
             } else {
                 const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
                 if (abilityType) {
@@ -46,6 +52,14 @@ class Entity extends THREE.Object3D {
                     newAbility.activate();
                 }
             }
+        });
+    }
+
+    getUpgradableAbilities() {
+        return Array.from(this.possibleAbilities.values())
+        .filter(ability => {
+            const playerAbility = player.abilities.find(pa => pa.title === ability.title);
+            return (playerAbility ? playerAbility.level : 0) < 10;
         });
     }
 
@@ -119,6 +133,7 @@ let joystickActive = false;
 let joystickStartX, joystickStartY;
 let joystickContainer;
 let joystick;
+let xpLoadingBar;
 
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 let colorIndex = 0;
@@ -383,7 +398,7 @@ const abilityTypes = [
     effectinfo: 'Cooldown % reduction  .',
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
     level: 0,
-    isLocked: true,
+    isLocked: false, 
     effect(level, user) {
         const veil = {
             create: () => {
@@ -458,16 +473,17 @@ const playerTypes = [{
     health: 1,
     movementspeed:0.2,
     xp: 0,
-    evasion: 50,
+    evasion: 50, 
+    xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
+    material: createNeonMaterial(rainbowColors[2]),
     level:0,
     isLocked: false,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
+        { type: 'Onchain Trail', level: 0 },
         { type: 'Scalping Bot', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Veil of Decentralization', level: 0 },
@@ -825,7 +841,8 @@ function LevelUp() {
     hideContainerUI(botUI); 
     player.xp = 0;  
 
-    const upgradableAbilities = player.abilities.filter(ability => ability.level < 10);
+    const upgradableAbilities = player.getUpgradableAbilities();
+
 
     if (upgradableAbilities.length === 0) {
         canMove = true;
@@ -1368,9 +1385,9 @@ function updateTimerDisplay() {
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
-const xpLoadingBar = document.createElement('div');
+
 function refreshDisplay() {
-    const xpLoadingContainer = document.createElement('div');
+    let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.style.position = 'absolute';
     xpLoadingContainer.style.bottom = '-5px';
     xpLoadingContainer.style.left = '50%';
@@ -1383,6 +1400,7 @@ function refreshDisplay() {
     xpLoadingContainer.style.borderImageSlice = 1;
     xpLoadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
 
+    xpLoadingBar = document.createElement('div');
     xpLoadingBar.style.width = '0';
     xpLoadingBar.style.height = '100%';
     xpLoadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
@@ -1491,6 +1509,7 @@ function resumeGame() {
             player.addAbility(newAbility);
             newAbility.activate();
         }
+        player.possibleAbilities.set(ability.title, { ...ability, level: 1 });
     }
 }
 
@@ -1499,20 +1518,17 @@ function resumeGame() {
 ---------------------------------------------------------------------------*/
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
-    world.update();
-    composer.render();
-
     accumulatedTime += clock.getDelta();
     while (accumulatedTime >= fixedTimeStep) {
         if (!isPaused) {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-        } else {
-            if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
-        }
+        } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
+    world.update();
+    composer.render();
 }
 
 animate();
