@@ -1481,7 +1481,7 @@ startSpawningEnemies(player);
         //attachHoverEffect(button, dataType); 
        // img.style.filter = 'sepia(100%) ';
         img.style.filter = 'grayscale(100%) blur(5px)';
-        if(dataType.isLocked){
+       // if(dataType.isLocked){
         button.style.color = 'gray';
         button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
         button.style.cursor = 'not-allowed';
@@ -1494,7 +1494,7 @@ startSpawningEnemies(player);
         button.style.animation = 'none';
         levelStars.style.filter = 'grayscale(100%)';
         img.style.filter = 'grayscale(100%) blur(5px)';
-        }
+       // }
 
         return button;
     }
