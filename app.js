@@ -855,6 +855,151 @@ const playerTypes = [{
     ],
 },{
     class: 'Survivor',
+    title: 'Cabal Insider',
+    description: 'Part of the inner group that manipulates markets for their benefit. They are in control.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Insider Cabal/MCABAL.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Cabal Insider',
+    description: 'Part of the inner group that manipulates markets for their benefit. They are in control.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Insider Cabal/FCABAL.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Mercerany Capital',
+    description: 'High control of the markets, quick to take profits, regardless of the effects his actions might take on others peoples life.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Mercenary Capital/MMERCENARY.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Mercerany Capital',
+    description: 'High control of the markets, quick to take profits, regardless of the effects his actions might take on others peoples life.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Mercenary Capital/FMERCENARY.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Bitcoin MAXI',
+    description: 'Holds 100% of their net worth in a Bitcoin, Never selling, always holding.  Showcases unwavering faith.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Maxi/MMAXI.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Bitcoin MAXI',
+    description: 'Holds 100% of their net worth in a Bitcoin, Never selling, always holding.  Showcases unwavering faith.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Maxi/FMAXI.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Gambler',
+    description: 'Former poker player and sports bettor turned crypto enthusiast, thriving on risk.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Gambler/MGAMBLER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},{
+    class: 'Survivor',
+    title: 'Gambler',
+    description: 'Former poker player and sports bettor turned crypto enthusiast, thriving on risk.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Gambler/FGAMBLER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+  
+    ],
+},
+{
+    class: 'Survivor',
     title: 'Validator',
     description: 'Ensures the integrity of the blockchain by validating transactions. Validators have abilities that focus on defense and support.',
     tooltip: '',    
@@ -871,7 +1016,8 @@ const playerTypes = [{
     abilities: [
   
     ],
-},{
+},
+{
     class: 'Survivor',
     title: 'Validator',
     description: 'Ensures the integrity of the blockchain by validating transactions. Validators have abilities that focus on defense and support.',
@@ -1281,6 +1427,8 @@ startSpawningEnemies(player);
         img.src = dataType.thumbnail;
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
+        
+        //img.style.filter = 'brightness(200%)'; 
 
         const titlelvl = document.createElement('div');
         titlelvl.innerText = 'LVL : 0'; 
@@ -1331,18 +1479,21 @@ startSpawningEnemies(player);
 
         //  if(scale== 0.55)
         //attachHoverEffect(button, dataType); 
-
+       /// img.style.filter = 'sepia(100%) ';
+       
         if(dataType.isLocked){
         button.style.color = 'gray';
         button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
         button.style.cursor = 'not-allowed';
         button.style.opacity = '0.5';
+        title.innerText="???"
         title.style.color = 'gray';
         titlelvl.style.color = 'gray';
         effectinfo.style.color = 'gray';
+        effectinfo.innerText="?????????????"
         button.style.animation = 'none';
-        img.style.filter = 'grayscale(100%)';
         levelStars.style.filter = 'grayscale(100%)';
+        img.style.filter = 'grayscale(100%) blur(5px)';
         }
 
         return button;
