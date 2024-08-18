@@ -1479,8 +1479,8 @@ startSpawningEnemies(player);
 
         //  if(scale== 0.55)
         //attachHoverEffect(button, dataType); 
-       /// img.style.filter = 'sepia(100%) ';
-       
+       // img.style.filter = 'sepia(100%) ';
+        img.style.filter = 'grayscale(100%) blur(5px)';
         if(dataType.isLocked){
         button.style.color = 'gray';
         button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
