@@ -91,7 +91,7 @@ class Entity extends THREE.Object3D {
 }
 
 /*---------------------------------------------------------------------------
-                              Global Variables
+                              Global Variables & Constants
 ---------------------------------------------------------------------------*/
 
 let player;
@@ -105,7 +105,6 @@ let animationFrameId;
 const clock = new THREE.Clock();
 const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
-let deltaTime;
 
 const isMobile = window.innerWidth <= 650;
 
@@ -113,9 +112,13 @@ let cameraAngle = 0;
 const cameraRadius = 20;
 const cameraHeight = 20;
 
-/*---------------------------------------------------------------------------
-                              Constants
----------------------------------------------------------------------------*/
+let canMove = true;
+
+const keys = {};
+let joystickActive = false;
+let joystickStartX, joystickStartY;
+let joystickContainer;
+let joystick;
 
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 let colorIndex = 0;
@@ -157,18 +160,140 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
+['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].forEach(key => keys[key] = false);
+
+function initiateJoystick(){
+    joystickContainer = document.createElement('div');
+    joystickContainer.style.position = 'absolute';
+    joystickContainer.style.width = '100px';
+    joystickContainer.style.height = '100px';
+    joystickContainer.style.borderRadius = '50%';
+    joystickContainer.style.touchAction = 'none';
+    joystickContainer.style.pointerEvents = 'none'; 
+    joystickContainer.style.visibility = 'hidden'; 
+    document.body.appendChild(joystickContainer);
+    joystick = document.createElement('div');
+    joystick.style.width = '60px';
+    joystick.style.height = '60px';
+    joystick.style.background = 'rgba(255, 255, 255, 0.8)';
+    joystick.style.borderRadius = '50%';
+    joystick.style.position = 'absolute';
+    joystick.style.top = '50%';
+    joystick.style.left = '50%';
+    joystick.style.transform = 'translate(-50%, -50%)';
+    joystickContainer.appendChild(joystick);
+}
+ 
+function activateJoystick(x, y) {
+        joystickContainer.style.left = `${x - joystickContainer.clientWidth / 2}px`;
+        joystickContainer.style.top = `${y - joystickContainer.clientHeight / 2}px`;
+        joystickContainer.style.pointerEvents = 'auto';
+        joystickContainer.style.visibility = 'visible';
+        joystickStartX = x;
+        joystickStartY = y;
+        joystickActive = true;
+}
+
+function deactivateJoystick() {
+        joystickActive = false;
+        joystickContainer.style.pointerEvents = 'none';
+        joystickContainer.style.visibility = 'hidden';
+        joystick.style.transform = 'translate(-50%, -50%)';
+        keys.w = keys.a = keys.s = keys.d = false; 
+}
+
+function updateJoystickDirection(normalizedX, normalizedY) {
+        if(!canMove) return;
+        keys.w = keys.a = keys.s = keys.d = false;
+        
+        if (normalizedY > 0.5) keys.w = true; 
+        if (normalizedY < -0.5) keys.s = true; 
+        if (normalizedX < -0.5) keys.a = true;
+        if (normalizedX > 0.5) keys.d = true; 
+}
+
 /*---------------------------------------------------------------------------
                               Ability Blueprints
 ---------------------------------------------------------------------------*/
 
 const abilityTypes = [
- {
+{
+    title: "Scalping Bot",
+    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
+    tooltip: "Like a true degen",
+    tags:["Offensive", "Burst Damage"],
+    effectinfo: 'Orb damage and homing speed increase.',
+    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
+    level: 0,
+    isLocked: true,
+    effect(level, user) {
+            this.lastHitTime=0;
+            let time = Date.now();
+            let potentialTargets= null;
+            let distanceToCurrent = null;
+            let distanceToNearest = null;
+            let direction= null;
+            const orb = {
+                mesh: null,
+                target: null,
+                orbitRadius: 2,
+                orbitSpeed: 0.01,
+                homingSpeed: 0.2,
+                create: () => {
+                    const geometry = new THREE.SphereGeometry(0.3, 16, 16);
+                    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+                    orb.mesh = new THREE.Mesh(geometry, material);
+                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
+                    scene.add(orb.mesh);
+                }
+            };
+            this.update = () => {
+                    if (!orb.target) {
+                        time = Date.now() * orb.orbitSpeed;
+                        orb.mesh.position.set(
+                            user.position.x + Math.cos(time) * orb.orbitRadius,
+                            user.position.y,
+                            user.position.z + Math.sin(time) * orb.orbitRadius
+                        );
+                        if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
+                        this.lastHitTime = Date.now();
+                        potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
+                        if (potentialTargets.length > 0) {
+                            orb.target = potentialTargets.reduce((nearest, entity) => {
+                                distanceToCurrent = user.position.distanceTo(entity.position);
+                                distanceToNearest = user.position.distanceTo(nearest.position);
+                                return distanceToCurrent < distanceToNearest ? entity : nearest;
+                            });
+                        }
+                        }
+                    } else {
+                        direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
+                        orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
+                        orb.boundingBox.setFromObject(orb.mesh);
+                        if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
+                            orb.target.takeDamage(1);  
+                            orb.target = null;  
+                        }
+                    }
+            };
+            this.deactivate = () => {
+                    if (orb.mesh) {
+                        scene.remove(orb.mesh);
+                        orb.mesh = null;
+                    }
+            };
+            orb.create();
+    },
+},
+{
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
-    classes: ['Data Analysts', 'Blockchain Enthusiasts', 'Coders'],
-    explanation: 'Data Analysts use the trails to gather data insights, Blockchain Enthusiasts appreciate the representation of transaction trails, and Coders find utility in the trail for debugging and tracking.',
     tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
+    effectinfo: 'Trail size and frequency increase.',
+    thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+    level: 0,
+    isLocked: true,
     effect(level, user) {
         const trailBullets = [];
         this.lastTrailTime = 0;
@@ -208,17 +333,16 @@ const abilityTypes = [
             trailBullets.length = 0; 
         };
     },
-    effectinfo: 'Trail size and frequency increase.',
-    thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-    level: 0
 },
 {
     title: "Veil of Decentralization",
     description: "The Survivor shrouds in decentralization, becoming elusive.",
     tooltip: "Can't touch this!",
-    classes: ["Validator", "Decentralization Trilemma Solver"],
-    explanation: "Validator: Ensures decentralization security. Decentralization Trilemma Solver: Balances decentralization aspects.",
     tags: ["Defensive", "Support"],
+    effectinfo: 'Veil trigger % UP.',
+    thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
+    level: 0,
+    isLocked: true,
     effect(level, user) {
         const veil = {
             create: () => {
@@ -250,84 +374,52 @@ const abilityTypes = [
         };
         veil.create();
     },
-    effectinfo: 'Veil trigger % UP.',
-    thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
-    level: 0,
-    isLocked: true,
 },
 {
-    title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
-    tooltip: "Like a true degen",
-    classes: ["Trader", "High-Frequency Trader"],
-    explanation: "Trader: Uses quick trades for gains. High-Frequency Trader: Executes high-speed strategies.",
-    tags:["Offensive", "Burst Damage"],
+    title: "Code Refactor",
+    description: "Rewrites the Survivor's abilities, reducing their cooldowns.",
+    tooltip: "FAST",
+    tags: ["Buffs", "Skill Cooldown Reduction"],
+    effectinfo: 'Cooldown % reduction  .',
+    thumbnail: 'Media/Abilities/CODEREFACTOR.png',
+    level: 0,
+    isLocked: true,
     effect(level, user) {
-        this.lastHitTime=0;
-        let time = Date.now();
-        let potentialTargets= null;
-        let distanceToCurrent = null;
-        let distanceToNearest = null;
-        let direction= null;
-        const orb = {
-            mesh: null,
-            target: null,
-            orbitRadius: 2,
-            orbitSpeed: 0.01,
-            homingSpeed: 0.2,
+        const veil = {
             create: () => {
-                const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-                orb.mesh = new THREE.Mesh(geometry, material);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                scene.add(orb.mesh);
+                if (veil.shield) scene.remove(veil.shield);
+                user.evasion += (3*level);
+                colorIndex = (colorIndex + 1) % rainbowColors.length;
+                const shieldMaterial = new THREE.MeshStandardMaterial({
+                    color: rainbowColors[colorIndex],
+                    transparent: true,
+                    opacity: 0.1,
+                    emissive: rainbowColors[colorIndex],
+                    emissiveIntensity: 1
+                });
+                const shieldGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+                veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
+                veil.shield.position.copy(user.position);
+                scene.add(veil.shield);
             }
         };
         this.update = () => {
-                if (!orb.target) {
-                    time = Date.now() * orb.orbitSpeed;
-                    orb.mesh.position.set(
-                        user.position.x + Math.cos(time) * orb.orbitRadius,
-                        user.position.y,
-                        user.position.z + Math.sin(time) * orb.orbitRadius
-                    );
-                    if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
-                    this.lastHitTime = Date.now();
-                    potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
-                    if (potentialTargets.length > 0) {
-                        orb.target = potentialTargets.reduce((nearest, entity) => {
-                            distanceToCurrent = user.position.distanceTo(entity.position);
-                            distanceToNearest = user.position.distanceTo(nearest.position);
-                            return distanceToCurrent < distanceToNearest ? entity : nearest;
-                        });
-                    }
-                    }
-                } else {
-                    direction = new THREE.Vector3().subVectors(orb.target.position, orb.mesh.position).normalize();
-                    orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                    orb.boundingBox.setFromObject(orb.mesh);
-                    if (orb.boundingBox.intersectsBox(orb.target.boundingBox)) {
-                        orb.target.takeDamage(1);  
-                        orb.target = null;  
-                    }
-                }
+                if (veil.shield) veil.shield.position.copy(user.position);
         };
         this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
+                if (veil.shield) {
+                    user.evasion -= (3*level);
+                    scene.remove(veil.shield);
+                    veil.shield = null;
                 }
         };
-        orb.create();
+        veil.create();
     },
-    effectinfo: 'Orb damage and homing speed increase.',
-    thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0
-}
+},
 ];
 
 /*---------------------------------------------------------------------------
-                              Survivor Class Blueprint
+                              Survivors Blueprint
 ---------------------------------------------------------------------------*/
 
 const playerTypes = [{
@@ -339,24 +431,25 @@ const playerTypes = [{
     movementspeed:0.2,
     xp: 0,
     evasion: 50,
+    xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Veil of Decentralization', level: 0 },
         { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
+        { type: 'Onchain Trail', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: false,
 },{
     class: 'Survivor',
     title: 'Onchain Survivoress',
@@ -370,6 +463,8 @@ const playerTypes = [{
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
@@ -382,8 +477,6 @@ const playerTypes = [{
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: false,
 },{
     class: 'Survivor',
     title: 'Influencer',
@@ -397,6 +490,8 @@ const playerTypes = [{
     thumbnail: 'Media/Classes/Influencer/MINFLUENCER.jpg',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: true,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
@@ -409,8 +504,6 @@ const playerTypes = [{
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: true,
 },
 {
     class: 'Survivor',
@@ -425,6 +518,8 @@ const playerTypes = [{
     thumbnail: 'Media/Classes/Influencer/FINFLUENCER.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: true,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
@@ -437,8 +532,6 @@ const playerTypes = [{
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: true,
 },{
     class: 'Survivor',
     title: 'Validator',
@@ -452,6 +545,8 @@ const playerTypes = [{
     thumbnail: 'Media/Classes/Validator/MVALIDATOR.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: true,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
@@ -464,8 +559,6 @@ const playerTypes = [{
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: true,
 },{
     class: 'Survivor',
     title: 'Validator',
@@ -479,6 +572,8 @@ const playerTypes = [{
     thumbnail: 'Media/Classes/Validator/FVALIDATOR.jpg',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: true,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
@@ -491,13 +586,11 @@ const playerTypes = [{
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
-    level:0,
-    isLocked: true,
 },
 ];
 
 /*---------------------------------------------------------------------------
-                              Enemy Blueprints
+                              Enemies Blueprints
 ---------------------------------------------------------------------------*/
 
 const enemyTypes = [{
@@ -519,7 +612,7 @@ const enemyTypes = [{
 ];
 
 /*---------------------------------------------------------------------------
-                              World Blueprints
+                              Worlds Blueprints
 ---------------------------------------------------------------------------*/
 const worldTypes = [{
     class: 'World',
@@ -636,7 +729,7 @@ const worldTypes = [{
 }
 ];
 /*---------------------------------------------------------------------------
-                              Scene Controller
+                              Scene Initialization
 ---------------------------------------------------------------------------*/
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -663,7 +756,6 @@ function updateRendererSize() {
     composer.setSize(window.innerWidth, window.innerHeight);
 }
 
-window.addEventListener('resize', updateRendererSize);
 updateRendererSize();
 
 /*---------------------------------------------------------------------------
@@ -677,20 +769,11 @@ world.setup(scene,camera,renderer);
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
-player = new Entity(playerTypes.find(type => type.class === 'Survivor'));
+player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'));
+
+initiateJoystick();
 
 ability = abilityTypes[0] ;
-const keys = {};
-let canMove = true;
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'u', 'o'].forEach(key => keys[key] = false);
-
-document.addEventListener('keydown', (event) => {
-    if (keys.hasOwnProperty(event.key)) keys[event.key] = true;
-});
-
-document.addEventListener('keyup', (event) => {
-    if (keys.hasOwnProperty(event.key)) keys[event.key] = false;
-});
 
 function updatePlayerMovement() {
     if(!canMove) return;
@@ -714,9 +797,6 @@ function updatePlayerMovement() {
         player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
         player.boundingBox.setFromObject(player.mesh);
     }
-    else{
-
-    }
 
     const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
     const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
@@ -727,9 +807,9 @@ function updatePlayerMovement() {
 
     xpSpheres.forEach((xpSphere, index) => {
         if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
-            player.xp += 100;
-            if (player.xp >= 100) {
-                player.xp = 0;
+            player.xp += 10;
+            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+            if (player.xp >= player.xpToNextLevel) {
                 LevelUp();
             }
             scene.remove(xpSphere);
@@ -739,145 +819,36 @@ function updatePlayerMovement() {
 }
 
 function LevelUp() {
-    canMove= false;
+    canMove = false;
     isPaused = true;
+    hideContainerUI(topUI);
+    hideContainerUI(botUI); 
+    player.xp = 0;  
 
-    const availableAbilities = abilityTypes.filter(abilityType => {
-        return !player.abilities.some(playerAbility => 
-            playerAbility.title === abilityType.title && playerAbility.level >9 
-        );
-    });
+    const upgradableAbilities = player.abilities.filter(ability => ability.level < 10);
 
-    const filteredAvailableAbilities = availableAbilities.filter(abilityType => {
-        return !player.abilities.some(playerAbility => 
-            playerAbility.title === abilityType.title
-        );
-    });
+    if (upgradableAbilities.length === 0) {
+        canMove = true;
+        isPaused = false;
+        return;
+    }
 
-    const allAbilities = [...player.abilities.filter(ability => ability.level < 10), ...filteredAvailableAbilities];
-    const allPlayerAbilities = player.abilities.filter(ability => ability.level < 10);
+    //Make level up more difficult according to the number of skilss in the player  
+    player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
-    if (allPlayerAbilities && allPlayerAbilities.length > 0) 
-    upgradeOptions.push(allPlayerAbilities[Math.floor(Math.random() * allPlayerAbilities.length)]);
-    if (allAbilities && allAbilities.length > 0){
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]);
-        upgradeOptions.push(allAbilities[Math.floor(Math.random() * allAbilities.length)]); 
+    for (let i = 0; i < 4 && upgradableAbilities.length > 0; i++) {
+        const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
+        const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
+        abilityToUpgrade.isLocked = false; 
+        upgradeOptions.push(abilityToUpgrade);
+        upgradableAbilities.splice(randomIndex, 1);
     }
-    if (upgradeOptions && upgradeOptions.length > 0){
-        // TODO Everything is maxxed up, Class update? ability evolution?
-    }
+
     createChooseMenu(upgradeOptions, "Upgrade! Choose 1:", "Upgrade");
 }
-
-    const joystickContainer = document.createElement('div');
-    joystickContainer.style.position = 'absolute';
-    joystickContainer.style.width = '100px';
-    joystickContainer.style.height = '100px';
-    joystickContainer.style.borderRadius = '50%';
-    joystickContainer.style.touchAction = 'none';
-    joystickContainer.style.pointerEvents = 'none'; 
-    joystickContainer.style.visibility = 'hidden'; 
-    document.body.appendChild(joystickContainer);
-
-    const joystick = document.createElement('div');
-    joystick.style.width = '60px';
-    joystick.style.height = '60px';
-    joystick.style.background = 'rgba(255, 255, 255, 0.8)';
-    joystick.style.borderRadius = '50%';
-    joystick.style.position = 'absolute';
-    joystick.style.top = '50%';
-    joystick.style.left = '50%';
-    joystick.style.transform = 'translate(-50%, -50%)';
-    joystickContainer.appendChild(joystick);
-
-    let joystickActive = false;
-    let joystickStartX, joystickStartY;
-
-    function activateJoystick(x, y) {
-        joystickContainer.style.left = `${x - joystickContainer.clientWidth / 2}px`;
-        joystickContainer.style.top = `${y - joystickContainer.clientHeight / 2}px`;
-        joystickContainer.style.pointerEvents = 'auto';
-        joystickContainer.style.visibility = 'visible';
-        joystickStartX = x;
-        joystickStartY = y;
-        joystickActive = true;
-    }
-
-    function deactivateJoystick() {
-        joystickActive = false;
-        joystickContainer.style.pointerEvents = 'none';
-        joystickContainer.style.visibility = 'hidden';
-        joystick.style.transform = 'translate(-50%, -50%)';
-        keys.w = keys.a = keys.s = keys.d = false; 
-    }
-
-    function updateJoystickDirection(normalizedX, normalizedY) {
-        if(!canMove) return;
-        keys.w = keys.a = keys.s = keys.d = false;
-        
-        if (normalizedY > 0.5) keys.w = true; 
-        if (normalizedY < -0.5) keys.s = true; 
-        if (normalizedX < -0.5) keys.a = true;
-        if (normalizedX > 0.5) keys.d = true; 
-    }
-
-    document.addEventListener('mousedown', (e) => {
-        if(!canMove) return;
-        activateJoystick(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('touchstart', (e) => {
-        if(!canMove) return; 
-        activateJoystick(e.touches[0].clientX, e.touches[0].clientY);
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (!joystickActive) return;
-        if(!canMove) return;
-
-        const joystickDeltaX = e.clientX - joystickStartX;
-        const joystickDeltaY = e.clientY - joystickStartY;
-
-        const maxDistance = joystickContainer.clientWidth / 2;
-        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
-        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
-
-        const x = distance * Math.cos(angle);
-        const y = distance * Math.sin(angle);
-
-        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
-
-        const normalizedX = x / maxDistance;
-        const normalizedY = y / maxDistance;
-        updateJoystickDirection(normalizedX, -normalizedY);
-    });
-
-    document.addEventListener('touchmove', (e) => {
-        if (!joystickActive) return;
-
-        const touch = e.touches[0];
-        const joystickDeltaX = touch.clientX - joystickStartX;
-        const joystickDeltaY = touch.clientY - joystickStartY;
-
-        const maxDistance = joystickContainer.clientWidth / 2;
-        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
-        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
-
-        const x = distance * Math.cos(angle);
-        const y = distance * Math.sin(angle);
-
-        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
-
-        const normalizedX = x / maxDistance;
-        const normalizedY = y / maxDistance;
-        updateJoystickDirection(normalizedX, -normalizedY);
-    });
-
-    document.addEventListener('mouseup', deactivateJoystick);
-    document.addEventListener('touchend', deactivateJoystick);
-
+    
+ 
 /*---------------------------------------------------------------------------
                               Enemies Controller
 ---------------------------------------------------------------------------*/
@@ -1075,22 +1046,13 @@ startSpawningEnemies(player);
 
         return button;
     }
-    
-/*---------------------------------------------------------------------------
-                                Main Menu UI 
----------------------------------------------------------------------------*/
 
-    let topUI = createContainer(['top-container', 'fade-in']);
-    
-    let centerUI = createContainer(['center-container', 'fade-in']);
-
-    let botUI = createContainer(['bottom-container', 'fade-in']);
-    
     function addContainerUI(container,location,uiElements){
 
         container.innerHTML='';
-        container = createContainer([location, 'fade-in']);
-
+        container.className = ''; // Remove any existing classes
+        container.classList.add(location, 'fade-in');
+      
         uiElements.forEach(element => {
             container.appendChild(element);
         });
@@ -1103,21 +1065,21 @@ startSpawningEnemies(player);
         setTimeout(() => { container.classList.add('hide'); }, 10);
     }
 
+    let topUI = createContainer(['top-container', 'fade-in']);
+        
+    let centerUI = createContainer(['center-container', 'fade-in']);
+
+    let botUI = createContainer(['bottom-container', 'fade-in']);
+
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
 
     function createGameTitle(){
-        topUI.innerHTML='';
-        topUI = createContainer(['top-container', 'fade-in']);
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
-        mainTitle.onclick = function() {
-            window.open('https://x.com/OnChainSurvivor', '_blank'); b
-        };
-        topUI.appendChild(mainTitle);
+        mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
         const subTitle = createTitleElement('Can you survive? Move to start', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-        topUI.appendChild(subTitle);
-        setTimeout(() => {topUI.classList.add('show'); }, 10);
+        addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
     };
 
     createGameTitle();
@@ -1127,36 +1089,31 @@ startSpawningEnemies(player);
 ---------------------------------------------------------------------------*/
 
     function createGameMenu(){
-
-        botUI.innerHTML='';
-        botUI = createContainer(['bottom-container', 'fade-in']);
-
-        const menuButtonsContainer = createContainer([], { display: 'flex' });
         classContainer = document.createElement('div');
         const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        menuButtonsContainer.appendChild(classContainer);
         classContainer.appendChild(createButton(player, isMobile ? 0.6 : 0.75));
         classContainer.appendChild(classSubTitle);
-        menuButtonsContainer.appendChild(classContainer);
+
         classAbilityContainer = document.createElement('div');
         const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        ability.isLocked=false;
         classAbilityContainer.appendChild(createButton(ability,isMobile ? 0.6 : 0.75));
         classAbilityContainer.appendChild(abilitiesSubTitle);
-        classContainer.appendChild(classAbilityContainer);
-        menuButtonsContainer.appendChild(classAbilityContainer);
+
         worldContainer = document.createElement('div');
         const worldSubTitle = createTitleElement('🔗 World 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
         worldContainer.appendChild(createButton(world, isMobile ? 0.6 : 0.75));
         worldContainer.appendChild(worldSubTitle);
+        
+        const menuButtonsContainer = createContainer([], { display: 'flex' });
+        menuButtonsContainer.appendChild(classContainer);
+        menuButtonsContainer.appendChild(classAbilityContainer);
         menuButtonsContainer.appendChild(worldContainer);
-
-        botUI.appendChild(menuButtonsContainer);
-        setTimeout(() => { botUI.classList.add('show');}, 10); 
+        addContainerUI(botUI,'bottom-container', [menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
                 canMove=false;
-
                 if (button === classContainer) {
                     createChooseMenu(playerTypes, "Choose your Survivor 🏆 NFT!","Survivor");
                 } else if (button === classAbilityContainer) {
@@ -1164,23 +1121,17 @@ startSpawningEnemies(player);
                 } else if (button === worldContainer) {
                     createChooseMenu(worldTypes, "Choose your Chain 🔗 NFT! ","World");
                 }
-
                 hideContainerUI(botUI);
             });
         });
     };
-
     createGameMenu()
 
 /*---------------------------------------------------------------------------
                         Generic Choose NFT Menu
 ---------------------------------------------------------------------------*/
-
+//debt: this is a mess
 function createChooseMenu(entityList,text,type) {
-
-    centerUI.innerHTML='';
-    centerUI = createContainer(['center-container', 'fade-in']);
-
     const popUpContainer = createContainer([],);
     popUpContainer.style.position = 'fixed';
     popUpContainer.style.zIndex = '1001';
@@ -1276,14 +1227,14 @@ function createChooseMenu(entityList,text,type) {
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
 
-    centerUI.appendChild(popUpContainer);
-    setTimeout(() => { centerUI.classList.add('show'); }, 10);
+    addContainerUI(centerUI,'center-container', [popUpContainer]);
+
 }
 
 /*---------------------------------------------------------------------------
                                     WEB3 Menu
 ---------------------------------------------------------------------------*/
-   
+   //debt: havent touched it at all
     const web3Container = createContainer(['fade-in', 'top-container'], { left: '95%' });
 
     const metaMaskImage = document.createElement('img');
@@ -1405,7 +1356,7 @@ function simulateLoading() {
 /*---------------------------------------------------------------------------
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
-
+//debt, this will change depending on the world  mostly the display time and game mode  
 let countdown = 500 * 60;
 const modeDisplay = createTitleElement('Practice Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
@@ -1417,31 +1368,40 @@ function updateTimerDisplay() {
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
+const xpLoadingBar = document.createElement('div');
 function refreshDisplay() {
-    botUI.innerHTML='';
-    botUI = createContainer(['bottom-container', 'fade-in']);
+    const xpLoadingContainer = document.createElement('div');
+    xpLoadingContainer.style.position = 'absolute';
+    xpLoadingContainer.style.bottom = '-5px';
+    xpLoadingContainer.style.left = '50%';
+    xpLoadingContainer.style.transform = 'translateX(-50%)';
+    xpLoadingContainer.style.width = '97%'; 
+    xpLoadingContainer.style.height = '7px';
+    xpLoadingContainer.style.backgroundColor = 'black';
+    xpLoadingContainer.style.boxSizing = 'border-box';
+    xpLoadingContainer.style.border = '0.1px solid'; 
+    xpLoadingContainer.style.borderImageSlice = 1;
+    xpLoadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
 
-    topUI.innerHTML='';
-    topUI = createContainer(['top-container', 'fade-in']);
+    xpLoadingBar.style.width = '0';
+    xpLoadingBar.style.height = '100%';
+    xpLoadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
+    xpLoadingBar.style.backgroundSize = '400% 400%';
+    xpLoadingBar.style.animation = 'rainbow 5s linear infinite';
+    xpLoadingContainer.appendChild(xpLoadingBar);
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
-    topUI.appendChild(modeDisplay);
-    topUI.appendChild(timerDisplay);
-    botUI.appendChild(abilitiesContainer);
+    abilitiesContainer.appendChild(createButton(player, .35));
+    player.abilities.filter(ability => ability.level > 0).forEach(ability => {
+            const clonedAbility = { ...ability, isLocked: false }; 
 
+            abilitiesContainer.appendChild(createButton(clonedAbility, 0.3));
+        });
 
-    abilitiesContainer.innerHTML = '';
-    abilityButton = createButton(player, .35);
-    abilitiesContainer.appendChild(abilityButton);
-
-    player.abilities.forEach(ability => {
-        const abilityButton = createButton(ability, .3);
-        abilitiesContainer.appendChild(abilityButton);
-    });
-
-    setTimeout(() => { botUI.classList.add('show'); }, 10); 
-    setTimeout(() => { topUI.classList.add('show'); }, 10); 
+    addContainerUI(topUI,'top-container', [modeDisplay,timerDisplay]);
+    addContainerUI(botUI,'bottom-container', [abilitiesContainer,xpLoadingContainer]);
 }
+
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
@@ -1514,13 +1474,11 @@ function resumeGame() {
     }
     
     if(isMainMenu){ 
-
     world.resumeGame();
     isMainMenu = false;
     hideContainerUI(topUI);
     hideContainerUI(centerUI);
     hideContainerUI(botUI);
-
     setTimeout(() => { refreshDisplay() }, 1050);
 
         const existingAbility = player.abilities.find(playerAbility => playerAbility.title === ability.title);
@@ -1536,33 +1494,28 @@ function resumeGame() {
     }
 }
 
+/*---------------------------------------------------------------------------
+                            Main loop
+---------------------------------------------------------------------------*/
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
+    world.update();
+    composer.render();
 
-    deltaTime = clock.getDelta();
-    accumulatedTime += deltaTime;
-
+    accumulatedTime += clock.getDelta();
     while (accumulatedTime >= fixedTimeStep) {
         if (!isPaused) {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
         } else {
-            if(!canMove) return;
-            if (keys.s) resumeGame();
-            if (keys.w) resumeGame();
-            if (keys.a) resumeGame();
-            if (keys.d) resumeGame();
+            if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         }
         accumulatedTime -= fixedTimeStep;
     }
-
-    world.update();
-    composer.render();
 }
 
 animate();
-
 
 /*---------------------------------------------------------------------------
                             Service Worker for PWA
@@ -1577,3 +1530,81 @@ animate();
       });
     });
   }  
+
+/*---------------------------------------------------------------------------
+                            Event Listeners
+---------------------------------------------------------------------------*/
+
+document.addEventListener('keydown', (event) => {
+    if (keys.hasOwnProperty(event.key)) {
+        keys[event.key] = true;
+    }
+    
+    // Map arrow keys to WASD behavior
+    if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = true;
+    if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = true;
+    if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = true;
+    if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = true;
+});
+document.addEventListener('keyup', (event) => {
+    if (keys.hasOwnProperty(event.key)) {
+        keys[event.key] = false;
+    }
+    
+    // Map arrow keys to WASD behavior
+    if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = false;
+    if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = false;
+    if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = false;
+    if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = false;
+});
+document.addEventListener('mousedown', (e) => {
+        if(!canMove) return;
+        activateJoystick(e.clientX, e.clientY);
+});
+document.addEventListener('touchstart', (e) => {
+        if(!canMove) return; 
+        activateJoystick(e.touches[0].clientX, e.touches[0].clientY);
+});
+document.addEventListener('mousemove', (e) => {
+        if (!joystickActive) return;
+        if(!canMove) return;
+
+        const joystickDeltaX = e.clientX - joystickStartX;
+        const joystickDeltaY = e.clientY - joystickStartY;
+
+        const maxDistance = joystickContainer.clientWidth / 2;
+        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
+        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
+
+        const x = distance * Math.cos(angle);
+        const y = distance * Math.sin(angle);
+
+        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
+
+        const normalizedX = x / maxDistance;
+        const normalizedY = y / maxDistance;
+        updateJoystickDirection(normalizedX, -normalizedY);
+});
+document.addEventListener('touchmove', (e) => {
+        if (!joystickActive) return;
+
+        const touch = e.touches[0];
+        const joystickDeltaX = touch.clientX - joystickStartX;
+        const joystickDeltaY = touch.clientY - joystickStartY;
+
+        const maxDistance = joystickContainer.clientWidth / 2;
+        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
+        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
+
+        const x = distance * Math.cos(angle);
+        const y = distance * Math.sin(angle);
+
+        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
+
+        const normalizedX = x / maxDistance;
+        const normalizedY = y / maxDistance;
+        updateJoystickDirection(normalizedX, -normalizedY);
+});
+document.addEventListener('mouseup', deactivateJoystick);
+document.addEventListener('touchend', deactivateJoystick);
+window.addEventListener('resize', updateRendererSize);
