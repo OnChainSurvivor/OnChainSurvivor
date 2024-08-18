@@ -456,18 +456,18 @@ const playerTypes = [{
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Onchain Trail', level: 0  },
-        { type: 'Onchain Trail', level: 0 },
+        { type: 'Scalping Bot', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Veil of Decentralization', level: 0 },
         { type: 'Onchain Trail', level: 0  },
-        { type: 'Onchain Trail', level: 0 },
+        { type: 'Scalping Bot', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Onchain Trail', level: 0 }, 
         { type: 'Veil of Decentralization', level: 0 }
     ],
 },{
     class: 'Survivor',
-    title: 'Onchain Survivoress',
+    title: 'Onchain Survivor',
     description: 'The jill of all trades (lol), adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
     tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
     health: 1,
@@ -482,18 +482,86 @@ const playerTypes = [{
     level:0,
     isLocked: false,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
+
     ],
 },{
+    class: 'Survivor',
+    title: 'Miner',
+    description: 'Strong, durable, reliable, albeit somewhat slow, have higher chance of taking good rewards.',
+    tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50, 
+    xpToNextLevel:10,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Miner/MMINER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[2]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Miner',
+    description: 'Has a longer and battle tested proven record of protecting and surviving in the chain.',
+    tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50, 
+    xpToNextLevel:10,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Miner/FMINER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[2]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Staker',
+    description: 'Balanced in speed and strength, stakers gain bonuses for maintaining stability and have unique defensive abilities.',
+    tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50, 
+    xpToNextLevel:10,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Staker/MSTAKER.png',  
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[2]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Staker',
+    description: 'Balanced in speed and strength, stakers gain bonuses for maintaining stability and have unique defensive abilities.',
+    tooltip: 'Despite losing it all in the 2018 market crash, she kept grinding every day.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50, 
+    xpToNextLevel:10,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Staker/FSTAKER.png', 
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[2]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
+},
+{
     class: 'Survivor',
     title: 'Influencer',
     description: 'Influencers have a huge following and can move markets with a single well timed post online. Tends to lean the vain side.',
@@ -509,16 +577,7 @@ const playerTypes = [{
     level:0,
     isLocked: true,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
+
     ],
 },
 {
@@ -537,16 +596,8 @@ const playerTypes = [{
     level:0,
     isLocked: true,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
+
+
     ],
 },{
     class: 'Survivor',
@@ -564,16 +615,7 @@ const playerTypes = [{
     level:0,
     isLocked: true,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
+  
     ],
 },{
     class: 'Survivor',
@@ -591,20 +633,10 @@ const playerTypes = [{
     level:0,
     isLocked: true,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
+
     ],
 },
 ];
-
 /*---------------------------------------------------------------------------
                               Enemies Blueprints
 ---------------------------------------------------------------------------*/
@@ -861,7 +893,6 @@ function LevelUp() {
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
-
     createChooseMenu(upgradeOptions, "Choose:", "Upgrade");
 }
     
@@ -1158,8 +1189,8 @@ function createChooseMenu(entityList, text, type) {
         itemButton.onclick = () => handleEntitySelection(entity, type);
 
         if (type === "Survivor") {
-            const abilitiesOfClassContainer = createAbilitiesContainer(entity);
-            gridContainer.appendChild(abilitiesOfClassContainer);
+           const abilitiesOfClassContainer = createAbilitiesContainer(entity);
+           // DEBT gridContainer.appendChild(abilitiesOfClassContainer);
         }
     });
 
