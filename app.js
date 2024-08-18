@@ -129,6 +129,8 @@ const cameraHeight = 20;
 let canMove = true;
 
 const keys = {};
+['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].forEach(key => keys[key] = false);
+
 let joystickActive = false;
 let joystickStartX, joystickStartY;
 let joystickContainer;
@@ -174,8 +176,6 @@ const handleEntityDeath = (entity, enemies) => {
     const enemyIndex = enemies.indexOf(entity);
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
-
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].forEach(key => keys[key] = false);
 
 function initiateJoystick(){
     joystickContainer = document.createElement('div');
@@ -763,7 +763,7 @@ const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.inner
 });
 const composer = new THREE.EffectComposer(renderer,renderTarget);
 
-//Technical debt: Make the UI Elements, divs and containers Adaptable. 
+//Technical debt: Make the UI Elements, divs and containers responsive. 
 function updateRendererSize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -854,7 +854,7 @@ function LevelUp() {
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
-    for (let i = 0; i < 4 && upgradableAbilities.length > 0; i++) {
+    for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
         const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
         abilityToUpgrade.isLocked = false; 
@@ -862,7 +862,7 @@ function LevelUp() {
         upgradableAbilities.splice(randomIndex, 1);
     }
 
-    createChooseMenu(upgradeOptions, "Upgrade! Choose 1:", "Upgrade");
+    createChooseMenu(upgradeOptions, "Choose:", "Upgrade");
 }
     
  
@@ -1044,7 +1044,7 @@ startSpawningEnemies(player);
 
         if (onClick) button.onclick = onClick;
 
-       //  if(scale== 0.55)
+        //  if(scale== 0.55)
         //attachHoverEffect(button, dataType); 
 
         if(dataType.isLocked){
@@ -1059,7 +1059,6 @@ startSpawningEnemies(player);
         img.style.filter = 'grayscale(100%)';
         levelStars.style.filter = 'grayscale(100%)';
         }
-
 
         return button;
     }
@@ -1147,105 +1146,122 @@ startSpawningEnemies(player);
 /*---------------------------------------------------------------------------
                         Generic Choose NFT Menu
 ---------------------------------------------------------------------------*/
-//debt: this is a mess
-function createChooseMenu(entityList,text,type) {
-    const popUpContainer = createContainer([],);
-    popUpContainer.style.position = 'fixed';
-    popUpContainer.style.zIndex = '1001';
-    popUpContainer.style.backgroundColor = 'black';
-    popUpContainer.style.height = `${window.innerHeight * 0.99}px`;
-    popUpContainer.style.width = `${window.innerWidth * 0.99}px`;
-    popUpContainer.style.transform = 'translate(0%, -50%)';
-    popUpContainer.style.border = '.5px solid';
-    popUpContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-    popUpContainer.style.borderImageSlice = 1;
-  
-    popUpContainer.style.boxSizing = 'border-box';
-    popUpContainer.style.overflowY = 'auto';
-    popUpContainer.style.animation = 'rainbow-border 5s linear infinite';
-
-    const titleContainer = document.createElement('div');
-    titleContainer.style.display = 'flex';
-    titleContainer.style.justifyContent = 'space-between';
-    titleContainer.style.alignItems = 'center';
-    titleContainer.style.marginBottom = '20px';
-    titleContainer.style.flexDirection = 'column';
-    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw');
-    titleContainer.appendChild(title);
-
-    const gridContainer = document.createElement('div');
-    gridContainer.style.display = 'grid';
-   
-    const gridTemplateColumns = `repeat(2, auto)`;
-    gridContainer.style.justifyContent = 'center'; 
- 
-    gridContainer.style.margin = '0 auto';
-    gridContainer.style.gridTemplateColumns = gridTemplateColumns;
+function createChooseMenu(entityList, text, type) {
+    const popUpContainer = createPopUpContainer();
+    const titleContainer = createTitleContainer(text);
+    const gridContainer = createGridContainer();
 
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
-        itemButton.style.display = 'block';
         gridContainer.appendChild(itemButton);
 
-        itemButton.onclick = () => {
-            if (type === "Upgrade"){
-                entity.isLocked=false;
-                const existingAbility = player.abilities.find(playerAbility => playerAbility.title === entity.title);
-                if (existingAbility) {
-                    existingAbility.deactivate();
-                    existingAbility.level += 1;
-                    existingAbility.activate();
-                } else {
-                    const newAbility = new Ability(player, { ...entity, level: 1 });
-                    player.addAbility(newAbility);
-                    newAbility.activate();
-                } 
-                refreshDisplay();
-                hideContainerUI(centerUI);
-                canMove=true;
-            }
-            if (entity.isLocked) return;
-            if (type === "Survivor") {
-            player.deactivateAbilities();
-            scene.remove(player);
-            player = new Entity(playerTypes.find(type => type === entity));
-            createGameMenu();
-            }
-            if (type ==="Ability") {
-            ability=entity
-            createGameMenu();
-            }
-            if (type === "World"){
-            world=entity
-            createGameMenu();
-            }
-            canMove=true;
-            hideContainerUI(centerUI);
-        };
-        // APEX
-        if (type === "Survivor") {
-            const abilitiesOfClassContainer = document.createElement('div');
-            abilitiesOfClassContainer.style.display = 'grid';
-            abilitiesOfClassContainer.style.justifyContent = 'center'; 
-            abilitiesOfClassContainer.style.margin = '0 auto'; 
-            abilitiesOfClassContainer.style.gridTemplateColumns = 'repeat(2, auto)'; 
+        itemButton.onclick = () => handleEntitySelection(entity, type);
 
-            createTitleElement()
-            entity.abilities.forEach(survivorAbility => {
-                const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
-                if (existingAbility) {
-                    const itemButton = createButton(existingAbility, 0.33); 
-                    abilitiesOfClassContainer.appendChild(itemButton);
-                }
-            });
+        if (type === "Survivor") {
+            const abilitiesOfClassContainer = createAbilitiesContainer(entity);
             gridContainer.appendChild(abilitiesOfClassContainer);
-            }
-    }); 
+        }
+    });
+
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
+    addContainerUI(centerUI, 'center-container', [popUpContainer]);
+}
 
-    addContainerUI(centerUI,'center-container', [popUpContainer]);
+function createPopUpContainer() {
+    const container = createContainer([]);
+    Object.assign(container.style, {
+        position: 'fixed',
+        zIndex: '1001',
+        backgroundColor: 'black',
+        height: `${window.innerHeight * 0.99}px`,
+        width: `${window.innerWidth * 0.99}px`,
+        transform: 'translate(0%, -50%)',
+        border: '.5px solid',
+        borderImageSource: 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)',
+        borderImageSlice: 1,
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+        animation: 'rainbow-border 5s linear infinite',
+    });
+    return container;
+}
 
+function createTitleContainer(text) {
+    const container = document.createElement('div');
+    Object.assign(container.style, {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '20px',
+        flexDirection: 'column',
+    });
+    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw');
+    container.appendChild(title);
+    return container;
+}
+let isWide = window.innerWidth > 830;
+console.log(window.innerWidth)
+function createGridContainer() {
+    const container = document.createElement('div');
+    Object.assign(container.style, {
+        display: 'grid',
+        justifyContent: 'center',
+        margin: '0 auto',
+        gridTemplateColumns: isWide ? 'repeat(4, auto)' : 'repeat(2, auto)',
+    });
+    return container;
+}
+
+function handleEntitySelection(entity, type) {
+    if (type === "Upgrade") {
+        entity.isLocked = false;
+        const existingAbility = player.abilities.find(a => a.title === entity.title);
+        if (existingAbility) {
+            existingAbility.deactivate();
+            existingAbility.level += 1;
+            existingAbility.activate();
+        } else {
+            const newAbility = new Ability(player, { ...entity, level: 1 });
+            player.addAbility(newAbility);
+            newAbility.activate();
+        }
+        refreshDisplay();
+    } else if (entity.isLocked) {
+        return;
+    } else if (type === "Survivor") {
+        player.deactivateAbilities();
+        scene.remove(player);
+        player = new Entity(playerTypes.find(t => t === entity));
+        createGameMenu();
+    } else if (type === "Ability") {
+        ability = entity;
+        createGameMenu();
+    } else if (type === "World") {
+        world = entity;
+        createGameMenu();
+    }
+    canMove = true;
+    hideContainerUI(centerUI);
+}
+
+function createAbilitiesContainer(entity) {
+    const container = document.createElement('div');
+    Object.assign(container.style, {
+        display: 'grid',
+        justifyContent: 'center',
+        margin: '0 auto',
+        gridTemplateColumns: 'repeat(2, auto)',
+    });
+
+    entity.abilities.forEach(survivorAbility => {
+        const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
+        if (existingAbility) {
+            const abilityButton = createButton(existingAbility, 0.33);
+            container.appendChild(abilityButton);
+        }
+    });
+    return container;
 }
 
 /*---------------------------------------------------------------------------
