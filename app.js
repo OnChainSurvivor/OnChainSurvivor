@@ -560,6 +560,186 @@ const playerTypes = [{
     abilities: [
 
     ],
+},{
+    class: 'Survivor',
+    title: 'Trader',
+    description: 'Fast and agile, traders can move quickly around the arena but have lower health. They have unique abilities related to market dynamics.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Trader/MTRADER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Trader',
+    description: 'Fast and agile, traders can move quickly around the arena but have lower health. They have unique abilities related to market dynamics.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Trader/FTRADER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Developer',
+    description: 'Versatile and strategic, developers can modify the environment and create powerful code-based attacks.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Developer/MDEVELOPER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Developer',
+    description: 'Versatile and strategic, developers can modify the environment and create powerful code-based attacks.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Developer/FDEVELOPER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Regulator',
+    description: 'Controllers of chaos, regulators can impose rules and restrictions on enemies, making them powerful crowd-control specialists.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Regulator/MREGULATOR.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Regulator',
+    description: 'Controllers of chaos, regulators can impose rules and restrictions on enemies, making them powerful crowd-control specialists.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Regulator/FREGULATOR.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Quantum Cryptographer',
+    description: 'Masters of quantum cryptography, withouth them the blockchain has no means of suriving in the future.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Quantum/MQUANTUM.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Quantum Cryptographer',
+    description: 'Masters of quantum cryptography, withouth them the blockchain has no means of suriving in the future.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Quantum/FQUANTUM.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Crypto Botter',
+    description: 'Utilizes bots and scripts for every action, very resourceful, always has an edge agaisnt other survivors.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Crypto Botter/MBOTTER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Crypto Botter',
+    description: 'Utilizes bots and scripts for every action, very resourceful, always has an edge agaisnt other survivors.',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Crypto Botter/FBOTTER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
 },
 {
     class: 'Survivor',
@@ -575,7 +755,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level:0,
-    isLocked: true,
+    isLocked: false,
     abilities: [
 
     ],
@@ -594,7 +774,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level:0,
-    isLocked: true,
+    isLocked: false,
     abilities: [
 
 
@@ -613,7 +793,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level:0,
-    isLocked: true,
+    isLocked: false,
     abilities: [
   
     ],
@@ -631,7 +811,7 @@ const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level:0,
-    isLocked: true,
+    isLocked: false, 
     abilities: [
 
     ],
