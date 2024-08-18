@@ -740,6 +740,80 @@ const playerTypes = [{
     abilities: [
 
     ],
+},{
+    class: 'Survivor',
+    title: 'Fudder',
+    description: 'Always bearish, spreading fear, uncertainty, and doubt (FUD). Fudders are unafected by the always improving  blockchain tech...',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Fudder/MFUDDER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},{
+    class: 'Survivor',
+    title: 'Fudder',
+    description: 'Always bearish, spreading fear, uncertainty, and doubt (FUD). Fudders are unafected by the always improving  blockchain tech...',
+    tooltip: '',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Fudder/FFUDDER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false, 
+    abilities: [
+
+    ],
+},
+{
+    class: 'Survivor',
+    title: 'Crypto Astrologer',
+    description: 'Uses the moon cycles and the stars and signs to predict market movements, providing unique takes based on astrological insights',
+    tooltip: 'Some say he has more hidden wallets than *******.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Astrologer/MASTROLOGER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
+},
+{
+    class: 'Survivor',
+    title: 'Crypto Astrologer',
+    description: 'Uses the moon cycles and the stars and signs to predict market movements, providing unique takes based on astrological insights',
+    tooltip: 'Some say he has more hidden wallets than *******.',    
+    health: 1,
+    movementspeed:0.2,
+    xp: 0,
+    evasion: 50,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Astrologer/FASTROLOGER.png',
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level:0,
+    isLocked: false,
+    abilities: [
+
+    ],
 },
 {
     class: 'Survivor',
