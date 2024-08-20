@@ -40,34 +40,14 @@ canvas {
     opacity: 1;
 }
 
-@keyframes rainbowBorder {
-    0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-    10% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
-    20% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
-    30% { border-image-source: linear-gradient(45deg, green, deepskyblue, blueviolet, violet, red, orange, yellow); }
-    40% { border-image-source: linear-gradient(45deg, deepskyblue, blueviolet, violet, red, orange, yellow, green); }
-    50% { border-image-source: linear-gradient(45deg, blueviolet, violet, red, orange, yellow, green, deepskyblue); }
-    60% { border-image-source: linear-gradient(45deg, violet, red, orange, yellow, green, deepskyblue, blueviolet); }
-    70% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-    80% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
-    90% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
-    100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-}
+
 
 @keyframes rainbowText {
     0% { background-position: 0% 50%; }
     100% { background-position: 1000% 50%; }
 }
 
-.rainbow-text {
-    color: transparent;
-    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
-    background-clip: text;
-    -webkit-background-clip: text;
-    background-size: 200% 200%;
-    text-align: center;
-    animation: rainbowText 7s linear infinite;
-}
+
 
 .fade-in {
     opacity: 0;
