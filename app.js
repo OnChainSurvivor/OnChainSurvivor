@@ -2787,26 +2787,8 @@ const worldTypes = [{
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
-const renderer = new THREE.WebGLRenderer({ 
-    canvas,
-    antialias: false, // Disable antialiasing for better performance
-    alpha: false, // Disable transparency to reduce rendering load
-    powerPreference: "high-performance", // Optimize for performance
-    precision: "mediump", // Use medium precision for shaders
-    logarithmicDepthBuffer: false, // Disable to improve performance
-});
-
-// Set the renderer size and pixel ratio
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio to avoid unnecessary rendering load
-
-// Set other rendering settings
-renderer.shadowMap.enabled = false; // Disable shadows for better performance
-renderer.toneMapping = THREE.NoToneMapping; // Disable tone mapping for faster rendering
-renderer.autoClear = true;
-renderer.setClearColor(0x000000); // Set background color to black
-renderer.outputEncoding = THREE.sRGBEncoding; // Improve color accuracy
-renderer.physicallyCorrectLights = false; // Disable for better performance
+const renderer = new THREE.WebGLRenderer({ canvas });
+renderer.setPixelRatio(window.devicePixelRatio || 1);
 const dpr = window.devicePixelRatio || 1;
 const rect = canvas.getBoundingClientRect();
 
@@ -3030,8 +3012,9 @@ startSpawningEnemies(player);
         button.style.border = '1px solid';
         button.style.borderImageSlice = 1;
         button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-        button.style.animation = 'rainbowBorder 5s linear infinite';
-    
+
+        // button.style.animation = 'rainbowBorder 5s linear infinite';
+
         button.title = dataType.tooltip;
     
         const title = document.createElement('div');
