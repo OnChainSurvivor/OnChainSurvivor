@@ -1407,7 +1407,7 @@ const playerTypes = [{
     xp: 0,
     evasion: 20,
     tags: ['player'],
-    thumbnail: 'Media/Classes/Dormant Holder/MDORMANTHOLDER.png', 
+    thumbnail: 'Media/Classes/Dormant Holder/MDORMANT.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level: 0,
@@ -1424,7 +1424,40 @@ const playerTypes = [{
     xp: 0,
     evasion: 20,
     tags: ['player'],
-    thumbnail: 'Media/Classes/Dormant Holder/FDORMANTHOLDER.png', 
+    thumbnail: 'Media/Classes/Dormant Holder/FDORMANT.png', 
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level: 0,
+    isLocked: false,
+    abilities: [],
+},{
+    class: 'Survivor',
+    title: 'Solo Node Runner',
+    description: 'Operates independently, running a node to support the network, resilient and resourceful.',
+    tooltip: '',    
+    health: 1,
+    movementspeed: 0.25,
+    xp: 0,
+    evasion: 40,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Solo Node Runner/MSOLONODERUNNER.png', 
+    geometry: new THREE.BoxGeometry(1, 1, 1),
+    material: createNeonMaterial(rainbowColors[colorIndex]),
+    level: 0,
+    isLocked: false,
+    abilities: [],
+},
+{
+    class: 'Survivor',
+    title: 'Solo Node Runner',
+    description: 'Operates independently, Maintains the networks infrastructure.',
+    tooltip: '',    
+    health: 1,
+    movementspeed: 0.25,
+    xp: 0,
+    evasion: 40,
+    tags: ['player'],
+    thumbnail: 'Media/Classes/Solo Node Runner/FSOLONODERUNNER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level: 0,
@@ -1785,40 +1818,6 @@ const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Holder/FHOLDER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
-    level: 0,
-    isLocked: false,
-    abilities: [],
-},
-{
-    class: 'Survivor',
-    title: 'Solo Node Runner',
-    description: 'Operates independently, running a node to support the network, resilient and resourceful.',
-    tooltip: '',    
-    health: 1,
-    movementspeed: 0.25,
-    xp: 0,
-    evasion: 40,
-    tags: ['player'],
-    thumbnail: 'Media/Classes/Solo Node Runner/MSOLONODERUNNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
-    material: createNeonMaterial(rainbowColors[colorIndex]),
-    level: 0,
-    isLocked: false,
-    abilities: [],
-},
-{
-    class: 'Survivor',
-    title: 'Solo Node Runner',
-    description: 'Operates independently, Maintains the networks infrastructure.',
-    tooltip: '',    
-    health: 1,
-    movementspeed: 0.25,
-    xp: 0,
-    evasion: 40,
-    tags: ['player'],
-    thumbnail: 'Media/Classes/Solo Node Runner/FSOLONODERUNNER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     level: 0,
@@ -2788,8 +2787,26 @@ const worldTypes = [{
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
-const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setPixelRatio(window.devicePixelRatio || 1);
+const renderer = new THREE.WebGLRenderer({ 
+    canvas,
+    antialias: false, // Disable antialiasing for better performance
+    alpha: false, // Disable transparency to reduce rendering load
+    powerPreference: "high-performance", // Optimize for performance
+    precision: "mediump", // Use medium precision for shaders
+    logarithmicDepthBuffer: false, // Disable to improve performance
+});
+
+// Set the renderer size and pixel ratio
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio to avoid unnecessary rendering load
+
+// Set other rendering settings
+renderer.shadowMap.enabled = false; // Disable shadows for better performance
+renderer.toneMapping = THREE.NoToneMapping; // Disable tone mapping for faster rendering
+renderer.autoClear = true;
+renderer.setClearColor(0x000000); // Set background color to black
+renderer.outputEncoding = THREE.sRGBEncoding; // Improve color accuracy
+renderer.physicallyCorrectLights = false; // Disable for better performance
 const dpr = window.devicePixelRatio || 1;
 const rect = canvas.getBoundingClientRect();
 
