@@ -3008,8 +3008,7 @@ startSpawningEnemies(player);
         button.style.padding = '0';
         button.style.cursor = 'pointer';
         button.style.fontFamily = 'Arial, sans-serif';
-        button.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-        button.style.border = '1px solid';
+        button.style.border = '.1px solid';
         button.style.borderImageSlice = 1;
         button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
 
