@@ -30,7 +30,6 @@ class Entity extends THREE.Object3D {
             this.mesh = object;
             this.add(this.mesh);
             this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
-            mixers.push(this.mesh.mixer);
             this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
             this.playerRun.play();
             this.playerRun.setLoop(THREE.LoopRepeat);

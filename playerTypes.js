@@ -1958,7 +1958,7 @@ export const playerTypes = [{
 
 {
     class: 'Survivor',
-    title: 'Evil Genius',
+    title: 'MEVil Genius',
     description: 'Possesses unmatched intellect and ruthlessness, capable of devising complex and malicious plans.',
     tooltip: '',    
     health: 2,
@@ -1975,7 +1975,7 @@ export const playerTypes = [{
 },
 {
     class: 'Survivor',
-    title: 'Evil Genius',
+    title: 'MEVil Genius',
     description: 'Possesses unmatched intellect and ruthlessness, capable of devising complex and malicious plans.',
     tooltip: '',    
     health: 2,
@@ -2026,7 +2026,7 @@ export const playerTypes = [{
 },
 {
     class: 'Survivor',
-    title: 'Ponzi Promoter',
+    title: 'Caller',
     description: 'Spreads the word about fraudulent schemes, luring others into the trap with charisma and false hope.',
     tooltip: '',    
     health: 1,
@@ -2034,7 +2034,7 @@ export const playerTypes = [{
     xp: 0,
     evasion: 55,
     tags: ['player'],
-    thumbnail: 'Media/Classes/Ponzi Promoter/MPONZIPROMOTER.png', 
+    thumbnail: 'Media/Classes/Caller/MCALLER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
@@ -2043,7 +2043,7 @@ export const playerTypes = [{
 },
 {
     class: 'Survivor',
-    title: 'Ponzi Promoter',
+    title: 'Caller',
     description: 'Spreads the word about fraudulent schemes, luring others into the trap with charisma and false hope.',
     tooltip: '',    
     health: 1,
@@ -2051,7 +2051,7 @@ export const playerTypes = [{
     xp: 0,
     evasion: 55,
     tags: ['player'],
-    thumbnail: 'Media/Classes/Ponzi Promoter/FPONZIPROMOTER.png', 
+    thumbnail: 'Media/Classes/Caller/FCALLER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
@@ -2162,7 +2162,7 @@ export const playerTypes = [{
 {
     class: 'Survivor',
     title: 'Protagonist',
-    description: '',
+    description: 'The center of attention of all survivors, albeit short lived, has a profound effect in the collective consciousness',
     tooltip: '',    
     health: 1,
     movementspeed: 0.1,
@@ -2178,7 +2178,7 @@ export const playerTypes = [{
 {
     class: 'Survivor',
     title: 'Protagonist',
-    description: '',
+    description:  'The center of attention of all survivors, albeit short lived, has a profound effect in the collective consciousness',
     tooltip: '',    
     health: 1,
     movementspeed: 0.1,
