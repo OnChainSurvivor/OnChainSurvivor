@@ -21,39 +21,79 @@ class Ability {
 }
 
 
+let sharedMesh2 = null;
+
+
+
+const mixers = []; // Array to manage mixers
+let isFBXLoaded = false; // Flag to track if FBX is loaded
 let sharedMesh = null;
+let sharedAnimation = null;
+
+const loader = new THREE.FBXLoader();
+loader.load('Media/Running-2.fbx', addObj, undefined, (error) => {
+    console.error('Error loading FBX file:', error);
+});
+
+function addObj(object) {
+    sharedMesh = object;
+    sharedAnimation = object.animations[0];
+    isFBXLoaded = true; // Set the flag to true
+}
 
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
         Object.assign(this, config);
 
+const intervalId2 = setInterval(() => {
+    if (isFBXLoaded && sharedMesh && sharedAnimation) {
+        clearInterval(intervalId2);
+        sharedMesh.mixer = new THREE.AnimationMixer(sharedMesh);
+        mixers.push(sharedMesh.mixer);
+        const playerRun = sharedMesh.mixer.clipAction(sharedAnimation);
+        playerRun.play();
+        playerRun.setLoop(THREE.LoopRepeat);
+        sharedMesh.scale.set(10, 10, 10);
+        scene.add(sharedMesh);
+    }
+}, 10);
+
+
         // Load the GLB file only once
-        if (!sharedMesh) {
+        if (!sharedMesh2) {
             const loader = new THREE.GLTFLoader();
             loader.load('Media/Survivor.glb', (gltf) => {
                 gltf.scene.traverse((child) => {
                     if (child.isMesh) {
-                        sharedMesh = child; // Store the mesh globally
+                        sharedMesh2 = child; // Store the mesh globally
                     }
                 });
             });
         }
-
         // Wait for the mesh to load
         const intervalId = setInterval(() => {
-            if (sharedMesh) {
+            if (sharedMesh2) {
                 clearInterval(intervalId); // Stop checking once the mesh is loaded
-                this.mesh = sharedMesh.clone(); // Clone the shared mesh for this entity
+                this.mesh = sharedMesh2.clone(); // Clone the shared mesh for this entity
                 this.add(this.mesh); // Add the mesh to the entity
-                this.mesh.scale.set(5, 5, 5); // Increase the scale by a factor of 2 (adjust as needed)
+             //   this.mesh.scale.set(7,7,7); // Increase the scale by a factor of 2 (adjust as needed)
  
-                // Optional: Add edges and bounding box
-                this.edgesGeometry = new THREE.EdgesGeometry(this.mesh.geometry);
-                this.lineMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 2 });
-                this.edgesMesh = new THREE.LineSegments(this.edgesGeometry, this.lineMaterial);
-                this.add(this.edgesMesh);
+        // Add wireframe
+        this.wireframeGeometry = new THREE.WireframeGeometry(this.mesh.geometry);
+   
+        this.wireframeMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 8  });
+        this.wireframeMesh = new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial);
+        this.wireframeMesh.scale.set(7, 7, 7); //
+        this.add(this.wireframeMesh);
 
+
+                // Optional: Add edges and bounding box
+              //  this.edgesGeometry = new THREE.EdgesGeometry(this.mesh.geometry);
+              //  this.lineMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 2 });
+              //  this.edgesMesh = new THREE.LineSegments(this.edgesGeometry, this.lineMaterial);
+              //  this.add(this.edgesMesh);
+//
                 this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
                 scene.add(this);
             }
@@ -543,7 +583,7 @@ const worldTypes = [{
         camera.position.set(0, 15, 15);
     
         this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-        this.octahedronGeometry.scale(5, 7, 5); 
+        this.octahedronGeometry.scale(5); 
         
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
@@ -1409,6 +1449,12 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
+            const deltaAnim = clock.getDelta();
+            if (mixers.length > 0) {
+                for (let i = 0; i < mixers.length; i++) {
+                    mixers[i].update(deltaAnim*120);
+                }
+            }
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }

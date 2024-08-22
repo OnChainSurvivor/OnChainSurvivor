@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBX Animation Example</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/loaders/FBXLoader.js"></script>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add basic lighting
+        const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // White directional light
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
+
+        const clock = new THREE.Clock();
+        const mixers = []; // Array to manage mixers
+        let isFBXLoaded = false; // Flag to track if FBX is loaded
+        let sharedMesh = null;
+        let sharedAnimation = null;
+
+        // Load the FBX file
+        const loader = new THREE.FBXLoader();
+        loader.load('Media/Running-2.fbx', addObj, undefined, (error) => {
+            console.error('Error loading FBX file:', error);
+        });
+
+        function addObj(object) {
+            // Store the mesh and animation
+            sharedMesh = object;
+            sharedAnimation = object.animations[0];
+            isFBXLoaded = true; // Set the flag to true
+
+            // Create a mixer for the object and store it in the mixers array
+            object.mixer = new THREE.AnimationMixer(object);
+            mixers.push(object.mixer);
+
+            // Play the first animation
+            const playerRun = object.mixer.clipAction(object.animations[0]);
+            playerRun.play();
+            playerRun.setLoop(THREE.LoopRepeat);
+
+            // Add the object to the scene
+            scene.add(object);
+        }
+
+        // Timer loop to check if FBX is loaded
+        const intervalId = setInterval(() => {
+            if (isFBXLoaded && sharedMesh && sharedAnimation) {
+                clearInterval(intervalId);
+
+                // Additional setup if needed (e.g., setting up wireframe or bounding box)
+                // Example:
+                const wireframeGeometry = new THREE.WireframeGeometry(sharedMesh.geometry);
+                const wireframeMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 1 });
+                const wireframeMesh = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+                wireframeMesh.scale.set(1, 1, 1);
+                scene.add(wireframeMesh);
+
+                console.log('FBX loaded and animation setup complete.');
+            }
+        }, 10);
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update animation mixers
+            const deltaAnim = clock.getDelta();
+            if (mixers.length > 0) {
+                for (let i = 0; i < mixers.length; i++) {
+                    mixers[i].update(deltaAnim);
+                }
+            }
+
+            // Render the scene
+            renderer.render(scene, camera);
+        }
+
+        animate(); // Start the animation loop
+
+        // Set camera position
+        camera.position.z = 5;
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
