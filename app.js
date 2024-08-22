@@ -19,89 +19,39 @@ class Ability {
         this.effect.update();
     }
 }
-
-
-let sharedMesh2 = null;
-
-
-
-const mixers = []; // Array to manage mixers
-let isFBXLoaded = false; // Flag to track if FBX is loaded
-let sharedMesh = null;
-let sharedAnimation = null;
-
 const loader = new THREE.FBXLoader();
-loader.load('Media/Running-2.fbx', addObj, undefined, (error) => {
-    console.error('Error loading FBX file:', error);
-});
-
-function addObj(object) {
-    sharedMesh = object;
-    sharedAnimation = object.animations[0];
-    isFBXLoaded = true; // Set the flag to true
-}
-
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
         Object.assign(this, config);
-
-const intervalId2 = setInterval(() => {
-    if (isFBXLoaded && sharedMesh && sharedAnimation) {
-        clearInterval(intervalId2);
-        sharedMesh.mixer = new THREE.AnimationMixer(sharedMesh);
-        mixers.push(sharedMesh.mixer);
-        const playerRun = sharedMesh.mixer.clipAction(sharedAnimation);
-        playerRun.play();
-        playerRun.setLoop(THREE.LoopRepeat);
-        sharedMesh.scale.set(10, 10, 10);
-        scene.add(sharedMesh);
-    }
-}, 10);
-
-
-        // Load the GLB file only once
-        if (!sharedMesh2) {
-            const loader = new THREE.GLTFLoader();
-            loader.load('Media/Survivor.glb', (gltf) => {
-                gltf.scene.traverse((child) => {
-                    if (child.isMesh) {
-                        sharedMesh2 = child; // Store the mesh globally
-                    }
-                });
-            });
-        }
-        // Wait for the mesh to load
-        const intervalId = setInterval(() => {
-            if (sharedMesh2) {
-                clearInterval(intervalId); // Stop checking once the mesh is loaded
-                this.mesh = sharedMesh2.clone(); // Clone the shared mesh for this entity
-                this.add(this.mesh); // Add the mesh to the entity
-             //   this.mesh.scale.set(7,7,7); // Increase the scale by a factor of 2 (adjust as needed)
- 
-        // Add wireframe
-        this.wireframeGeometry = new THREE.WireframeGeometry(this.mesh.geometry);
-   
-        this.wireframeMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 8  });
-        this.wireframeMesh = new THREE.LineSegments(this.wireframeGeometry, this.wireframeMaterial);
-        this.wireframeMesh.scale.set(7, 7, 7); //
-        this.add(this.wireframeMesh);
-
-
-                // Optional: Add edges and bounding box
-              //  this.edgesGeometry = new THREE.EdgesGeometry(this.mesh.geometry);
-              //  this.lineMaterial = new THREE.LineBasicMaterial({ color: 'blue', linewidth: 2 });
-              //  this.edgesMesh = new THREE.LineSegments(this.edgesGeometry, this.lineMaterial);
-              //  this.add(this.edgesMesh);
-//
-                this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
-                scene.add(this);
-            }
-        }, 1);
+        this.position.copy(position);
+        //Debt: extremelly ineficient way to load objectes, needs pooling later on 
+        loader.load('Media/Survivor.fbx', (object) => {
+            this.mesh = object;
+            this.add(this.mesh);
+            this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
+            mixers.push(this.mesh.mixer);
+            this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
+            this.playerRun.play();
+            this.playerRun.setLoop(THREE.LoopRepeat);
+            this.mesh.scale.set(3,3,3);
+            this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
+            scene.add(this);
+        });
 
         this.abilities = [];
         this.possibleAbilities = new Map();
         this.initAbilities(config.abilities);
+    }
+
+    updateMesh() {
+        if (this.mesh) {
+            this.mesh.mixer.update(.01);
+            this.mesh.position.set(0, 0, 0); 
+            this.mesh.rotation.set(0, 0, 0); 
+            this.mesh.updateMatrixWorld(true);
+            this.boundingBox.setFromObject(this.mesh);
+        }
     }
 
     initAbilities(abilitiesConfig) {
@@ -146,6 +96,7 @@ const intervalId2 = setInterval(() => {
         this.abilities[index]?.deactivate();
     }
 
+    
     updateAbilities() {
         this.abilities.forEach(ability => ability.update());
     }
@@ -518,7 +469,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.2,
+    movementspeed:0.5,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -554,7 +505,7 @@ const worldTypes = [{
         scene.add(this.directionalLight)
 
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.01);  //2,1,0.1
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
 
@@ -583,7 +534,7 @@ const worldTypes = [{
         camera.position.set(0, 15, 15);
     
         this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-        this.octahedronGeometry.scale(5); 
+        this.octahedronGeometry.scale(5,7.5,5); 
         
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
@@ -690,14 +641,16 @@ world.setup(scene,camera,renderer);
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
-player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'));
+const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
+
+player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
 
 initiateJoystick();
 
 ability = abilityTypes[0] ;
 
 function updatePlayerMovement() {
-    if(!canMove) return;
+    if (!canMove) return;
     let direction = new THREE.Vector3();
 
     if (keys.s) direction.z -= player.movementspeed;
@@ -708,6 +661,7 @@ function updatePlayerMovement() {
     if (direction.length() > 0) {
         isPaused = false;
         direction.normalize();
+        
         const cameraDirection = new THREE.Vector3();
         camera.getWorldDirection(cameraDirection);
         cameraDirection.y = 0;
@@ -715,8 +669,11 @@ function updatePlayerMovement() {
         const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(player.movementspeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-        player.rotation.y += (targetRotation - player.rotation.y) * 0.1;
-        player.boundingBox.setFromObject(player.mesh);
+        const rotationSpeed = 0.1;
+        const angleDifference = targetRotation - player.rotation.y;
+        const adjustedAngle = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
+        player.rotation.y += Math.sign(adjustedAngle) * Math.min(rotationSpeed, Math.abs(adjustedAngle));
+     player.updateMesh();
     }
 
     const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
@@ -739,6 +696,7 @@ function updatePlayerMovement() {
     });
 }
 
+
 function LevelUp() {
     canMove = false;
     isPaused = true;
@@ -755,7 +713,7 @@ function LevelUp() {
         return;
     }
 
-    //Make level up more difficult according to the number of skilss in the player  
+    //Debt: Make level up more difficult according to the number of skilss in the player  
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
@@ -769,7 +727,6 @@ function LevelUp() {
     createChooseMenu(upgradeOptions, "Upgrade:", "Upgrade");
 }
     
- 
 /*---------------------------------------------------------------------------
                               Enemies Controller
 ---------------------------------------------------------------------------*/
@@ -780,12 +737,15 @@ function updateEnemies() {
     enemies.forEach(enemy => {
         const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
         enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
+        const targetRotation = Math.atan2(direction.x, direction.z);
+        enemy.rotation.y = targetRotation;
         enemy.boundingBox.setFromObject(enemy.mesh);
+        enemy.updateMesh();
         enemy.updateAbilities();
     });
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 4) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
@@ -798,11 +758,9 @@ function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 50, nu
                 player.position.y,
                 player.position.z + offsetZ
             );
-
+            
             const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
-            const enemy = new Entity(enemyConfig);
-
-            enemy.position.set(spawnPosition.x, spawnPosition.y, spawnPosition.z);
+            const enemy = new Entity(enemyConfig,new THREE.Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
 
             scene.add(enemy);
             enemies.push(enemy);
@@ -901,7 +859,7 @@ startSpawningEnemies(player);
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
         
-        //img.style.filter = 'brightness(200%)'; 
+        img.style.filter = 'brightness(130%)'; 
 
         const titlelvl = document.createElement('div');
         titlelvl.innerText = 'LVL : 0'; 
@@ -1141,7 +1099,7 @@ function handleEntitySelection(entity, type) {
     } else if (type === "Survivor") {
         player.deactivateAbilities();
         scene.remove(player);
-        player = new Entity(playerTypes.find(t => t === entity));
+        player = new Entity(playerTypes.find(t => t === entity),initialPlayerPosition);
         createGameMenu();
     } else if (type === "Ability") {
         ability = entity;
@@ -1449,12 +1407,6 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-            const deltaAnim = clock.getDelta();
-            if (mixers.length > 0) {
-                for (let i = 0; i < mixers.length; i++) {
-                    mixers[i].update(deltaAnim*120);
-                }
-            }
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
@@ -1487,7 +1439,6 @@ document.addEventListener('keydown', (event) => {
         keys[event.key] = true;
     }
     
-    // Map arrow keys to WASD behavior
     if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = true;
     if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = true;
     if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = true;
@@ -1498,7 +1449,6 @@ document.addEventListener('keyup', (event) => {
         keys[event.key] = false;
     }
     
-    // Map arrow keys to WASD behavior
     if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = false;
     if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = false;
     if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = false;
