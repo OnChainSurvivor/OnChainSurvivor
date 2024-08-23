@@ -184,7 +184,7 @@ const isMobile = window.innerWidth <= 650;
 
 let cameraAngle = 0;
 const cameraRadius = 20;
-const cameraHeight = 15;
+let cameraHeight = 1;
 
 let canMove = true;
 
@@ -313,7 +313,7 @@ const abilityTypes = [
                 target: null,
                 orbitRadius: 2,
                 orbitSpeed: 0.01,
-                homingSpeed: 0.2,
+                homingSpeed: 0.5,
                 create: () => {
                     const geometry = new THREE.SphereGeometry(0.3, 16, 16);
                     const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
@@ -543,19 +543,22 @@ const worldTypes = [{
         scene.add(this.directionalLight)
 
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 1, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.2, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
 
-        this.floorGeometry = new THREE.PlaneGeometry(1, 1);
+        this.floorGeometry = new THREE.PlaneGeometry(.100, .100);
         this.floorMaterial = new THREE.MeshStandardMaterial({
-            color: 0xaaaaaa,
-            metalness: 0.9,
-            roughness: 0.1,
+
+            metalness: 0,
+            roughness: 0,
             transparent: true,
-            opacity: 0.8,
-            side: THREE.DoubleSide
+            opacity: 0.15,  // Adjust transparency
+            side: THREE.DoubleSide,
+            envMap: this.envMap,  // Use the environment map for reflections
+            refractionRatio: 0.98 // Simulate refraction for glass-like effect
         });
+        
         this.floor = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
         this.floor.rotation.x = -Math.PI / 2;
         this.floor.position.y = -0.5;
@@ -727,6 +730,7 @@ function updatePlayerMovement() {
             xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
             if (player.xp >= player.xpToNextLevel) {
                 LevelUp();
+                
             }
             scene.remove(xpSphere);
             xpSpheres.splice(index, 1);
@@ -1445,6 +1449,8 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
+             if(cameraHeight <= 35)
+            cameraHeight+=0.075;
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }

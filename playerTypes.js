@@ -15,7 +15,7 @@ export const playerTypes = [{
     isLocked: false,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 0  },
+        { type: 'Onchain Trail', level: 1  },
         { type: 'Scalping Bot', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Veil of Decentralization', level: 0 },
