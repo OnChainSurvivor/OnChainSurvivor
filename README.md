@@ -17,6 +17,7 @@ Onchain Survivor is a web-based top-down arena shooter survival roguelite game t
 - **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
 - **Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
 - **Variable Gameplay**: Every experience is different, Guaranteed. 
+- **Meta Progress**: As the game progresses and the user plays more of the game, he discovers unlocks classes, powerups. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -38,6 +39,17 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 
 ##  📚 Basic Interaction Models 🕹️
 
+As frictionless as possible, the game's first priority is FUN. 
+
+```mermaid
+graph TD
+A[Welcome Screen] --> D{Connect Wallet}
+A[Welcome Screen] -->B[Move to start, Quick Free to play mode]
+A --> C[Join a survivors Official Run]
+D --> E[Request or Sponsor Official run]
+E --> G[Upload records to Hall of survivors]
+```
+
 ```mermaid
 sequenceDiagram
     participant User as Survivors friend
@@ -56,75 +68,45 @@ sequenceDiagram
     Client -> User: Display Final Game State Results
 ```
 
-```mermaid
-graph TD
-A[Welcome Screen] --> B[Wallet Log in]
-A --> C[Join a survivor as guest]
-B --> D{Select NFT}
-D --> E[Own NFT]
-D --> F[Guest NFT]
-E --> G[TBD]
-F --> H[TBD interaction to Owner]
-G --> I[Survive]
-H --> I
-C --> I
-```
-
 ## 🚀Getting Started🚀 
 
 Follow these steps to set up Onchain Survivor on your local machine:
 
 ### ⏱️Prerequisites⏱️
-- Currently tests should easily run in 10 years old hardware or less.
+- Currently tests should easily run in 10 years old hardware.
 
 ### 💿Installation💿
-- Download the client release and open index.html in your preferred browser. 
+- Download the client release and open index.html in your local server, or visit https://onchainsurvivor.pages.dev
 
 ## 🎮How to Survive🎮
 
--   **Select to Survive as guest or with your own NFT**
--   **Join a run**: Enter an address and click "Join Room" to connect with other survivor.
--   **Move Your survivor**: Use the arrow keys to move your character around the 3D environment.
--   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time.
+-   **Connect wallet, and Request a run from the Hall of survivors**
+-   **OR Join a run**: Enter an address and click "Join Room" to connect with survivor currenly playing.
+-   **Move Your survivor**: Use the arrow keys, on screen joystick, WASD or IJKL to move your character around the 3D environment.
+-   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time. Every choice affects your gameplay. Every Ability you choose is significant, so choose wisely.
 
 ## 🤝Contributing🤝
 
-Contributions from everyone are welcomed! Here’s how you can help:
+Contributions from everyone are welcomed! You can contact me directly, make a proposal directly in github. I am really focusing adding content into the game, but you can ping me on twitter to notify me about your contribution. 
 
-1.  **Fork the Repository**: Click the "Fork" button at the top-right corner of this page.
-2.  **Create a New Branch**:
-    `git checkout -b feature/your-feature-name` 
-    
-3.  **Commit Your Changes**:
-    `git commit -m "Add some feature"` 
-    
-4.  **Push to the Branch**:
-    `git push origin feature/your-feature-name` 
-    
-5.  **Open a Pull Request**: Navigate to the original repository and click "New Pull Request".
+1.  **Fork the Repository**
+2.  **Create a New Branch**
+3.  **Commit Your Changes**
+4.  **Push to the Branch**
+5.  **Open a Pull Request**
 
 ## 📜License📜 
 
 This project license is currently [TBD]. 
 
-## 🌆 OnChain Survivor NFT Series, "The Survivors"  🌆
-
-DISCLAIMER: The Onchain Survivor NFT series will only serve as a collectible art piece. The NFT minting is neither an utility token nor a promise of equity. 
-Purchasers should not expect any form of profit, profit sharing or any kind of return. 
-
-This NFT is purely a digital collectible for fans and people who enjoy the AI Art.
-
-|                |Own NFT                          |Guest NFT                         |
-|----------------|-------------------------------|-----------------------------|
-|Onchain Survivor NFT|NFT Art Featured in game.           | TBD      |
-|Guest Series NFT         | TBD         | TBD             |
-
 ## 🙏 Acknowledgments
 
--   **Three js**: For the amazing 3D graphics library.
--   **Web3 js**: For simplifying blockchain interactions.
--   **OpenAI ChatGPT**: For making development great again.
--   **Microsoft Copilot**: Best Artist i've ever known.
+-   **Three js**: For the amazing engine ❤️.
+-   **Web3 js**: For simplifying blockchain interactions ❤️.
+-   **OpenAI ChatGPT**: For making development great again ❤️.
+-   **Microsoft Copilot**: Best Artist i've ever known ❤️.
+-   **Adobe Mixamo**: Best 3D Animator ❤️.
+-   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License
 
 ## 📬 Contact
 

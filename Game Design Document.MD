@@ -29,7 +29,6 @@ Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, 
 **Color Palette**: Bright and vibrant neon colors to distinguish different elements and enemies.
 **Animation**: Smooth and responsive AI generated animations for characters, enemies, and effects.
 
-
 ## Sound Design 🎵
 
 **Background Music**: Upbeat, electronic AI made music to match the fast-paced gameplay.
@@ -38,12 +37,14 @@ Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, 
 
 ## Blockchain Integration 🔗
 
-**NFTs**: Characters, power-ups, and upgrades as NFTs.
-**Decentralized Multiplayer**: Peer-to-peer multiplayer interactions using Web3 technologies.
+**Smart Contracts**: Secure and transparent mechanics for upgrades and power-ups, The blockchain will serve official runs so the player can have their records stored forever.
+**Decentralized Multiplayer**: Peer-to-peer multiplayer interactions using Peer to Peer technologies.
 **Tokenomics**: There are no Tokenomics plans in the roadmap.
-**Smart Contracts**: Secure and transparent mechanics for upgrades and power-ups.
+**NFTs**: There are no NFTs in the roadmap.
 
 ## Development Roadmap 🛠️
+
+Not a roadmap per se, but More or less a loose list of the current development cycle, as certain items are all being executing in parallel in real time.
 
 **Prototype Development**: Basic mechanics, character movement, and enemy AI.
 **Core Mechanics**: Implement leveling up, power-ups, and upgrades.
@@ -52,7 +53,7 @@ Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, 
 **Art and Sound Design**: Develop and integrate art assets and sound effects.
 **Testing**: Conduct playtesting and debugging.
 **Launch**: Deploy the game on the web platform.
-**Post-Launch Updates**: Regular updates with new content, events, and features.
+**Constant Content Updates**: Regular updates with new content, events, and features.
 
 ## User Interface (UI) 📊
 
@@ -63,6 +64,7 @@ Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, 
 - **Upgrade Menu:** Appears when leveling up, allowing selection of upgrades.
 - **Active Abilities:** Displays active abilities and their effects.
 - **Power-Up Indicators:** Displays active power-ups and their durations.
+- **Survivors Backstory**  A backtory for every survivor, being light hearted stories regarding of how they came to be.
 
 ## Icons 🖼️
 

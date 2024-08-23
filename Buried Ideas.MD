@@ -110,6 +110,32 @@ sequenceDiagram
     Client ->> User: Display Game State
     User ->> User2: Display Game State
 ```
+Older interacction model based on NFTs
+```mermaid
+graph TD
+A[Welcome Screen] --> B[Wallet Log in]
+A --> C[Join a survivor as guest]
+B --> D{Select NFT}
+D --> E[Own NFT]
+D --> F[Guest NFT]
+E --> G[TBD]
+F --> H[TBD interaction to Owner]
+G --> I[Survive]
+H --> I
+C --> I
+```
+
+## 🌆 OnChain Survivor NFT Series, "The Survivors"  🌆
+
+DISCLAIMER: The Onchain Survivor NFT series will only serve as a collectible art piece. The NFT minting is neither an utility token nor a promise of equity. 
+Purchasers should not expect any form of profit, profit sharing or any kind of return. 
+
+This NFT is purely a digital collectible for fans and people who enjoy the AI Art.
+
+|                |Own NFT                          |Guest NFT                         |
+|----------------|-------------------------------|-----------------------------|
+|Onchain Survivor NFT|NFT Art Featured in game.           | TBD      |
+|Guest Series NFT         | TBD         | TBD             |
 
 ## Generic NFT Traits and Properties
 This document contains generic design elements that were initially drafted for the game. During production, these ideas were deemed too generic and were subsequently replaced with a more specific, onchain survivor class-oriented design.
@@ -198,6 +224,7 @@ Old table of contents used in the initial tests.
 
 
 ## Enemies
+Even if specific enemies were scrapped in favour of making the game survivor vs survivor oriented, these might resurface eventually as extra content. 
 
 # Rug:
 Description: A sneaky trap that appears randomly, causing the player to fall and die instantly.
@@ -613,12 +640,6 @@ A stronghold where validators maintain the blockchain. Defend the fortress and e
 8. **Arbitrage Bot**: Automated trading bot.
 9. **High-Speed Internet**: For faster transactions.
 10. **Cross-Exchange Monitor**: Keeping an eye on markets.
-
-# Survivors Backstory 
-A backtory for every survivor, being light hearted stories regarding of how they came to be. Maybe make a quadrant of all classes with funny data.
-
-# Meta Progress 
-display a ??? in the ability description, effects, titles, classes and so on, for the first time before they appear as a choice to the player, and as the game progresses or the user plays more of the game, he discovers or uncryps information.
 
 # Game modes
 
