@@ -20,28 +20,67 @@ class Ability {
     }
 }
 const loader = new THREE.FBXLoader();
+const objectPool = new Map(); 
+
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
         Object.assign(this, config);
         this.position.copy(position);
-        //Debt: extremelly ineficient way to load objectes, needs pooling later on 
-        loader.load('Media/Survivor.fbx', (object) => {
-            this.mesh = object;
-            this.add(this.mesh);
-            this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
-            this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
-            this.playerRun.play();
-            this.playerRun.setLoop(THREE.LoopRepeat);
-            this.mesh.scale.set(3,3,3);
-            this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
-            scene.add(this);
-        });
-
         this.abilities = [];
         this.possibleAbilities = new Map();
+
+        const modelKey = 'SurvivorModel';
+
+        if (objectPool.has(modelKey)) {
+            const serializedModel = objectPool.get(modelKey);
+            this.initEntity(new THREE.ObjectLoader().parse(serializedModel), position);
+        } else {
+            loader.load('Media/Survivor.fbx', (object) => {
+                this.modifyMaterials(object);
+                const serializedObject = object.toJSON();
+                objectPool.set(modelKey, serializedObject);
+                this.initEntity(object, position);
+            });
+        }
+
         this.initAbilities(config.abilities);
     }
+
+    modifyMaterials(object) {
+        object.traverse((child) => {
+            if (child.isMesh) {
+                // Example: Modify material
+                child.material = new THREE.MeshPhysicalMaterial({
+                    envMap: null, 
+                    reflectivity: 0.9,
+                    roughness: 0,
+                    metalness: 1,
+                    clearcoat: 0.13,
+                    clearcoatRoughness: 0.1,
+                    transmission: 0.82,
+                    ior: 2.75, 
+                    thickness: 10,
+                    sheen: 1,
+                    color: new THREE.Color('white')
+                });
+            }
+        });
+    }
+
+
+    initEntity(object, position) {
+        this.mesh = object;
+        this.add(this.mesh);
+        this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
+        this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
+        this.playerRun.play();
+        this.playerRun.setLoop(THREE.LoopRepeat);
+        this.mesh.scale.set(3, 3, 3);
+        this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
+        scene.add(this);
+    }
+ 
 
     updateMesh() {
         if (this.mesh) {
@@ -145,7 +184,7 @@ const isMobile = window.innerWidth <= 650;
 
 let cameraAngle = 0;
 const cameraRadius = 20;
-const cameraHeight = 50;
+const cameraHeight = 15;
 
 let canMove = true;
 
@@ -524,7 +563,7 @@ const worldTypes = [{
         scene.add(this.floor);
         
         this.floor.onBeforeRender = (renderer, scene, camera) => {
-            const distance = 1000;
+            const distance = 1;
             const cameraDirection = camera.getWorldDirection(new THREE.Vector3());
             const floorPosition = camera.position.clone().add(cameraDirection.multiplyScalar(distance));
             this.floor.position.set(floorPosition.x, this.floor.position.y, floorPosition.z);
@@ -744,7 +783,7 @@ function updateEnemies() {
     });
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 4) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
