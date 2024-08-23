@@ -39,33 +39,34 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 
 ##  📚 Basic Interaction Models 🕹️
 
-As frictionless as possible, the game's first priority is FUN. 
+As frictionless as possible, the game's first priority is FUN. If the game is not fun then it will not be sustainable
 
 ```mermaid
 graph TD
+A[Welcome Screen] -->B[Quick Free to play mode]
 A[Welcome Screen] --> D{Connect Wallet}
-A[Welcome Screen] -->B[Move to start, Quick Free to play mode]
 A --> C[Join a survivors Official Run]
-D --> E[Request or Sponsor Official run]
-E --> G[Upload records to Hall of survivors]
+D --> E[Request a Run]
+D --> z[Sponsor Official Run]
+D --> G[Write run records]
 ```
 
 ```mermaid
-sequenceDiagram
-    participant User as Survivors friend
-    participant Client as OffChain, Hosting Survivor Client
-    participant SmartContract as Smart Contracts
-    participant OnChainData as OnChain Data
+   sequenceDiagram
+    participant User as Survivor
+    participant Client as Survivor Host
+    participant SmartContract as Smart Contract
+    participant OnChainData as OnChain Record
     participant Consensus as Consensus Mechanisms
-    Client ->> SmartContract: Request hashed Game randomizer
+    Client ->> SmartContract: Request Game Run
     User ->> Client: Access Onchain Survivor
     SmartContract ->> Client: Provide run, Initialize
-    User -> Client: Verify Gamestate Integrity of partner
+    User -> Client: Finish, Verify Integrity
     Client ->> OnChainData: Update results, Meta Progress
-    OnChainData ->> SmartContract: Validate client results integrity
-    SmartContract ->> Consensus: Broadcast Consensus
-    SmartContract ->> Client: Update User Interface
-    Client -> User: Display Final Game State Results
+    OnChainData ->> SmartContract: Validate client integrity
+    SmartContract ->> Consensus: Broadcast Results
+    SmartContract ->> Client: Update UI
+    Client -> User: Display Final Results
 ```
 
 ## 🚀Getting Started🚀 
