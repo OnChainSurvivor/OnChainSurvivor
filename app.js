@@ -145,7 +145,7 @@ const isMobile = window.innerWidth <= 650;
 
 let cameraAngle = 0;
 const cameraRadius = 20;
-const cameraHeight = 20;
+const cameraHeight = 50;
 
 let canMove = true;
 
@@ -476,7 +476,7 @@ const enemyTypes = [{
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-
+        { type: 'Onchain Trail', level: 1  }, 
     ],
     level:0,
 }
