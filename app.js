@@ -1073,8 +1073,7 @@ startSpawningEnemies(player);
     function createGameTitle(){
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('Can you survive? Move to start.', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-       
+        const subTitle = createTitleElement('Can you survive?', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
     };
 
@@ -1105,8 +1104,8 @@ startSpawningEnemies(player);
         menuButtonsContainer.appendChild(classContainer);
         menuButtonsContainer.appendChild(classAbilityContainer);
         menuButtonsContainer.appendChild(worldContainer);
-
-        addContainerUI(botUI,'bottom-container', [menuButtonsContainer]);
+        const subTitle = createTitleElement('Move to start !', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        addContainerUI(botUI,'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
