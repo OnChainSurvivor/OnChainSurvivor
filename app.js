@@ -1073,8 +1073,7 @@ startSpawningEnemies(player);
     function createGameTitle(){
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('Can you survive? Move to start', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-        addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
+        addContainerUI(topUI,'top-container', [mainTitle]);
     };
 
     createGameTitle();
@@ -1085,18 +1084,18 @@ startSpawningEnemies(player);
 
     function createGameMenu(){
         const classContainer = document.createElement('div');
-        const classSubTitle = createTitleElement('🏆 Class 🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const classSubTitle = createTitleElement('🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
         classContainer.appendChild(createButton(player, isMobile ? 0.6 : 0.75));
         classContainer.appendChild(classSubTitle);
 
         const classAbilityContainer = document.createElement('div');
-        const abilitiesSubTitle = createTitleElement( '⚔️ Ability ⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const abilitiesSubTitle = createTitleElement( '⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
         ability.isLocked=false;
         classAbilityContainer.appendChild(createButton(ability,isMobile ? 0.6 : 0.75));
         classAbilityContainer.appendChild(abilitiesSubTitle);
 
         const worldContainer = document.createElement('div');
-        const worldSubTitle = createTitleElement('🔗 Chain 🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
         worldContainer.appendChild(createButton(world, isMobile ? 0.6 : 0.75));
         worldContainer.appendChild(worldSubTitle);
         
@@ -1104,7 +1103,9 @@ startSpawningEnemies(player);
         menuButtonsContainer.appendChild(classContainer);
         menuButtonsContainer.appendChild(classAbilityContainer);
         menuButtonsContainer.appendChild(worldContainer);
-        addContainerUI(botUI,'bottom-container', [menuButtonsContainer]);
+        const subTitle = createTitleElement('Will you survive? Move to start.', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+
+        addContainerUI(botUI,'bottom-container', [menuButtonsContainer,subTitle]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
