@@ -22,4 +22,8 @@ if ('serviceWorker' in navigator) {
   <meta name="apple-mobile-web-app-title" content="Onchain Survivor">
   <link rel="apple-touch-icon" href="Media/Classes/Onchain Survivor/MSURVIVOR.png">
 
+
+                            Add this to the index.html body
+
+   <script src="service-worker.js"></script>
   ---------------------------------------------------------------------------*/

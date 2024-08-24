@@ -50,7 +50,6 @@ class Entity extends THREE.Object3D {
     modifyMaterials(object) {
         object.traverse((child) => {
             if (child.isMesh) {
-                // Example: Modify material
                 child.material = new THREE.MeshPhysicalMaterial({
                     envMap: null, 
                     reflectivity: 0.9,
@@ -809,13 +808,11 @@ function LevelUp() {
 
     const upgradableAbilities = player.getUpgradableAbilities();
 
-
     if (upgradableAbilities.length === 0) {
         canMove = true;
         isPaused = false;
         return;
     }
-
     //Debt: Make level up more difficult according to the number of skilss in the player  
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
@@ -1131,21 +1128,9 @@ function createChooseMenu(entityList, text, type) {
 
         if (type === "Survivor") {
            const abilitiesOfClassContainer = createAbilitiesContainer(entity);
-            gridContainer.appendChild(abilitiesOfClassContainer);
-        }
-    // Create a subtitle with all relevant entity information
-    const entityInfo = `
-        En: ${entity.health} \n
-        Dx: ${entity.movementspeed} \n
-        St: ${entity.xpToNextLevel} \n
-        Ag: ${entity.xpToNextLevel} \n
-        Lu: ${entity.xpToNextLevel} \n
-        In: 10\n
-        XP: ${entity.xpToNextLevel} \n     
-        `;
-
-  //  const subTitle = createTitleElement(entityInfo, 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-  //  gridContainer.appendChild(subTitle);
+           abilitiesOfClassContainer.onclick = () => handleEntitySelection(entity, type);
+           gridContainer.appendChild(abilitiesOfClassContainer);
+        }   
     });
 
     popUpContainer.appendChild(titleContainer);

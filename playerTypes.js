@@ -13,6 +13,12 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
     isLocked: false,
+    En:0,
+    Dx:0,
+    St:0,
+    Ag:0,
+    Lu:0,
+    In:0,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
         { type: 'Veil of Decentralization', level: 0 },
