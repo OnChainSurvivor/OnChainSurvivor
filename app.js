@@ -281,10 +281,15 @@ function updateJoystickDirection(normalizedX, normalizedY) {
         if(!canMove) return;
         keys.w = keys.a = keys.s = keys.d = false;
         
-        if (normalizedY > 0.5) keys.w = true; 
-        if (normalizedY < -0.5) keys.s = true; 
-        if (normalizedX < -0.5) keys.a = true;
-        if (normalizedX > 0.5) keys.d = true; 
+        const sensitivity = 4; // Increase this value to make the joystick more sensitive.
+
+        const adjustedX = normalizedX * sensitivity;
+        const adjustedY = normalizedY * sensitivity;
+    
+        if (adjustedY > 0.5) keys.w = true; 
+        if (adjustedY < -0.5) keys.s = true; 
+        if (adjustedX < -0.5) keys.a = true;
+        if (adjustedX > 0.5) keys.d = true; 
 }
 
 /*---------------------------------------------------------------------------
@@ -1459,20 +1464,6 @@ function animate() {
 }
 
 animate();
-
-/*---------------------------------------------------------------------------
-                            Service Worker for PWA
----------------------------------------------------------------------------*/
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }, function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-    });
-  }  
 
 /*---------------------------------------------------------------------------
                             Event Listeners

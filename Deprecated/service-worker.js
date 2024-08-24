@@ -32,12 +32,10 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
       fetch(event.request)
         .then(function(response) {
-          // Check if the response is a redirection
           if (response.type === 'opaqueredirect') {
             return response;
           }
   
-          // If the response is valid, clone it and store it in the cache
           let responseClone = response.clone();
           caches.open(CACHE_NAME).then(function(cache) {
             cache.put(event.request, responseClone);
@@ -46,7 +44,6 @@ self.addEventListener('fetch', function(event) {
           return response;
         })
         .catch(function() {
-          // If the network request fails, try to get the response from the cache
           return caches.match(event.request)
             .then(function(response) {
               return response || new Response('Offline content not available', {
@@ -59,7 +56,6 @@ self.addEventListener('fetch', function(event) {
   });
   
 
-// Activate event to update the cache if necessary
 self.addEventListener('activate', function(event) {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
