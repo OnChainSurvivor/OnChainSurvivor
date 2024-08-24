@@ -1073,7 +1073,7 @@ startSpawningEnemies(player);
     function createGameTitle(){
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('Can you survive?', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
     };
 
@@ -1104,7 +1104,7 @@ startSpawningEnemies(player);
         menuButtonsContainer.appendChild(classContainer);
         menuButtonsContainer.appendChild(classAbilityContainer);
         menuButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleElement('Move to start !', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         addContainerUI(botUI,'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
@@ -1371,7 +1371,7 @@ function simulateLoading() {
 ---------------------------------------------------------------------------*/
 //debt, this will change depending on the world  mostly the display time and game mode  
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('Practice Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
+const modeDisplay = createTitleElement('Survive Practice', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 
 function updateTimerDisplay() {
