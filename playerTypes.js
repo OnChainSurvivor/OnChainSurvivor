@@ -15,15 +15,10 @@ export const playerTypes = [{
     isLocked: false,
     abilities: [
         { type: 'Scalping Bot', level: 1 },
-        { type: 'Onchain Trail', level: 1  },
-        { type: 'Scalping Bot', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
         { type: 'Onchain Trail', level: 0 },
         { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0  },
-        { type: 'Scalping Bot', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Onchain Trail', level: 0 }, 
-        { type: 'Veil of Decentralization', level: 0 }
     ],
 },{
     class: 'Survivor',
@@ -41,7 +36,11 @@ export const playerTypes = [{
     level:0,
     isLocked: false,
     abilities: [
-
+        { type: 'Code Refactor', level: 1 }, 
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Veil of Decentralization', level: 0 },
     ],
 },{
     class: 'Survivor',
@@ -57,7 +56,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/MMINER.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -75,7 +74,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/FMINER.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -93,7 +92,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Staker/MSTAKER.png',  
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -111,7 +110,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Staker/FSTAKER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -128,7 +127,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Trader/MTRADER.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -146,7 +145,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -164,7 +163,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -182,7 +181,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -200,7 +199,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -218,7 +217,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -236,7 +235,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -254,7 +253,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -272,7 +271,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -290,7 +289,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -308,7 +307,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -326,7 +325,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -345,7 +344,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -364,7 +363,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -383,7 +382,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -402,7 +401,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
 
@@ -421,7 +420,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -439,7 +438,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -457,7 +456,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -475,7 +474,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -493,7 +492,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -511,7 +510,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -529,7 +528,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -547,7 +546,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -565,7 +564,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -583,7 +582,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -601,7 +600,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -619,7 +618,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -637,7 +636,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -655,7 +654,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -673,7 +672,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -691,7 +690,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -709,7 +708,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -727,7 +726,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -745,7 +744,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -763,7 +762,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -781,7 +780,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -799,7 +798,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -818,7 +817,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -837,7 +836,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -855,7 +854,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -874,7 +873,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -892,7 +891,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -911,7 +910,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -929,7 +928,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -947,7 +946,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -965,7 +964,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -982,7 +981,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -998,7 +997,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1015,7 +1014,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1031,7 +1030,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Sniper/MSNIPER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1047,7 +1046,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Sniper/FSNIPER.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1064,7 +1063,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1082,7 +1081,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1100,7 +1099,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1118,7 +1117,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1137,7 +1136,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1155,7 +1154,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1173,7 +1172,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1191,7 +1190,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1209,7 +1208,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1227,7 +1226,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1245,7 +1244,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1263,7 +1262,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1281,7 +1280,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1299,7 +1298,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1317,7 +1316,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1335,7 +1334,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1353,7 +1352,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1371,7 +1370,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1390,7 +1389,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1407,7 +1406,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1424,7 +1423,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1441,7 +1440,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1458,7 +1457,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1475,7 +1474,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1492,7 +1491,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1509,7 +1508,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1526,7 +1525,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1543,7 +1542,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1560,7 +1559,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1577,7 +1576,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1596,7 +1595,7 @@ export const playerTypes = [{
 .BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1613,7 +1612,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1630,7 +1629,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1647,7 +1646,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1664,7 +1663,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1681,7 +1680,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1698,7 +1697,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1715,7 +1714,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1732,7 +1731,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1749,7 +1748,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1766,7 +1765,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1783,7 +1782,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1800,7 +1799,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1817,7 +1816,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1834,7 +1833,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1851,7 +1850,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1867,7 +1866,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1883,7 +1882,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1899,7 +1898,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1916,7 +1915,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1933,7 +1932,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1950,7 +1949,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1967,7 +1966,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1984,7 +1983,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 
@@ -2002,7 +2001,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2019,7 +2018,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2036,7 +2035,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2053,7 +2052,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2070,7 +2069,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2087,7 +2086,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2104,7 +2103,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2121,7 +2120,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2138,7 +2137,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2155,7 +2154,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2172,7 +2171,7 @@ export const playerTypes = [{
     geometry: new THREE.BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2188,7 +2187,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Beggar/FBEGGAR.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2204,7 +2203,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Protagonist/MPROTAG.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2220,7 +2219,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Protagonist/FPROTAG.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2236,7 +2235,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Intern/MINTERN.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2252,7 +2251,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Intern/FINTERN.png', 
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2268,7 +2267,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Mod/MMOD.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2284,7 +2283,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Mod/FMOD.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -2299,7 +2298,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Seedless/MSEEDLESS.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -2314,7 +2313,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Seedless/FSEEDLESS.png',
     geometry: new THREE.BoxGeometry(1, 1, 1),
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 }
 ];

@@ -17,6 +17,21 @@ canvas {
     display: inline-block;
     cursor: pointer;
 }
+img {
+    user-drag: none; /* For Safari */
+    user-select: none; /* For modern browsers */
+    -moz-user-select: none; /* For Firefox */
+    -webkit-user-drag: none; /* For Chrome, Safari, Opera */
+    -webkit-user-select: none; /* For Chrome, Safari, Opera */
+    -ms-user-select: none; /* For Internet Explorer/Edge */
+}
+
+button, div {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 
 .tooltip .tooltiptext {
     visibility: hidden;

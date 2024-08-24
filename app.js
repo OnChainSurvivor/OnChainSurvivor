@@ -281,7 +281,7 @@ function updateJoystickDirection(normalizedX, normalizedY) {
         if(!canMove) return;
         keys.w = keys.a = keys.s = keys.d = false;
         
-        const sensitivity = 4; // Increase this value to make the joystick more sensitive.
+        const sensitivity = 4; 
 
         const adjustedX = normalizedX * sensitivity;
         const adjustedY = normalizedY * sensitivity;
@@ -401,12 +401,12 @@ const abilityTypes = [
                 trail.create();
             }
            // playerCollisionList.forEach((trailBullet,index) => {
-            //            if (trailBullet.trailBox.intersectsBox(other)) { 
-            //                scene.remove(trailBullet); 
-            //                trailBullets.splice(index, 1);
-            //                player.takeDamage(1);  
+            //             if (trailBullet.trailBox.intersectsBox(other)) { 
+            //               scene.remove(trailBullet); 
+            //               trailBullets.splice(index, 1);
+            //               player.takeDamage(1);  
             //            }
-           // });
+          //  });
         };
         this.deactivate = () => {
             trailBullets.forEach(bullet => { scene.remove(bullet); });
@@ -558,10 +558,10 @@ const worldTypes = [{
             metalness: 0,
             roughness: 0,
             transparent: true,
-            opacity: 0.15,  // Adjust transparency
+            opacity: 0.15,   
             side: THREE.DoubleSide,
-            envMap: this.envMap,  // Use the environment map for reflections
-            refractionRatio: 0.98 // Simulate refraction for glass-like effect
+            envMap: this.envMap,
+            refractionRatio: 0.98 
         });
         
         this.floor = new THREE.Mesh(this.floorGeometry, this.floorMaterial);
@@ -743,12 +743,10 @@ function updatePlayerMovement() {
     });
 }
 function createParticleEffect(position, color = 'white', particleCount = 100) {
-    // Geometry and material for the particles
     const particleGeometry = new THREE.BufferGeometry();
     const particles = new Float32Array(particleCount * 3); // Each particle has an x, y, and z position
 
     for (let i = 0; i < particleCount; i++) {
-        // Set random positions within a sphere for each particle
         particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
         particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 2;
         particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 2;
@@ -758,25 +756,22 @@ function createParticleEffect(position, color = 'white', particleCount = 100) {
 
     const particleMaterial = new THREE.PointsMaterial({
         color: color,
-        size: 0.1, // Adjust size of the particles
+        size: 0.1, 
         transparent: true,
         opacity: 0.5,
-        blending: THREE.AdditiveBlending, // Additive blending for a glowing effect
+        blending: THREE.AdditiveBlending,
     });
 
     const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
 
-    // Add particle system to the scene
     scene.add(particleSystem);
 
-    // Animate particles to spread out and fade away
-    const duration = 1 ; // Duration in seconds
+    const duration = 1 ; 
     const startTime = performance.now();
 
     function animateParticles() {
         const elapsedTime = (performance.now() - startTime) / 1000;
 
-        // Update positions to spread particles outward
         for (let i = 0; i < particleCount; i++) {
             particleGeometry.attributes.position.array[i * 3] += (Math.random() - 0.5) * 0.05;
             particleGeometry.attributes.position.array[i * 3 + 1] += (Math.random() - 0.5) * 0.05;
@@ -785,13 +780,11 @@ function createParticleEffect(position, color = 'white', particleCount = 100) {
 
         particleGeometry.attributes.position.needsUpdate = true;
 
-        // Gradually fade out the particles
         particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration));
 
         if (elapsedTime < duration) {
             requestAnimationFrame(animateParticles);
         } else {
-            // Clean up the particles after the animation
             scene.remove(particleSystem);
             particleGeometry.dispose();
             particleMaterial.dispose();
@@ -803,8 +796,6 @@ function createParticleEffect(position, color = 'white', particleCount = 100) {
 
 Entity.prototype.die = function() {
     handleEntityDeath(this, enemies);
-    
-    // Trigger particle effect at entity's position
     createParticleEffect(this.position);
 };
 
@@ -1037,7 +1028,8 @@ startSpawningEnemies(player);
         button.style.animation = 'none';
         levelStars.style.filter = 'grayscale(100%)';
         img.style.filter = 'grayscale(100%) blur(5px)';
-        }
+        button.title = 'Insert unlock hint here'
+    }
 
         return button;
     }
@@ -1045,7 +1037,7 @@ startSpawningEnemies(player);
     function addContainerUI(container,location,uiElements){
 
         container.innerHTML='';
-        container.className = ''; // Remove any existing classes
+        container.className = ''; 
         container.classList.add(location, 'fade-in');
       
         uiElements.forEach(element => {
@@ -1139,8 +1131,21 @@ function createChooseMenu(entityList, text, type) {
 
         if (type === "Survivor") {
            const abilitiesOfClassContainer = createAbilitiesContainer(entity);
-           // DEBT gridContainer.appendChild(abilitiesOfClassContainer);
+            gridContainer.appendChild(abilitiesOfClassContainer);
         }
+    // Create a subtitle with all relevant entity information
+    const entityInfo = `
+        En: ${entity.health} \n
+        Dx: ${entity.movementspeed} \n
+        St: ${entity.xpToNextLevel} \n
+        Ag: ${entity.xpToNextLevel} \n
+        Lu: ${entity.xpToNextLevel} \n
+        In: 10\n
+        XP: ${entity.xpToNextLevel} \n     
+        `;
+
+  //  const subTitle = createTitleElement(entityInfo, 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+  //  gridContainer.appendChild(subTitle);
     });
 
     popUpContainer.appendChild(titleContainer);
@@ -1231,7 +1236,7 @@ function createAbilitiesContainer(entity) {
         display: 'grid',
         justifyContent: 'center',
         margin: '0 auto',
-        gridTemplateColumns: 'repeat(2, auto)',
+        gridTemplateColumns: 'repeat(1, auto)',
     });
 
     entity.abilities.forEach(survivorAbility => {
@@ -1371,7 +1376,7 @@ function simulateLoading() {
 ---------------------------------------------------------------------------*/
 //debt, this will change depending on the world  mostly the display time and game mode  
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('Survive Practice', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
+const modeDisplay = createTitleElement('Trial Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 
 function updateTimerDisplay() {
@@ -1385,11 +1390,11 @@ function updateTimerDisplay() {
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.style.position = 'absolute';
-    xpLoadingContainer.style.bottom = '-5px';
+    xpLoadingContainer.style.top = '-10px';
     xpLoadingContainer.style.left = '50%';
     xpLoadingContainer.style.transform = 'translateX(-50%)';
     xpLoadingContainer.style.width = '97%'; 
-    xpLoadingContainer.style.height = '7px';
+    xpLoadingContainer.style.height = '10px';
     xpLoadingContainer.style.backgroundColor = 'black';
     xpLoadingContainer.style.boxSizing = 'border-box';
     xpLoadingContainer.style.border = '0.1px solid'; 
@@ -1405,15 +1410,15 @@ function refreshDisplay() {
     xpLoadingContainer.appendChild(xpLoadingBar);
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
-    abilitiesContainer.appendChild(createButton(player, .35));
+    abilitiesContainer.appendChild(createButton(player, .3));
     player.abilities.filter(ability => ability.level > 0).forEach(ability => {
             const clonedAbility = { ...ability, isLocked: false }; 
 
-            abilitiesContainer.appendChild(createButton(clonedAbility, 0.3));
+            abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
         });
 
-    addContainerUI(topUI,'top-container', [modeDisplay,timerDisplay]);
-    addContainerUI(botUI,'bottom-container', [abilitiesContainer,xpLoadingContainer]);
+    addContainerUI(topUI,'top-container', [xpLoadingContainer,abilitiesContainer,timerDisplay]);
+    addContainerUI(botUI,'bottom-container', [modeDisplay]);
 }
 
 /*---------------------------------------------------------------------------
