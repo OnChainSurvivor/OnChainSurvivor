@@ -335,7 +335,7 @@ const abilityTypes = [
                             user.position.y,
                             user.position.z + Math.sin(time) * orb.orbitRadius
                         );
-                        if ((Date.now() - this.lastHitTime > (5000-(level*200)))) {
+                        if ((Date.now() - this.lastHitTime > (500-(level*200)))) {
                         this.lastHitTime = Date.now();
                         potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                         if (potentialTargets.length > 0) {
@@ -520,7 +520,7 @@ const enemyTypes = [{
     geometry: new THREE.BoxGeometry(1, 2, 1),
     material: createNeonMaterial(rainbowColors[colorIndex]),
     abilities: [
-        { type: 'Onchain Trail', level: 1  }, 
+
     ],
     level:0,
 }
@@ -719,7 +719,7 @@ function updatePlayerMovement() {
         const angleDifference = targetRotation - player.rotation.y;
         const adjustedAngle = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
         player.rotation.y += Math.sign(adjustedAngle) * Math.min(rotationSpeed, Math.abs(adjustedAngle));
-     player.updateMesh();
+        player.updateMesh();
     }
 
     const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
@@ -742,6 +742,71 @@ function updatePlayerMovement() {
         }
     });
 }
+function createParticleEffect(position, color = 'white', particleCount = 100) {
+    // Geometry and material for the particles
+    const particleGeometry = new THREE.BufferGeometry();
+    const particles = new Float32Array(particleCount * 3); // Each particle has an x, y, and z position
+
+    for (let i = 0; i < particleCount; i++) {
+        // Set random positions within a sphere for each particle
+        particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
+        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 2;
+        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 2;
+    }
+
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+
+    const particleMaterial = new THREE.PointsMaterial({
+        color: color,
+        size: 0.1, // Adjust size of the particles
+        transparent: true,
+        opacity: 0.5,
+        blending: THREE.AdditiveBlending, // Additive blending for a glowing effect
+    });
+
+    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+
+    // Add particle system to the scene
+    scene.add(particleSystem);
+
+    // Animate particles to spread out and fade away
+    const duration = 1 ; // Duration in seconds
+    const startTime = performance.now();
+
+    function animateParticles() {
+        const elapsedTime = (performance.now() - startTime) / 1000;
+
+        // Update positions to spread particles outward
+        for (let i = 0; i < particleCount; i++) {
+            particleGeometry.attributes.position.array[i * 3] += (Math.random() - 0.5) * 0.05;
+            particleGeometry.attributes.position.array[i * 3 + 1] += (Math.random() - 0.5) * 0.05;
+            particleGeometry.attributes.position.array[i * 3 + 2] += (Math.random() - 0.5) * 0.05;
+        }
+
+        particleGeometry.attributes.position.needsUpdate = true;
+
+        // Gradually fade out the particles
+        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration));
+
+        if (elapsedTime < duration) {
+            requestAnimationFrame(animateParticles);
+        } else {
+            // Clean up the particles after the animation
+            scene.remove(particleSystem);
+            particleGeometry.dispose();
+            particleMaterial.dispose();
+        }
+    }
+
+    animateParticles();
+}
+
+Entity.prototype.die = function() {
+    handleEntityDeath(this, enemies);
+    
+    // Trigger particle effect at entity's position
+    createParticleEffect(this.position);
+};
 
 
 function LevelUp() {
@@ -1304,7 +1369,7 @@ function simulateLoading() {
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
 //debt, this will change depending on the world  mostly the display time and game mode  
-let countdown = 500 * 60;
+let countdown = 300 * 60;
 const modeDisplay = createTitleElement('Practice Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 
