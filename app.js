@@ -1105,7 +1105,7 @@ startSpawningEnemies(player);
         menuButtonsContainer.appendChild(worldContainer);
         const subTitle = createTitleElement('Will you survive? Move to start.', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
 
-        addContainerUI(botUI,'bottom-container', [menuButtonsContainer,subTitle]);
+        addContainerUI(botUI,'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
