@@ -79,7 +79,6 @@ class Entity extends THREE.Object3D {
         this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         scene.add(this);
     }
- 
 
     updateMesh() {
         if (this.mesh) {
@@ -91,21 +90,21 @@ class Entity extends THREE.Object3D {
         }
     }
 
-    initAbilities(abilitiesConfig) {
-        abilitiesConfig.forEach(abilityConfig => {
-            const vabilityType = abilityTypes.find(type => type.title === abilityConfig.type);
+    initAbilities(entityAbilities) {
+        entityAbilities.forEach(entityAbility => {
+            const vabilityType = abilityTypes.find(type => type.title === entityAbility.type);
             if (vabilityType) {
-                this.possibleAbilities.set(abilityConfig.type, { ...vabilityType, level: abilityConfig.level });
+                this.possibleAbilities.set(entityAbility.type, { ...vabilityType, level: entityAbility.level });
             }
-            if (abilityConfig.level===0) return;
-            const existingAbility = this.abilities.find(ability => ability.title === abilityConfig.type);
+            if (entityAbility.level===0) return;
+            const existingAbility = this.abilities.find(ability => ability.title === entityAbility.type);
             if (existingAbility) {
-               existingAbility.level = Math.min(existingAbility.level + abilityConfig.level, 10);
+               existingAbility.level = Math.min(existingAbility.level + entityAbility.level, 10);
                existingAbility.activate();
             } else {
-                const abilityType = abilityTypes.find(type => type.title === abilityConfig.type);
+                const abilityType = abilityTypes.find(type => type.title === entityAbility.type);
                 if (abilityType) {
-                    const newAbility = new Ability(this, { ...abilityType, level: abilityConfig.level });
+                    const newAbility = new Ability(this, { ...abilityType, level: entityAbility.level });
                     this.addAbility(newAbility);
                     newAbility.activate();
                 }
@@ -733,8 +732,7 @@ function updatePlayerMovement() {
             player.xp += 10;
             xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
             if (player.xp >= player.xpToNextLevel) {
-                LevelUp();
-                
+                LevelUp();  
             }
             scene.remove(xpSphere);
             xpSpheres.splice(index, 1);
@@ -743,7 +741,7 @@ function updatePlayerMovement() {
 }
 function createParticleEffect(position, color = 'white', particleCount = 100) {
     const particleGeometry = new THREE.BufferGeometry();
-    const particles = new Float32Array(particleCount * 3); // Each particle has an x, y, and z position
+    const particles = new Float32Array(particleCount * 3); 
 
     for (let i = 0; i < particleCount; i++) {
         particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
@@ -755,7 +753,7 @@ function createParticleEffect(position, color = 'white', particleCount = 100) {
 
     const particleMaterial = new THREE.PointsMaterial({
         color: color,
-        size: 0.1, 
+        size: 0.05, 
         transparent: true,
         opacity: 0.5,
         blending: THREE.AdditiveBlending,
@@ -798,7 +796,6 @@ Entity.prototype.die = function() {
     createParticleEffect(this.position);
 };
 
-
 function LevelUp() {
     canMove = false;
     isPaused = true;
@@ -817,10 +814,11 @@ function LevelUp() {
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
-    for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
+    for (let i = 0; i < 4 && upgradableAbilities.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
         const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
         abilityToUpgrade.isLocked = false; 
+        console.log(abilityToUpgrade.level)
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
@@ -985,11 +983,12 @@ startSpawningEnemies(player);
             levelStars.appendChild(star);
         }
     
-        let expl = dataType.description;
-        if (dataType.level != 0) expl = dataType.effectinfo;
-    
+
+
         const effectinfo = document.createElement('div');
-        effectinfo.innerText = `${expl}`;
+        effectinfo.innerText = `${dataType.description}`;
+        if (dataType.level>0)
+        effectinfo.innerText =`${dataType.effectinfo}`;
         rainbowText(effectinfo, `${14.5 * scale}px`); 
         effectinfo.style.height = `${5 * scale}em`; 
         effectinfo.style.lineHeight = `${1 * scale}em`; 
@@ -1072,29 +1071,76 @@ startSpawningEnemies(player);
                                 MAIN MENU
 ---------------------------------------------------------------------------*/
 
-    function createGameMenu(){
-        const classContainer = document.createElement('div');
-        const classSubTitle = createTitleElement('🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        classContainer.appendChild(createButton(player, isMobile ? 0.6 : 0.75));
-        classContainer.appendChild(classSubTitle);
 
-        const classAbilityContainer = document.createElement('div');
-        const abilitiesSubTitle = createTitleElement( '⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        ability.isLocked=false;
-        classAbilityContainer.appendChild(createButton(ability,isMobile ? 0.6 : 0.75));
-        classAbilityContainer.appendChild(abilitiesSubTitle);
+function createRandomRunEffect(button, images, finalImageIndex, scale) {
+    const imgContainer = document.createElement('div');
+    imgContainer.style.position = 'relative';
+    imgContainer.style.height = `${150 * scale}px`; 
+    imgContainer.style.width = `${150 * scale}px`; 
 
-        const worldContainer = document.createElement('div');
-        const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-        worldContainer.appendChild(createButton(world, isMobile ? 0.6 : 0.75));
-        worldContainer.appendChild(worldSubTitle);
-        
-        const menuButtonsContainer = createContainer([], { display: 'flex' });
-        menuButtonsContainer.appendChild(classContainer);
-        menuButtonsContainer.appendChild(classAbilityContainer);
-        menuButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-        addContainerUI(botUI,'bottom-container', [subTitle,menuButtonsContainer]);
+    images.forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = `${150 * scale}px`;
+        img.style.height = `${150 * scale}px`;
+        img.style.display = 'block';
+        imgContainer.appendChild(img);
+    });
+
+
+    button.innerHTML = ''; 
+    button.appendChild(imgContainer);
+
+    const totalHeight = images.length * 150 * scale;
+    const frames = images.length * 10;
+    let currentFrame = 0;
+
+    function spin() {
+        const progress = currentFrame / frames;
+        const currentTop = -(progress * totalHeight);
+        imgContainer.style.transform = `translateY(${currentTop}px)`;
+
+        if (currentFrame < frames) {
+            currentFrame++;
+            requestAnimationFrame(spin);
+        } else {
+            const finalTop = -(finalImageIndex * 150 * scale);
+            imgContainer.style.transform = `translateY(${finalTop}px)`;
+        }
+    }
+    spin();
+}
+
+function createGameMenu() {
+    const classImages = playerTypes.map(player => player.thumbnail);
+    const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+    const worldImages = worldTypes.map(world => world.thumbnail);
+
+    const classContainer = document.createElement('div');
+    const classSubTitle = createTitleElement('🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+    classContainer.appendChild(classButton);
+    classContainer.appendChild(classSubTitle);
+
+    const abilitiesSubTitle = createTitleElement('⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    ability.isLocked=false;
+    const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+    const classAbilityContainer = document.createElement('div');
+    classAbilityContainer.appendChild(abilitiesButton);
+    classAbilityContainer.appendChild(abilitiesSubTitle);
+
+    const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+    const worldContainer = document.createElement('div');
+    worldContainer.appendChild(worldButton);
+    worldContainer.appendChild(worldSubTitle);
+
+    const menuButtonsContainer = createContainer([], { display: 'flex' });
+    menuButtonsContainer.appendChild(classContainer);
+    menuButtonsContainer.appendChild(classAbilityContainer);
+    menuButtonsContainer.appendChild(worldContainer);
+    const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+    addContainerUI(botUI, 'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
@@ -1109,6 +1155,10 @@ startSpawningEnemies(player);
                 hideContainerUI(botUI);
             });
         });
+        //Debt, this is for Official Runs. 
+      // createRandomRunEffect(classButton, classImages, 110,isMobile ? 0.6 : 0.75); 
+      //  createRandomRunEffect(abilitiesButton, abilityImages, 0,isMobile ? 0.6 : 0.75);
+      //  createRandomRunEffect(worldButton, worldImages, 0,isMobile ? 0.6 : 0.75);
     };
     createGameMenu()
 
@@ -1144,7 +1194,7 @@ function createPopUpContainer() {
         position: 'fixed',
         zIndex: '1001',
         backgroundColor: 'black',
-        height: `${window.innerHeight * 0.99}px`,
+        height: `${window.innerHeight * 0.98}px`,
         width: `${window.innerWidth * 0.99}px`,
         transform: 'translate(0%, -50%)',
         border: '.5px solid',
@@ -1196,6 +1246,7 @@ function handleEntitySelection(entity, type) {
             player.addAbility(newAbility);
             newAbility.activate();
         }
+        player.possibleAbilities.set(entity.title, { ...entity, level: 1 });
         refreshDisplay();
     } else if (entity.isLocked) {
         return;
@@ -1363,23 +1414,23 @@ function simulateLoading() {
 let countdown = 300 * 60;
 const modeDisplay = createTitleElement('Trial Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
-
+const coordinateDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    coordinateDisplay.innerText = (`${Math.trunc(player.position.x)},${Math.trunc(player.position.z)}`);
 }
-
 
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.style.position = 'absolute';
-    xpLoadingContainer.style.top = '-10px';
+    xpLoadingContainer.style.top = '-5px';
     xpLoadingContainer.style.left = '50%';
     xpLoadingContainer.style.transform = 'translateX(-50%)';
     xpLoadingContainer.style.width = '97%'; 
-    xpLoadingContainer.style.height = '10px';
+    xpLoadingContainer.style.height = '5px';
     xpLoadingContainer.style.backgroundColor = 'black';
     xpLoadingContainer.style.boxSizing = 'border-box';
     xpLoadingContainer.style.border = '0.1px solid'; 
@@ -1402,8 +1453,8 @@ function refreshDisplay() {
             abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
         });
 
-    addContainerUI(topUI,'top-container', [xpLoadingContainer,abilitiesContainer,timerDisplay]);
-    addContainerUI(botUI,'bottom-container', [modeDisplay]);
+    addContainerUI(topUI,'top-container', [,xpLoadingContainer,abilitiesContainer,timerDisplay]);
+    addContainerUI(botUI,'bottom-container', [modeDisplay,coordinateDisplay]);
 }
 
 /*---------------------------------------------------------------------------

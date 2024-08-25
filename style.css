@@ -105,7 +105,7 @@ button, div {
 
 .top-container{
     position : absolute;
-    top : 15px;
+    top : 5px;
     left : 50%;
     transform : translateX(-50%);
     display : flex;
@@ -115,7 +115,7 @@ button, div {
 
 .bottom-container{
     position : absolute;
-    bottom : 15px;
+    bottom : 5px;
     left : 50%;
     transform : translateX(-50%);
     display : flex;
