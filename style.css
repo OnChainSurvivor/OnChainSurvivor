@@ -153,3 +153,26 @@ html, body {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+#xpLoadingContainer {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 97%;
+    height: 5px;
+    background-color: black;
+    box-sizing: border-box;
+    border: 0.1px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+}
+
+#xpLoadingBar {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    background-size: 400% 400%;
+    animation: rainbow 5s linear infinite;
+}
+

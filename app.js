@@ -245,6 +245,7 @@ function initiateJoystick(){
     joystickContainer.style.pointerEvents = 'none'; 
     joystickContainer.style.visibility = 'hidden'; 
     document.body.appendChild(joystickContainer);
+
     joystick = document.createElement('div');
     joystick.style.width = '60px';
     joystick.style.height = '60px';
@@ -318,8 +319,8 @@ const abilityTypes = [
                 orbitSpeed: 0.01,
                 homingSpeed: 0.5,
                 create: () => {
-                    const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-                    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+                    const geometry = new THREE.SphereGeometry(0.3, 16, 6);
+                    const material = new THREE.MeshStandardMaterial({ color: 'red' });
                     orb.mesh = new THREE.Mesh(geometry, material);
                     orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
                     scene.add(orb.mesh);
@@ -404,7 +405,8 @@ const abilityTypes = [
             //               trailBullets.splice(index, 1);
             //               player.takeDamage(1);  
             //            }
-          //  });
+          //  
+          //});
         };
         this.deactivate = () => {
             trailBullets.forEach(bullet => { scene.remove(bullet); });
@@ -739,7 +741,7 @@ function updatePlayerMovement() {
         }
     });
 }
-function createParticleEffect(position, color = 'white', particleCount = 100) {
+function createParticleEffect(position, color = 'red', particleCount = 100) {
     const particleGeometry = new THREE.BufferGeometry();
     const particles = new Float32Array(particleCount * 3); 
 
@@ -1289,29 +1291,28 @@ function createAbilitiesContainer(entity) {
                                     WEB3 Menu
 ---------------------------------------------------------------------------*/
    //debt: havent touched it at all
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '95%' });
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '93%' });
 
-    const metaMaskImage = document.createElement('img');
-    metaMaskImage.src = 'Media/MetamaskLogo.png';
-    metaMaskImage.style.width = '30px';
-    metaMaskImage.style.height = '30px';
+    const button = document.createElement('button');
+    const subTitle = createTitleElement('♢\nConnect\n♢', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
 
-    const metaMaskButton = document.createElement('button');
-    metaMaskButton.innerText = '';
-    metaMaskButton.style.fontSize = '14px';
-    metaMaskButton.style.padding = '3px 3px';
-    metaMaskButton.style.backgroundColor = 'transparent';
-    metaMaskButton.style.color = 'white';
-    metaMaskButton.style.border = '1px solid white';
-    metaMaskButton.style.borderRadius = '5px';
-    metaMaskButton.title = 'wen update';
-    metaMaskButton.appendChild(metaMaskImage);
- 
+    button.style.margin = '3px';
+    button.style.display = 'flex';
+    button.style.flexDirection = 'column';
+    button.style.alignItems = 'center';
+    button.style.backgroundColor = 'black';
+    button.style.overflow = 'hidden';
+    button.style.padding = '0';
+    button.style.cursor = 'pointer';
+    button.style.fontFamily = 'Arial, sans-serif';
+    button.style.border = '.1px solid';
+    button.appendChild(subTitle);
+
     const loadingContainer = document.createElement('div');
     loadingContainer.id = 'loadingContainer';
     loadingContainer.style.position = 'relative';
     loadingContainer.style.width = '100%'; 
-    loadingContainer.style.height = '10px';
+   // loadingContainer.style.height = '10px';
     loadingContainer.style.backgroundColor = 'black';
     loadingContainer.style.boxSizing = 'border-box';
     loadingContainer.style.border = '0.5px solid'; 
@@ -1331,7 +1332,7 @@ function createAbilitiesContainer(entity) {
     loadingText.style.color = 'white';
   
     loadingContainer.appendChild(loadingBar);
-    web3Container.appendChild(metaMaskButton);
+    web3Container.appendChild(button);
 
     function displayMetaMaskInfo(address, ethBalance) {
         web3Container.appendChild(loadingContainer);
@@ -1343,7 +1344,7 @@ function createAbilitiesContainer(entity) {
             `;
         }
         
-        metaMaskButton.onclick = async () => {
+        button.onclick = async () => {
             if (window.ethereum) {
                 const web3 = new Web3(window.ethereum);
                 try {
@@ -1410,11 +1411,11 @@ function simulateLoading() {
 /*---------------------------------------------------------------------------
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
-//debt, this will change depending on the world  mostly the display time and game mode  
+ 
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('Trial Mode', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
-const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
-const coordinateDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '5vw' : '3vw');
+const modeDisplay = createTitleElement('Trial Mode', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
+const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
+const coordinateDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
@@ -1425,24 +1426,10 @@ function updateTimerDisplay() {
 
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
-    xpLoadingContainer.style.position = 'absolute';
-    xpLoadingContainer.style.top = '-5px';
-    xpLoadingContainer.style.left = '50%';
-    xpLoadingContainer.style.transform = 'translateX(-50%)';
-    xpLoadingContainer.style.width = '97%'; 
-    xpLoadingContainer.style.height = '5px';
-    xpLoadingContainer.style.backgroundColor = 'black';
-    xpLoadingContainer.style.boxSizing = 'border-box';
-    xpLoadingContainer.style.border = '0.1px solid'; 
-    xpLoadingContainer.style.borderImageSlice = 1;
-    xpLoadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
-
+    xpLoadingContainer.id = 'xpLoadingContainer';
+    
     xpLoadingBar = document.createElement('div');
-    xpLoadingBar.style.width = '0';
-    xpLoadingBar.style.height = '100%';
-    xpLoadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)';
-    xpLoadingBar.style.backgroundSize = '400% 400%';
-    xpLoadingBar.style.animation = 'rainbow 5s linear infinite';
+    xpLoadingBar.id = 'xpLoadingBar';
     xpLoadingContainer.appendChild(xpLoadingBar);
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
