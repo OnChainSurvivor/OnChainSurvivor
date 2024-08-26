@@ -36,7 +36,7 @@ class Entity extends THREE.Object3D {
             const serializedModel = objectPool.get(modelKey);
             this.initEntity(new THREE.ObjectLoader().parse(serializedModel), position);
         } else {
-            loader.load('Media/Survivor.fbx', (object) => {
+            loader.load('Media/Models/Survivor.fbx', (object) => {
                 this.modifyMaterials(object);
                 const serializedObject = object.toJSON();
                 objectPool.set(modelKey, serializedObject);
@@ -585,7 +585,7 @@ const worldTypes = [{
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
-        this.envTexture = new THREE.TextureLoader().load('Media/ENVTEXTURE.png', texture => {
+        this.envTexture = new THREE.TextureLoader().load('Media/Textures/ENVTEXTURE.png', texture => {
             this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
             this.pmremGenerator.dispose();
             scene.environment = this.envMap; 
