@@ -10,7 +10,6 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
     level:0,
     isLocked: false,
     En:0,
@@ -38,7 +37,7 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: false,
     abilities: [
@@ -60,7 +59,7 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Miner/MMINER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: true,
     abilities: [
@@ -78,7 +77,7 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Miner/FMINER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: true,
     abilities: [
@@ -96,7 +95,7 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Staker/MSTAKER.png',  
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: true,
     abilities: [
@@ -114,7 +113,7 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Staker/FSTAKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: true,
     abilities: [
@@ -131,7 +130,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trader/MTRADER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level:0,
     isLocked: true, 
     abilities: [
@@ -148,7 +147,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trader/FTRADER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -166,7 +165,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Developer/MDEVELOPER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -184,7 +183,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Developer/FDEVELOPER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -202,7 +201,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Regulator/MREGULATOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -220,7 +219,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Regulator/FREGULATOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -238,7 +237,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Quantum/MQUANTUM.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -256,7 +255,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Quantum/FQUANTUM.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -274,7 +273,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Crypto Botter/MBOTTER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -292,7 +291,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Crypto Botter/FBOTTER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -310,7 +309,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Fudder/MFUDDER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -328,7 +327,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Fudder/FFUDDER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -347,7 +346,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Astrologer/MASTROLOGER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -366,7 +365,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Astrologer/FASTROLOGER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -385,7 +384,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Influencer/MINFLUENCER.jpg',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -404,7 +403,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Influencer/FINFLUENCER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -423,7 +422,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Insider Cabal/MCABAL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -441,7 +440,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Insider Cabal/FCABAL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -459,7 +458,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Maxi/MMAXI.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -477,7 +476,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Maxi/FMAXI.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -495,7 +494,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Gambler/MGAMBLER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -513,7 +512,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Gambler/FGAMBLER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -531,7 +530,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Liquidator/MLIQUIDATOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -549,7 +548,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Liquidator/FLIQUIDATOR.png', // Debt: fix the green borders, make them black
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -567,7 +566,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Nocoiner/MNOCOINER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -585,7 +584,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Nocoiner/FNOCOINER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -603,7 +602,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Auditor/MAUDITOR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -621,7 +620,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Auditor/FAUDITOR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -639,7 +638,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sleuth/MSLEUTH.png', //Debt: add a pipe, make background black 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -657,7 +656,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sleuth/FSLEUTH.png', //Debt: add a pipe 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -675,7 +674,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Beta Tester/MBETATESTER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -693,7 +692,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Beta Tester/FBETATESTER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -711,7 +710,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi/MDEFI.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -729,7 +728,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi/FDEFI.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -747,7 +746,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi Hacker/MDEFIHACKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -765,7 +764,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi Hacker/FDEFIHACKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -783,7 +782,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sybiller/MSYBILLER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -801,7 +800,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sybiller/FSYBILLER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -820,7 +819,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Validator/MVALIDATOR.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -839,7 +838,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Validator/FVALIDATOR.jpg',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -857,7 +856,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Industrial Miner/MINDUSTRIAL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -876,7 +875,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Industrial Miner/FINDUSTRIAL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -894,7 +893,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/HFT/MHFT.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -913,7 +912,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/HFT/FHFT.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -931,7 +930,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Liquid/MLIQUID.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -949,7 +948,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Liquid/FLIQUID.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -967,7 +966,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Dormant Holder/MDORMANT.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -984,7 +983,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Dormant Holder/FDORMANT.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1000,7 +999,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Solo Node Runner/MSOLONODERUNNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1017,7 +1016,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Solo Node Runner/FSOLONODERUNNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1034,7 +1033,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sniper/MSNIPER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -1050,7 +1049,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Sniper/FSNIPER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -1066,7 +1065,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Governance Staker/MGOV.jpg',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1084,7 +1083,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Governance Staker/FGOV.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1102,7 +1101,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Farmer/MFARMER.png',  //Debt ADD PERSONALITY
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1120,7 +1119,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Farmer/FFARMER.png',  //Debt ADD PERSONALITY
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1139,7 +1138,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Venture Capital/MVC.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1157,7 +1156,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Venture Capital/FVC.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1175,7 +1174,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trillemma Solver/MSOLVER.jpg',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1193,7 +1192,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trillemma Solver/FSOLVER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1211,7 +1210,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/TRUTHER/MTRUTHER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1229,7 +1228,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/TRUTHER/FTRUTHER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true, 
@@ -1247,7 +1246,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Mercenary Capital/MMERCENARY.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1265,7 +1264,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Mercenary Capital/FMERCENARY.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1283,7 +1282,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Copy Trader/MCOPYTRADER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1301,7 +1300,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Copy Trader/FCOPYTRADER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1319,7 +1318,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Policy Maker/MPOLICYMAKER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1337,7 +1336,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Policy Maker/FPOLICYMAKER.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1355,7 +1354,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Angel/MANGEL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1373,7 +1372,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Angel/FANGEL.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level:0,
     isLocked: true,
@@ -1392,7 +1391,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Holder/MHOLDER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1409,7 +1408,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Holder/FHOLDER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1426,7 +1425,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/CEX/MCEX.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1443,7 +1442,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/CEX/FCEX.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1460,7 +1459,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/USD Maxi/MUSDMAXI.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1477,7 +1476,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/USD Maxi/FUSDMAXI.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1494,7 +1493,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Market Maker/MMARKETMAKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1511,7 +1510,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Market Maker/FMARKETMAKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1528,7 +1527,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Wallet Maker/MWALLETMAKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1545,7 +1544,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Wallet Maker/FWALLETMAKER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1562,7 +1561,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/Oracle/MORACLE.jpg', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1579,7 +1578,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/Oracle/FORACLE.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1615,7 +1614,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Whale/FWHALE.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1632,7 +1631,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Shrimp/MSHRIMP.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1649,7 +1648,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Shrimp/FSHRIMP.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1666,7 +1665,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/LARP/MLARP.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1683,7 +1682,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/LARP/FLARP.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1700,7 +1699,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Grifter/MGRIFTER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1717,7 +1716,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Grifter/FGRIFTER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1734,7 +1733,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/NFT Artist/MNFTARTIST.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1751,7 +1750,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/NFT Artist/FNFTARTIST.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1768,7 +1767,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/NFT Collector/MNFTCOLLECTOR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1785,7 +1784,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/NFT Collector/FNFTCOLLECTOR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1802,7 +1801,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/CTO Leader/MCTOLEADER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1819,7 +1818,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/CTO Leader/FCTOLEADER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1836,7 +1835,7 @@ export const playerTypes = [{
     evasion: 60,
     tags: ['player'],
     thumbnail: 'Media/Classes/Serial Scammer/MSERIALSCAMMER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1853,7 +1852,7 @@ export const playerTypes = [{
     evasion: 60,
     tags: ['player'],
     thumbnail: 'Media/Classes/Serial Scammer/FSERIALSCAMMER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1869,7 +1868,7 @@ export const playerTypes = [{
     evasion: 60,
     tags: ['player'],
     thumbnail: 'Media/Classes/Bagholder/MBAGHOLDER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1885,7 +1884,7 @@ export const playerTypes = [{
     evasion: 60,
     tags: ['player'],
     thumbnail: 'Media/Classes/Bagholder/FBAGHOLDER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1901,7 +1900,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Pioneer/MPIONEER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1918,7 +1917,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Pioneer/FPIONEER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1935,7 +1934,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi Native/MDEFINATIVE.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1952,7 +1951,7 @@ export const playerTypes = [{
     evasion: 35,
     tags: ['player'],
     thumbnail: 'Media/Classes/Defi Native/FDEFINATIVE.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1969,7 +1968,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Metaverse Landowner/MMETAVERSELANDOWNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -1986,7 +1985,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Metaverse Landowner/FMETAVERSELANDOWNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2004,7 +2003,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/Evil Genius/MEVILGENIUS.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2021,7 +2020,7 @@ export const playerTypes = [{
     evasion: 45,
     tags: ['player'],
     thumbnail: 'Media/Classes/Evil Genius/FEVILGENIUS.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2038,7 +2037,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Ponzi Designer/MPONZIDESIGNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2055,7 +2054,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Ponzi Designer/FPONZIDESIGNER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2072,7 +2071,7 @@ export const playerTypes = [{
     evasion: 55,
     tags: ['player'],
     thumbnail: 'Media/Classes/Caller/MCALLER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2089,7 +2088,7 @@ export const playerTypes = [{
     evasion: 55,
     tags: ['player'],
     thumbnail: 'Media/Classes/Caller/FCALLER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2106,7 +2105,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Backstabber/MBACKSTABBER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2123,7 +2122,7 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Backstabber/FBACKSTABBER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2140,7 +2139,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trencher/MTRENCHER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2157,7 +2156,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Trencher/FTRENCHER.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2174,7 +2173,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Beggar/MBEGGAR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
 
     level: 0,
     isLocked: true,
@@ -2191,7 +2190,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Beggar/FBEGGAR.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2207,7 +2206,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Protagonist/MPROTAG.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2223,7 +2222,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Protagonist/FPROTAG.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2239,7 +2238,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Intern/MINTERN.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2255,7 +2254,7 @@ export const playerTypes = [{
     evasion: 30,
     tags: ['player'],
     thumbnail: 'Media/Classes/Intern/FINTERN.png', 
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2271,7 +2270,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Mod/MMOD.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2287,7 +2286,7 @@ export const playerTypes = [{
     evasion: 40,
     tags: ['player'],
     thumbnail: 'Media/Classes/Mod/FMOD.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2302,7 +2301,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Seedless/MSEEDLESS.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
@@ -2317,7 +2316,7 @@ export const playerTypes = [{
     evasion: 20,
     tags: ['player'],
     thumbnail: 'Media/Classes/Seedless/FSEEDLESS.png',
-    geometry: new THREE.BoxGeometry(1, 1, 1),
+    
     level: 0,
     isLocked: true,
     abilities: [],
