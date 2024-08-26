@@ -299,12 +299,12 @@ function updateJoystickDirection(normalizedX, normalizedY) {
 const abilityTypes = [
 {
     title: "Scalping Bot",
-    description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
+    description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
     tooltip: "Like a true degen",
-    effectinfo: 'Orb damage and homing speed increase.',
+    effectinfo: 'Bot damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
     level: 0,
-    isLocked: true,
+    isLocked: false,
     effect(level, user) {
             this.lastHitTime=0;
             let time = Date.now();
@@ -366,12 +366,12 @@ const abilityTypes = [
 },
 {
     title: 'Onchain Trail',
-    description: 'The Survivor movements leave a powerful Onchain trail behind.',
+    description: 'Your onchain movements leave a trail behind, damaging pursuers',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
     effectinfo: 'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
     level: 0,
-    isLocked: true,
+    isLocked: false,
     effect(level, user) {
         const trailBullets = [];
         this.lastTrailTime = 0;
@@ -420,7 +420,7 @@ const abilityTypes = [
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
-    isLocked: true,
+    isLocked: false,
     effect(level, user) {
         const veil = {
             create: () => {
@@ -492,6 +492,15 @@ const abilityTypes = [
         };
         veil.create();
     },
+},{
+    title: 'Onchain Trail',
+    description: 'Your onchain movements leave a trail behind, damaging pursuers',
+    tooltip: 'Powerful...interesting choice of words, to say the least.',
+    effectinfo: 'Trail size and frequency increase.',
+    thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { },
 },
 ];
 
