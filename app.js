@@ -4,7 +4,7 @@
 
 class Ability {
     constructor(user, config) {
-        Object.assign(this, { user, ...config, active: false });
+        Object.assign(this, { user, ...config });
     }
 
     activate() {
@@ -19,6 +19,7 @@ class Ability {
         this.effect.update();
     }
 }
+
 const loader = new THREE.FBXLoader();
 const objectPool = new Map(); 
 
@@ -300,7 +301,6 @@ const abilityTypes = [
     title: "Scalping Bot",
     description: "Abusing the market volatility, The Survivor's bot Executes incredibly fast attacks.",
     tooltip: "Like a true degen",
-    tags:["Offensive", "Burst Damage"],
     effectinfo: 'Orb damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
     level: 0,
@@ -368,7 +368,6 @@ const abilityTypes = [
     title: 'Onchain Trail',
     description: 'The Survivor movements leave a powerful Onchain trail behind.',
     tooltip: 'Powerful...interesting choice of words, to say the least.',
-    tags: ['Area Damage', 'Defensive', 'Miscellaneous'],
     effectinfo: 'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
     level: 0,
@@ -418,7 +417,6 @@ const abilityTypes = [
     title: "Veil of Decentralization",
     description: "The Survivor shrouds in decentralization, becoming elusive.",
     tooltip: "Can't touch this!",
-    tags: ["Defensive", "Support"],
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
     level: 0,
@@ -459,7 +457,6 @@ const abilityTypes = [
     title: "Code Refactor",
     description: "Rewrites the Survivor's abilities, reducing their cooldowns.",
     tooltip: "FAST",
-    tags: ["Buffs", "Skill Cooldown Reduction"],
     effectinfo: 'Cooldown % reduction  .',
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
     level: 0,
