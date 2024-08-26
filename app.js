@@ -1295,17 +1295,8 @@ function createAbilitiesContainer(entity) {
 
     const button = document.createElement('button');
     const subTitle = createTitleElement('♢\nConnect\n♢', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
-
-    button.style.margin = '3px';
-    button.style.display = 'flex';
-    button.style.flexDirection = 'column';
-    button.style.alignItems = 'center';
     button.style.backgroundColor = 'black';
-    button.style.overflow = 'hidden';
-    button.style.padding = '0';
-    button.style.cursor = 'pointer';
-    button.style.fontFamily = 'Arial, sans-serif';
-    button.style.border = '.1px solid';
+    button.style.border = 'transparent';
     button.appendChild(subTitle);
 
     const loadingContainer = document.createElement('div');
