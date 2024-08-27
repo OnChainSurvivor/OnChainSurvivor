@@ -457,7 +457,7 @@ const abilityTypes = [
     title: "Code Refactor",
     description: "Rewrites the Survivor's abilities, reducing their cooldowns.",
     tooltip: "FAST",
-    effectinfo: 'Cooldown % reduction  .',
+    effectinfo: 'Optimizes the code much more, reducing cooldown of all other abilities.',
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
     level: 0,
     isLocked: false, 
@@ -493,15 +493,254 @@ const abilityTypes = [
         veil.create();
     },
 },{
-    title: 'Onchain Trail',
-    description: 'Your onchain movements leave a trail behind, damaging pursuers',
-    tooltip: 'Powerful...interesting choice of words, to say the least.',
-    effectinfo: 'Trail size and frequency increase.',
-    thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+    title: "Sybil Attack",
+    description: "Creates multiples identities, disorienting and damaging enemies.",
+    tooltip: "More alts than a telegram schizo",
+    effectinfo: "Creates 2 extra identities.",
+    thumbnail:'Media/Abilities/SYBILATTACK.png',
     level: 0,
     isLocked: false,
-    effect(level, user) { },
+    effect(level, user) { 
+
+    },
+},{
+    title: "Vote Manipulation",
+    description: "Illegally uses the voting power of other survivors in range agaisnt their will, turning bonuses into penalties.",
+    tooltip: "no, CEXes totally have never ever done this.",
+    effectinfo: "Doubles the penalties value.",
+    thumbnail: 'Media/Abilities/VOTEMANIPULATION.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) {
+    },
+},{
+    title: "Airdrop Fraud",
+    description: "Free, fake tokens fall from the sky, draining the survivors who interact with them.",
+    tooltip: "Free tokens! Just kidding, they're mine.",
+    effectinfo: "Fake airdrop also steals networth out of enemies.",
+    thumbnail: 'Media/Abilities/AIRDROPFRAUD.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},{
+    title: "Identity Forge",
+    description: "Specializes in creating a whole new persona, gaining the bonuses of a random class.",
+    tooltip: "Fake it till you make it, anon!",
+    effectinfo: "Doubles the bonuses of the forged class.",
+    thumbnail: 'Media/Abilities/IDENTITYFORGE.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},{
+    title: "Decentralized Vote Rigging",
+    description: "By controlling the majority of the chain validators, the survivor gains a random bonus.",
+    tooltip: " ",
+    effectinfo: "Increases attack and defense by 3% per controlled enemy. Increases by 1% per level.",
+    thumbnail: 'Media/Abilities/VOTERIGGING.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},{
+    title: "Confirm Block",
+    description: "As transactions become confirmed and secured overtime, the survivor gains defensive bonuses",
+    tooltip: "Block confirmed!.",
+    effectinfo: "Doubles defensive bonuses.",
+    thumbnail: 'Media/Abilities/CONFIRMBLOCK.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
 },
+{
+    title: "Finality",
+    description: "The blockchain inmutality makes it so  buried Survivors can not ever revive, If they take more than 6 blocks.",
+    tooltip: ">Your transaction was succesfull \n>the coin moons, you check your wallet\n>turns out your tx never got in",
+    effectinfo: "Survivors downed cannot come back from life.",
+    thumbnail: 'Media/Abilities/FINALITY.png',
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Double Spend Prevention",
+    description: "Creates a shield that absorbs multiple hits.",
+    tooltip: "No double-spending here, buddy!",
+    effectinfo: "Absorbs 1 hit per level.",
+    thumbnail: "A broken coin split in half.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Overclock",
+    description: "Greatly increases attack power for a brief period.",
+    tooltip: "Overclocked like a mining rig in a bull run!",
+    effectinfo: "Increases attack power by 20% for 5 seconds. Increases by 5% per level.",
+    thumbnail: "A CPU with a glowing overclock symbol.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Mining Rig",
+    description: "Deploys a stationary turret that automatically attacks enemies.",
+    tooltip: "Mining while you sleep!",
+    effectinfo: "Deploys a turret that deals 5% damage per second. Increases by 1% per level.",
+    thumbnail: "A turret with mining gear.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Energy Surge",
+    description: "Temporarily increases attack speed and movement speed.",
+    tooltip: "Surging like the latest meme coin!",
+    effectinfo: "Increases attack speed and movement speed by 10% for 5 seconds. Increases by 2% per level.",
+    thumbnail: "A lightning bolt with gears.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "PoS Migration",
+    description: "Increases the player's defense.",
+    tooltip: "Migrated to PoS and feeling safe!",
+    effectinfo: "Increases defense by 5% per level.",
+    thumbnail: "A shield with 'PoS' written on it.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Governance Vote",
+    description: "Grants a random beneficial effect based on player needs.",
+    tooltip: "DAO voted, gains distributed!",
+    effectinfo: "Grants a random buff of 5% to an attribute for 5 seconds. Increases by 1% per level.",
+    thumbnail: "A voting card with a checkmark.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Protocol Upgrade",
+    description: "Improves all abilities for a limited time.",
+    tooltip: "Upgraded like ETH 2.0!",
+    effectinfo: "Increases effectiveness of all abilities by 5% for 5 seconds. Increases by 1% per level.",
+    thumbnail: "A progress bar with a checkmark.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "DeFi Yield",
+    description: "Periodically grants a boost in resources.",
+    tooltip: "APY like a degen farm!",
+    effectinfo: "Grants 5% more resources every 10 seconds. Increases by 1% per level.",
+    thumbnail: "A yield sign with coins.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Flash Loan Attack",
+    description: "Deals a burst of damage to a single target.",
+    tooltip: "One-shot wonder like a flash loan!",
+    effectinfo: "Deals 20% damage to a single target. Increases by 5% per level.",
+    thumbnail: "A lightning bolt striking a target.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Frontrunning Bot",
+    description: "Increases movement speed and prioritizes attacks.",
+    tooltip: "Faster than your FOMO trades!",
+    effectinfo: "Increases movement speed by 10% and attack priority by 5%. Increases by 2% per level.",
+    thumbnail: "A racing bot with a trail.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Exploit Finder",
+    description: "Scans for enemy weaknesses and exploits them.",
+    tooltip: "Finding bugs like a true degen!",
+    effectinfo: "Increases damage to enemies by 10% when weaknesses are found. Increases by 2% per level.",
+    thumbnail: "A magnifying glass over a bug.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Liquidation Event",
+    description: "Causes a massive area-of-effect damage.",
+    tooltip: "Liquidated harder than a leveraged trade gone wrong!",
+    effectinfo: "Deals 15% area damage. Increases by 3% per level.",
+    thumbnail: "A graph plummeting with red arrows.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Chain Reorg",
+    description: "Rewinds time slightly to undo recent events.",
+    tooltip: "Reorg'd like a 51% attack!",
+    effectinfo: "Rewinds 2 seconds of gameplay. Increases by 0.5 seconds per level.",
+    thumbnail: "A clock turning backward.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Staking Rewards",
+    description: "Grants a boost to resources over time.",
+    tooltip: "Compounding gains like a staking pro!",
+    effectinfo: "Increases resource gain by 5% every 10 seconds. Increases by 1% per level.",
+    thumbnail: "A pile of tokens growing over time.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "DDoS Attack",
+    description: "Stuns all enemies for a short duration.",
+    tooltip: "Overloaded like a cheap DDoS script!",
+    effectinfo: "Stuns all enemies for 2 seconds. Increases by 0.5 seconds per level.",
+    thumbnail: "A wave crashing into a server.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+},
+{
+    title: "Oracle Manipulation",
+    description: "Disrupts enemy abilities based on false data.",
+    tooltip: "Manipulated just like those price feeds!",
+    effectinfo: "Disrupts enemy abilities for 3 seconds. Increases by 1 second per level.",
+    thumbnail: "A tampered-with scale.",
+    level: 0,
+    isLocked: false,
+    effect(level, user) { 
+    },
+}
 ];
 
 /*---------------------------------------------------------------------------
