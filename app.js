@@ -4762,13 +4762,21 @@ startSpawningEnemies(player);
 /*---------------------------------------------------------------------------
                                 MAIN MENU
 ---------------------------------------------------------------------------*/
+const spinningStates = {
+    class: true,
+    ability: true,
+    world: true
+};
 
-
-function createRandomRunEffect(button, images, finalImageIndex, scale) {
+function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
+    if (!spinningStates[category])
+    return;
     const imgContainer = document.createElement('div');
     imgContainer.style.position = 'relative';
     imgContainer.style.height = `${150 * scale}px`; 
     imgContainer.style.width = `${150 * scale}px`; 
+
+    images = images.concat(images); 
 
     images.forEach((src) => {
         const img = document.createElement('img');
@@ -4779,30 +4787,27 @@ function createRandomRunEffect(button, images, finalImageIndex, scale) {
         imgContainer.appendChild(img);
     });
 
-
     button.innerHTML = ''; 
     button.appendChild(imgContainer);
 
     const totalHeight = images.length * 150 * scale;
-    const frames = images.length * 10;
-    let currentFrame = 0;
-
+    let currentTop = 0;
+let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
     function spin() {
-        const progress = currentFrame / frames;
-        const currentTop = -(progress * totalHeight);
-        imgContainer.style.transform = `translateY(${currentTop}px)`;
-
-        if (currentFrame < frames) {
-            currentFrame++;
-            requestAnimationFrame(spin);
-        } else {
-            const finalTop = -(finalImageIndex * 150 * scale);
-            imgContainer.style.transform = `translateY(${finalTop}px)`;
+        if (spinningStates[category]) {
+            currentTop -= speed;
+            if (currentTop <= -totalHeight / 2) {
+                currentTop = 0;
+            }
+            imgContainer.style.transform = `translateY(${currentTop}px)`;
         }
+        requestAnimationFrame(spin); 
     }
     spin();
+    button.parentElement.addEventListener('click', () => {
+        spinningStates[category] = false;
+    });
 }
-
 function createGameMenu() {
     const classImages = playerTypes.map(player => player.thumbnail);
     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
@@ -4831,7 +4836,7 @@ function createGameMenu() {
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+    const subTitle = createTitleElement('Move to quick start !', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
     addContainerUI(botUI, 'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
@@ -4848,9 +4853,9 @@ function createGameMenu() {
             });
         });
         //Debt, this is for Official Runs. 
-      // createRandomRunEffect(classButton, classImages, 110,isMobile ? 0.6 : 0.75); 
-      //  createRandomRunEffect(abilitiesButton, abilityImages, 0,isMobile ? 0.6 : 0.75);
-      //  createRandomRunEffect(worldButton, worldImages, 0,isMobile ? 0.6 : 0.75);
+        createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
+        createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
+        createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
     createGameMenu()
 
@@ -5094,7 +5099,7 @@ function simulateLoading() {
 ---------------------------------------------------------------------------*/
  
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('Trial Mode', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
+const modeDisplay = createTitleElement('__________________', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
 const coordinateDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
 function updateTimerDisplay() {
