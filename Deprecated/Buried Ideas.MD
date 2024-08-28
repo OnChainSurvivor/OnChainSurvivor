@@ -648,3 +648,54 @@ A stronghold where validators maintain the blockchain. Defend the fortress and e
 **Survivor mode**: Level up, choose your ability path between 3 skills each time . Survive  a fixed time to 30 minutes 30 minutes. 
 
 **Professional mode**: Select a class, each class has a predefined set of abilities , beat the final boss of each class.
+
+
+ # Effects of abilities 
+
+Removed this list until the effects are added to the finalized build of the game. 
+
+## Attack Boost
+* Critical Hit Enhancement
+* Attack Power Surge
+* High Attack Speed Boost
+## Area Damage
+* AoE Burst
+* Persistent Area Damage
+* Explosive Damage
+## Single Target Damage
+* Piercing Attack
+* High Precision Damage
+* DoT
+## Healing and Regeneration
+* Instant Heal
+* Health Regen Over Time
+* Lifesteal
+## Defensive
+* Damage Absorption
+* Shield Generation
+* Damage Reduction
+## Buffs
+* Stat Enhancement
+* Skill Cooldown Reduction
+* Resource Generation Boost
+## Debuffs
+* Enemy Stat Reduction
+* Status Effects
+* Resource Denial
+## Crowd Control
+* Stun
+* Slow
+* Knockback
+## ## Summons and Allies
+* Summon Minions
+* Temporary Ally Support
+* Companion Buffs
+## Speed and Movement
+* Movement Speed Boost
+* Teleportation
+* Dash/Leap
+## Miscellaneous Effect
+* Resource Generation
+* Visibility Enhancement
+* Environmental Manipulation
+## Exclusive Ultimate Skill 

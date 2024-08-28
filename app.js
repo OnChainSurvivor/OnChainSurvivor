@@ -187,13 +187,6 @@ let cameraHeight = 1;
 
 let canMove = true;
 
-const keys = {};
-['w', 'a', 's', 'd', 'i', 'j', 'k', 'l', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'].forEach(key => keys[key] = false);
-
-let joystickActive = false;
-let joystickStartX, joystickStartY;
-let joystickContainer;
-let joystick;
 let xpLoadingBar;
 
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
@@ -236,61 +229,9 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
-function initiateJoystick(){
-    joystickContainer = document.createElement('div');
-    joystickContainer.style.position = 'absolute';
-    joystickContainer.style.width = '100px';
-    joystickContainer.style.height = '100px';
-    joystickContainer.style.borderRadius = '50%';
-    joystickContainer.style.touchAction = 'none';
-    joystickContainer.style.pointerEvents = 'none'; 
-    joystickContainer.style.visibility = 'hidden'; 
-    document.body.appendChild(joystickContainer);
 
-    joystick = document.createElement('div');
-    joystick.style.width = '60px';
-    joystick.style.height = '60px';
-    joystick.style.background = 'rgba(255, 255, 255, 0.8)';
-    joystick.style.borderRadius = '50%';
-    joystick.style.position = 'absolute';
-    joystick.style.top = '50%';
-    joystick.style.left = '50%';
-    joystick.style.transform = 'translate(-50%, -50%)';
-    joystickContainer.appendChild(joystick);
-}
- 
-function activateJoystick(x, y) {
-        joystickContainer.style.left = `${x - joystickContainer.clientWidth / 2}px`;
-        joystickContainer.style.top = `${y - joystickContainer.clientHeight / 2}px`;
-        joystickContainer.style.pointerEvents = 'auto';
-        joystickContainer.style.visibility = 'visible';
-        joystickStartX = x;
-        joystickStartY = y;
-        joystickActive = true;
-}
 
-function deactivateJoystick() {
-        joystickActive = false;
-        joystickContainer.style.pointerEvents = 'none';
-        joystickContainer.style.visibility = 'hidden';
-        joystick.style.transform = 'translate(-50%, -50%)';
-        keys.w = keys.a = keys.s = keys.d = false; 
-}
 
-function updateJoystickDirection(normalizedX, normalizedY) {
-        if(!canMove) return;
-        keys.w = keys.a = keys.s = keys.d = false;
-        
-        const sensitivity = 4; 
-
-        const adjustedX = normalizedX * sensitivity;
-        const adjustedY = normalizedY * sensitivity;
-    
-        if (adjustedY > 0.5) keys.w = true; 
-        if (adjustedY < -0.5) keys.s = true; 
-        if (adjustedX < -0.5) keys.a = true;
-        if (adjustedX > 0.5) keys.d = true; 
-}
 
 /*---------------------------------------------------------------------------
                               Ability Blueprints
@@ -4366,6 +4307,8 @@ function updateRendererSize() {
 
 updateRendererSize();
 
+window.addEventListener('resize', updateRendererSize);
+
 /*---------------------------------------------------------------------------
                               World Controller
 ---------------------------------------------------------------------------*/
@@ -4380,6 +4323,7 @@ world.setup(scene,camera,renderer);
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
 
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
+import { keys, initiateJoystick } from './joystick.js';
 
 initiateJoystick();
 
@@ -4585,33 +4529,6 @@ startSpawningEnemies(player);
         return container;
     }
 
-    function attachHoverEffect(button, entity) {
-        button.addEventListener('pointerenter', () => {
-            
-            centerUI.innerHTML='';
-            centerUI = createContainer(['center-container', 'fade-in']);
-            const scaledButton = createButton(entity, 1);
-            scaledButton.style.position = 'fixed';
-            scaledButton.style.top = '-100%';
-            scaledButton.style.left = '50%';
-            scaledButton.style.transform = 'translate(-50%, -50%)';
-            scaledButton.style.zIndex = '2000';
-            scaledButton.style.pointerEvents = 'none'; 
-            centerUI.appendChild(scaledButton);
-          
-            const removeScaledButton = () => {
-                console.log('Mouse left:', entity.title);
-                if (scaledButton) {
-                    centerUI.removeChild(scaledButton);
-                }
-            };
-
-            setTimeout(() => { centerUI.classList.add('show'); }, 10);
-    
-            button.addEventListener('pointerleave', removeScaledButton, { once: true });
-        });
-    }
-
     function createButton(dataType, scale = 1, onClick) {
         const button = document.createElement('button');
         button.style.width = `${200 * scale}px`;
@@ -4696,12 +4613,7 @@ startSpawningEnemies(player);
         button.appendChild(effectinfo);
         button.appendChild(levelStars); 
         
-
         if (onClick) button.onclick = onClick;
-
-        //  if(scale== 0.55)
-        //attachHoverEffect(button, dataType); 
-
         //img.style.filter = 'grayscale(100%) blur(5px)';
         if(dataType.isLocked){
         button.style.color = 'gray';
@@ -4718,12 +4630,10 @@ startSpawningEnemies(player);
         img.style.filter = 'grayscale(100%) blur(5px)';
         button.title = 'Insert unlock hint here'
     }
-
         return button;
     }
 
     function addContainerUI(container,location,uiElements){
-
         container.innerHTML='';
         container.className = ''; 
         container.classList.add(location, 'fade-in');
@@ -4852,7 +4762,7 @@ function createGameMenu() {
                 hideContainerUI(botUI);
             });
         });
-        //Debt, this is for Official Runs. 
+ 
         createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
@@ -4886,47 +4796,22 @@ function createChooseMenu(entityList, text, type) {
 }
 
 function createPopUpContainer() {
-    const container = createContainer([]);
-    Object.assign(container.style, {
-        position: 'fixed',
-        zIndex: '1001',
-        backgroundColor: 'black',
-        height: `${window.innerHeight * 0.98}px`,
-        width: `${window.innerWidth * 0.99}px`,
-        transform: 'translate(0%, -50%)',
-        border: '.5px solid',
-        borderImageSource: 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)',
-        borderImageSlice: 1,
-        boxSizing: 'border-box',
-        overflowY: 'auto',
-        animation: 'rainbow-border 5s linear infinite',
-    });
+    const container = document.createElement('div');
+    container.classList.add('choose-menu-container'); 
     return container;
 }
 
 function createTitleContainer(text) {
     const container = document.createElement('div');
-    Object.assign(container.style, {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px',
-        flexDirection: 'column',
-    });
-    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw');
+    container.classList.add('choose-menu-title');
+    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw'); 
     container.appendChild(title);
     return container;
 }
-let isWide = window.innerWidth > 830;
-console.log(window.innerWidth)
+
 function createGridContainer() {
     const container = document.createElement('div');
-    Object.assign(container.style, {
-        display: 'grid',
-        justifyContent: 'center',
-        margin: '0 auto',
-        gridTemplateColumns: isWide ? 'repeat(4, auto)' : 'repeat(2, auto)',
-    });
+    container.classList.add('choose-menu-grid'); 
     return container;
 }
 
@@ -4965,12 +4850,7 @@ function handleEntitySelection(entity, type) {
 
 function createAbilitiesContainer(entity) {
     const container = document.createElement('div');
-    Object.assign(container.style, {
-        display: 'grid',
-        justifyContent: 'center',
-        margin: '0 auto',
-        gridTemplateColumns: 'repeat(1, auto)',
-    });
+    container.classList.add('abilities-grid');
 
     entity.abilities.forEach(survivorAbility => {
         const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
@@ -4985,20 +4865,20 @@ function createAbilitiesContainer(entity) {
 /*---------------------------------------------------------------------------
                                     WEB3 Menu
 ---------------------------------------------------------------------------*/
-   //debt: havent touched it at all
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '93%' });
-
+   //debt: havent touched this at all, Needs deep cleaning. 
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '135%' });
     const button = document.createElement('button');
     const subTitle = createTitleElement('♢\nConnect\n♢', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
     button.style.backgroundColor = 'black';
     button.style.border = 'transparent';
     button.appendChild(subTitle);
+    web3Container.appendChild(button);
 
     const loadingContainer = document.createElement('div');
     loadingContainer.id = 'loadingContainer';
     loadingContainer.style.position = 'relative';
     loadingContainer.style.width = '100%'; 
-   // loadingContainer.style.height = '10px';
+    loadingContainer.style.height = '10px';
     loadingContainer.style.backgroundColor = 'black';
     loadingContainer.style.boxSizing = 'border-box';
     loadingContainer.style.border = '0.5px solid'; 
@@ -5013,22 +4893,87 @@ function createAbilitiesContainer(entity) {
     loadingBar.style.backgroundSize = '400% 400%';
     loadingBar.style.animation = 'rainbow 5s linear infinite';
 
-    const loadingText = document.createElement('div');
+    const loadingText =  createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '2vw');
     loadingText.id = 'loadingText';
-    loadingText.style.color = 'white';
-  
     loadingContainer.appendChild(loadingBar);
-    web3Container.appendChild(button);
 
     function displayMetaMaskInfo(address, ethBalance) {
-        web3Container.appendChild(loadingContainer);
-        web3Container.appendChild(loadingText);
-            metaMaskContainer.innerHTML = `
-               <div style="color: white; margin-right: 10px;">
-                    <div>Address: ${address}</div>
-               </div>
-            `;
-        }
+        canMove=false;
+        hideContainerUI(botUI);
+        hideContainerUI(topUI);
+        hideContainerUI(centerUI);
+        const buttonT = document.createElement('button');
+        const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        buttonT.style.backgroundColor = 'black';
+        buttonT.style.border = 'transparent';
+        buttonT.appendChild(subTitleReport);
+        const welcomeSurvivor = createTitleElement('Welcome home, Survivor.eth', 'lazy subtitle too btw', isMobile ? '10vw' : '6vw');
+        
+       const disconnectContainer = createContainer(['fade-in', 'top-container'], { left: '135%' });
+       const button2 = document.createElement('button');
+       const subTitle2 = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+       button2.style.backgroundColor = 'black';
+       button2.style.border = 'transparent';
+       button2.appendChild(subTitle2);
+       disconnectContainer.appendChild(button2);
+       button2.onclick = () => {
+        localStorage.removeItem('metaMaskAddress');
+        location.reload(); 
+    };
+         const classImages = playerTypes.map(player => player.thumbnail);
+         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+         const worldImages = worldTypes.map(world => world.thumbnail);
+     
+         const classContainer = document.createElement('div');
+         const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+         const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+         classContainer.appendChild(classButton);
+         classContainer.appendChild(classSubTitle);
+     
+         const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+         ability.isLocked=false;
+         const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+         const classAbilityContainer = document.createElement('div');
+         classAbilityContainer.appendChild(abilitiesButton);
+         classAbilityContainer.appendChild(abilitiesSubTitle);
+     
+         const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+         const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+         const worldContainer = document.createElement('div');
+         worldContainer.appendChild(worldButton);
+         worldContainer.appendChild(worldSubTitle);
+     
+         const menuButtonsContainer = createContainer([], { display: 'flex' });
+         menuButtonsContainer.appendChild(classContainer);
+         menuButtonsContainer.appendChild(classAbilityContainer);
+         menuButtonsContainer.appendChild(worldContainer);
+         const subTitle = createTitleElement('Welcome Home, Survivor.eth!', 'lazy subtitle too btw', isMobile ? '4.5vw' : '2.5vw');
+        
+        setTimeout(() => { 
+            addContainerUI(topUI, 'top-container', [subTitle,menuButtonsContainer]);
+            addContainerUI(botUI,'bottom-container', [subTitleRun,subTitleHall,buttonT,loadingText,loadingContainer,button2]);
+            simulateLoading(); 
+        }, 1050);
+     
+         //    menuButtonsContainer.childNodes.forEach(button => {
+            //     button.addEventListener('click', () => {
+            //         canMove=false;
+            //         if (button === classContainer) {
+           //              createChooseMenu(playerTypes, "Choose a Survivor 🏆","Survivor");
+           //          } else if (button === classAbilityContainer) {
+           //              createChooseMenu(abilityTypes, "Choose an Ability ⚔️","Ability");
+           //          } else if (button === worldContainer) {
+           //              createChooseMenu(worldTypes, "Choose a Chain 🔗","World");
+          //           }
+          //           hideContainerUI(center);
+          //       });
+         //    });
+             createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
+             createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
+             createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
+    }
         
         button.onclick = async () => {
             if (window.ethereum) {
@@ -5065,7 +5010,7 @@ function createAbilitiesContainer(entity) {
             }
         });
         
-        document.body.appendChild(web3Container);
+    topUI.appendChild(web3Container);
 
     setTimeout(() => { web3Container.classList.add('show'); }, 10); 
 
@@ -5076,7 +5021,8 @@ function updateLoadingBar(currentAmount) {
     const goal = 1000000; 
     const percentage = (currentAmount / goal) * 100;
     loadingBar.style.width = percentage + '%';
-    loadingText.innerText ='🏆\n'+percentage.toFixed(2) + '%';
+    loadingText.innerText =' ❤️ Goal '+percentage.toFixed(2) + '% ❤️';
+    loadingText.classList.add('rainbow-text'); 
 }
 
 function simulateLoading() {
@@ -5091,8 +5037,6 @@ function simulateLoading() {
         }
     }, 50); 
 }
-
-//simulateLoading();
 
 /*---------------------------------------------------------------------------
                                    IN-GAME UI 
@@ -5126,7 +5070,7 @@ function refreshDisplay() {
             abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
         });
 
-    addContainerUI(topUI,'top-container', [,xpLoadingContainer,abilitiesContainer,timerDisplay]);
+    addContainerUI(topUI,'top-container', [xpLoadingContainer,abilitiesContainer,timerDisplay]);
     addContainerUI(botUI,'bottom-container', [modeDisplay,coordinateDisplay]);
 }
 
@@ -5244,79 +5188,3 @@ function animate() {
 }
 
 animate();
-
-/*---------------------------------------------------------------------------
-                            Event Listeners
----------------------------------------------------------------------------*/
-
-document.addEventListener('keydown', (event) => {
-    if (keys.hasOwnProperty(event.key)) {
-        keys[event.key] = true;
-    }
-    
-    if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = true;
-    if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = true;
-    if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = true;
-    if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = true;
-});
-document.addEventListener('keyup', (event) => {
-    if (keys.hasOwnProperty(event.key)) {
-        keys[event.key] = false;
-    }
-    
-    if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = false;
-    if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = false;
-    if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = false;
-    if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = false;
-});
-document.addEventListener('mousedown', (e) => {
-        if(!canMove) return;
-        activateJoystick(e.clientX, e.clientY);
-});
-document.addEventListener('touchstart', (e) => {
-        if(!canMove) return; 
-        activateJoystick(e.touches[0].clientX, e.touches[0].clientY);
-});
-document.addEventListener('mousemove', (e) => {
-        if (!joystickActive) return;
-        if(!canMove) return;
-
-        const joystickDeltaX = e.clientX - joystickStartX;
-        const joystickDeltaY = e.clientY - joystickStartY;
-
-        const maxDistance = joystickContainer.clientWidth / 2;
-        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
-        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
-
-        const x = distance * Math.cos(angle);
-        const y = distance * Math.sin(angle);
-
-        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
-
-        const normalizedX = x / maxDistance;
-        const normalizedY = y / maxDistance;
-        updateJoystickDirection(normalizedX, -normalizedY);
-});
-document.addEventListener('touchmove', (e) => {
-        if (!joystickActive) return;
-
-        const touch = e.touches[0];
-        const joystickDeltaX = touch.clientX - joystickStartX;
-        const joystickDeltaY = touch.clientY - joystickStartY;
-
-        const maxDistance = joystickContainer.clientWidth / 2;
-        const distance = Math.min(maxDistance, Math.sqrt(joystickDeltaX ** 2 + joystickDeltaY ** 2));
-        const angle = Math.atan2(joystickDeltaY, joystickDeltaX);
-
-        const x = distance * Math.cos(angle);
-        const y = distance * Math.sin(angle);
-
-        joystick.style.transform = `translate(${x - 50}%, ${y - 50}%)`;
-
-        const normalizedX = x / maxDistance;
-        const normalizedY = y / maxDistance;
-        updateJoystickDirection(normalizedX, -normalizedY);
-});
-document.addEventListener('mouseup', deactivateJoystick);
-document.addEventListener('touchend', deactivateJoystick);
-window.addEventListener('resize', updateRendererSize);

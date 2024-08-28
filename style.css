@@ -177,3 +177,47 @@ html, body {
     animation: rainbow 5s linear infinite;
 }
 
+.choose-menu-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-direction: column;
+}
+
+.choose-menu-container {
+    position: fixed;
+    z-index: 1001;
+    background-color: black;
+    height: 98vh;
+    width: 99vw;
+    transform: translate(0%, -50%);
+    border: 0.5px solid;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+    border-image-slice: 1;
+    box-sizing: border-box;
+    overflow-y: auto;
+    animation: rainbow-border 5s linear infinite;
+} 
+
+
+.choose-menu-grid {
+    display: grid;
+    justify-content: center;
+    margin: 0 auto;
+    grid-template-columns: repeat(4, auto); /* Adjust as needed */
+}
+
+.abilities-grid {
+    display: grid;
+    justify-content: center;
+    margin: 0 auto;
+    grid-template-columns: repeat(1, auto);
+}
+
+
+@media (max-width: 830px) {
+    .choose-menu-grid {
+        grid-template-columns: repeat(2, auto); 
+    }
+}
