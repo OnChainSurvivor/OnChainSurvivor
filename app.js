@@ -154,7 +154,7 @@ const clock = new THREE.Clock();
 const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
 
-const isMobile = window.innerWidth <= 650;
+const isMobile = window.innerWidth <= 830;
 
 let cameraAngle = 0;
 const cameraRadius = 20;
@@ -221,8 +221,7 @@ const abilityTypes = [
                 homingSpeed: 0.5,
                 create: () => {
                     const geometry = new THREE.SphereGeometry(0.3, 16, 6);
-                    const material = world.material;
-                    orb.mesh = new THREE.Mesh(geometry, material);
+                    orb.mesh = new THREE.Mesh(geometry, world.material);
                     orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
                     scene.add(orb.mesh);
                 }
@@ -275,7 +274,6 @@ const abilityTypes = [
         this.update = () => {}
         const trailBullets = [];
         this.lastTrailTime = 0;
-        this.material =   world.material.clone();
         const trail = {
             create: () => {
                 if (trailBullets.length >= (10)) {
@@ -330,7 +328,7 @@ const abilityTypes = [
                 shieldMaterial.transparent = true;
                 shieldMaterial.opacity = 0.1; 
 
-                const shieldGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+                const shieldGeometry = new THREE.SphereGeometry(3.5);
                 veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
                 veil.shield.position.copy(user.position);
                 scene.add(veil.shield);
@@ -4107,7 +4105,8 @@ startSpawningEnemies(player);
         const element = document.createElement('div');
         element.innerText = text;
         element.title = title;
-        rainbowText(element, fontSize);
+        element.classList.add(fontSize); 
+        element.classList.add('rainbow-text'); 
         return element;
     }
 
@@ -4157,33 +4156,7 @@ startSpawningEnemies(player);
         img.style.height = `${150 * scale}px`;
         
         img.style.filter = 'brightness(130%)'; 
-
-        const titlelvl = document.createElement('div');
-        titlelvl.innerText = 'LVL : 0'; 
-        rainbowText(titlelvl, `${20 * scale}px`);  
-        titlelvl.style.height = `${2.5 * scale}em`; 
-        titlelvl.style.lineHeight = `${1.5 * scale}em`;
-        titlelvl.style.overflow = 'hidden';
-        titlelvl.style.textAlign = 'center'; 
-        titlelvl.style.display = scale < 0.751 ? 'flex' : 'none';
-        titlelvl.style.alignItems = 'center';
-        titlelvl.style.justifyContent = 'center';
-        titlelvl.style.padding = `${5 * scale}px 0`;
-
-        const levelStars = document.createElement('div');
-        levelStars.style.display = scale < 0.751 ? 'flex' : 'none';
-        levelStars.style.alignItems = 'center'; 
-        levelStars.style.justifyContent = 'center';
-        for (let i = 0; i < dataType.level; i++) {
-            const star = document.createElement('img');
-            star.src = 'Media/Abilities/STAR.png';
-            star.style.width = `${20 * scale}px`;
-            star.style.height = `${20 * scale}px`;
-            levelStars.appendChild(star);
-        }
     
-
-
         const description = document.createElement('div');
         description.innerText = `${dataType.description}`;
         rainbowText(description, `${14.5 * scale}px`); 
@@ -4199,7 +4172,6 @@ startSpawningEnemies(player);
         button.appendChild(title);
         button.appendChild(img);
         button.appendChild(description);
-        button.appendChild(levelStars); 
         
         if (onClick) button.onclick = onClick;
         //img.style.filter = 'grayscale(100%) blur(5px)';
@@ -4210,7 +4182,6 @@ startSpawningEnemies(player);
         button.style.opacity = '0.5';
         title.innerText="???"
         title.style.color = 'gray';
-        titlelvl.style.color = 'gray';
         description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
@@ -4244,10 +4215,10 @@ startSpawningEnemies(player);
         return container;
     }
     
-    function createTitleContainer(text) {
+    function createTitleContainer(text,tooltip) {
         const container = document.createElement('div');
         container.classList.add('choose-menu-title');
-        const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw'); 
+        const title = createTitleElement(text, tooltip, "title"); 
         container.appendChild(title);
         return container;
     }
@@ -4268,10 +4239,10 @@ startSpawningEnemies(player);
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitle = createTitleElement('', 'lazy subtitle too btw', "subtitle");
         addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
     };
     createGameTitle();
@@ -4330,18 +4301,18 @@ function createGameMenu() {
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
-    const classSubTitle = createTitleElement('🏆', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    const classSubTitle = createTitleElement('🏆', 'lazy subtitle too btw', "subtitle")
     const classButton = createButton(player, isMobile ? 0.6 : 0.75);
     classContainer.appendChild(classButton);
     classContainer.appendChild(classSubTitle);
 
-    const abilitiesSubTitle = createTitleElement('⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    const abilitiesSubTitle = createTitleElement('⚔️', 'lazy subtitle too btw', "subtitle");
     const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesButton);
     classAbilityContainer.appendChild(abilitiesSubTitle);
 
-    const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+    const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', "subtitle");
     const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldButton);
@@ -4351,7 +4322,7 @@ function createGameMenu() {
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = createTitleElement('Move to quick start !', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+    const subTitle = createTitleElement('Move to quick start !', 'lazy subtitle too btw', "subtitle");
     addContainerUI(botUI, 'bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
@@ -4378,7 +4349,7 @@ function createGameMenu() {
 ---------------------------------------------------------------------------*/
 function createChooseMenu(entityList, text, type) {
     const popUpContainer = createPopUpContainer();
-    const titleContainer = createTitleContainer(text);
+    const titleContainer = createTitleContainer(text,'Test');
     const gridContainer = createGridContainer();
 
     entityList.forEach(entity => {
@@ -4438,9 +4409,9 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                                     WEB3 Connect Menu
 ---------------------------------------------------------------------------*/
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '135%' });
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '130%' });
     const buttonConnect = document.createElement('button');
-    const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
+    const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
     buttonConnect.style.backgroundColor = 'black';
     buttonConnect.style.border = 'transparent';
     buttonConnect.style.cursor = 'pointer';
@@ -4503,19 +4474,19 @@ function handleEntitySelection(entity, type) {
         const worldImages = worldTypes.map(world => world.thumbnail);
      
         const classContainer = document.createElement('div');
-        const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', "subtitle");
         const classButton = createButton(player, isMobile ? 0.6 : 0.75);
         classContainer.appendChild(classButton);
         classContainer.appendChild(classSubTitle);
      
-        const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', "subtitle");
         ability.isLocked=false;
         const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
         const classAbilityContainer = document.createElement('div');
         classAbilityContainer.appendChild(abilitiesButton);
         classAbilityContainer.appendChild(abilitiesSubTitle);
      
-        const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', "subtitle");
         const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
         const worldContainer = document.createElement('div');
         worldContainer.appendChild(worldButton);
@@ -4525,18 +4496,18 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleElement(`Welcome Home, ${address}!`, 'lazy subtitle too btw', isMobile ? '4.5vw' : '2.5vw');
+        const subTitle = createTitleContainer(`Welcome Home, Survivor.eth!`, 'lazy subtitle too btw');
         
-        const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
          
-        const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw',"subtitle");
         subTitleReport.style.cursor = 'pointer';
  
-        const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw',"subtitle");
         subTitleHall.style.cursor = 'pointer';
  
-        const subTitleLogout = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        const subTitleLogout = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw',"subtitle");
         subTitleLogout.style.cursor = 'pointer';
         subTitleLogout.onclick = () => {
             localStorage.removeItem('metaMaskAddress');
@@ -4549,7 +4520,7 @@ function handleEntitySelection(entity, type) {
         const loadingBar = document.createElement('div');
         loadingBar.classList.add('loading-bar');
          
-        const loadingText =  createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '2vw');
+        const loadingText =  createTitleElement('', 'who even keeps track of these', "subtitle");
         loadingContainer.appendChild(loadingBar);
 
         //debt: push real data here, eventually
@@ -4604,9 +4575,9 @@ function handleEntitySelection(entity, type) {
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('__________________', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
-const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
-const coordinateDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
+const modeDisplay = createTitleElement('__________________', 'who even keeps track of these',"subtitle");
+const timerDisplay = createTitleElement('', 'who even keeps track of these', "subtitle");
+const coordinateDisplay = createTitleElement('', 'who even keeps track of these',"subtitle");
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
