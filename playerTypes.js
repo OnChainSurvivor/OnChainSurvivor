@@ -25,11 +25,11 @@ export const playerTypes = [{
     Transparency: 0,
     Consensus: 0,
     abilities: [
-        { type: 'Scalping Bot', level: 1 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Onchain Trail', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Scalping Bot'},
+        { type: 'Scalping Bot'},
+        { type: 'Scalping Bot'},
+        { type: 'Onchain Trail'},
+        { type: 'Scalping Bot'},
     ],
 },{
     class: 'Survivor',
@@ -47,11 +47,11 @@ export const playerTypes = [{
     level:0,
     isLocked: false,
     abilities: [
-        { type: 'Code Refactor', level: 1 }, 
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
-        { type: 'Veil of Decentralization', level: 0 },
+        { type: 'Code Refactor'}, 
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
     ],
 },{
     class: 'Survivor',

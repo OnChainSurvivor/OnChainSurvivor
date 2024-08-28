@@ -215,13 +215,11 @@ html, body {
     grid-template-columns: repeat(1, auto);
 }
 
-
 @media (max-width: 830px) {
     .choose-menu-grid {
         grid-template-columns: repeat(2, auto); 
     }
 }
-
 
 .loading-container {
     position: relative;

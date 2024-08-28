@@ -10,7 +10,7 @@ class Ability {
     }
 
     activate() {
-        this.effect(this.level, this.user);
+        this.effect( this.user);
     }
 
     deactivate() {
@@ -28,7 +28,6 @@ class Entity extends THREE.Object3D {
         Object.assign(this, config);
         this.position.copy(position);
         this.abilities = [];
-        this.possibleAbilities = new Map();
 
         const modelKey = 'SurvivorModel';
 
@@ -92,16 +91,6 @@ class Entity extends THREE.Object3D {
 
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
-            const vabilityType = abilityTypes.find(type => type.title === entityAbility.type);
-            if (vabilityType) {
-                this.possibleAbilities.set(entityAbility.type, { ...vabilityType, level: entityAbility.level });
-            }
-            if (entityAbility.level===0) return;
-            const existingAbility = this.abilities.find(ability => ability.title === entityAbility.type);
-            if (existingAbility) {
-               existingAbility.level = Math.min(existingAbility.level + entityAbility.level, 10);
-               existingAbility.activate();
-            } else {
                 const abilityType = abilityTypes.find(type => type.title === entityAbility.type);
                 if (abilityType) {
                     const newAbility = new Ability(this, { ...abilityType, level: entityAbility.level });
@@ -109,16 +98,19 @@ class Entity extends THREE.Object3D {
                     newAbility.activate();
                 }
             }
-        });
+        )
     }
 
     getUpgradableAbilities() {
-        return Array.from(this.possibleAbilities.values())
-        .filter(ability => {
-            const playerAbility = player.abilities.find(pa => pa.title === ability.title);
-            return (playerAbility ? playerAbility.level : 0) < 10;
+        return abilityTypes.filter(ability => {
+          if (ability.isLocked) {
+            return false; 
+          }
+      
+          const isActive = this.abilities.some(pa => pa.title === ability.title);
+          return !isActive; 
         });
-    }
+      }
 
     addAbility(ability) {
         this.abilities.push(ability);
@@ -233,9 +225,8 @@ const abilityTypes = [
     tooltip: "Like a true degen",
     effectinfo: 'Bot damage and homing speed increase.',
     thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-    level: 0,
     isLocked: false,
-    effect(level, user) {
+    effect(user) {
             this.lastHitTime=0;
             let time = Date.now();
             let potentialTargets= null;
@@ -264,7 +255,7 @@ const abilityTypes = [
                             user.position.y,
                             user.position.z + Math.sin(time) * orb.orbitRadius
                         );
-                        if ((Date.now() - this.lastHitTime > (500-(level*200)))) {
+                        if ((Date.now() - this.lastHitTime > (500))) {
                         this.lastHitTime = Date.now();
                         potentialTargets = scene.children.filter(child => child instanceof Entity && child.class !== user.class);
                         if (potentialTargets.length > 0) {
@@ -300,14 +291,13 @@ const abilityTypes = [
     tooltip: 'Powerful...interesting choice of words, to say the least.',
     effectinfo: 'Trail size and frequency increase.',
     thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-    level: 0,
     isLocked: false,
-    effect(level, user) {
+    effect(user) {
         const trailBullets = [];
         this.lastTrailTime = 0;
         const trail = {
             create: () => {
-                if (trailBullets.length >= (7+(level*2))) {
+                if (trailBullets.length >= (10)) {
                     const oldestBullet = trailBullets.shift(); 
                     scene.remove(oldestBullet); 
                 }
@@ -349,13 +339,12 @@ const abilityTypes = [
     tooltip: "Can't touch this!",
     effectinfo: 'Veil trigger % UP.',
     thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
-    level: 0,
     isLocked: false,
-    effect(level, user) {
+    effect(user) {
         const veil = {
             create: () => {
                 if (veil.shield) scene.remove(veil.shield);
-                user.evasion += (3*level);
+                user.evasion += 20;
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -375,7 +364,6 @@ const abilityTypes = [
         };
         this.deactivate = () => {
                 if (veil.shield) {
-                    user.evasion -= (3*level);
                     scene.remove(veil.shield);
                     veil.shield = null;
                 }
@@ -389,13 +377,12 @@ const abilityTypes = [
     tooltip: "FAST",
     effectinfo: 'Optimizes the code much more, reducing cooldown of all other abilities.',
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
-    level: 0,
     isLocked: false, 
     effect(level, user) {
         const veil = {
             create: () => {
                 if (veil.shield) scene.remove(veil.shield);
-                user.evasion += (3*level);
+                user.evasion += 3;
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
                 const shieldMaterial = new THREE.MeshStandardMaterial({
                     color: rainbowColors[colorIndex],
@@ -415,7 +402,7 @@ const abilityTypes = [
         };
         this.deactivate = () => {
                 if (veil.shield) {
-                    user.evasion -= (3*level);
+
                     scene.remove(veil.shield);
                     veil.shield = null;
                 }
@@ -428,7 +415,6 @@ const abilityTypes = [
     tooltip: "More alts than a telegram schizo",
     effectinfo: "Creates 2 extra identities.",
     thumbnail:'Media/Abilities/SYBILATTACK.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
 
@@ -439,7 +425,6 @@ const abilityTypes = [
     tooltip: "no, CEXes totally have never ever done this.",
     effectinfo: "Doubles the penalties value.",
     thumbnail: 'Media/Abilities/VOTEMANIPULATION.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -449,7 +434,6 @@ const abilityTypes = [
     tooltip: "Free tokens! Just kidding, they're mine.",
     effectinfo: "Fake airdrop also steals networth out of enemies.",
     thumbnail: 'Media/Abilities/AIRDROPFRAUD.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -459,7 +443,6 @@ const abilityTypes = [
     tooltip: "Fake it till you make it, anon!",
     effectinfo: "Doubles the bonuses of the forged class.",
     thumbnail: 'Media/Abilities/IDENTITYFORGE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -469,7 +452,6 @@ const abilityTypes = [
     tooltip: " ",
     effectinfo: "Increases attack and defense by 3% per controlled enemy. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/VOTERIGGING.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -479,7 +461,6 @@ const abilityTypes = [
     tooltip: "Block confirmed!.",
     effectinfo: "Doubles defensive bonuses.",
     thumbnail: 'Media/Abilities/CONFIRMBLOCK.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -490,7 +471,6 @@ const abilityTypes = [
     tooltip: ">Your transaction was succesfull \n>the coin moons, you check your wallet\n>turns out your tx never got in",
     effectinfo: "Survivors downed cannot come back from life.",
     thumbnail: 'Media/Abilities/FINALITY.png',
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -501,7 +481,6 @@ const abilityTypes = [
     tooltip: "No double-spending here, buddy!",
     effectinfo: "Absorbs 1 hit per level.",
     thumbnail: "A broken coin split in half.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -512,7 +491,6 @@ const abilityTypes = [
     tooltip: "Overclocked like a mining rig in a bull run!",
     effectinfo: "Increases attack power by 20% for 5 seconds. Increases by 5% per level.",
     thumbnail: "A CPU with a glowing overclock symbol.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -523,7 +501,6 @@ const abilityTypes = [
     tooltip: "Mining while you sleep!",
     effectinfo: "Deploys a turret that deals 5% damage per second. Increases by 1% per level.",
     thumbnail: "A turret with mining gear.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -534,7 +511,6 @@ const abilityTypes = [
     tooltip: "Surging like the latest meme coin!",
     effectinfo: "Increases attack speed and movement speed by 10% for 5 seconds. Increases by 2% per level.",
     thumbnail: "A lightning bolt with gears.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -545,7 +521,6 @@ const abilityTypes = [
     tooltip: "Migrated to PoS and feeling safe!",
     effectinfo: "Increases defense by 5% per level.",
     thumbnail: "A shield with 'PoS' written on it.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -556,7 +531,6 @@ const abilityTypes = [
     tooltip: "DAO voted, gains distributed!",
     effectinfo: "Grants a random buff of 5% to an attribute for 5 seconds. Increases by 1% per level.",
     thumbnail: "A voting card with a checkmark.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -567,7 +541,6 @@ const abilityTypes = [
     tooltip: "Upgraded like ETH 2.0!",
     effectinfo: "Increases effectiveness of all abilities by 5% for 5 seconds. Increases by 1% per level.",
     thumbnail: "A progress bar with a checkmark.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -578,7 +551,6 @@ const abilityTypes = [
     tooltip: "APY like a degen farm!",
     effectinfo: "Grants 5% more resources every 10 seconds. Increases by 1% per level.",
     thumbnail: "A yield sign with coins.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -589,7 +561,6 @@ const abilityTypes = [
     tooltip: "One-shot wonder like a flash loan!",
     effectinfo: "Deals 20% damage to a single target. Increases by 5% per level.",
     thumbnail: "A lightning bolt striking a target.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -600,7 +571,6 @@ const abilityTypes = [
     tooltip: "Faster than your FOMO trades!",
     effectinfo: "Increases movement speed by 10% and attack priority by 5%. Increases by 2% per level.",
     thumbnail: "A racing bot with a trail.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -611,7 +581,6 @@ const abilityTypes = [
     tooltip: "Finding bugs like a true degen!",
     effectinfo: "Increases damage to enemies by 10% when weaknesses are found. Increases by 2% per level.",
     thumbnail: "A magnifying glass over a bug.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -622,7 +591,6 @@ const abilityTypes = [
     tooltip: "Liquidated harder than a leveraged trade gone wrong!",
     effectinfo: "Deals 15% area damage. Increases by 3% per level.",
     thumbnail: "A graph plummeting with red arrows.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -633,7 +601,6 @@ const abilityTypes = [
     tooltip: "Reorg'd like a 51% attack!",
     effectinfo: "Rewinds 2 seconds of gameplay. Increases by 0.5 seconds per level.",
     thumbnail: "A clock turning backward.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -644,7 +611,6 @@ const abilityTypes = [
     tooltip: "Compounding gains like a staking pro!",
     effectinfo: "Increases resource gain by 5% every 10 seconds. Increases by 1% per level.",
     thumbnail: "A pile of tokens growing over time.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -655,7 +621,6 @@ const abilityTypes = [
     tooltip: "Overloaded like a cheap DDoS script!",
     effectinfo: "Stuns all enemies for 2 seconds. Increases by 0.5 seconds per level.",
     thumbnail: "A wave crashing into a server.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -666,7 +631,6 @@ const abilityTypes = [
     tooltip: "Manipulated just like those price feeds!",
     effectinfo: "Disrupts enemy abilities for 3 seconds. Increases by 1 second per level.",
     thumbnail: "A tampered-with scale.",
-    level: 0,
     isLocked: false,
     effect(level, user) { 
     },
@@ -676,7 +640,6 @@ const abilityTypes = [
     tooltip: "Spotted a whale in the arena!",
     effectinfo: "Marks the strongest enemy, increasing damage dealt to them by 10%. Increases by 2% per level.",
     thumbnail: "A whale icon with a radar.",
-    level: 0,
     isLocked: false,
     effect(level, user) {
         // Implement the effect logic here
@@ -688,7 +651,6 @@ const abilityTypes = [
     tooltip: "Caught in a gas war!",
     effectinfo: "Deploys a smart contract that traps enemies in an area, dealing 5% damage per second. Increases by 1% per level.",
     thumbnail: "A smart contract document with chains.",
-    level: 0,
     isLocked: false,
     effect(level, user) {
         // Implement the effect logic here
@@ -699,7 +661,6 @@ const abilityTypes = [
     tooltip: "Providing liquidity like a degen in a farm!",
     effectinfo: "Heals allies for 5% and damages enemies for 5% per second. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -710,7 +671,6 @@ const abilityTypes = [
     tooltip: "Front-running like an MEV bot!",
     effectinfo: "Drains 2% health per second from moving enemies. Increases by 0.5% per level.",
     thumbnail: 'Media/Abilities/MEVBOT.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -721,7 +681,6 @@ const abilityTypes = [
     tooltip: "Causing FUD like a pro!",
     effectinfo: "Reduces enemy effectiveness by 10% for 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/FUDSTORM.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -732,7 +691,6 @@ const abilityTypes = [
     tooltip: "Protected by the wisdom of Satoshi!",
     effectinfo: "Grants immunity to damage for 3 seconds. Increases by 0.5 seconds per level.",
     thumbnail: 'Media/Abilities/WHITEPAPERSHIELD.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -743,7 +701,6 @@ const abilityTypes = [
     tooltip: "Burned like gas fees in a bull run!",
     effectinfo: "Reduces enemy resources by 5% per second for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/TRANSACTIONFEEBURN.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -754,7 +711,6 @@ const abilityTypes = [
     tooltip: "Faster than an MEV bot!",
     effectinfo: "Increases attack speed by 5% and initiative by 10%. Increases by 2% per level.",
     thumbnail: 'Media/Abilities/TRANSACTIONFRONTRUNNER.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -765,7 +721,6 @@ const abilityTypes = [
     tooltip: "Exploiting vulnerabilities like a pro!",
     effectinfo: "Deals 5% damage per second for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/SMARTCONTRACTHACK.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -776,7 +731,6 @@ const abilityTypes = [
     tooltip: "Stunning like a sudden market crash!",
     effectinfo: "Stuns enemies for 2 seconds. Increases by 0.5 seconds per level.",
     thumbnail: 'Media/Abilities/FLASHCRASH.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -787,7 +741,6 @@ const abilityTypes = [
     tooltip: "Splitting like a forked chain!",
     effectinfo: "Creates a duplicate that lasts for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CHAINSPLIT.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -798,7 +751,6 @@ const abilityTypes = [
     tooltip: "Free goodies like an airdrop!",
     effectinfo: "Grants a 5% buff to allies for 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/AIRDROP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -809,7 +761,6 @@ const abilityTypes = [
     tooltip: "Cheap like a bear market gas fee!",
     effectinfo: "Reduces ability resource cost by 5%. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/GASFEEREDUCTION.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -820,7 +771,6 @@ const abilityTypes = [
     tooltip: "Balancing like a true market maker!",
     effectinfo: "Balances stats, increasing allies' and decreasing enemies' by 5%. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/MARKETMAKER.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -831,7 +781,6 @@ const abilityTypes = [
     tooltip: "Rugged like a failed project!",
     effectinfo: "Removes all buffs from enemies instantly. Duration increases by 0.5 seconds per level.",
     thumbnail: 'Media/Abilities/RUGPULL.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -842,7 +791,6 @@ const abilityTypes = [
     tooltip: "Collective power like a DAO!",
     effectinfo: "Grants a 5% decision-making buff to allies for 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/DAOGOVERNANCE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -853,7 +801,6 @@ const abilityTypes = [
     tooltip: "Earning passively like liquidity mining!",
     effectinfo: "Generates 5% resources every 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/LIQUIDITYMINING.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -864,7 +811,6 @@ const abilityTypes = [
     tooltip: "Secure like a certified audit!",
     effectinfo: "Negates enemy traps for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/SMARTCONTRACTAUDIT.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -875,7 +821,6 @@ const abilityTypes = [
     tooltip: "Hyped like an ICO!",
     effectinfo: "Increases all stats by 10% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/ICOHYPE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -886,7 +831,6 @@ const abilityTypes = [
     tooltip: "Swapped like a dex trade!",
     effectinfo: "Swaps 5% debuffs for buffs with enemies. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/TOKENSWAP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -897,7 +841,6 @@ const abilityTypes = [
     tooltip: "Stable like a top-tier stablecoin!",
     effectinfo: "Reduces damage taken by 5%. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/STABLECOINSHIELD.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -908,7 +851,6 @@ const abilityTypes = [
     tooltip: "Seeing the future like an oracle!",
     effectinfo: "Increases evasion by 5%. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/ORACLEINSIGHT.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -919,7 +861,6 @@ const abilityTypes = [
     tooltip: "Bounties like finding bugs in protocols!",
     effectinfo: "Grants 5% extra resources for each enemy defeated. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOBOUNTY.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -930,7 +871,6 @@ const abilityTypes = [
     tooltip: "Unified like a consensus protocol!",
     effectinfo: "Increases allies' effectiveness by 5%. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CONSENSUSPROTOCOL.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -941,7 +881,6 @@ const abilityTypes = [
     tooltip: "Burned like tokens in a supply reduction!",
     effectinfo: "Burns 5% of enemy resources. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/TOKENBURN.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -952,7 +891,6 @@ const abilityTypes = [
     tooltip: "Leveraged like a flash loan exploit!",
     effectinfo: "Increases resources by 10% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/FLASHLOAN.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -963,7 +901,6 @@ const abilityTypes = [
     tooltip: "Signaling like a trading bot!",
     effectinfo: "Summons reinforcements that last for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOSIGNAL.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -974,7 +911,6 @@ const abilityTypes = [
     tooltip: "Whale-sized like a market mover!",
     effectinfo: "Increases damage by 10% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOWHALE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -985,7 +921,6 @@ const abilityTypes = [
     tooltip: "Airdropped like free tokens!",
     effectinfo: "Grants 5% extra resources to allies for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOAIRDROP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -996,7 +931,6 @@ const abilityTypes = [
     tooltip: "Bearish like a market downturn!",
     effectinfo: "Reduces enemies' attack power by 5% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOBEAR.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1007,7 +941,6 @@ const abilityTypes = [
     tooltip: "Bullish like a market rally!",
     effectinfo: "Increases allies' attack power by 5% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOBULL.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1018,7 +951,6 @@ const abilityTypes = [
     tooltip: "Dumping like a whale!",
     effectinfo: "Deals 20% damage to a single enemy. Increases by 2% per level.",
     thumbnail: 'Media/Abilities/CRYPTOWHALEDUMP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1029,7 +961,6 @@ const abilityTypes = [
     tooltip: "Rallying like a bull market!",
     effectinfo: "Increases allies' speed by 10% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPOTORALLY.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1040,7 +971,6 @@ const abilityTypes = [
     tooltip: "Protected like a whitelist spot!",
     effectinfo: "Grants immunity to debuffs for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOWHITELIST.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1051,7 +981,6 @@ const abilityTypes = [
     tooltip: "Locked like funds in a smart contract!",
     effectinfo: "Locks an enemy's abilities for 3 seconds. Increases by 0.5 seconds per level.",
     thumbnail: 'Media/Abilities/CRYPTOLOCK.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1062,7 +991,6 @@ const abilityTypes = [
     tooltip: "Lending like a DeFi protocol!",
     effectinfo: "Lends 10% resources to allies for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOLOAN.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1073,7 +1001,6 @@ const abilityTypes = [
     tooltip: "Governance like a DAO!",
     effectinfo: "Increases allies' power by 5% for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOGOVERNANCE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1084,7 +1011,6 @@ const abilityTypes = [
     tooltip: "Hodling like a true believer!",
     effectinfo: "Increases resources by 5% per 10 seconds held. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOHODLER.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1095,7 +1021,6 @@ const abilityTypes = [
     tooltip: "Forking like a blockchain split!",
     effectinfo: "Duplicates an ability for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOFORK.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1106,7 +1031,6 @@ const abilityTypes = [
     tooltip: "Charging like a transaction fee!",
     effectinfo: "Charges enemies 5% resources for using abilities. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOFEE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1117,7 +1041,6 @@ const abilityTypes = [
     tooltip: "Mining like a blockchain!",
     effectinfo: "Generates 5% resources every 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOMINING.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1128,7 +1051,6 @@ const abilityTypes = [
     tooltip: "Escrow like a smart contract!",
     effectinfo: "Holds 5% resources in escrow for 10 seconds, releasing them after the delay. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOESCROW.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1139,7 +1061,6 @@ const abilityTypes = [
     tooltip: "Bridging like cross-chain assets!",
     effectinfo: "Transfers 10% resources to an ally. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOBRIDGE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1150,7 +1071,6 @@ const abilityTypes = [
     tooltip: "Secure like a custody service!",
     effectinfo: "Prevents resources from being stolen for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOCUSTODY.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1161,7 +1081,6 @@ const abilityTypes = [
     tooltip: "Yielding like a DeFi protocol!",
     effectinfo: "Generates 5% yield from resources every 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOYIELD.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1172,7 +1091,6 @@ const abilityTypes = [
     tooltip: "Arbitraging like a pro!",
     effectinfo: "Generates 10% resources from price differences every 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOARBITRAGE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1183,7 +1101,6 @@ const abilityTypes = [
     tooltip: "Building like a dApp developer!",
     effectinfo: "Generates 5% resources from dApp every 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTODAPP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1194,7 +1111,6 @@ const abilityTypes = [
     tooltip: "Proof like a Merkle tree!",
     effectinfo: "Verifies resources, preventing theft for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOMERKLEPROOF.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1205,7 +1121,6 @@ const abilityTypes = [
     tooltip: "Storing like a hardware wallet!",
     effectinfo: "Stores resources securely, preventing theft for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOWALLET.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1216,7 +1131,6 @@ const abilityTypes = [
     tooltip: "Oracling like Chainlink!",
     effectinfo: "Generates 5% resources from accurate data every 10 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOORACLE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1227,7 +1141,6 @@ const abilityTypes = [
     tooltip: "Consensing like a blockchain!",
     effectinfo: "Increases power by 5% through consensus for 5 seconds. Increases by 1% per level.",
     thumbnail: 'Media/Abilities/CRYPTOCONSENSUS.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1238,7 +1151,6 @@ const abilityTypes = [
     tooltip: "Securing like a multi-signature wallet!",
     effectinfo: "Secures resources with multiple signatures for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOMULTISIG.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1249,7 +1161,6 @@ const abilityTypes = [
     tooltip: "Disrupt like a true NFT master!",
     effectinfo: "Disables enemy NFT effects for 3 seconds. Increases by 0.5 seconds per level.",
     thumbnail: 'Media/Abilities/NFTDISRUPTOR.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1260,7 +1171,6 @@ const abilityTypes = [
     tooltip: "Enhancing like an NFT upgrade!",
     effectinfo: "Increases NFT effects by 10% for 5 seconds. Increases by 2% per level.",
     thumbnail: 'Media/Abilities/NFTENHANCER.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1271,7 +1181,6 @@ const abilityTypes = [
     tooltip: "Shielding like a smart contract!",
     effectinfo: "Provides 20% damage reduction for 5 seconds. Increases by 5% per level.",
     thumbnail: 'Media/Abilities/SMARTCONTRACTSHIELD.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1282,7 +1191,6 @@ const abilityTypes = [
     tooltip: "Boosting like a diversified portfolio!",
     effectinfo: "Increases resource gathering efficiency by 10% for 10 seconds. Increases by 2% per level.",
     thumbnail: 'Media/Abilities/CRYPTOPORTFOLIO.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1293,7 +1201,6 @@ const abilityTypes = [
     tooltip: "Trading like a decentralized exchange!",
     effectinfo: "Allows trading of resources between allies. Increases trade efficiency by 10% per level.",
     thumbnail: 'Media/Abilities/DECENTRALIZEDEXCHANGE.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1304,7 +1211,6 @@ const abilityTypes = [
     tooltip: "Analyzing like a blockchain expert!",
     effectinfo: "Increases strategy effectiveness by 15% for 10 seconds. Increases by 3% per level.",
     thumbnail: 'Media/Abilities/BLOCKCHAINANALYTICS.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1315,7 +1221,6 @@ const abilityTypes = [
     tooltip: "Auditing like a pro!",
     effectinfo: "Reveals enemy weaknesses and increases damage dealt to them by 10% for 5 seconds. Increases by 2% per level.",
     thumbnail: 'Media/Abilities/CRYPTOAUDIT.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1326,7 +1231,6 @@ const abilityTypes = [
     tooltip: "Backing up like a secure blockchain!",
     effectinfo: "Creates a backup of 20% resources for recovery after 10 seconds. Increases by 5% per level.",
     thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1337,7 +1241,6 @@ const abilityTypes = [
     tooltip: "Validating like a blockchain node!",
     effectinfo: "Validates transactions, preventing fraudulent activities for 5 seconds. Increases by 1 second per level.",
     thumbnail: 'Media/Abilities/CRYPTOVALIDATOR.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1348,7 +1251,6 @@ const abilityTypes = [
     tooltip: "Escalating like a market rally!",
     effectinfo: "Increases ability power by 15% for 5 seconds. Increases by 3% per level.",
     thumbnail: 'Media/Abilities/CRYPTOESCALATION.png',
-    level: 0,
     isLocked: false,
     effect(level, user) {
     },
@@ -1359,7 +1261,7 @@ const abilityTypes = [
     tooltip: "Harness the power of the hash. Strike with more force.",
     effectinfo: "Increases attack power by 10% per level.",
     thumbnail: 'Media/Abilities/HASHPOWER.png',
-    level: 1,
+
     isLocked: false,
     effect(level, user) {
     },
@@ -1370,7 +1272,7 @@ const abilityTypes = [
     tooltip: "Lay down the mines. Enemies beware.",
     effectinfo: "Deals 5% of total damage per second to enemies in the zone. Duration increases per level.",
     thumbnail: 'Media/Abilities/MINEFIELD.png',
-    level: 1,
+
     isLocked: false,
     effect(level, user) {
     },
@@ -1381,7 +1283,6 @@ const abilityTypes = [
     tooltip: "Reward yourself with health for your efforts.",
     effectinfo: "Heals for 2% of damage dealt per level.",
     thumbnail: 'Media/Abilities/BLOCKREWARD.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1392,7 +1293,6 @@ const abilityTypes = [
     tooltip: "Unleash the power of the Mega Miner. Massive destruction.",
     effectinfo: "Deals 50% of total damage in a large area. Damage increases per level.",
     thumbnail: 'Media/Abilities/MEGAMINER.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1403,7 +1303,6 @@ const abilityTypes = [
     tooltip: "Strengthen your defenses with stakes.",
     effectinfo: "Increases defense by 10% per level for a short duration.",
     thumbnail: 'Media/Abilities/STAKEDEFENSE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1414,7 +1313,6 @@ const abilityTypes = [
     tooltip: "Reap the benefits of your interest. Regenerate health.",
     effectinfo: "Regenerates 1% of total health per level over time.",
     thumbnail: 'Media/Abilities/INTERESTYIELD.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1425,7 +1323,6 @@ const abilityTypes = [
     tooltip: "Call in support from a trusted validator.",
     effectinfo: "Summons an ally with 10% of player's stats per level for a short duration.",
     thumbnail: 'Media/Abilities/VALIDATORSUPPORT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1436,7 +1333,6 @@ const abilityTypes = [
     tooltip: "Build your fortress and withstand any attack.",
     effectinfo: "Increases defense by 50% per level and reduces damage taken by 20% per level for a short duration.",
     thumbnail: 'Media/Abilities/STAKEFORTRESS.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1447,7 +1343,6 @@ const abilityTypes = [
     tooltip: "Scaling up like a true degen, moving fast and striking hard.",
     effectinfo: "Increases attack speed and movement speed by 5% per level.",
     thumbnail: 'Media/Abilities/SCALABILITYBOOST.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1458,7 +1353,6 @@ const abilityTypes = [
     tooltip: "Lock it down, secure the bag. Take less damage.",
     effectinfo: "Reduces damage taken by 10% per level for a short period.",
     thumbnail: 'Media/Abilities/SECURITYLOCKDOWN.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1469,7 +1363,6 @@ const abilityTypes = [
     tooltip: "Rally the network. Summon allies to join the fight.",
     effectinfo: "Summons 1 ally per level to assist in battle, each with 10% of player's stats.",
     thumbnail: 'Media/Abilities/DECENTRALIZEDNETWORK.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1480,7 +1373,6 @@ const abilityTypes = [
     tooltip: "Network effect in action. Boost all your powers.",
     effectinfo: "Increases the effectiveness of all abilities by 5% per level.",
     thumbnail: 'Media/Abilities/NETWORKEFFECT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1491,7 +1383,6 @@ const abilityTypes = [
     tooltip: "Layer up! More defense, less worry.",
     effectinfo: "Adds an additional layer of defense, reducing damage taken by 5% per level.",
     thumbnail: 'Media/Abilities/MULTILAYERDESIGN.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1502,7 +1393,6 @@ const abilityTypes = [
     tooltip: "Built like a monolith. More health, more power.",
     effectinfo: "Increases maximum health by 10% per level.",
     thumbnail: 'Media/Abilities/MONOLITHICDESIGN.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1513,7 +1403,6 @@ const abilityTypes = [
     tooltip: "Sidechains for sidekicks! Distract your enemies.",
     effectinfo: "Creates 1 decoy per level that distracts enemies for a short duration.",
     thumbnail: 'Media/Abilities/SIDECHAINS.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1524,7 +1413,6 @@ const abilityTypes = [
     tooltip: "Scale up and save! Reduce costs and cooldowns.",
     effectinfo: "Reduces the cost and cooldown of all abilities by 5% per level.",
     thumbnail: 'Media/Abilities/LAYER2SCALING.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1535,7 +1423,6 @@ const abilityTypes = [
     tooltip: "Deploy the contract. Let the turret handle it.",
     effectinfo: "Deploys a turret with 10% of player's attack power per level. Duration increases per level.",
     thumbnail: 'Media/Abilities/DEPLOYCONTRACT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1546,7 +1433,6 @@ const abilityTypes = [
     tooltip: "Pay the fee, cut the wait. Reduce your cooldowns.",
     effectinfo: "Reduces the cooldown of all abilities by 5% per level.",
     thumbnail: 'Media/Abilities/TRANSACTIONFEE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1557,7 +1443,6 @@ const abilityTypes = [
     tooltip: "Block out the FUD. Stay strong and immune.",
     effectinfo: "Makes the player immune to all debuffs for 5 seconds per level.",
     thumbnail: 'Media/Abilities/FUDSHIELD.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1568,7 +1453,6 @@ const abilityTypes = [
     tooltip: "Optimize your gas, save on costs. Efficiency wins.",
     effectinfo: "Decreases mana cost of all abilities by 5% per level.",
     thumbnail: 'Media/Abilities/GASOPTIMIZATION.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1579,7 +1463,6 @@ const abilityTypes = [
     tooltip: "Stake your claim. Regenerate health faster.",
     effectinfo: "Increases health regeneration by 5% per level.",
     thumbnail: 'Media/Abilities/PROOFOFSTAKE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1590,7 +1473,6 @@ const abilityTypes = [
     tooltip: "Delegate and elevate. Share the wealth.",
     effectinfo: "Shares 5% of all buffs with allies per level.",
     thumbnail: 'Media/Abilities/DELEGATION.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1601,7 +1483,6 @@ const abilityTypes = [
     tooltip: "Farm those yields. Reap the rewards.",
     effectinfo: "Increases resource gain by 10% per level.",
     thumbnail: 'Media/Abilities/YIELDFARMING.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1612,7 +1493,6 @@ const abilityTypes = [
     tooltip: "Get instant liquidity. Just don't get rekt.",
     effectinfo: "Instantly grants a large amount of resources, with a cooldown. Amount increases per level.",
     thumbnail: 'Media/Abilities/FLASHLOAN.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1623,7 +1503,6 @@ const abilityTypes = [
     tooltip: "Add liquidity, boost the pool. Attack faster.",
     effectinfo: "Creates a pool that increases allies' attack speed by 5% per level.",
     thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1634,7 +1513,6 @@ const abilityTypes = [
     tooltip: "Shield against impermanent loss. Take less damage.",
     effectinfo: "Reduces damage taken by 5% per level.",
     thumbnail: 'Media/Abilities/IMPERMANENTLOSsshield.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1645,7 +1523,6 @@ const abilityTypes = [
     tooltip: "Receive the airdrop. Enjoy the random goodies.",
     effectinfo: "Grants a random buff to all allies, effect increases per level.",
     thumbnail: 'Media/Abilities/AIRDROP.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1656,7 +1533,6 @@ const abilityTypes = [
     tooltip: "Launch on the DEX. Pump up those attacks.",
     effectinfo: "Increases allies' attack power by 5% per level.",
     thumbnail: 'Media/Abilities/INITIALDEXOFFERING.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1667,7 +1543,6 @@ const abilityTypes = [
     tooltip: "Stake and earn. Heal over time.",
     effectinfo: "Heals all allies for 2% of their total health per level every few seconds.",
     thumbnail: 'Media/Abilities/STAKINGREWARDS.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1678,7 +1553,6 @@ const abilityTypes = [
     tooltip: "Stay online. Extend those buffs.",
     effectinfo: "Increases the duration of all buffs by 5% per level.",
     thumbnail: 'Media/Abilities/VALIDATORUPTIME.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1689,7 +1563,6 @@ const abilityTypes = [
     tooltip: "Protect against slashing. Reduce crit damage.",
     effectinfo: "Reduces damage taken from critical hits by 5% per level.",
     thumbnail: 'Media/Abilities/SLASHINGPROTECTION.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1700,7 +1573,6 @@ const abilityTypes = [
     tooltip: "Vote and secure. Gain temporary invulnerability.",
     effectinfo: "Grants temporary invulnerability to all allies for 2 seconds per level.",
     thumbnail: 'Media/Abilities/GOVERNANCEVOTE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1711,7 +1583,6 @@ const abilityTypes = [
     tooltip: "Allocate the treasury. Distribute the wealth.",
     effectinfo: "Provides a large amount of resources to all allies, amount increases per level.",
     thumbnail: 'Media/Abilities/TREASURYALLOCATION.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1722,7 +1593,6 @@ const abilityTypes = [
     tooltip: "Go DeFi. Boost your resource gains.",
     effectinfo: "Increases the effectiveness of all resource-gathering abilities by 5% per level.",
     thumbnail: 'Media/Abilities/DECENTRALIZEDFINANCE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1733,7 +1603,6 @@ const abilityTypes = [
     tooltip: "Trade NFTs. Find rare items more often.",
     effectinfo: "Increases the drop rate of rare items by 5% per level.",
     thumbnail: 'Media/Abilities/NFTMARKETPLACE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1744,7 +1613,6 @@ const abilityTypes = [
     tooltip: "Triple the pools, triple the power. Buff your allies.",
     effectinfo: "Creates three pools that each increase allies' attack power by 5% per level.",
     thumbnail: 'Media/Abilities/TRIPOOL.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1755,7 +1623,6 @@ const abilityTypes = [
     tooltip: "Double the pools, double the speed. Boost your allies' attack rate.",
     effectinfo: "Creates two pools that each increase allies' attack speed by 5% per level.",
     thumbnail: 'Media/Abilities/TWOPOOL.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1766,7 +1633,6 @@ const abilityTypes = [
     tooltip: "Stake your claim. Boost health regeneration.",
     effectinfo: "Increases health regeneration by 10% per level based on a single stake.",
     thumbnail: 'Media/Abilities/SINGLESTAKE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1777,7 +1643,6 @@ const abilityTypes = [
     tooltip: "Consult the order book. Gain a wealth of resources.",
     effectinfo: "Grants a large amount of resources based on order book data, amount increases per level.",
     thumbnail: 'Media/Abilities/ORDERBOOK.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1788,7 +1653,6 @@ const abilityTypes = [
     tooltip: "Reveal the HP. Monitor health bars of all entities.",
     effectinfo: "Shows HP bars for all entities in the game, allowing you to monitor their health.",
     thumbnail: 'Media/Abilities/SEEHPBARS.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1799,7 +1663,6 @@ const abilityTypes = [
     tooltip: "Make a pact. Gain power, but lose health.",
     effectinfo: "Increases all stats by 20% per level but reduces maximum health by 10% per level.",
     thumbnail: 'Media/Abilities/PACTWITHTHEDEVIL.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1810,7 +1673,6 @@ const abilityTypes = [
     tooltip: "Sellout for power. Trade resources for a boost.",
     effectinfo: "Trades 10% of your resources for a 15% increase in power for 30 seconds per level.",
     thumbnail: 'Media/Abilities/SELLOUT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1821,7 +1683,6 @@ const abilityTypes = [
     tooltip: "HODL strong. Boost your defense.",
     effectinfo: "Increases the player's defense by 5% per level.",
     thumbnail: "A fist gripping a glowing token.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1832,7 +1693,6 @@ const abilityTypes = [
     tooltip: "Pump it up, then brace for the dump.",
     effectinfo: "Increases attack power by 20% per level for 5 seconds, followed by a 10% debuff for 10 seconds.",
     thumbnail: "A graph with a sharp rise and fall.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1843,7 +1703,6 @@ const abilityTypes = [
     tooltip: "Unleash the whale power. Dominate the field.",
     effectinfo: "Increases all stats by 10% per level for 10 seconds.",
     thumbnail: "A whale swimming through a sea of tokens.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1854,7 +1713,6 @@ const abilityTypes = [
     tooltip: "Adapt and overcome. Your strikes change to fit the need.",
     effectinfo: "Adapts damage based on current situation, varying between single target and area effects.",
     thumbnail: 'Media/Abilities/ADAPTIVETRADING.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1865,7 +1723,6 @@ const abilityTypes = [
     tooltip: "Unyielding spirit. Boost your defense and health regen.",
     effectinfo: "Boosts defense and health regeneration temporarily.",
     thumbnail: 'Media/Abilities/RESILIENTSPIRIT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1876,7 +1733,6 @@ const abilityTypes = [
     tooltip: "Instincts kick in. Move faster and reduce cooldowns when it matters most.",
     effectinfo: "Enhances movement speed and reduces cooldowns temporarily during critical moments.",
     thumbnail: 'Media/Abilities/SURVIVORSINSTINCT.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1887,7 +1743,6 @@ const abilityTypes = [
     tooltip: "Unbreakable resolve. Become invincible and unleash your power.",
     effectinfo: "Grants temporary invincibility and greatly increases attack power.",
     thumbnail: 'Media/Abilities/ULTIMATESURVIVORSRESOLVE.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1898,7 +1753,6 @@ const abilityTypes = [
     tooltip: "Harness the power of the hash. Strike with more force.",
     effectinfo: "Temporarily increases attack power.",
     thumbnail: 'Media/Abilities/HASHPOWER.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1909,7 +1763,6 @@ const abilityTypes = [
     tooltip: "Lay down the mines. Enemies beware.",
     effectinfo: "Creates a damaging zone that applies damage over time to enemies.",
     thumbnail: 'Media/Abilities/MINEFIELD.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1920,7 +1773,6 @@ const abilityTypes = [
     tooltip: "Reward yourself with health for your efforts.",
     effectinfo: "Heals the player for a portion of the damage dealt.",
     thumbnail: 'Media/Abilities/BLOCKREWARD.png',
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1931,7 +1783,6 @@ const abilityTypes = [
     tooltip: "Unleash the power of the Mega Miner. Massive destruction.",
     effectinfo: "Deals heavy area damage with a massive explosion.",
     thumbnail: "A mining rig with an explosion.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1942,7 +1793,6 @@ const abilityTypes = [
     tooltip: "Strengthen your defenses with stakes.",
     effectinfo: "Increases defense for a short period.",
     thumbnail: "A shield with stakes.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1953,7 +1803,6 @@ const abilityTypes = [
     tooltip: "Reap the benefits of your interest. Regenerate health.",
     effectinfo: "Gradually regenerates health over time.",
     thumbnail: "A growing plant.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1964,7 +1813,6 @@ const abilityTypes = [
     tooltip: "Call in support from a trusted validator.",
     effectinfo: "Summons a temporary ally to assist in battle.",
     thumbnail: "A robot helper.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1975,7 +1823,6 @@ const abilityTypes = [
     tooltip: "Become an unbreakable fortress. Ultimate defense and healing.",
     effectinfo: "Creates an impenetrable fortress that provides massive defense and healing.",
     thumbnail: "A fortified castle.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1986,7 +1833,6 @@ const abilityTypes = [
     tooltip: "Manipulate the market. Strike with precision.",
     effectinfo: "Temporarily increases critical hit chance.",
     thumbnail: "A graph with a rising arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -1997,7 +1843,6 @@ const abilityTypes = [
     tooltip: "Crash through your enemies with lightning speed.",
     effectinfo: "A quick dash attack that damages all enemies in the path.",
     thumbnail: "A lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2008,7 +1853,6 @@ const abilityTypes = [
     tooltip: "Deal massive damage but face the consequences.",
     effectinfo: "Deals heavy damage to a single enemy and applies a debuff to the player for a short time.",
     thumbnail: "A pump and dump graph.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2019,7 +1863,6 @@ const abilityTypes = [
     tooltip: "Enter a trading frenzy. Maximum speed and precision.",
     effectinfo: "Drastically increases speed and critical hit chance for a short time.",
     thumbnail: "A trader in frenzy.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2030,7 +1873,6 @@ const abilityTypes = [
     tooltip: "Locked in and loaded! Maximize your profits and outpace the competition with unparalleled focus.",
     effectinfo: "Maximizes profits and increases strategic insight, providing substantial boosts.",
     thumbnail: "A pair of focused eyes with dollar signs in the pupils, surrounded by a glowing aura.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2041,7 +1883,6 @@ const abilityTypes = [
     tooltip: "Fix the bugs. Restore your health.",
     effectinfo: "Restores a small amount of health by fixing bugs.",
     thumbnail: "A wrench fixing code.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2052,7 +1893,6 @@ const abilityTypes = [
     tooltip: "Refactor your code. Reduce cooldowns.",
     effectinfo: "Reduces cooldowns of the player's abilities.",
     thumbnail: "A refactored code.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2063,7 +1903,6 @@ const abilityTypes = [
     tooltip: "Deploy a patch. Boost allies' defenses.",
     effectinfo: "Creates a temporary area that boosts allies' defenses.",
     thumbnail: "A patch being deployed.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2074,7 +1913,6 @@ const abilityTypes = [
     tooltip: "Overhaul your abilities. Massive buffs and cooldown reset.",
     effectinfo: "Provides massive buffs and resets cooldowns of abilities.",
     thumbnail: "A complete overhaul.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2085,7 +1923,6 @@ const abilityTypes = [
     tooltip: "Ensure compliance. Slow down enemies and deal damage.",
     effectinfo: "Slows down enemies and deals damage over time.",
     thumbnail: "A compliance checklist.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2096,7 +1933,6 @@ const abilityTypes = [
     tooltip: "Conduct an audit. Reveal and disable enemies.",
     effectinfo: "Reveals all hidden enemies and disables their abilities temporarily.",
     thumbnail: "A magnifying glass.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2107,7 +1943,6 @@ const abilityTypes = [
     tooltip: "Impose sanctions. Weaken a single enemy.",
     effectinfo: "Reduces speed and defense of a single enemy significantly.",
     thumbnail: "A stop sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2118,7 +1953,6 @@ const abilityTypes = [
     tooltip: "Take total control. Enemies turn on each other.",
     effectinfo: "Temporarily makes all enemies fight each other.",
     thumbnail: "A controller.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2129,7 +1963,6 @@ const abilityTypes = [
     tooltip: "Encrypt your defenses. Reduce damage taken.",
     effectinfo: "Creates a shield that reduces incoming damage.",
     thumbnail: "A quantum shield.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2140,7 +1973,6 @@ const abilityTypes = [
     tooltip: "Entangle your enemies. Damage spreads.",
     effectinfo: "Links enemies, causing damage to spread among them.",
     thumbnail: "Entangled particles.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2151,7 +1983,6 @@ const abilityTypes = [
     tooltip: "Exchange health. Transfer from enemies to you.",
     effectinfo: "Transfers health from enemies to the player.",
     thumbnail: "A key exchange.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2162,7 +1993,6 @@ const abilityTypes = [
     tooltip: "Overload the field. Massive damage and stun.",
     effectinfo: "Deals massive area damage and stuns enemies.",
     thumbnail: "A quantum explosion.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2173,7 +2003,6 @@ const abilityTypes = [
     tooltip: "Summon a bot swarm. Increase your firepower.",
     effectinfo: "Summons additional bots to assist in battle.",
     thumbnail: "A swarm of bots.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2184,7 +2013,6 @@ const abilityTypes = [
     tooltip: "Form a bot shield. Increase your defense.",
     effectinfo: "Creates a defensive barrier with the bots.",
     thumbnail: "Bots forming a shield.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2195,7 +2023,6 @@ const abilityTypes = [
     tooltip: "Focus fire. Direct all bots to attack a target.",
     effectinfo: "Directs all bots to focus fire on a single enemy.",
     thumbnail: "Bots attacking.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2206,7 +2033,6 @@ const abilityTypes = [
     tooltip: "No more rug-pulls for you. Detect and disable rug traps.",
     effectinfo: "Detects and disables rug traps.",
     thumbnail: "A crossed-out rug.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2217,7 +2043,6 @@ const abilityTypes = [
     tooltip: "Get the perfect shot. Increase critical hit chances and accuracy.",
     effectinfo: "Enhances critical hit chances and accuracy.",
     thumbnail: "A sniper rifle with a target.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2228,7 +2053,6 @@ const abilityTypes = [
     tooltip: "Drain enemy resources. Extract value from their HP pools.",
     effectinfo: "Drains resources from enemy HP pools and converts them to personal gain.",
     thumbnail: "A downward arrow with a dollar sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2239,7 +2063,6 @@ const abilityTypes = [
     tooltip: "Call in the bot armada. Maximum support and damage.",
     effectinfo: "Summons an entire armada of bots for significant support and damage.",
     thumbnail: "A fleet of bots.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2250,7 +2073,6 @@ const abilityTypes = [
     tooltip: "Sound the scam alert. Weaken your enemies.",
     effectinfo: "Decreases enemies' attack power and movement speed for a short duration.",
     thumbnail: "A warning sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2261,7 +2083,6 @@ const abilityTypes = [
     tooltip: "Invoke the bear market. Damage your enemies.",
     effectinfo: "Damages all enemies with a wave of bearish sentiment.",
     thumbnail: "A bear wave.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2272,7 +2093,6 @@ const abilityTypes = [
     tooltip: "Spread fear. Enemies flee.",
     effectinfo: "Causes enemies to flee in random directions.",
     thumbnail: "A face in terror.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2283,7 +2103,6 @@ const abilityTypes = [
     tooltip: "Instill capitulation. Cause widespread fear and resource loss.",
     effectinfo: "Causes enemies to lose resources and morale due to widespread fear and panic.",
     thumbnail: "A collapsing currency symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2294,7 +2113,6 @@ const abilityTypes = [
     tooltip: "Declare the end. Reduce enemy effectiveness and cause them to falter.",
     effectinfo: "Reduces enemies' effectiveness and causes them to falter.",
     thumbnail: "A gravestone with a downward arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2305,7 +2123,6 @@ const abilityTypes = [
     tooltip: "The end is near. Massive damage and stun.",
     effectinfo: "Deals heavy damage and stuns all enemies with a wave of FUD.",
     thumbnail: "A skull with a storm.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2316,7 +2133,6 @@ const abilityTypes = [
     tooltip: "Harness the power of the moon. Buffs and debuffs change with each phase.",
     effectinfo: "Provides buffs or debuffs depending on the current moon phase.",
     thumbnail: "A moon with phases.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2327,7 +2143,6 @@ const abilityTypes = [
     tooltip: "The stars have aligned! Your attacks become more powerful.",
     effectinfo: "Increases critical hit chance and attack power when stars align.",
     thumbnail: "A constellation.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2338,7 +2153,6 @@ const abilityTypes = [
     tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     effectinfo: "Reduces enemies' defenses by revealing their weaknesses.",
     thumbnail: "Zodiac symbols.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2349,7 +2163,6 @@ const abilityTypes = [
     tooltip: "Harness celestial fury. Massive damage and buffs.",
     effectinfo: "Deals massive area damage and provides buffs to allies.",
     thumbnail: "A meteor shower.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2360,7 +2173,6 @@ const abilityTypes = [
     tooltip: "Shill your way to victory. Boost ally attack power and speed.",
     effectinfo: "Temporarily increases attack power and speed of allies.",
     thumbnail: "A rocket emoji.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2371,7 +2183,6 @@ const abilityTypes = [
     tooltip: "Create a wave of FOMO. Draw enemies towards you.",
     effectinfo: "Causes enemies to rush towards the player due to fear of missing out.",
     thumbnail: "A wave symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2382,7 +2193,6 @@ const abilityTypes = [
     tooltip: "Summon the hype train. Trample your enemies.",
     effectinfo: "Summons followers to stampede and trample enemies.",
     thumbnail: "A train emoji.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2393,7 +2203,6 @@ const abilityTypes = [
     tooltip: "Move the market. Enhance ally abilities.",
     effectinfo: "Enhances allies' abilities and influences the battlefield.",
     thumbnail: "A rising graph.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2404,7 +2213,6 @@ const abilityTypes = [
     tooltip: "Set the trend. Buff allies and debuff enemies.",
     effectinfo: "Buffs allies and debuffs enemies based on market trends.",
     thumbnail: "A star with upward arrows.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2415,7 +2223,6 @@ const abilityTypes = [
     tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
     effectinfo: "Drastically increases all abilities' effectiveness and summons followers.",
     thumbnail: "A viral symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2426,7 +2233,6 @@ const abilityTypes = [
     tooltip: "Gain inside information. Reveal hidden enemies and weak points.",
     effectinfo: "Reveals hidden enemies and weak points.",
     thumbnail: "An eye with a market graph.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2437,7 +2243,6 @@ const abilityTypes = [
     tooltip: "Manipulate the market. Control enemy movements.",
     effectinfo: "Temporarily controls enemy movements.",
     thumbnail: "A brain with puppet strings.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2448,7 +2253,6 @@ const abilityTypes = [
     tooltip: "Pump and dump. Deal heavy damage and heal allies.",
     effectinfo: "Deals heavy damage to a single target and redistributes health to allies.",
     thumbnail: "A bomb with a dollar sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2459,7 +2263,6 @@ const abilityTypes = [
     tooltip: "Be the whale. Deliver high-impact attacks.",
     effectinfo: "Focuses on high-impact attacks against a single target.",
     thumbnail: "A whale.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2470,7 +2273,6 @@ const abilityTypes = [
     tooltip: "Puppet master. Control and manipulate enemies.",
     effectinfo: "Controls and manipulates multiple enemies.",
     thumbnail: "A puppet on strings.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2481,7 +2283,6 @@ const abilityTypes = [
     tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     effectinfo: "Massively disrupts enemy abilities and resources, providing significant buffs to allies.",
     thumbnail: "A black swan.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2492,7 +2293,6 @@ const abilityTypes = [
     tooltip: "Quick flip. Deal instant damage.",
     effectinfo: "Deals instant damage to nearby enemies.",
     thumbnail: "A dollar sign and a lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2503,7 +2303,6 @@ const abilityTypes = [
     tooltip: "Sell-off. Increase damage over time in an area.",
     effectinfo: "Creates an area where enemies take increased damage over time.",
     thumbnail: "A downward graph on fire.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2514,7 +2313,6 @@ const abilityTypes = [
     tooltip: "Execute an exit scam. Teleport and leave a damaging decoy.",
     effectinfo: "Teleports to a safe location and leaves a damaging decoy behind.",
     thumbnail: "A running man with a disappearing trail.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2525,7 +2323,6 @@ const abilityTypes = [
     tooltip: "Flash trader. Quick, high-damage attacks.",
     effectinfo: "Performs quick, high-damage attacks.",
     thumbnail: "A lightning bolt and a dollar sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2536,7 +2333,6 @@ const abilityTypes = [
     tooltip: "Take profits. Buff self and allies after defeating enemies.",
     effectinfo: "Buffs self and allies after defeating enemies.",
     thumbnail: "A bag of money.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2547,7 +2343,6 @@ const abilityTypes = [
     tooltip: "Execute a rug pull. Massive damage and stun all enemies.",
     effectinfo: "Deals massive damage to all enemies and stuns them.",
     thumbnail: "A rug being pulled.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2558,7 +2353,6 @@ const abilityTypes = [
     tooltip: "Hold with diamond hands. Reduce damage taken.",
     effectinfo: "Reduces damage taken significantly for a short period.",
     thumbnail: "A diamond and a hand.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2569,7 +2363,6 @@ const abilityTypes = [
     tooltip: "HODL the line. Create a damage-absorbing barrier.",
     effectinfo: "Creates a barrier that absorbs damage.",
     thumbnail: "A shield with 'HODL'.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2580,7 +2373,6 @@ const abilityTypes = [
     tooltip: "Maxi rally. Boost ally attack and defense.",
     effectinfo: "Temporarily boosts all allies' attack and defense.",
     thumbnail: "A rallying flag.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2591,7 +2383,6 @@ const abilityTypes = [
     tooltip: "Perma-bull. Increase ally attack and movement speed.",
     effectinfo: "Buffs allies' attack and movement speed.",
     thumbnail: "A bullish arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2602,7 +2393,6 @@ const abilityTypes = [
     tooltip: "Zealot's fervor. Enhance defense and health regeneration.",
     effectinfo: "Enhances defense and health regeneration.",
     thumbnail: "A flaming coin.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2613,7 +2403,6 @@ const abilityTypes = [
     tooltip: "Achieve maxi ascendancy. Drastically boost stats and buff allies.",
     effectinfo: "Drastically increases all stats and provides powerful buffs to allies.",
     thumbnail: "A shining star.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2624,7 +2413,6 @@ const abilityTypes = [
     tooltip: "Go all in. Deal massive damage but become vulnerable.",
     effectinfo: "Deals massive damage to a single target and leaves the player vulnerable.",
     thumbnail: "Poker chips and cards.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2635,7 +2423,6 @@ const abilityTypes = [
     tooltip: "Ride a lucky streak. Increase critical hit chance and dodge rate.",
     effectinfo: "Temporarily increases critical hit chance and dodge rate.",
     thumbnail: "A four-leaf clover.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2646,7 +2433,6 @@ const abilityTypes = [
     tooltip: "Double or nothing. Randomly buff or debuff yourself.",
     effectinfo: "Randomly buffs or debuffs the player.",
     thumbnail: "A slot machine.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2657,7 +2443,6 @@ const abilityTypes = [
     tooltip: "Take a risk. High-risk, high-reward abilities.",
     effectinfo: "High-risk, high-reward abilities.",
     thumbnail: "A balance scale.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2668,7 +2453,6 @@ const abilityTypes = [
     tooltip: "Manipulate luck. Control odds and outcomes.",
     effectinfo: "Controls odds and outcomes for strategic advantage.",
     thumbnail: "A crystal ball.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2679,7 +2463,6 @@ const abilityTypes = [
     tooltip: "Hit the jackpot. Massive damage and significant buffs.",
     effectinfo: "Deals massive damage to all enemies and provides significant buffs to allies.",
     thumbnail: "A jackpot slot machine.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2690,7 +2473,6 @@ const abilityTypes = [
     tooltip: "Issue a margin call. Inflict damage over time.",
     effectinfo: "Forces enemies to take damage over time.",
     thumbnail: "A falling chart with a phone.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2701,7 +2483,6 @@ const abilityTypes = [
     tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
     effectinfo: "Deals area-of-effect damage and reduces enemy defenses.",
     thumbnail: "A crashing wave.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2712,7 +2493,6 @@ const abilityTypes = [
     tooltip: "Crash the protocol. Increase damage and slow enemies.",
     effectinfo: "Creates a zone where enemies take increased damage and have reduced speed.",
     thumbnail: "A broken protocol symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2723,7 +2503,6 @@ const abilityTypes = [
     tooltip: "Be the debt collector. Sustain damage and apply debuffs.",
     effectinfo: "Focuses on sustained damage and applies debuffs.",
     thumbnail: "A hand holding a collection notice.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2734,7 +2513,6 @@ const abilityTypes = [
     tooltip: "Enforce market rules. Disrupt enemy formations.",
     effectinfo: "Controls and disrupts enemy formations.",
     thumbnail: "A gavel.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2745,7 +2523,6 @@ const abilityTypes = [
     tooltip: "Cause a financial collapse. Devastate and debuff all enemies.",
     effectinfo: "Deals devastating damage to all enemies and significantly debuffs them.",
     thumbnail: "An explosion over a market chart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2756,7 +2533,6 @@ const abilityTypes = [
     tooltip: "Skeptic's shield. Reduce damage and reflect a portion.",
     effectinfo: "Reduces incoming damage and reflects a portion back to attackers.",
     thumbnail: "A shield with a question mark.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2766,9 +2542,7 @@ const abilityTypes = [
     description: "Temporarily silences and weakens enemies.",
     tooltip: "Engage in debate. Silence and weaken enemies.",
     effectinfo: "Temporarily silences and weakens enemies.",
-    thumbnail: "Two speech bubbles.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "Two speech bubbles.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2777,9 +2551,7 @@ const abilityTypes = [
     description: "Decreases enemy attack power and movement speed.",
     tooltip: "Spread FUD. Decrease enemy attack power and speed.",
     effectinfo: "Decreases enemy attack power and movement speed.",
-    thumbnail: "A warning sign.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A warning sign.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2788,9 +2560,7 @@ const abilityTypes = [
     description: "Enhances debuffs and controls enemy behavior.",
     tooltip: "Critique crypto. Enhance debuffs and control enemies.",
     effectinfo: "Enhances debuffs and controls enemy behavior.",
-    thumbnail: "A downward arrow.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A downward arrow.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2799,9 +2569,7 @@ const abilityTypes = [
     description: "Buffs allies' defense and reduces enemy effectiveness.",
     tooltip: "Skeptical scholar. Buff allies' defense and reduce enemy effectiveness.",
     effectinfo: "Buffs allies' defense and reduces enemy effectiveness.",
-    thumbnail: "A book and shield.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A book and shield.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2810,9 +2578,7 @@ const abilityTypes = [
     description: "Causes a market crash, drastically weakening all enemies and providing significant buffs to allies.",
     tooltip: "Induce a market crash. Weaken enemies and buff allies.",
     effectinfo: "Drastically weakens all enemies and provides significant buffs to allies.",
-    thumbnail: "A crashing market chart.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A crashing market chart.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2821,9 +2587,7 @@ const abilityTypes = [
     description: "Temporarily reveals enemy weaknesses and increases damage dealt.",
     tooltip: "Review code. Reveal weaknesses and increase damage.",
     effectinfo: "Reveals enemy weaknesses and increases damage dealt.",
-    thumbnail: "A checklist.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A checklist.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2832,9 +2596,7 @@ const abilityTypes = [
     description: "Removes debuffs from allies and restores health.",
     tooltip: "Fix bugs. Remove debuffs and restore health.",
     effectinfo: "Removes debuffs from allies and restores health.",
-    thumbnail: "A wrench and a bug.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A wrench and a bug.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2843,9 +2605,7 @@ const abilityTypes = [
     description: "Creates a zone where enemies are significantly weakened.",
     tooltip: "Conduct a security audit. Weaken enemies in a zone.",
     effectinfo: "Creates a zone where enemies are significantly weakened.",
-    thumbnail: "A lock and a magnifying glass.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A lock and a magnifying glass.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2854,9 +2614,7 @@ const abilityTypes = [
     description: "Specializes in revealing and exploiting enemy weaknesses.",
     tooltip: "Enforce code standards. Reveal and exploit weaknesses.",
     effectinfo: "Reveals and exploits enemy weaknesses.",
-    thumbnail: "A gavel and code.",
-    level: 1,
-    isLocked: false,
+    thumbnail: "A gavel and code.",    isLocked: false,
     effect(level, user) {
     },
 },
@@ -2866,7 +2624,6 @@ const abilityTypes = [
     tooltip: "Hunt bugs. Remove debuffs and support allies.",
     effectinfo: "Focuses on debuff removal and ally support.",
     thumbnail: "A net catching a bug.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2877,7 +2634,6 @@ const abilityTypes = [
     tooltip: "Deploy a critical patch. Buff allies and debuff enemies.",
     effectinfo: "Significantly buffs all allies and debuffs all enemies.",
     thumbnail: "A rocket and code.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2888,7 +2644,6 @@ const abilityTypes = [
     tooltip: "Analyze the chain. Reveal and track enemies.",
     effectinfo: "Reveals hidden enemies and tracks their movements.",
     thumbnail: "A chain and an eye.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2899,7 +2654,6 @@ const abilityTypes = [
     tooltip: "Trace transactions. Reduce speed and reveal weak points.",
     effectinfo: "Reduces enemy speed and reveals weak points.",
     thumbnail: "A chart and a footprint.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2910,7 +2664,6 @@ const abilityTypes = [
     tooltip: "Hunt criminals. Deal extra damage to revealed enemies.",
     effectinfo: "Deals extra damage to recently revealed enemies.",
     thumbnail: "A target symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2921,7 +2674,6 @@ const abilityTypes = [
     tooltip: "Be the on-chain detective. Enhance tracking and debuffs.",
     effectinfo: "Enhances enemy tracking and debuffs.",
     thumbnail: "A flashlight and chain.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2932,7 +2684,6 @@ const abilityTypes = [
     tooltip: "Investigate crypto. Buff self and allies based on enemy locations.",
     effectinfo: "Buffs self and allies based on revealed enemy locations.",
     thumbnail: "A magnifying glass and map.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2943,7 +2694,6 @@ const abilityTypes = [
     tooltip: "Trigger a chain reaction. Reveal, debuff enemies, and buff allies.",
     effectinfo: "Reveals all enemies and drastically debuffs them while significantly buffing allies.",
     thumbnail: "Exploding chain links.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2954,7 +2704,6 @@ const abilityTypes = [
     tooltip: "Report bugs. Reveal weaknesses and reduce defenses.",
     effectinfo: "Reveals enemy weaknesses and reduces their defenses.",
     thumbnail: "A bug report form.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2965,7 +2714,6 @@ const abilityTypes = [
     tooltip: "Test features. Temporarily boost ally abilities.",
     effectinfo: "Temporarily boosts allies' abilities.",
     thumbnail: "A gear and a check mark.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2976,7 +2724,6 @@ const abilityTypes = [
     tooltip: "Conduct a stress test. Increase enemy damage and reduce speed.",
     effectinfo: "Creates a zone where enemies take increased damage and have reduced speed.",
     thumbnail: "A weight and a clock.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2987,7 +2734,6 @@ const abilityTypes = [
     tooltip: "Be a test engineer. Reveal and exploit weaknesses.",
     effectinfo: "Specializes in revealing and exploiting enemy weaknesses.",
     thumbnail: "A wrench and gear.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -2998,7 +2744,6 @@ const abilityTypes = [
     tooltip: "Quality assurance. Enhance buffs and reduce enemy effectiveness.",
     effectinfo: "Enhances ally buffs and reduces enemy effectiveness.",
     thumbnail: "A shield and check mark.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3009,7 +2754,6 @@ const abilityTypes = [
     tooltip: "Release the final version. Buff allies and debuff enemies.",
     effectinfo: "Significantly buffs all allies and debuffs all enemies.",
     thumbnail: "A rocket launching.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3020,7 +2764,6 @@ const abilityTypes = [
     tooltip: "Exploit vulnerabilities. Deal damage and restore health.",
     effectinfo: "Deals significant damage to a single target and restores health.",
     thumbnail: "A broken lock and a hammer.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3031,7 +2774,6 @@ const abilityTypes = [
     tooltip: "Drain liquidity. Reduce defenses and steal resources.",
     effectinfo: "Reduces enemy defenses and steals resources.",
     thumbnail: "A draining faucet.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3042,7 +2784,6 @@ const abilityTypes = [
     tooltip: "Execute a flash loan attack. Boost attack power and speed.",
     effectinfo: "Temporarily boosts attack power and speed.",
     thumbnail: "A lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3053,7 +2794,6 @@ const abilityTypes = [
     tooltip: "Raid protocols. High-damage, single-target attacks.",
     effectinfo: "Focuses on high-damage, single-target attacks.",
     thumbnail: "A pirate flag.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3064,7 +2804,6 @@ const abilityTypes = [
     tooltip: "Be a liquidity vampire. Steal resources and buff allies.",
     effectinfo: "Steals resources and buffs self and allies.",
     thumbnail: "A vampire and a dollar sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3075,7 +2814,6 @@ const abilityTypes = [
     tooltip: "Freeze the network! Slow down all activity.",
     effectinfo: "Slows all enemies for a short duration.",
     thumbnail: "A clock with ice crystals.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3086,7 +2824,6 @@ const abilityTypes = [
     tooltip: "Drain multiple protocols. Massive damage and resource gain.",
     effectinfo: "Drains multiple protocols simultaneously, dealing massive damage to all enemies and providing significant resources to allies.",
     thumbnail: "A swirling vortex.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3097,7 +2834,6 @@ const abilityTypes = [
     tooltip: "Execute a Sybil attack. Distract and damage enemies.",
     effectinfo: "Creates decoys that distract and damage enemies.",
     thumbnail: "Multiple masks.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3108,7 +2844,6 @@ const abilityTypes = [
     tooltip: "Manipulate votes. Control enemy movements.",
     effectinfo: "Temporarily controls enemy movements.",
     thumbnail: "A ballot box with strings.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3119,7 +2854,6 @@ const abilityTypes = [
     tooltip: "Commit airdrop fraud. Steal resources and redistribute.",
     effectinfo: "Steals resources from enemies and redistributes them to allies.",
     thumbnail: "An airplane dropping coins.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3130,7 +2864,6 @@ const abilityTypes = [
     tooltip: "Forge identities. Create decoys and control enemies.",
     effectinfo: "Specializes in creating decoys and controlling enemies.",
     thumbnail: "A forging hammer.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3141,7 +2874,6 @@ const abilityTypes = [
     tooltip: "Execute a total takeover. Drastically buff allies and debuff enemies.",
     effectinfo: "Completely takes over the battlefield, drastically buffing allies and debuffing enemies.",
     thumbnail: "A world with chains.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3152,7 +2884,6 @@ const abilityTypes = [
     tooltip: "Confirm a block. Increase defense and regenerate health.",
     effectinfo: "Temporarily increases defense and regenerates health.",
     thumbnail: "A confirmed block symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3163,7 +2894,6 @@ const abilityTypes = [
     tooltip: "Achieve finality. Grant temporary invincibility.",
     effectinfo: "Grants temporary invincibility to all nearby players.",
     thumbnail: "An hourglass.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3174,7 +2904,6 @@ const abilityTypes = [
     tooltip: "Prevent double spend. Create a shield.",
     effectinfo: "Creates a shield that absorbs multiple hits.",
     thumbnail: "A shield with a double spend symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3185,7 +2914,6 @@ const abilityTypes = [
     tooltip: "A veil of protection. Stay safe out there.",
     effectinfo: "Provides a shield that absorbs damage.",
     thumbnail: "A veil covering the player.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3196,7 +2924,6 @@ const abilityTypes = [
     tooltip: "Achieve network consensus. Boost defense and provide damage immunity.",
     effectinfo: "Significantly boosts allies' defense and provides damage immunity for a short period.",
     thumbnail: "A globe with connected nodes.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3207,7 +2934,6 @@ const abilityTypes = [
     tooltip: "Overclock your rig. Greatly increase attack power.",
     effectinfo: "Greatly increases attack power for a brief period.",
     thumbnail: "An overheating GPU.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3218,7 +2944,6 @@ const abilityTypes = [
     tooltip: "Deploy a mining rig. Automatically attack enemies.",
     effectinfo: "Deploys a stationary turret that automatically attacks enemies.",
     thumbnail: "A mining rig.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3229,7 +2954,6 @@ const abilityTypes = [
     tooltip: "Unleash an energy surge. Increase attack speed and movement speed.",
     effectinfo: "Temporarily increases attack speed and movement speed.",
     thumbnail: "A lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3240,7 +2964,6 @@ const abilityTypes = [
     tooltip: "Proof of Safety! Stronger defenses.",
     effectinfo: "Increases the player's defense.",
     thumbnail: "A shield with 'PoS' written on it.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3251,7 +2974,6 @@ const abilityTypes = [
     tooltip: "Enter a mining frenzy. Drastically increase attack power and speed.",
     effectinfo: "Drastically increases attack power and speed for a short period.",
     thumbnail: "A pickaxe and a lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3262,7 +2984,6 @@ const abilityTypes = [
     tooltip: "Cast a governance vote. Grant a random beneficial effect.",
     effectinfo: "Grants a random beneficial effect based on player needs.",
     thumbnail: "A ballot box.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3273,7 +2994,6 @@ const abilityTypes = [
     tooltip: "Execute a protocol upgrade. Permanently enhance an ability.",
     effectinfo: "Permanently enhances one of the player's abilities.",
     thumbnail: "An upgrade symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3284,7 +3004,6 @@ const abilityTypes = [
     tooltip: "Activate a stability mechanism. Reduce damage taken.",
     effectinfo: "Reduces damage taken for a prolonged period.",
     thumbnail: "A scale.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3295,7 +3014,6 @@ const abilityTypes = [
     tooltip: "Proof of Whacking! Stronger attacks.",
     effectinfo: "Increases the player's attack power.",
     thumbnail: "A hammer with 'PoW' on it.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3306,7 +3024,6 @@ const abilityTypes = [
     tooltip: "Implement protocol governance. Buff allies and debuff enemies.",
     effectinfo: "Significantly buffs allies and debuffs enemies.",
     thumbnail: "A government building.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3317,7 +3034,6 @@ const abilityTypes = [
     tooltip: "Harvest yield. Increase resource drops.",
     effectinfo: "Increases resource drops from defeated enemies.",
     thumbnail: "A harvest basket.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3328,7 +3044,6 @@ const abilityTypes = [
     tooltip: "Compound interest. Gradually increase attack power and defense.",
     effectinfo: "Gradually increases attack power and defense over time.",
     thumbnail: "An interest chart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3339,7 +3054,6 @@ const abilityTypes = [
     tooltip: "Rotate crops. Switch between buffs.",
     effectinfo: "Switches between different buffs to suit the player's needs.",
     thumbnail: "Rotating crops.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3350,7 +3064,6 @@ const abilityTypes = [
     tooltip: "Trigger a bountiful harvest. Increase resources and buff allies.",
     effectinfo: "Drastically increases resource drops and provides significant buffs to all allies.",
     thumbnail: "A golden field.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3361,7 +3074,6 @@ const abilityTypes = [
     tooltip: "Create price divergence. Confuse enemies to attack each other.",
     effectinfo: "Confuses enemies, causing them to attack each other.",
     thumbnail: "Diverging arrows.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3372,7 +3084,6 @@ const abilityTypes = [
     tooltip: "Execute a quick trade. Dash through enemies and deal damage.",
     effectinfo: "Rapidly dashes through enemies, dealing damage.",
     thumbnail: "A running figure.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3383,7 +3094,6 @@ const abilityTypes = [
     tooltip: "Ride the market swing. Increase critical hit chance and attack speed.",
     effectinfo: "Temporarily increases critical hit chance and attack speed.",
     thumbnail: "A swinging market chart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3394,7 +3104,6 @@ const abilityTypes = [
     tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
     effectinfo: "Drastically increases attack power and critical hit chance for a short period.",
     thumbnail: "Golden coins.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3405,7 +3114,6 @@ const abilityTypes = [
     tooltip: "Execute a flash trade. Instantly move and deal damage.",
     effectinfo: "Instantaneously moves to a targeted location, dealing damage.",
     thumbnail: "A lightning bolt.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3416,7 +3124,6 @@ const abilityTypes = [
     tooltip: "Create an order book. Confuse enemies with decoys.",
     effectinfo: "Creates decoys to confuse enemies.",
     thumbnail: "A financial order book.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3427,7 +3134,6 @@ const abilityTypes = [
     tooltip: "Boost execution speed. Increase attack and movement speed.",
     effectinfo: "Increases attack speed and movement speed.",
     thumbnail: "A rocket.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3438,7 +3144,6 @@ const abilityTypes = [
     tooltip: "Enter a trade frenzy. Drastically increase attack speed and damage.",
     effectinfo: "Drastically increases attack speed and damage for a short period.",
     thumbnail: "A frenzied market chart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3449,7 +3154,6 @@ const abilityTypes = [
     tooltip: "A true masterpiece! Watch as enemies are mesmerized and allies are inspired.",
     effectinfo: "Creates a stunning piece of digital art that distracts enemies and boosts allies' morale.",
     thumbnail: "A paintbrush and palette.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3460,7 +3164,6 @@ const abilityTypes = [
     tooltip: "Free tokens for everyone! Enjoy the perks of being an NFT creator.",
     effectinfo: "Airdrops valuable tokens to allies, providing temporary buffs and resources.",
     thumbnail: "A gift box with tokens.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3471,7 +3174,6 @@ const abilityTypes = [
     tooltip: "Art meets security. This smart contract art keeps you safe and sound.",
     effectinfo: "Deploys a smart contract-based artwork that creates a protective barrier.",
     thumbnail: "A framed artwork.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3482,7 +3184,6 @@ const abilityTypes = [
     tooltip: "Collectors are on the hunt! Unleash their frenzy on your foes.",
     effectinfo: "Calls upon devoted collectors to swarm enemies, dealing massive damage.",
     thumbnail: "A swarm of collectors.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3493,7 +3194,6 @@ const abilityTypes = [
     tooltip: "Lead an art revolution. Drastically buff allies and damage enemies.",
     effectinfo: "Drastically buffs allies and deals massive damage to all enemies.",
     thumbnail: "A radiant artwork.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3504,7 +3204,6 @@ const abilityTypes = [
     tooltip: "Boost scalability. Enhance attack and movement speed.",
     effectinfo: "Increases attack speed and movement speed.",
     thumbnail: "A speedometer.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3515,7 +3214,6 @@ const abilityTypes = [
     tooltip: "Activate security lockdown. Reduce damage taken.",
     effectinfo: "Reduces damage taken for a short period.",
     thumbnail: "A locked shield.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3526,7 +3224,6 @@ const abilityTypes = [
     tooltip: "The power of many. Amplify your abilities.",
     effectinfo: "Summons allies to assist in battle.",
     thumbnail: "A network diagram with a ripple effect.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3537,7 +3234,6 @@ const abilityTypes = [
     tooltip: "The network effect amplifies all abilities.",
     effectinfo: "Increases the effectiveness of all abilities.",
     thumbnail: "A glowing network node.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3548,7 +3244,6 @@ const abilityTypes = [
     tooltip: "When one layer just isn't enough.",
     effectinfo: "Adds an additional layer of defense.",
     thumbnail: "Stacked shields.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3559,7 +3254,6 @@ const abilityTypes = [
     tooltip: "Strong, sturdy, and monolithic – just like your health.",
     effectinfo: "Provides a significant health boost.",
     thumbnail: "A large, imposing monolith.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3570,7 +3264,6 @@ const abilityTypes = [
     tooltip: "Sidechains for sidekicks! Distract your enemies.",
     effectinfo: "Allows the player to create decoys that distract enemies.",
     thumbnail: "A chain with multiple branches.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3581,7 +3274,6 @@ const abilityTypes = [
     tooltip: "Scale up and save! Reduce costs and cooldowns.",
     effectinfo: "Reduces the cost and cooldown of all abilities.",
     thumbnail: "Two layers stacked with an arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3592,7 +3284,6 @@ const abilityTypes = [
     tooltip: "Achieve trilemma mastery. Boost attack, defense, and movement speed while weakening enemies.",
     effectinfo: "Provides significant buffs to attack, defense, and movement speed while weakening enemies.",
     thumbnail: "A balanced scale with a glowing aura.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3603,7 +3294,6 @@ const abilityTypes = [
     tooltip: "Deploy a smart contract. Set up a turret to attack enemies.",
     effectinfo: "Sets up a turret that automatically attacks enemies.",
     thumbnail: "A turret.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3614,7 +3304,6 @@ const abilityTypes = [
     tooltip: "Set a gas limit. Reduce enemy speed in a large area.",
     effectinfo: "Reduces the speed of all enemies in a large area.",
     thumbnail: "A gas gauge.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3625,7 +3314,6 @@ const abilityTypes = [
     tooltip: "Revert to a previous location. Avoid damage.",
     effectinfo: "Teleports the player to a previous location, avoiding damage.",
     thumbnail: "A backward arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3636,7 +3324,6 @@ const abilityTypes = [
     tooltip: "One chance to escape from a L2+.",
     effectinfo: "Grants one extra life.",
     thumbnail: "A hatch with an emergency sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3647,7 +3334,6 @@ const abilityTypes = [
     tooltip: "Deploy an overload of defenses and traps. Disrupt and damage enemies.",
     effectinfo: "Deploys multiple automated defenses and traps that significantly disrupt and damage enemies.",
     thumbnail: "A computer with an overload symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3658,7 +3344,6 @@ const abilityTypes = [
     tooltip: "Enhance protocols. Boost the effectiveness of all abilities.",
     effectinfo: "Temporarily increases the effectiveness of all abilities.",
     thumbnail: "A gear with a plus symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3669,7 +3354,6 @@ const abilityTypes = [
     tooltip: "Apply a patch update. Heal and buff nearby allies.",
     effectinfo: "Heals and buffs nearby allies.",
     thumbnail: "A patch with a heart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3680,7 +3364,6 @@ const abilityTypes = [
     tooltip: "Upgrade the network. Buff a random ability.",
     effectinfo: "Grants a significant buff to a random ability.",
     thumbnail: "An upgrade arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3691,7 +3374,6 @@ const abilityTypes = [
     tooltip: "Divide and conquer! Your attacks hit multiple targets.",
     effectinfo: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
     thumbnail: "A shard of glass with reflections.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3702,7 +3384,6 @@ const abilityTypes = [
     tooltip: "Achieve protocol mastery. Provide extensive buffs and debuffs.",
     effectinfo: "Provides comprehensive buffs to all allies and debuffs enemies significantly.",
     thumbnail: "A trophy with protocol symbols.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3713,7 +3394,6 @@ const abilityTypes = [
     tooltip: "Enforce the rule of law. Slow all enemies in a large area.",
     effectinfo: "Significantly slows all enemies in a large area.",
     thumbnail: "A gavel.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3724,7 +3404,6 @@ const abilityTypes = [
     tooltip: "Conduct an inspection. Reveal and debuff enemies.",
     effectinfo: "Reveals and debuffs all enemies in a targeted area.",
     thumbnail: "A magnifying glass.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3735,7 +3414,6 @@ const abilityTypes = [
     tooltip: "Issue a compliance order. Force enemies to move towards you and take damage.",
     effectinfo: "Forces enemies to move towards the player, taking damage over time.",
     thumbnail: "A compliance document.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3746,7 +3424,6 @@ const abilityTypes = [
     tooltip: "Enforce the law. Weaken and slow enemies while buffing allies.",
     effectinfo: "Significantly weakens and slows all enemies while providing substantial buffs to allies.",
     thumbnail: "A gavel with a shield.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3757,7 +3434,6 @@ const abilityTypes = [
     tooltip: "Implement legislation. Weaken enemies in a designated area.",
     effectinfo: "Creates an area where enemies are significantly weakened.",
     thumbnail: "A scroll with a seal.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3768,7 +3444,6 @@ const abilityTypes = [
     tooltip: "Unleash a sanction wave. Debuff enemies in its path.",
     effectinfo: "Sends out a wave that debuffs all enemies it touches.",
     thumbnail: "A wave with sanctions.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3779,7 +3454,6 @@ const abilityTypes = [
     tooltip: "Establish a regulatory framework. Block enemy movement.",
     effectinfo: "Creates a barrier that blocks enemy movement.",
     thumbnail: "A government building.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3790,7 +3464,6 @@ const abilityTypes = [
     tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     effectinfo: "Provides massive buffs to allies and drastically debuffs enemies across the battlefield.",
     thumbnail: "A document with major changes.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3801,7 +3474,6 @@ const abilityTypes = [
     tooltip: "Upgrade the network. Boost attack and defense of allies.",
     effectinfo: "Increases the attack and defense of all nearby allies.",
     thumbnail: "A network with an upward arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3812,7 +3484,6 @@ const abilityTypes = [
     tooltip: "Fortify the node. Become invulnerable and taunt enemies.",
     effectinfo: "Temporarily becomes invulnerable while taunting enemies.",
     thumbnail: "A fortified node.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3823,7 +3494,6 @@ const abilityTypes = [
     tooltip: "Balance the load. Spread damage to nearby enemies.",
     effectinfo: "Spreads damage taken to nearby enemies.",
     thumbnail: "A balancing scale.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3834,7 +3504,6 @@ const abilityTypes = [
     tooltip: "Light on your feet, quick on your toes.",
     effectinfo: "Increases movement speed.",
     thumbnail: "A runner with a light node.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3845,7 +3514,6 @@ const abilityTypes = [
     tooltip: "Build a network fortress. Offer extensive protection and disrupt enemies.",
     effectinfo: "Constructs a powerful fortress that provides extensive protection to allies and significantly disrupts enemies.",
     thumbnail: "A fortified network with a protective shield.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3856,7 +3524,6 @@ const abilityTypes = [
     tooltip: "Hold strong with diamond hands. Reduce incoming damage.",
     effectinfo: "Reduces incoming damage significantly for a short period.",
     thumbnail: "A diamond hand.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3867,7 +3534,6 @@ const abilityTypes = [
     tooltip: "Show market patience. Gradually regenerate health.",
     effectinfo: "Gradually regenerates health over time.",
     thumbnail: "An hourglass.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3878,7 +3544,6 @@ const abilityTypes = [
     tooltip: "Make a whale buy. Execute a powerful area-of-effect attack.",
     effectinfo: "Unleashes a powerful area-of-effect attack, representing a large buy order.",
     thumbnail: "A whale with a coin.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3889,7 +3554,6 @@ const abilityTypes = [
     tooltip: "Triumph with HODL. Boost defense, health, and deliver a massive area attack.",
     effectinfo: "Massively boosts defense and health while delivering a devastating area attack.",
     thumbnail: "A trophy with diamond hands.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3900,7 +3564,6 @@ const abilityTypes = [
     tooltip: "Create a liquidity pool. Heal and buff allies in the area.",
     effectinfo: "Creates an area that slowly heals and buffs allies.",
     thumbnail: "A pool with a healing symbol.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3911,7 +3574,6 @@ const abilityTypes = [
     tooltip: "Boost yield. Increase resource generation temporarily.",
     effectinfo: "Increases resource generation for a short period.",
     thumbnail: "A growing bar chart.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3922,7 +3584,6 @@ const abilityTypes = [
     tooltip: "Take a flash loan. Borrow attack power and deal increased damage.",
     effectinfo: "Temporarily borrows attack power from enemies, dealing increased damage.",
     thumbnail: "A loan document with an arrow.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3933,7 +3594,6 @@ const abilityTypes = [
     tooltip: "Achieve DeFi supremacy. Enhance resource generation and buff allies extensively.",
     effectinfo: "Significantly enhances all aspects of resource generation and provides massive buffs to allies.",
     thumbnail: "A golden trophy with DeFi symbols.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3944,7 +3604,6 @@ const abilityTypes = [
     tooltip: "Boost your funding. Increase resource generation.",
     effectinfo: "Increases resource generation for a short period.",
     thumbnail: "A stack of coins.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3955,7 +3614,6 @@ const abilityTypes = [
     tooltip: "Conduct due diligence. Know and weaken your enemies.",
     effectinfo: "Reveals enemies' weaknesses and reduces their defenses.",
     thumbnail: "A magnifying glass over documents.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3966,7 +3624,6 @@ const abilityTypes = [
     tooltip: "Inject capital. Boost health significantly.",
     effectinfo: "Provides a significant health boost to the player or an ally.",
     thumbnail: "A money bag with a plus sign.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3977,7 +3634,6 @@ const abilityTypes = [
     tooltip: "Leverage your buyout power. Control an enemy.",
     effectinfo: "Temporarily takes control of an enemy, turning them into an ally.",
     thumbnail: "A handshake with dollar signs.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3988,7 +3644,6 @@ const abilityTypes = [
     tooltip: "Breach their systems. Disable enemy abilities.",
     effectinfo: "Disables enemy abilities for a short period.",
     thumbnail: "A broken lock.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -3999,7 +3654,6 @@ const abilityTypes = [
     tooltip: "Inject malware. Damage and slow your enemies.",
     effectinfo: "Inflicts damage over time and reduces enemy attack speed.",
     thumbnail: "A bug with a syringe.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4010,7 +3664,6 @@ const abilityTypes = [
     tooltip: "Raise your firewall. Increase defense.",
     effectinfo: "Increases the player's defense temporarily.",
     thumbnail: "A shield with flames.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4021,7 +3674,6 @@ const abilityTypes = [
     tooltip: "Initiate total shutdown. Disable and weaken enemies.",
     effectinfo: "Shuts down all enemy abilities and greatly reduces their stats for a short period.",
     thumbnail: "A power button with a lock.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4032,7 +3684,6 @@ const abilityTypes = [
     tooltip: "Strike quickly and precisely. Increase critical hit chance.",
     effectinfo: "Delivers a fast attack with increased critical hit chance.",
     thumbnail: "A fast-moving sword.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4043,7 +3694,6 @@ const abilityTypes = [
     tooltip: "Boost your speed. Move faster for a short time.",
     effectinfo: "Increases movement speed for a short period.",
     thumbnail: "A running figure.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4054,7 +3704,6 @@ const abilityTypes = [
     tooltip: "Execute your escape plan. Teleport to safety.",
     effectinfo: "Teleports the player to a safe location.",
     thumbnail: "An open door.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4065,7 +3714,6 @@ const abilityTypes = [
     tooltip: "Unleash scalping frenzy. Maximize attack and movement speed.",
     effectinfo: "Temporarily boosts attack speed and movement speed to maximum levels.",
     thumbnail: "A lightning-fast figure.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4076,7 +3724,6 @@ const abilityTypes = [
     tooltip: "Stabilize prices. Reduce enemy attack power and boost ally defense.",
     effectinfo: "Stabilizes prices, reducing enemy attack power and increasing ally defense.",
     thumbnail: "Stabilized graphs.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4087,7 +3734,6 @@ const abilityTypes = [
     tooltip: "Create a liquidity pool. Heal allies over time.",
     effectinfo: "Creates a liquidity pool that heals allies over time.",
     thumbnail: "A pool of liquid.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4098,7 +3744,6 @@ const abilityTypes = [
     tooltip: "Summon the order book. Block incoming projectiles.",
     effectinfo: "Summons an order book that blocks enemy projectiles.",
     thumbnail: "An open book.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4109,7 +3754,6 @@ const abilityTypes = [
     tooltip: "Master the market. Drastically buff allies and debuff enemies.",
     effectinfo: "Gains full control over the market, drastically buffing allies and debuffing enemies.",
     thumbnail: "A mastermind controlling the market.",
-    level: 1,
     isLocked: false,
     effect(level, user) {
     },
@@ -4803,18 +4447,11 @@ function createChooseMenu(entityList, text, type) {
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
         entity.isLocked = false;
-        const existingAbility = player.abilities.find(a => a.title === entity.title);
-        if (existingAbility) {
-            existingAbility.deactivate();
-            existingAbility.level += 1;
-            existingAbility.activate();
-        } else {
-            const newAbility = new Ability(player, { ...entity, level: 1 });
-            player.addAbility(newAbility);
-            newAbility.activate();
-        }
-        player.possibleAbilities.set(entity.title, { ...entity, level: 1 });
+        const newAbility = new Ability(player, { ...entity});
+        player.addAbility(newAbility);
+        newAbility.activate();
         refreshDisplay();
+
     } else if (entity.isLocked) {
         return;
     } else if (type === "Survivor") {
@@ -5023,9 +4660,8 @@ function refreshDisplay() {
 
     const abilitiesContainer = createContainer([], { display: 'flex' });
     abilitiesContainer.appendChild(createButton(player, .3));
-    player.abilities.filter(ability => ability.level > 0).forEach(ability => {
+    player.abilities.forEach(ability => {
             const clonedAbility = { ...ability, isLocked: false }; 
-
             abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
         });
 
@@ -5107,17 +4743,10 @@ function resumeGame() {
     hideContainerUI(botUI);
     setTimeout(() => { refreshDisplay() }, 1050);
 
-        const existingAbility = player.abilities.find(playerAbility => playerAbility.title === ability.title);
-        if (existingAbility) {
-            existingAbility.deactivate();
-            existingAbility.level += 1;
-            existingAbility.activate();
-        } else {
-            const newAbility = new Ability(player, { ...ability, level: 1 });
-            player.addAbility(newAbility);
-            newAbility.activate();
-        }
-        player.possibleAbilities.set(ability.title, { ...ability, level: 1 });
+    const newAbility = new Ability(player, { ...ability});
+    player.addAbility(newAbility);
+    newAbility.activate();
+    refreshDisplay();
     }
 }
 
