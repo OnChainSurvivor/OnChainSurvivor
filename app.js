@@ -1,6 +1,8 @@
 /*---------------------------------------------------------------------------
                               Classes
 ---------------------------------------------------------------------------*/
+const loader = new THREE.FBXLoader();
+const objectPool = new Map(); 
 
 class Ability {
     constructor(user, config) {
@@ -19,9 +21,6 @@ class Ability {
         this.effect.update();
     }
 }
-
-const loader = new THREE.FBXLoader();
-const objectPool = new Map(); 
 
 class Entity extends THREE.Object3D {
     constructor(config, position) {
@@ -162,11 +161,9 @@ class Entity extends THREE.Object3D {
         handleEntityDeath(this, enemies);
     }
 }
-
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
 ---------------------------------------------------------------------------*/
-
 let player;
 let ability;
 let world;
@@ -195,11 +192,9 @@ let colorIndex = 0;
 const xpSpheres = []; 
 const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
 const xpsphereMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-
 const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
     color,
     emissive: color,
@@ -228,15 +223,9 @@ const handleEntityDeath = (entity, enemies) => {
     const enemyIndex = enemies.indexOf(entity);
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
-
-
-
-
-
 /*---------------------------------------------------------------------------
                               Ability Blueprints
 ---------------------------------------------------------------------------*/
-
 const abilityTypes = [
 {
     title: "Scalping Bot",
@@ -4128,17 +4117,13 @@ const abilityTypes = [
 
 
 ];
-
 /*---------------------------------------------------------------------------
                               Survivors Blueprint
 ---------------------------------------------------------------------------*/
-
 import { playerTypes } from './playerTypes.js';
-
 /*---------------------------------------------------------------------------
                               Enemies Blueprints
 ---------------------------------------------------------------------------*/
-
 const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
@@ -4156,7 +4141,6 @@ const enemyTypes = [{
     level:0,
 }
 ];
-
 /*---------------------------------------------------------------------------
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
@@ -4306,25 +4290,20 @@ function updateRendererSize() {
 }
 
 updateRendererSize();
-
 window.addEventListener('resize', updateRendererSize);
 
 /*---------------------------------------------------------------------------
                               World Controller
 ---------------------------------------------------------------------------*/
-
 world = worldTypes[0];
-
 world.setup(scene,camera,renderer);
-
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
-
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
-import { keys, initiateJoystick } from './joystick.js';
 
+import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 
 ability = abilityTypes[0] ;
@@ -4650,6 +4629,26 @@ startSpawningEnemies(player);
         setTimeout(() => { container.classList.add('hide'); }, 10);
     }
 
+    function createPopUpContainer() {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-container'); 
+        return container;
+    }
+    
+    function createTitleContainer(text) {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-title');
+        const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw'); 
+        container.appendChild(title);
+        return container;
+    }
+    
+    function createGridContainer() {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-grid'); 
+        return container;
+    }
+
     let topUI = createContainer(['top-container', 'fade-in']);
         
     let centerUI = createContainer(['center-container', 'fade-in']);
@@ -4659,16 +4658,14 @@ startSpawningEnemies(player);
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
-
     function createGameTitle(){
         const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀', isMobile ? '10vw' : '6vw');
+        mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
         const subTitle = createTitleElement('', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
         addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
     };
-
     createGameTitle();
-
 /*---------------------------------------------------------------------------
                                 MAIN MENU
 ---------------------------------------------------------------------------*/
@@ -4702,7 +4699,7 @@ function createRandomRunEffect(button, images, finalImageIndex, scale, category)
 
     const totalHeight = images.length * 150 * scale;
     let currentTop = 0;
-let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
+    let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
     function spin() {
         if (spinningStates[category]) {
             currentTop -= speed;
@@ -4730,7 +4727,6 @@ function createGameMenu() {
     classContainer.appendChild(classSubTitle);
 
     const abilitiesSubTitle = createTitleElement('⚔️', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-    ability.isLocked=false;
     const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesButton);
@@ -4768,7 +4764,6 @@ function createGameMenu() {
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
     createGameMenu()
-
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -4784,7 +4779,17 @@ function createChooseMenu(entityList, text, type) {
         itemButton.onclick = () => handleEntitySelection(entity, type);
 
         if (type === "Survivor") {
-           const abilitiesOfClassContainer = createAbilitiesContainer(entity);
+           const abilitiesOfClassContainer = document.createElement('div');
+           abilitiesOfClassContainer.classList.add('abilities-grid');
+       
+           entity.abilities.forEach(survivorAbility => {
+               const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
+               if (existingAbility) {
+                   const abilityButton = createButton(existingAbility, 0.33);
+                   abilitiesOfClassContainer.appendChild(abilityButton);
+               }
+           });
+
            abilitiesOfClassContainer.onclick = () => handleEntitySelection(entity, type);
            gridContainer.appendChild(abilitiesOfClassContainer);
         }   
@@ -4793,26 +4798,6 @@ function createChooseMenu(entityList, text, type) {
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
     addContainerUI(centerUI, 'center-container', [popUpContainer]);
-}
-
-function createPopUpContainer() {
-    const container = document.createElement('div');
-    container.classList.add('choose-menu-container'); 
-    return container;
-}
-
-function createTitleContainer(text) {
-    const container = document.createElement('div');
-    container.classList.add('choose-menu-title');
-    const title = createTitleElement(text, '', isMobile ? '10vw' : '6vw'); 
-    container.appendChild(title);
-    return container;
-}
-
-function createGridContainer() {
-    const container = document.createElement('div');
-    container.classList.add('choose-menu-grid'); 
-    return container;
 }
 
 function handleEntitySelection(entity, type) {
@@ -4848,200 +4833,174 @@ function handleEntitySelection(entity, type) {
     hideContainerUI(centerUI);
 }
 
-function createAbilitiesContainer(entity) {
-    const container = document.createElement('div');
-    container.classList.add('abilities-grid');
+/*---------------------------------------------------------------------------
+                                    WEB3 Connect Menu
+---------------------------------------------------------------------------*/
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '135%' });
+    const buttonConnect = document.createElement('button');
+    const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
+    buttonConnect.style.backgroundColor = 'black';
+    buttonConnect.style.border = 'transparent';
+    buttonConnect.style.cursor = 'pointer';
+    buttonConnect.appendChild(subTitle);
+    web3Container.appendChild(buttonConnect);
+    topUI.appendChild(web3Container);
+    setTimeout(() => { web3Container.classList.add('show'); }, 10); 
 
-    entity.abilities.forEach(survivorAbility => {
-        const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
-        if (existingAbility) {
-            const abilityButton = createButton(existingAbility, 0.33);
-            container.appendChild(abilityButton);
+    buttonConnect.onclick = async () => {
+        if (window.ethereum) {
+            const web3 = new Web3(window.ethereum);
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const address = accounts[0];
+ 
+                let ensName = null;
+                try {
+                    ensName = await web3.eth.ens.lookup(address);
+                } catch (error) {
+                    console.error('Error looking up ENS:', error);
+                }
+    
+                const displayName = ensName || address;
+                localStorage.setItem('metaMaskAddress', address); 
+                displayWeb3Menu(displayName); 
+    
+            } catch (error) {
+                if (error.code === 4902) {
+                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                } else {
+                    console.error('Error:', error);
+                }
+            }
+        } else {
+            alert('MetaMask is not installed. Please install it to use this feature.');
+        }
+    };
+
+    window.addEventListener('load', async () => {
+        const storedAddress = localStorage.getItem('metaMaskAddress');
+        if (storedAddress) {
+            const web3 = new Web3(window.ethereum);
+            displayWeb3Menu(storedAddress);
         }
     });
-    return container;
-}
-
 /*---------------------------------------------------------------------------
-                                    WEB3 Menu
+                                    WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
-   //debt: havent touched this at all, Needs deep cleaning. 
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '135%' });
-    const button = document.createElement('button');
-    const subTitle = createTitleElement('♢\nConnect\n♢', 'lazy subtitle too btw', isMobile ? '3vw' : '1.5vw');
-    button.style.backgroundColor = 'black';
-    button.style.border = 'transparent';
-    button.appendChild(subTitle);
-    web3Container.appendChild(button);
-
-    const loadingContainer = document.createElement('div');
-    loadingContainer.id = 'loadingContainer';
-    loadingContainer.style.position = 'relative';
-    loadingContainer.style.width = '100%'; 
-    loadingContainer.style.height = '10px';
-    loadingContainer.style.backgroundColor = 'black';
-    loadingContainer.style.boxSizing = 'border-box';
-    loadingContainer.style.border = '0.5px solid'; 
-    loadingContainer.style.borderImageSlice = 1;
-    loadingContainer.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-
-    const loadingBar = document.createElement('div');
-    loadingBar.id = 'loadingBar';
-    loadingBar.style.width = '0';
-    loadingBar.style.height = '100%';
-    loadingBar.style.background = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
-    loadingBar.style.backgroundSize = '400% 400%';
-    loadingBar.style.animation = 'rainbow 5s linear infinite';
-
-    const loadingText =  createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '2vw');
-    loadingText.id = 'loadingText';
-    loadingContainer.appendChild(loadingBar);
-
-    function displayMetaMaskInfo(address, ethBalance) {
+    function displayWeb3Menu(address) {
         canMove=false;
+
         hideContainerUI(botUI);
         hideContainerUI(topUI);
         hideContainerUI(centerUI);
-        const buttonT = document.createElement('button');
+
+        const classImages = playerTypes.map(player => player.thumbnail);
+        const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+        const worldImages = worldTypes.map(world => world.thumbnail);
+     
+        const classContainer = document.createElement('div');
+        const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+        classContainer.appendChild(classButton);
+        classContainer.appendChild(classSubTitle);
+     
+        const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        ability.isLocked=false;
+        const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+        const classAbilityContainer = document.createElement('div');
+        classAbilityContainer.appendChild(abilitiesButton);
+        classAbilityContainer.appendChild(abilitiesSubTitle);
+     
+        const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
+        const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+        const worldContainer = document.createElement('div');
+        worldContainer.appendChild(worldButton);
+        worldContainer.appendChild(worldSubTitle);
+     
+        const galleryButtonsContainer = createContainer([], { display: 'flex' });
+        galleryButtonsContainer.appendChild(classContainer);
+        galleryButtonsContainer.appendChild(classAbilityContainer);
+        galleryButtonsContainer.appendChild(worldContainer);
+        const subTitle = createTitleElement(`Welcome Home, ${address}!`, 'lazy subtitle too btw', isMobile ? '4.5vw' : '2.5vw');
+        
         const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        subTitleRun.style.cursor = 'pointer';
+         
         const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        subTitleReport.style.cursor = 'pointer';
+ 
         const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-        buttonT.style.backgroundColor = 'black';
-        buttonT.style.border = 'transparent';
-        buttonT.appendChild(subTitleReport);
-        const welcomeSurvivor = createTitleElement('Welcome home, Survivor.eth', 'lazy subtitle too btw', isMobile ? '10vw' : '6vw');
-        
-       const disconnectContainer = createContainer(['fade-in', 'top-container'], { left: '135%' });
-       const button2 = document.createElement('button');
-       const subTitle2 = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
-       button2.style.backgroundColor = 'black';
-       button2.style.border = 'transparent';
-       button2.appendChild(subTitle2);
-       disconnectContainer.appendChild(button2);
-       button2.onclick = () => {
-        localStorage.removeItem('metaMaskAddress');
-        location.reload(); 
-    };
-         const classImages = playerTypes.map(player => player.thumbnail);
-         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
-         const worldImages = worldTypes.map(world => world.thumbnail);
+        subTitleHall.style.cursor = 'pointer';
+ 
+        const subTitleLogout = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw', isMobile ? '4vw' : '2vw');
+        subTitleLogout.style.cursor = 'pointer';
+        subTitleLogout.onclick = () => {
+            localStorage.removeItem('metaMaskAddress');
+            location.reload(); 
+        };
+ 
+        const loadingContainer = document.createElement('div');
+        loadingContainer.classList.add('loading-container');
+             
+        const loadingBar = document.createElement('div');
+        loadingBar.classList.add('loading-bar');
+         
+        const loadingText =  createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '2vw');
+        loadingContainer.appendChild(loadingBar);
+
+        //debt: push real data here, eventually
+        function updateLoadingBar(currentAmount) {
+            const goal = 1000000; 
+            const percentage = (currentAmount / goal) * 100;
+            loadingBar.style.width = percentage + '%';
+            loadingText.innerText =' ❤️ Goal '+percentage.toFixed(2) + '% ❤️';
+            loadingText.classList.add('rainbow-text'); 
+        }
      
-         const classContainer = document.createElement('div');
-         const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-         const classButton = createButton(player, isMobile ? 0.6 : 0.75);
-         classContainer.appendChild(classButton);
-         classContainer.appendChild(classSubTitle);
+     //debt: delete  after simulation not needed 
+     function simulateLoading() {
+         let currentAmount = 0;
+         const increment = 10000; 
+         const loadingInterval = setInterval(() => {
+             if (currentAmount >= 1000000) {
+               //TODO
+             } else {
+                 currentAmount += increment;
+                 updateLoadingBar(currentAmount);
+             }
+         }, 50); 
+     }
      
-         const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-         ability.isLocked=false;
-         const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
-         const classAbilityContainer = document.createElement('div');
-         classAbilityContainer.appendChild(abilitiesButton);
-         classAbilityContainer.appendChild(abilitiesSubTitle);
-     
-         const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', isMobile ? '4.5vw' : '1.5vw');
-         const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
-         const worldContainer = document.createElement('div');
-         worldContainer.appendChild(worldButton);
-         worldContainer.appendChild(worldSubTitle);
-     
-         const menuButtonsContainer = createContainer([], { display: 'flex' });
-         menuButtonsContainer.appendChild(classContainer);
-         menuButtonsContainer.appendChild(classAbilityContainer);
-         menuButtonsContainer.appendChild(worldContainer);
-         const subTitle = createTitleElement('Welcome Home, Survivor.eth!', 'lazy subtitle too btw', isMobile ? '4.5vw' : '2.5vw');
-        
         setTimeout(() => { 
-            addContainerUI(topUI, 'top-container', [subTitle,menuButtonsContainer]);
-            addContainerUI(botUI,'bottom-container', [subTitleRun,subTitleHall,buttonT,loadingText,loadingContainer,button2]);
+            addContainerUI(topUI, 'top-container', [subTitle,galleryButtonsContainer]);
+            addContainerUI(botUI,'bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer,subTitleLogout]);
             simulateLoading(); 
         }, 1050);
      
-         //    menuButtonsContainer.childNodes.forEach(button => {
+            // Debt: Gallery functionality after withdrawing data from the blockchain
+         //    galleryButtonsContainer.childNodes.forEach(button => {
             //     button.addEventListener('click', () => {
             //         canMove=false;
             //         if (button === classContainer) {
-           //              createChooseMenu(playerTypes, "Choose a Survivor 🏆","Survivor");
+           //              createGallery(playerTypes, "Your Survivors 🏆","Survivor");
            //          } else if (button === classAbilityContainer) {
-           //              createChooseMenu(abilityTypes, "Choose an Ability ⚔️","Ability");
+           //              createGallery(abilityTypes, "Your Abilities ⚔️","Ability");
            //          } else if (button === worldContainer) {
-           //              createChooseMenu(worldTypes, "Choose a Chain 🔗","World");
+           //              createGallery(worldTypes, "Your Chains 🔗","World");
           //           }
           //           hideContainerUI(center);
           //       });
          //    });
+
              createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
              createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
              createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     }
-        
-        button.onclick = async () => {
-            if (window.ethereum) {
-                const web3 = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await web3.eth.getAccounts();
-                    const address = accounts[0];
-                    const balance = await web3.eth.getBalance(address);
-                    const ethBalance = web3.utils.fromWei(balance, 'ether');
-                    localStorage.setItem('metaMaskAddress', address);
-        
-                    displayMetaMaskInfo(address, ethBalance);
-                } catch (error) {
-                    if (error.code === 4902) {
-                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-                    } else {
-                        console.error('Error:', error);
-                    }
-                }
-            } else {
-                alert('MetaMask is not installed. Please install it to use this feature.');
-            }
-        };
-
-        window.addEventListener('load', async () => {
-            const storedAddress = localStorage.getItem('metaMaskAddress');
-            if (storedAddress) {
-                const web3 = new Web3(window.ethereum);
-                const balance = await web3.eth.getBalance(storedAddress);
-                const ethBalance = web3.utils.fromWei(balance, 'ether');
-                displayMetaMaskInfo(storedAddress, ethBalance);
-            }
-        });
-        
-    topUI.appendChild(web3Container);
-
-    setTimeout(() => { web3Container.classList.add('show'); }, 10); 
-
-
-function updateLoadingBar(currentAmount) {
-    const loadingBar = document.getElementById('loadingBar');
-    const loadingText = document.getElementById('loadingText');
-    const goal = 1000000; 
-    const percentage = (currentAmount / goal) * 100;
-    loadingBar.style.width = percentage + '%';
-    loadingText.innerText =' ❤️ Goal '+percentage.toFixed(2) + '% ❤️';
-    loadingText.classList.add('rainbow-text'); 
-}
-
-function simulateLoading() {
-    let currentAmount = 0;
-    const increment = 10000; 
-    const loadingInterval = setInterval(() => {
-        if (currentAmount >= 1000000) {
-          //TODO
-        } else {
-            currentAmount += increment;
-            updateLoadingBar(currentAmount);
-        }
-    }, 50); 
-}
-
 /*---------------------------------------------------------------------------
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
- 
 let countdown = 300 * 60;
 const modeDisplay = createTitleElement('__________________', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
 const timerDisplay = createTitleElement('', 'who even keeps track of these', isMobile ? '4vw' : '3vw');
@@ -5073,11 +5032,9 @@ function refreshDisplay() {
     addContainerUI(topUI,'top-container', [xpLoadingContainer,abilitiesContainer,timerDisplay]);
     addContainerUI(botUI,'bottom-container', [modeDisplay,coordinateDisplay]);
 }
-
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
-
 function triggerGameOver() {
     isPaused = true;
     cancelAnimationFrame(animationFrameId);
@@ -5134,13 +5091,10 @@ function triggerGameOver() {
     gameOverScreen.appendChild(tryAgainButton);
     document.body.appendChild(gameOverScreen);
 }
-
 /*---------------------------------------------------------------------------
                                     GAMESTATE CONTROLLER  
 ---------------------------------------------------------------------------*/
-
 function resumeGame() {
-
     if (isPaused) {
         isPaused = false;
     }

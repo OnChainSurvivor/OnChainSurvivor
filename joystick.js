@@ -6,6 +6,7 @@ let joystickStartX, joystickStartY;
 let joystickContainer, joystick;
 
 var canMove = true; 
+
 export function setCanMove(value) { 
   canMove = value;
 }

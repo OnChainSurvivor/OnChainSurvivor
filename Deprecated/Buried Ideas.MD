@@ -699,3 +699,9 @@ Removed this list until the effects are added to the finalized build of the game
 * Visibility Enhancement
 * Environmental Manipulation
 ## Exclusive Ultimate Skill 
+
+ # Levels of abilities 
+
+Removed level ups from Abilitites, it felt wrong to just mindlessly level up abilities "Until they got better".
+In the crypto world your improvement happens by combining different elements, if you use a trading bot, You gain over non bot users. If you start  wallet tracking , your trading improves more than just improving the bot.
+That’s the kind of feeling I want to display with the game. Players should be mindful that every skill they choose is important and not just a mindless grind.
