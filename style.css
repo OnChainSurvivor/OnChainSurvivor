@@ -18,7 +18,7 @@ canvas {
     cursor: pointer;
 }
 img {
-    user-drag: none; /* For Safari */
+   /* user-drag: none;  For Safari */
     user-select: none; /* For modern browsers */
     -moz-user-select: none; /* For Firefox */
     -webkit-user-drag: none; /* For Chrome, Safari, Opera */
