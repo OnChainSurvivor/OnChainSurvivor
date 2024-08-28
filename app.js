@@ -173,14 +173,6 @@ const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-const createNeonMaterial = (color, emissiveIntensity = 1) => new THREE.MeshStandardMaterial({
-    color,
-    emissive: color,
-    emissiveIntensity,
-    metalness: 0.5,
-    roughness: 0.3
-});
-
 const dropXpSphere = (position) => {
     const xpsphereMaterial = world.material.clone();
     xpsphereMaterial.color.setHex(0xFFD700); 
@@ -283,6 +275,7 @@ const abilityTypes = [
         this.update = () => {}
         const trailBullets = [];
         this.lastTrailTime = 0;
+        this.material =   world.material.clone();
         const trail = {
             create: () => {
                 if (trailBullets.length >= (10)) {
@@ -290,10 +283,10 @@ const abilityTypes = [
                     scene.remove(oldestBullet); 
                 }
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
-                const trailStep = new THREE.Mesh(
-                    new THREE.BoxGeometry(0.2 , 0.2 , 0.2 ),
-                    createNeonMaterial(rainbowColors[colorIndex], 2)
-                );
+                const trailStepMaterial = world.material.clone(); 
+                trailStepMaterial.color.setHex(rainbowColors[colorIndex]); 
+                trailStepMaterial.emissive.setHex(rainbowColors[colorIndex]);
+                const trailStep = new THREE.Mesh(new THREE.BoxGeometry(0.2 , 0.2 , 0.2 ),trailStepMaterial);
                 trailStep.position.copy(user.position);
                 trailStep.castShadow = true;
                 scene.add(trailStep);
@@ -368,13 +361,13 @@ const abilityTypes = [
                 if (veil.shield) scene.remove(veil.shield);
                 user.evasion += 3;
                 colorIndex = (colorIndex + 1) % rainbowColors.length;
-                const shieldMaterial = new THREE.MeshStandardMaterial({
-                    color: rainbowColors[colorIndex],
-                    transparent: true,
-                    opacity: 0.1,
-                    emissive: rainbowColors[colorIndex],
-                    emissiveIntensity: 1
-                });
+                const shieldMaterial = world.material.clone(); 
+                shieldMaterial.color.setHex(rainbowColors[colorIndex]);
+                shieldMaterial.transparent = true;
+                shieldMaterial.opacity = 0.1;
+                shieldMaterial.emissive.setHex(rainbowColors[colorIndex]);
+                shieldMaterial.emissiveIntensity = 1;
+    
                 const shieldGeometry = new THREE.SphereGeometry(1.5, 32, 32);
                 veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
                 veil.shield.position.copy(user.position);
@@ -386,7 +379,6 @@ const abilityTypes = [
         };
         this.deactivate = () => {
                 if (veil.shield) {
-
                     scene.remove(veil.shield);
                     veil.shield = null;
                 }
