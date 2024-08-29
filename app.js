@@ -4391,9 +4391,9 @@ function createGameMenu() {
                 if (button === classContainer) {
                     createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
                 } else if (button === classAbilityContainer) {
-                    createChooseMenu(abilityTypes, "Choose an Ability ⚔️","Ability");
+                    createChooseMenu(abilityTypes, "\nChoose an Ability ⚔️","Ability");
                 } else if (button === worldContainer) {
-                    createChooseMenu(worldTypes, "Choose a Chain 🔗","World");
+                    createChooseMenu(worldTypes, "\nChoose a Chain 🔗","World");
                 }
                 hideContainerUI(botUI);
             });
