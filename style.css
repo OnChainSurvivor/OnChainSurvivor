@@ -177,12 +177,7 @@ html, body {
     animation: rainbow 5s linear infinite;
 }
 
-.choose-menu-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column;
-}
+
 
 .choose-menu-container {
     position: fixed;

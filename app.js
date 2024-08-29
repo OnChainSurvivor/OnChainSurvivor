@@ -4277,7 +4277,6 @@ startSpawningEnemies(player);
     
     function createTitleContainer(text,tooltip) {
         const container = document.createElement('div');
-        container.classList.add('choose-menu-title');
         const title = createTitleElement(text, tooltip, "title"); 
         container.appendChild(title);
         return container;
