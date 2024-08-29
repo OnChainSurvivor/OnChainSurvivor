@@ -4246,7 +4246,6 @@ startSpawningEnemies(player);
         description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
-        levelStars.style.filter = 'grayscale(100%)';
         img.style.filter = 'grayscale(100%) blur(5px)';
         button.title = 'Insert unlock hint here'
     }

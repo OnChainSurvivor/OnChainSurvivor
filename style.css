@@ -189,8 +189,8 @@ html, body {
     position: fixed;
     z-index: 1001;
     background-color: black;
-    height: 98vh;
-    width: 99vw;
+    height: 100vh;
+    width: 100vw;
     transform: translate(0%, -50%);
     border: 0.5px solid;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
@@ -199,7 +199,6 @@ html, body {
     overflow-y: auto;
     animation: rainbow-border 5s linear infinite;
 } 
-
 
 .choose-menu-grid {
     display: grid;
