@@ -3767,7 +3767,7 @@ const worldTypes = [{
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     material:new THREE.MeshPhysicalMaterial({
         envMap: null, 
-        reflectivity: 0.9,
+        reflectivity: 1,
         roughness: 0,
         metalness: 1,
         clearcoat: 0.13,
@@ -3777,6 +3777,7 @@ const worldTypes = [{
         thickness: 10,
         sheen: 1,
         color: new THREE.Color('white'),
+        //wireframe : true
     }),
     level:0,
     setup: function(scene, camera, renderer) {
@@ -3785,7 +3786,7 @@ const worldTypes = [{
         scene.add(this.ambientLight);
 
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        this.directionalLight.position.set(-30, -30, -30);
+        this.directionalLight.position.set(10, 10, 10);
         this.directionalLight.castShadow = true;
         scene.add(this.directionalLight)
 
@@ -3819,10 +3820,12 @@ const worldTypes = [{
             this.floor.position.set(floorPosition.x, this.floor.position.y, floorPosition.z);
         };
         
-        camera.position.set(0, 15, 15);
+        const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
+        const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
+        camera.position.set(cameraX, cameraHeight, cameraZ);
     
         this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-        this.octahedronGeometry.scale(5,7.5,5); 
+        this.octahedronGeometry.scale(4.5,5.25,3.75); 
         
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
@@ -3836,20 +3839,19 @@ const worldTypes = [{
     this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
-    scene.add(this.octahedronMesh2);
-        
-    camera.lookAt(this.octahedronMesh2.position);
+    scene.add(this.octahedronMesh2); 
+    this.octahedronMesh2.rotation.z += 90;
+    camera.lookAt(this.octahedronMesh.position);
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
     const miniOctahedronMaterial = this.material.clone();
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
-    ///miniOctahedronMaterial.wireframe = true;
     const numCrystals = 1024; 
 
 
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
     for (let i = 0; i < numCrystals; i++) {
-        const miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
+        this.miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
 
         const y = 1 - (i / (numCrystals - 1)) * 2; // (* 6) for feed effect
         const radius = Math.sqrt(1 - y * y); // (0.1) for feed effect
@@ -3857,60 +3859,75 @@ const worldTypes = [{
         const phi = goldenAngle * i; // Use golden angle for even distribution
         const theta = Math.atan2(radius, y); // Calculate theta from y and radius
 
-        miniOctahedron.position.set(
-            1 * Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
-            1 * y,
-            25 * Math.sin(phi) * Math.sin(theta)
+        this.miniOctahedron.position.set(
+            1* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
+            1* y,
+            25* Math.sin(phi) * Math.sin(theta)
         );
-
-        miniOctahedron.rotation.set(
+ 
+        this.miniOctahedron.rotation.set(
             Math.random() * 2 * Math.PI,
             Math.random() * 2 * Math.PI,
             Math.random() * 2 * Math.PI
         );
 
-        scene.add(miniOctahedron);
-        this.miniOctahedrons.push(miniOctahedron);
+        scene.add(this.miniOctahedron);
+        this.miniOctahedrons.push(this.miniOctahedron);
 
     }
 },
     update: function(scene, camera, renderer) {
         if(isMainMenu){
-            this.octahedronMesh.rotation.x -= 0.005;
-            this.octahedronMesh2.rotation.x += 0.005;
-
-           this.miniOctahedrons.forEach((miniOctahedron,index) => {
+            this.octahedronMesh.rotation.z -= 0.005;
+            this.octahedronMesh2.rotation.z += 0.005;
+        
+            this.miniOctahedrons.forEach((miniOctahedron,index) => {
             miniOctahedron.rotation.x += 0.01;
             miniOctahedron.rotation.y += 0.01;
-            const orbitSpeed =0.5;
+            const orbitSpeed = 0.5;
             const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
-            const phi = Math.PI * index / this.miniOctahedrons.length; 
+    
+            // Spherical coordinates for orbit (Full sphere)
+            const phi = Math.PI * index / this.miniOctahedrons.length;
             const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
-            const angle = Date.now() * 0.001 * orbitSpeed; 
+    
+            // Calculate angle for orbiting around Y-axis (Reversed direction)
+            const angle = Date.now() * 0.001 * orbitSpeed; // Note the minus sign (-)
+    
+            // Set position for orbit around Y-axis using spherical coordinates
             miniOctahedron.position.set(
                 this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
-                this.octahedronMesh.position.y + orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
-                this.octahedronMesh.position.z + orbitRadius * Math.cos(phi)
+                this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
+                this.octahedronMesh.position.z +  orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
             );
+        
         });
         }else{
 
-            this.miniOctahedrons.forEach((miniOctahedron, index) => {
+            this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
+            if (this.octahedronMesh.scale.x <= 0.1) { 
+                scene.remove(this.octahedronMesh); 
+           }
+            this.miniOctahedrons.forEach((miniOctahedron,index) => {
+                const direction = new THREE.Vector3().subVectors(miniOctahedron.position, this.octahedronMesh.position).normalize();
+                const speed = 0.1; 
+                miniOctahedron.position.addScaledVector(direction, speed); 
+                miniOctahedron.rotation.x += 0.01;
+                miniOctahedron.rotation.y += 0.01;
+
                 const scaleSpeed = 0.005;
                 miniOctahedron.scale.multiplyScalar(1 - scaleSpeed); 
-    
-                if (miniOctahedron.scale.x <= 0) { 
-                     this.scene.remove(miniOctahedron.mesh); 
-                    this.miniOctahedrons.splice(index, 1); 
-                }}
-            )
-
-            this.octahedronMesh.rotation.y += 0.005;
+                if (miniOctahedron.scale.x <= 0.3) { 
+                     scene.remove(miniOctahedron); 
+                     this.miniOctahedrons.splice(index, 1); 
+                }
+            });
         }
     },
     resumeGame: function(){
-        scene.remove(world.octahedronMesh2);
-        this.octahedronMesh.rotation.x = 0;
+
+       scene.remove(world.octahedronMesh2);
+       this.octahedronMesh.rotation.z = 0;
     },
     cleanUp: function(scene) {
         scene.remove(this.ambientLight);
@@ -4767,7 +4784,7 @@ function animate() {
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
-    world.update();
+    world.update(scene,camera,renderer);
     composer.render();
 }
 
