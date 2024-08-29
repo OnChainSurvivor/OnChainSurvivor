@@ -193,15 +193,19 @@ html, body {
 }
 
 .choose-menu-title {
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    flex-direction: column;
 }
 
 .choose-menu-container {
     position: fixed;
     z-index: 1001;
     background-color: black;
-    height: 98vh;
-    width: 99vw;
+    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right)); 
     transform: translate(0%, -50%);
     border: 0.5px solid;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
@@ -210,7 +214,6 @@ html, body {
     overflow-y: auto;
     animation: rainbow-border 5s linear infinite;
 } 
-
 
 .choose-menu-grid {
     display: grid;

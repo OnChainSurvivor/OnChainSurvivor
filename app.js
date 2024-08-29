@@ -4389,7 +4389,7 @@ function createGameMenu() {
             button.addEventListener('click', () => {
                 canMove=false;
                 if (button === classContainer) {
-                    createChooseMenu(playerTypes, "Choose a Survivor 🏆","Survivor");
+                    createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
                 } else if (button === classAbilityContainer) {
                     createChooseMenu(abilityTypes, "Choose an Ability ⚔️","Ability");
                 } else if (button === worldContainer) {
