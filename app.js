@@ -62,7 +62,7 @@ class Entity extends THREE.Object3D {
         this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
         this.playerRun.play();
         this.playerRun.setLoop(THREE.LoopRepeat);
-        this.mesh.scale.set(3, 3, 3);
+        this.mesh.scale.set(2,2,2);
         this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         scene.add(this);
     }
@@ -110,7 +110,6 @@ class Entity extends THREE.Object3D {
         this.abilities[index]?.deactivate();
     }
 
-    
     updateAbilities() {
         this.abilities.forEach(ability => ability.update());
     }
@@ -157,8 +156,8 @@ let accumulatedTime = 0;
 const isMobile = window.innerWidth <= 830;
 
 let cameraAngle = 0;
-const cameraRadius = 20;
-let cameraHeight = 1;
+let cameraRadius = 15;
+let cameraHeight = 0;
 
 let canMove = true;
 
@@ -3840,12 +3839,72 @@ const worldTypes = [{
     scene.add(this.octahedronMesh2);
         
     camera.lookAt(this.octahedronMesh2.position);
-    },
+    this.miniOctahedrons = [];
+    const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
+    const miniOctahedronMaterial = this.material.clone();
+    miniOctahedronGeometry.scale(0.5,0.75,0.5)
+    ///miniOctahedronMaterial.wireframe = true;
+    const numCrystals = 1024; 
+
+
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < numCrystals; i++) {
+        const miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
+
+        const y = 1 - (i / (numCrystals - 1)) * 2; // (* 6) for feed effect
+        const radius = Math.sqrt(1 - y * y); // (0.1) for feed effect
+
+        const phi = goldenAngle * i; // Use golden angle for even distribution
+        const theta = Math.atan2(radius, y); // Calculate theta from y and radius
+
+        miniOctahedron.position.set(
+            1 * Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
+            1 * y,
+            25 * Math.sin(phi) * Math.sin(theta)
+        );
+
+        miniOctahedron.rotation.set(
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI
+        );
+
+        scene.add(miniOctahedron);
+        this.miniOctahedrons.push(miniOctahedron);
+
+    }
+},
     update: function(scene, camera, renderer) {
         if(isMainMenu){
             this.octahedronMesh.rotation.x -= 0.005;
             this.octahedronMesh2.rotation.x += 0.005;
+
+           this.miniOctahedrons.forEach((miniOctahedron,index) => {
+            miniOctahedron.rotation.x += 0.01;
+            miniOctahedron.rotation.y += 0.01;
+            const orbitSpeed =0.5;
+            const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
+            const phi = Math.PI * index / this.miniOctahedrons.length; 
+            const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
+            const angle = Date.now() * 0.001 * orbitSpeed; 
+            miniOctahedron.position.set(
+                this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
+                this.octahedronMesh.position.y + orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
+                this.octahedronMesh.position.z + orbitRadius * Math.cos(phi)
+            );
+        });
         }else{
+
+            this.miniOctahedrons.forEach((miniOctahedron, index) => {
+                const scaleSpeed = 0.005;
+                miniOctahedron.scale.multiplyScalar(1 - scaleSpeed); 
+    
+                if (miniOctahedron.scale.x <= 0) { 
+                     this.scene.remove(miniOctahedron.mesh); 
+                    this.miniOctahedrons.splice(index, 1); 
+                }}
+            )
+
             this.octahedronMesh.rotation.y += 0.005;
         }
     },
@@ -3873,6 +3932,8 @@ const worldTypes = [{
     isLocked: true,
 }
 ];
+
+
 /*---------------------------------------------------------------------------
                               Scene Initialization
 ---------------------------------------------------------------------------*/
@@ -4412,7 +4473,7 @@ function handleEntitySelection(entity, type) {
     const web3Container = createContainer(['fade-in', 'top-container'], { left: '130%' });
     const buttonConnect = document.createElement('button');
     const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-    buttonConnect.style.backgroundColor = 'black';
+    buttonConnect.style.backgroundColor = 'transparent';
     buttonConnect.style.border = 'transparent';
     buttonConnect.style.cursor = 'pointer';
     buttonConnect.appendChild(subTitle);
@@ -4594,20 +4655,14 @@ function refreshDisplay() {
     xpLoadingBar.id = 'xpLoadingBar';
     xpLoadingContainer.appendChild(xpLoadingBar);
 
-    // Grid Container for Abilities
     const abilitiesContainer = createContainer(['abilities-grid-container']); 
     abilitiesContainer.style.display = 'grid';
-    abilitiesContainer.style.gridTemplateColumns = 'repeat(7, 1fr)'; // 7 columns per row
-
-    // Player Ability (occupies first grid cell)
+    abilitiesContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
     abilitiesContainer.appendChild(createButton(player, .25));
-
-    // Other Abilities
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
         abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
     });
-
     addContainerUI(topUI,'top-container', [xpLoadingContainer, abilitiesContainer]);
     addContainerUI(botUI,'bottom-container', [modeDisplay,timerDisplay,]);
 }
@@ -4689,7 +4744,6 @@ function resumeGame() {
     const newAbility = new Ability(player, { ...ability});
     player.addAbility(newAbility);
     newAbility.activate();
-    refreshDisplay();
     }
 }
 
@@ -4704,8 +4758,13 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
+
              if(cameraHeight <= 35)
             cameraHeight+=0.075;
+
+             if(cameraRadius <= 30)
+                cameraRadius+=0.0075;
+
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }

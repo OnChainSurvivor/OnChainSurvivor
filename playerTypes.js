@@ -26,10 +26,7 @@ export const playerTypes = [{
     Consensus: 0,
     abilities: [
         { type: 'Scalping Bot'},
-        { type: 'Scalping Bot'},
-        { type: 'Scalping Bot'},
-        { type: 'Onchain Trail'},
-        { type: 'Scalping Bot'},
+
     ],
 },{
     class: 'Survivor',
