@@ -177,7 +177,13 @@ html, body {
     animation: rainbow 5s linear infinite;
 }
 
-
+.choose-menu-title {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    top: 40px;
+    flex-direction: column;
+}
 
 .choose-menu-container {
     position: fixed;
@@ -185,7 +191,7 @@ html, body {
     background-color: black;
     height: 100vh;
     width: 100vw;
-    transform: translate(0%, -50%);
+    transform: translate(0%, -50%); 
     border: 0.5px solid;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
     border-image-slice: 1;
@@ -193,6 +199,7 @@ html, body {
     overflow-y: auto;
     animation: rainbow-border 5s linear infinite;
 } 
+
 
 .choose-menu-grid {
     display: grid;
