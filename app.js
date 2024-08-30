@@ -3795,7 +3795,6 @@ const worldTypes = [{
 
         this.floorGeometry = new THREE.PlaneGeometry(.100, .100);
         this.floorMaterial = new THREE.MeshStandardMaterial({
-
             metalness: 0,
             roughness: 0,
             transparent: true,
@@ -3809,7 +3808,7 @@ const worldTypes = [{
         this.floor.rotation.x = -Math.PI / 2;
         this.floor.position.y = -0.5;
         this.floor.receiveShadow = true;
-        scene.add(this.floor);
+        //scene.add(this.floor);
         
         this.floor.onBeforeRender = (renderer, scene, camera) => {
             const distance = 1;
@@ -3838,35 +3837,39 @@ const worldTypes = [{
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
+
     this.octahedronMesh2.rotation.z += 90;
     camera.lookAt(this.octahedronMesh.position);
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
     const miniOctahedronMaterial = this.material.clone();
-    miniOctahedronMaterial.wireframe=false;
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
     const numCrystals = 1024; 
 
-
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-    const possibleRadii = [1, 25, 50, 100];
+    const possibleRadii = [1, 25, 50, 75];
     const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
     const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
     const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
-    const possibleRoot = [1, 2,3];
+
+    const possibleRoot = [1,2,3];
+    const possibleSqrt = [0.1,0.5,1,2];
+
     const root =possibleRoot[Math.floor(Math.random() * possibleRoot.length)];
+    const Sqrt =possibleSqrt[Math.floor(Math.random() * possibleSqrt.length)];
+
     for (let i = 0; i < numCrystals; i++) {
         this.miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
 
-        const y = 1 - (i / (numCrystals - 1)) * 1; // (* 6) for feed effect
-        const radius = Math.sqrt(root - y * y); 
+        const y = 1 - (i / (numCrystals - 1)) * root; 
+        const radius = Math.sqrt(Sqrt - y * y); 
 
-        const phi = goldenAngle * i; // Use golden angle for even distribution
-        const theta = Math.atan2(radius, y); // Calculate theta from y and radius
+        const phi = goldenAngle * i; 
+        const theta = Math.atan2(radius, y); 
 
         this.miniOctahedron.position.set(
-            radiusx* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
+            radiusx* Math.cos(phi) * Math.sin(theta),
             radiusy* y,
             radiusz* Math.sin(phi) * Math.sin(theta)
         );
@@ -3912,15 +3915,12 @@ const worldTypes = [{
             const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
 
 
-                // Define attraction speed 
                 const attractionSpeed = 0.02; // Adjust this value for desired speed
     
-                // Move the miniOctahedron towards the center
                 const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
                 if (distanceToCenter > 1.5) { 
                     miniOctahedron.position.addScaledVector(direction, attractionSpeed);
                 }
-
 
 
         });
@@ -4335,8 +4335,13 @@ startSpawningEnemies(player);
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('', 'lazy subtitle too btw', "subtitle");
-        addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
+        addContainerUI(topUI,'top-container', [mainTitle]);
+
+        const subTitle = createTitleContainer('Move to Start !', 'lazy subtitle too btw', "subtitle");
+        const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
+        sponsor.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };  //debt: explain the sponsor gameplay mechanics
+
+        addContainerUI(botUI,'bottom-container', [subTitle,sponsor]);
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
@@ -4436,7 +4441,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-    createGameMenu()
+   // createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
