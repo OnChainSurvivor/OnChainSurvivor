@@ -3843,24 +3843,32 @@ const worldTypes = [{
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
     const miniOctahedronMaterial = this.material.clone();
+    miniOctahedronMaterial.wireframe=false;
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
     const numCrystals = 1024; 
 
 
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+    const possibleRadii = [1, 25, 50, 100];
+    const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+    const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+    const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+    const possibleRoot = [1, 2,3];
+    const root =possibleRoot[Math.floor(Math.random() * possibleRoot.length)];
     for (let i = 0; i < numCrystals; i++) {
         this.miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
 
-        const y = 1 - (i / (numCrystals - 1)) * 2; // (* 6) for feed effect
-        const radius = Math.sqrt(1 - y * y); // (0.1) for feed effect
+        const y = 1 - (i / (numCrystals - 1)) * 1; // (* 6) for feed effect
+        const radius = Math.sqrt(root - y * y); 
 
         const phi = goldenAngle * i; // Use golden angle for even distribution
         const theta = Math.atan2(radius, y); // Calculate theta from y and radius
 
         this.miniOctahedron.position.set(
-            25* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
-            25* y,
-            25* Math.sin(phi) * Math.sin(theta)
+            radiusx* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
+            radiusy* y,
+            radiusz* Math.sin(phi) * Math.sin(theta)
         );
  
         this.miniOctahedron.rotation.set(
@@ -3879,6 +3887,9 @@ const worldTypes = [{
             this.octahedronMesh.rotation.z -= 0.005;
             this.octahedronMesh2.rotation.z += 0.005;
         
+            player.rotation.y += 0.005;
+            player.rotation.y = player.rotation.y % (2 * Math.PI); // Keep rotation within range
+    
             this.miniOctahedrons.forEach((miniOctahedron,index) => {
             miniOctahedron.rotation.x += 0.01;
             miniOctahedron.rotation.y += 0.01;
@@ -3906,7 +3917,7 @@ const worldTypes = [{
     
                 // Move the miniOctahedron towards the center
                 const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
-                if (distanceToCenter > 1) { 
+                if (distanceToCenter > 1.5) { 
                     miniOctahedron.position.addScaledVector(direction, attractionSpeed);
                 }
 
