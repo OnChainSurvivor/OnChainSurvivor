@@ -3763,7 +3763,6 @@ const worldTypes = [{
     title: 'Ethereumverse',
     description:'An open futuristic, digital landscape where data flows freely. Forever. 12 seconds at a time thought. ',
     tooltip:'0.04 💀',
-    tags: ['world'],
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     material:new THREE.MeshPhysicalMaterial({
         envMap: null, 
@@ -3777,9 +3776,8 @@ const worldTypes = [{
         thickness: 10,
         sheen: 1,
         color: new THREE.Color('white'),
-        //wireframe : true
+        wireframe : true
     }),
-    level:0,
     setup: function(scene, camera, renderer) {
 
         this.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
@@ -3860,8 +3858,8 @@ const worldTypes = [{
         const theta = Math.atan2(radius, y); // Calculate theta from y and radius
 
         this.miniOctahedron.position.set(
-            1* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
-            1* y,
+            25* Math.cos(phi) * Math.sin(theta), // 15 is the sphere radius
+            25* y,
             25* Math.sin(phi) * Math.sin(theta)
         );
  
@@ -3900,7 +3898,20 @@ const worldTypes = [{
                 this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
                 this.octahedronMesh.position.z +  orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
             );
-        
+            const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
+
+
+                // Define attraction speed 
+                const attractionSpeed = 0.02; // Adjust this value for desired speed
+    
+                // Move the miniOctahedron towards the center
+                const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
+                if (distanceToCenter > 1) { 
+                    miniOctahedron.position.addScaledVector(direction, attractionSpeed);
+                }
+
+
+
         });
         }else{
 
@@ -3944,13 +3955,10 @@ const worldTypes = [{
     title: 'Digital Goldland',
     description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes here are made and lost in the blink of an eye.',
     tooltip:'15.000 U S D O L L A R S 💀',
-    tags: ['world'],    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    level:0,
+    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     isLocked: true,
 }
 ];
-
-
 /*---------------------------------------------------------------------------
                               Scene Initialization
 ---------------------------------------------------------------------------*/
@@ -3959,8 +3967,6 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const canvas = document.getElementById('survivorCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setPixelRatio(window.devicePixelRatio || 1);
-const dpr = window.devicePixelRatio || 1;
-const rect = canvas.getBoundingClientRect();
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     minFilter: THREE.LinearFilter,
@@ -3989,6 +3995,7 @@ world.setup(scene,camera,renderer);
                               Player Controller
 ---------------------------------------------------------------------------*/
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
+
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
 
 import { keys, initiateJoystick } from './joystick.js';
@@ -4112,7 +4119,7 @@ function LevelUp() {
         isPaused = false;
         return;
     }
-    //Debt: Make level up more difficult according to the number of skilss in the player  
+
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
@@ -4124,7 +4131,7 @@ function LevelUp() {
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
-    createChooseMenu(upgradeOptions, "Upgrade:", "Upgrade");
+    createChooseMenu(upgradeOptions, "\nUpgrade 🔱", "Upgrade");
 }
     
 /*---------------------------------------------------------------------------
@@ -4174,11 +4181,6 @@ startSpawningEnemies(player);
                                 UI UTILITIES 
 ---------------------------------------------------------------------------*/
 
-    const rainbowText = (element, fontSize) => {
-        element.style.fontSize = fontSize;
-        element.classList.add('rainbow-text'); 
-    };
-
     function createTitleElement(text, title, fontSize) {
         const element = document.createElement('div');
         element.innerText = text;
@@ -4218,7 +4220,8 @@ startSpawningEnemies(player);
     
         const title = document.createElement('div');
         title.innerText = dataType.title;
-        rainbowText(title, `${20 * scale}px`);  
+        title.style.fontSize = `${20 * scale}px`;
+        title.classList.add('rainbow-text'); 
         title.style.height = `${2.5 * scale}em`; 
         title.style.lineHeight = `${1.5 * scale}em`;
         title.style.overflow = 'hidden';
@@ -4237,7 +4240,9 @@ startSpawningEnemies(player);
     
         const description = document.createElement('div');
         description.innerText = `${dataType.description}`;
-        rainbowText(description, `${14.5 * scale}px`); 
+        description.style.fontSize = `${14.5 * scale}px`;
+        description.classList.add('rainbow-text'); 
+
         description.style.height = `${5 * scale}em`; 
         description.style.lineHeight = `${1 * scale}em`; 
         description.style.overflow = 'hidden'; 
@@ -4464,7 +4469,6 @@ function handleEntitySelection(entity, type) {
         player.addAbility(newAbility);
         newAbility.activate();
         refreshDisplay();
-
     } else if (entity.isLocked) {
         return;
     } else if (type === "Survivor") {
