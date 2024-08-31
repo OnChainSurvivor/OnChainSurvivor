@@ -50,7 +50,6 @@ class Entity extends THREE.Object3D {
         object.traverse((child) => {
             if (child.isMesh) {
                 child.material = world.material.clone();
-                child.material.wireframe = true; 
             }
         });
     }
@@ -327,7 +326,7 @@ const abilityTypes = [
                 shieldMaterial.transparent = true;
                 shieldMaterial.opacity = 0.1; 
 
-                const shieldGeometry = new THREE.SphereGeometry(3.5);
+                const shieldGeometry = new THREE.SphereGeometry(2.5);
                 veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
                 veil.shield.position.copy(user.position);
                 scene.add(veil.shield);
@@ -3779,7 +3778,6 @@ const worldTypes = [{
         wireframe : true
     }),
     setup: function(scene, camera, renderer) {
-
         this.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
         scene.add(this.ambientLight);
 
@@ -3789,7 +3787,7 @@ const worldTypes = [{
         scene.add(this.directionalLight)
 
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.2, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
 
@@ -3837,8 +3835,20 @@ const worldTypes = [{
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
-
     this.octahedronMesh2.rotation.z += 90;
+
+    this.octahedronMesh3 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
+    scene.add(this.octahedronMesh3);   
+    this.octahedronMesh4 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
+    scene.add(this.octahedronMesh4); 
+    this.octahedronMesh3.material.transparent=true;
+    this.octahedronMesh3.material.opacity=1;
+    this.octahedronMesh3.material.wireframe=false;
+    this.octahedronMesh4.material.transparent=true;
+    this.octahedronMesh4.material.opacity=1;
+    this.octahedronMesh4.material.wireframe=false;
+    this.octahedronMesh4.rotation.z += 90;
+
     camera.lookAt(this.octahedronMesh.position);
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
@@ -3890,6 +3900,16 @@ const worldTypes = [{
             this.octahedronMesh.rotation.z -= 0.005;
             this.octahedronMesh2.rotation.z += 0.005;
         
+            this.octahedronMesh3.rotation.z -= 0.005;
+            this.octahedronMesh4.rotation.z += 0.005;
+            this.octahedronMesh4.material.opacity-=0.0025;
+            this.octahedronMesh3.material.opacity-=0.0025;
+
+            if (this.octahedronMesh3.material.opacity <= 0) { 
+                scene.remove(this.octahedronMesh4); 
+                scene.remove(this.octahedronMesh3); 
+           }
+
             player.rotation.y += 0.005;
             player.rotation.y = player.rotation.y % (2 * Math.PI); // Keep rotation within range
     
@@ -3899,14 +3919,11 @@ const worldTypes = [{
             const orbitSpeed = 0.5;
             const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
     
-            // Spherical coordinates for orbit (Full sphere)
             const phi = Math.PI * index / this.miniOctahedrons.length;
             const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
     
-            // Calculate angle for orbiting around Y-axis (Reversed direction)
-            const angle = Date.now() * 0.001 * orbitSpeed; // Note the minus sign (-)
+            const angle = Date.now() * 0.001 * orbitSpeed;
     
-            // Set position for orbit around Y-axis using spherical coordinates
             miniOctahedron.position.set(
                 this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
                 this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
@@ -3915,14 +3932,12 @@ const worldTypes = [{
             const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
 
 
-                const attractionSpeed = 0.02; // Adjust this value for desired speed
+            const attractionSpeed = 0.025;
     
-                const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
+            const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
                 if (distanceToCenter > 1.5) { 
                     miniOctahedron.position.addScaledVector(direction, attractionSpeed);
                 }
-
-
         });
         }else{
 
@@ -3947,7 +3962,6 @@ const worldTypes = [{
         }
     },
     resumeGame: function(){
-
        scene.remove(world.octahedronMesh2);
        this.octahedronMesh.rotation.z = 0;
     },
