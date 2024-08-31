@@ -3855,7 +3855,9 @@ const worldTypes = [{
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
     const miniOctahedronMaterial = this.material.clone();
+
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
+
     const numCrystals = 1024; 
 
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
@@ -3934,7 +3936,7 @@ const worldTypes = [{
             const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
 
 
-                const attractionSpeed = 0.05;
+                const attractionSpeed = 0.025;
     
                 const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
                 if (distanceToCenter > 1.5) { 
