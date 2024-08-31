@@ -4073,9 +4073,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         wireframe:true,
         transparent:true,
         opacity:0.1,
-
     });
-
    
     const grid = new THREE.Mesh(gridGeometry, gridMaterial);
     scene.add(grid);
@@ -4085,13 +4083,16 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         gridMaterial.uniforms.playerPosition.value.copy(player.position); 
     });
 }
+
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
 
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
+
 createInfinityGridFloor(scene, camera, renderer,player);
+
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 
@@ -4382,6 +4383,9 @@ startSpawningEnemies(player);
 
     function hideContainerUI(container){
         container.classList.add('fade-out'); 
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
         setTimeout(() => { container.classList.add('hide'); }, 10);
     }
 
@@ -4583,7 +4587,10 @@ function handleEntitySelection(entity, type) {
         createGameMenu();
     }
     canMove = true;
-    hideContainerUI(centerUI);
+    const centerUI = document.querySelector('.center-container');
+    if (centerUI) {
+        hideContainerUI(centerUI); 
+    }
 }
 
 /*---------------------------------------------------------------------------
