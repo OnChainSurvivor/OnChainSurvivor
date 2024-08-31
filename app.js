@@ -4007,13 +4007,11 @@ window.addEventListener('resize', updateRendererSize);
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
 function createInfinityGridFloor(scene, camera, renderer, player) {
-    const gridSize = 5; // Size of each grid tile
-    const divisions = 1; // Number of divisions per tile (can increase for more detail)
-
-    const numTiles = 6; // Number of tiles per axis (e.g., 11x11 grid around player)
+    const gridSize = 5; 
+    const divisions = 1; 
+    const numTiles = 4; 
 
     const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
-    gridGeometry.rotateX(-Math.PI / 2);
 
     const gridMaterial = new THREE.ShaderMaterial({
         uniforms: {
@@ -4063,7 +4061,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
                 float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
 
                 // 4. Brightness based on player proximity
-                float brightness = smoothstep(15.0, 0.0, distanceToPlayer); 
+                float brightness = smoothstep(10.0, 0.0, distanceToPlayer); 
 
                 // 5. Combine hue and brightness for final color
                 vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
@@ -4072,8 +4070,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
             }
         `,
         wireframe: true,
-        transparent: true,
-        opacity: 1,
+
     });
 
     const offsets = [];
@@ -4092,22 +4089,21 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
     scene.add(gridMesh);
 
     function updateGridTiles() {
-        gridMaterial.uniforms.time.value += 0.05;
+        gridMaterial.uniforms.time.value += 0.01;
         gridMaterial.uniforms.playerPosition.value.copy(player.position);
 
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, 0, playerGridZ);
+        gridMesh.position.set(playerGridX, -7, playerGridZ);
     }
-
+    gridGeometry.rotateX(-Math.PI / 2);
     renderer.setAnimationLoop(() => {
         updateGridTiles();
-        renderer.render(scene, camera);
+        
+        gridGeometry.rotateY(-Math.PI / 2+0.002);
     });
 }
-
-
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
@@ -4168,7 +4164,7 @@ function updatePlayerMovement() {
         }
     });
 }
-function createParticleEffect(position, color = 'red', particleCount = 100) {
+function createParticleEffect(position, color = 'red', particleCount = 5) {
     const particleGeometry = new THREE.BufferGeometry();
     const particles = new Float32Array(particleCount * 3); 
 
@@ -4182,9 +4178,9 @@ function createParticleEffect(position, color = 'red', particleCount = 100) {
 
     const particleMaterial = new THREE.PointsMaterial({
         color: color,
-        size: 0.05, 
+        size: 1, 
         transparent: true,
-        opacity: 0.5,
+        opacity: .5,
         blending: THREE.AdditiveBlending,
     });
 
@@ -4903,8 +4899,8 @@ function animate() {
             updateEnemies();
             updateTimerDisplay();
 
-             if(cameraHeight <= 35)
-            cameraHeight+=0.075;
+             if(cameraHeight <= 50)
+            cameraHeight+=0.75;
 
              if(cameraRadius <= 30)
                 cameraRadius+=0.0075;
