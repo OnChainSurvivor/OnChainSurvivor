@@ -282,8 +282,9 @@ const abilityTypes = [
                 const trailStepMaterial = world.material.clone(); 
                 trailStepMaterial.color.setHex(rainbowColors[colorIndex]); 
                 trailStepMaterial.emissive.setHex(rainbowColors[colorIndex]);
-                const trailStep = new THREE.Mesh(new THREE.BoxGeometry(0.2 , 0.2 , 0.2 ),trailStepMaterial);
+                const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1,.5,1 ),trailStepMaterial);
                 trailStep.position.copy(user.position);
+                trailStep.position.y-=1;
                 trailStep.castShadow = true;
                 scene.add(trailStep);
                 trailStep.trailBox = new THREE.Box3().setFromObject(trailStep);
@@ -291,7 +292,7 @@ const abilityTypes = [
             }
         };
         this.update = () => {
-            if ((Date.now() - this.lastTrailTime > 25)) {
+            if ((Date.now() - this.lastTrailTime > 400)) {
                 this.lastTrailTime = Date.now();
                 trail.create();
             }
@@ -3946,9 +3947,11 @@ const worldTypes = [{
         }else{
 
             this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
+            this.octahedronMesh2.scale.multiplyScalar(1 - 0.05); 
+            this.octahedronMesh3.scale.multiplyScalar(1 - 0.05); 
+            this.octahedronMesh4.scale.multiplyScalar(1 - 0.05); 
             if (this.octahedronMesh.scale.x <= 0.1) { 
                 scene.remove(this.octahedronMesh); 
-
                 scene.remove(this.octahedronMesh3); 
                 scene.remove(this.octahedronMesh4); 
            }
@@ -3971,6 +3974,7 @@ const worldTypes = [{
     resumeGame: function(){
        scene.remove(world.octahedronMesh2);
        this.octahedronMesh.rotation.z = 0;
+       createInfinityGridFloor(scene, camera, renderer,player);
     },
     cleanUp: function(scene) {
         scene.remove(this.ambientLight);
@@ -3991,6 +3995,8 @@ const worldTypes = [{
     isLocked: true,
 }
 ];
+
+
 /*---------------------------------------------------------------------------
                               Scene Initialization
 ---------------------------------------------------------------------------*/
@@ -4023,6 +4029,99 @@ window.addEventListener('resize', updateRendererSize);
 ---------------------------------------------------------------------------*/
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
+function createInfinityGridFloor(scene, camera, renderer, player) {
+    const gridSize = 1000000;
+    const divisions = 350000;
+
+    const gridGeometry = new THREE.BufferGeometry();
+    const positions = [];
+    const lineDistances = [];
+
+    for (let i = -gridSize / 2; i <= gridSize / 2; i += gridSize / divisions) {
+        positions.push(-gridSize / 2, 0, i, gridSize / 2, 0, i);
+        positions.push(i, 0, -gridSize / 2, i, 0, gridSize / 2);
+        const dist = Math.sqrt(i * i);
+        lineDistances.push(dist, dist, dist, dist);
+    }
+
+    gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    gridGeometry.setAttribute('lineDistance', new THREE.Float32BufferAttribute(lineDistances, 1));
+
+    const gridMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0 },
+            playerPosition: { value: new THREE.Vector3() },
+            opacity: { value: 0.0 } // Start with 0 opacity
+        },
+        vertexShader: `
+            uniform vec3 playerPosition;
+            uniform float time;
+            attribute float lineDistance;
+
+            varying float vAlpha;
+            varying vec3 vColor;
+
+            vec3 hsv2rgb(vec3 c) {
+                vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+                vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+            }
+
+            void main() {
+                vec3 worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                float distanceToPlayer = distance(worldPosition.xz, playerPosition.xz);
+
+                // Illuminate within a range of 15 units, with reduced intensity for edge lines
+                float illuminate = smoothstep(15.0, 0.0, distanceToPlayer);
+
+                // Reduce intensity for lines farther from the center (edge lines)
+                float edgeFactor = smoothstep(1.0, 0.0, abs(worldPosition.x) / ${gridSize / 2}.0) * 
+                                   smoothstep(1.0, 0.0, abs(worldPosition.z) / ${gridSize / 2}.0);
+                vAlpha = mix(0.2, 1.0, illuminate * edgeFactor);
+
+                // Rainbow color based on distance and time
+                float hue = mod(lineDistance * 0.01 + time * 0.1, 1.0);
+                vColor = hsv2rgb(vec3(hue, 1.0, 1.0));
+
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform float opacity;
+            varying float vAlpha;
+            varying vec3 vColor;
+
+            void main() {
+                gl_FragColor = vec4(vColor, vAlpha * opacity);
+            }
+        `,
+        transparent: true
+    });
+
+    const grid = new THREE.LineSegments(gridGeometry, gridMaterial);
+    scene.add(grid);
+
+    // Track the time since the grid was created
+    let startTime = Date.now();
+
+    // Manual update in your animation/render loop to gradually increase opacity
+    function updateGrid() {
+        let elapsedTime = (Date.now() - startTime) / 1000; // Time in seconds
+        let newOpacity = Math.min(elapsedTime / 15, 1.0); // Fade in over 15 seconds
+
+        // Update material uniforms
+        gridMaterial.uniforms.time.value += 0.05;
+        gridMaterial.uniforms.playerPosition.value.copy(player.position);
+        gridMaterial.uniforms.opacity.value = newOpacity; // Update opacity
+
+    }
+
+    // Update grid and render the scene
+    renderer.setAnimationLoop(() => {
+        updateGrid();
+    });
+}
+
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
