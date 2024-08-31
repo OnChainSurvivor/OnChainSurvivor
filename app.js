@@ -4094,11 +4094,8 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
+        gridMesh.position.set(playerGridX, -7, playerGridZ);
 
-            gridMesh.position.set(playerGridX, 0, playerGridZ);
-            if(isMainMenu){
-                gridMesh.position.set(playerGridX, -7, playerGridZ);
-            }
 
     }
     gridGeometry.rotateX(-Math.PI / 2);
@@ -4440,16 +4437,16 @@ startSpawningEnemies(player);
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor\n Move to Start!', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        addContainerUI(topUI,'top-container', [mainTitle]);
+        const subTitle = createTitleElement('Move to Start! !', 'lazy subtitle too btw', "subtitle");
+        addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
 
-        const subTitle = createTitleContainer('Move to Start !', 'lazy subtitle too btw', "subtitle");
         const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
         sponsor.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };  //debt: explain the sponsor gameplay mechanics
 
-        addContainerUI(botUI,'bottom-container', [subTitle,sponsor]);
+        addContainerUI(botUI,'bottom-container', [sponsor]);
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
@@ -4904,7 +4901,7 @@ function animate() {
             updateTimerDisplay();
 
              if(cameraHeight <= 35)
-            cameraHeight+=0.05;
+            cameraHeight+=0.3;
 
              if(cameraRadius <= 30)
                 cameraRadius+=0.0075;
