@@ -4094,7 +4094,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, -4, playerGridZ);
+        gridMesh.position.set(playerGridX, -3.5, playerGridZ);
 
 
     }
@@ -4441,12 +4441,12 @@ startSpawningEnemies(player);
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
         const subTitle = createTitleElement('Move to Start! !', 'lazy subtitle too btw', "subtitle");
-        addContainerUI(topUI,'top-container', [mainTitle,subTitle]);
+        addContainerUI(topUI,'top-container', [mainTitle]);
 
         const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
         sponsor.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };  //debt: explain the sponsor gameplay mechanics
 
-        addContainerUI(botUI,'bottom-container', [sponsor]);
+        addContainerUI(botUI,'bottom-container', [subTitle,sponsor]);
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
@@ -4611,7 +4611,7 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                                     WEB3 Connect Menu
 ---------------------------------------------------------------------------*/
-    const web3Container = createContainer(['fade-in', 'top-container'], { transform: 'translateX(190%)'  });
+    const web3Container = createContainer(['fade-in', 'top-container'], { left: '130%' });
     const buttonConnect = document.createElement('button');
     const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
     buttonConnect.style.backgroundColor = 'transparent';
