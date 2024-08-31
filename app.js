@@ -4087,7 +4087,6 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
 
     const gridMesh = new THREE.InstancedMesh(gridGeometry, gridMaterial, offsets.length / 2);
     scene.add(gridMesh);
-
     function updateGridTiles() {
         gridMaterial.uniforms.time.value += 0.01;
         gridMaterial.uniforms.playerPosition.value.copy(player.position);
@@ -4095,7 +4094,12 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, -7, playerGridZ);
+
+            gridMesh.position.set(playerGridX, 0, playerGridZ);
+            if(isMainMenu){
+                gridMesh.position.set(playerGridX, -7, playerGridZ);
+            }
+
     }
     gridGeometry.rotateX(-Math.PI / 2);
     renderer.setAnimationLoop(() => {
@@ -4436,7 +4440,7 @@ startSpawningEnemies(player);
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor\n Move to Start!', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
         addContainerUI(topUI,'top-container', [mainTitle]);
@@ -4899,8 +4903,8 @@ function animate() {
             updateEnemies();
             updateTimerDisplay();
 
-             if(cameraHeight <= 50)
-            cameraHeight+=0.75;
+             if(cameraHeight <= 35)
+            cameraHeight+=0.05;
 
              if(cameraRadius <= 30)
                 cameraRadius+=0.0075;

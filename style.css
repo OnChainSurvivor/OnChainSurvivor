@@ -198,6 +198,7 @@ html, body {
     align-items: center;
     margin-bottom: 40px;
     flex-direction: column;
+    white-space: nowrap;
 }
 
 .choose-menu-container {
