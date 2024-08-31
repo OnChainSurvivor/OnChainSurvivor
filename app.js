@@ -4094,7 +4094,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, -7, playerGridZ);
+        gridMesh.position.set(playerGridX, -4, playerGridZ);
 
 
     }
@@ -4611,7 +4611,7 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                                     WEB3 Connect Menu
 ---------------------------------------------------------------------------*/
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '130%' });
+    const web3Container = createContainer(['fade-in', 'top-container'], { transform: 'translateX(190%)'  });
     const buttonConnect = document.createElement('button');
     const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
     buttonConnect.style.backgroundColor = 'transparent';
