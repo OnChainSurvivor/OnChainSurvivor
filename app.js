@@ -3778,6 +3778,7 @@ const worldTypes = [{
         wireframe : true
     }),
     setup: function(scene, camera, renderer) {
+
         this.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
         scene.add(this.ambientLight);
 
@@ -3836,6 +3837,7 @@ const worldTypes = [{
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
     this.octahedronMesh2.rotation.z += 90;
+
 
     this.octahedronMesh3 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
     scene.add(this.octahedronMesh3);   
@@ -3902,8 +3904,8 @@ const worldTypes = [{
         
             this.octahedronMesh3.rotation.z -= 0.005;
             this.octahedronMesh4.rotation.z += 0.005;
-            this.octahedronMesh4.material.opacity-=0.0025;
-            this.octahedronMesh3.material.opacity-=0.0025;
+            this.octahedronMesh4.material.opacity-=0.002;
+            this.octahedronMesh3.material.opacity-=0.002;
 
             if (this.octahedronMesh3.material.opacity <= 0) { 
                 scene.remove(this.octahedronMesh4); 
@@ -3911,7 +3913,7 @@ const worldTypes = [{
            }
 
             player.rotation.y += 0.005;
-            player.rotation.y = player.rotation.y % (2 * Math.PI); // Keep rotation within range
+            player.rotation.y = player.rotation.y % (2 * Math.PI); 
     
             this.miniOctahedrons.forEach((miniOctahedron,index) => {
             miniOctahedron.rotation.x += 0.01;
@@ -3932,9 +3934,9 @@ const worldTypes = [{
             const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
 
 
-            const attractionSpeed = 0.025;
+                const attractionSpeed = 0.05;
     
-            const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
+                const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
                 if (distanceToCenter > 1.5) { 
                     miniOctahedron.position.addScaledVector(direction, attractionSpeed);
                 }
@@ -3944,6 +3946,9 @@ const worldTypes = [{
             this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
             if (this.octahedronMesh.scale.x <= 0.1) { 
                 scene.remove(this.octahedronMesh); 
+
+                scene.remove(this.octahedronMesh3); 
+                scene.remove(this.octahedronMesh4); 
            }
             this.miniOctahedrons.forEach((miniOctahedron,index) => {
                 const direction = new THREE.Vector3().subVectors(miniOctahedron.position, this.octahedronMesh.position).normalize();
