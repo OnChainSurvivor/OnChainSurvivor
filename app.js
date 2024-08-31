@@ -3980,7 +3980,7 @@ const worldTypes = [{
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
-const renderer = new THREE.WebGLRenderer({ canvas });
+const renderer = new THREE.WebGLRenderer({ canvas});
 renderer.setPixelRatio(window.devicePixelRatio || 1);
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
@@ -4007,8 +4007,10 @@ window.addEventListener('resize', updateRendererSize);
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
 function createInfinityGridFloor(scene, camera, renderer, player) {
-    const gridSize = 50;
-    const divisions = 5; 
+    const gridSize = 5; // Size of each grid tile
+    const divisions = 1; // Number of divisions per tile (can increase for more detail)
+
+    const numTiles = 6; // Number of tiles per axis (e.g., 11x11 grid around player)
 
     const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
     gridGeometry.rotateX(-Math.PI / 2);
@@ -4016,30 +4018,29 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
     const gridMaterial = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
-            playerPosition: { value: player.position },
-            gridSize: { value: gridSize },
-            divisions: { value: divisions }
+            playerPosition: { value: new THREE.Vector3() }
         },
         vertexShader: `
             uniform vec3 playerPosition;
             uniform float time;
-            uniform float gridSize;
-            uniform float divisions;
+
+            attribute vec2 offset;
 
             varying vec3 vWorldPos;
             varying vec2 vUv; 
 
             void main() {
-                vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+                vec3 pos = position;
+                pos.x += offset.x;
+                pos.z += offset.y;
+                vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
                 vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             }
         `,
         fragmentShader: `
             uniform vec3 playerPosition;
             uniform float time;
-            uniform float gridSize;
-            uniform float divisions;
 
             varying vec3 vWorldPos;
             varying vec2 vUv;
@@ -4056,13 +4057,13 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
                 float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
 
                 // 2. Cell coordinates for color variation 
-                vec2 cellCoord = floor(vUv * divisions);
+                vec2 cellCoord = floor(vUv);
 
                 // 3. Calculate hue based on cell coordinates and time 
                 float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
 
                 // 4. Brightness based on player proximity
-                float brightness = smoothstep(25.0, 0.0, distanceToPlayer); 
+                float brightness = smoothstep(15.0, 0.0, distanceToPlayer); 
 
                 // 5. Combine hue and brightness for final color
                 vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
@@ -4070,19 +4071,42 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
                 gl_FragColor = vec4(color, 1.0); 
             }
         `,
-        wireframe:true,
-        transparent:true,
-        opacity:0.1,
+        wireframe: true,
+        transparent: true,
+        opacity: 1,
     });
-   
-    const grid = new THREE.Mesh(gridGeometry, gridMaterial);
-    scene.add(grid);
+
+    const offsets = [];
+    const halfTiles = Math.floor(numTiles / 2);
+
+    for (let x = -halfTiles; x <= halfTiles; x++) {
+        for (let z = -halfTiles; z <= halfTiles; z++) {
+            offsets.push(x * gridSize, z * gridSize);
+        }
+    }
+
+    const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
+    gridGeometry.setAttribute('offset', offsetAttribute);
+
+    const gridMesh = new THREE.InstancedMesh(gridGeometry, gridMaterial, offsets.length / 2);
+    scene.add(gridMesh);
+
+    function updateGridTiles() {
+        gridMaterial.uniforms.time.value += 0.05;
+        gridMaterial.uniforms.playerPosition.value.copy(player.position);
+
+        const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
+        const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
+
+        gridMesh.position.set(playerGridX, 0, playerGridZ);
+    }
 
     renderer.setAnimationLoop(() => {
-        gridMaterial.uniforms.time.value += 0.05;
-        gridMaterial.uniforms.playerPosition.value.copy(player.position); 
+        updateGridTiles();
+        renderer.render(scene, camera);
     });
 }
+
 
 /*---------------------------------------------------------------------------
                               Player Controller
@@ -4383,9 +4407,6 @@ startSpawningEnemies(player);
 
     function hideContainerUI(container){
         container.classList.add('fade-out'); 
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
-        }
         setTimeout(() => { container.classList.add('hide'); }, 10);
     }
 
@@ -4587,10 +4608,7 @@ function handleEntitySelection(entity, type) {
         createGameMenu();
     }
     canMove = true;
-    const centerUI = document.querySelector('.center-container');
-    if (centerUI) {
-        hideContainerUI(centerUI); 
-    }
+    hideContainerUI(centerUI);
 }
 
 /*---------------------------------------------------------------------------
