@@ -3951,7 +3951,7 @@ const worldTypes = [{
     resumeGame: function(){
        scene.remove(world.octahedronMesh2);
        this.octahedronMesh.rotation.z = 0;
-       createInfinityGridFloor(scene, camera, renderer,player);
+  
     },
     cleanUp: function(scene) {
         scene.remove(this.ambientLight);
@@ -4007,14 +4007,12 @@ window.addEventListener('resize', updateRendererSize);
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
 function createInfinityGridFloor(scene, camera, renderer, player) {
-    const gridSize = 10000;
-    const divisions = 1000; 
+    const gridSize = 50;
+    const divisions = 5; 
 
-    // 1. Plane Geometry with Subdivisions
     const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
-    gridGeometry.rotateX(-Math.PI / 2); // Rotate to be horizontal
+    gridGeometry.rotateX(-Math.PI / 2);
 
-    // 2. Shader Material for Disco Effect
     const gridMaterial = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
@@ -4078,15 +4076,13 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
 
     });
 
-    // 3. Create the Grid Mesh
+   
     const grid = new THREE.Mesh(gridGeometry, gridMaterial);
     scene.add(grid);
 
-    // 4. Update Shader Uniforms in Render Loop
     renderer.setAnimationLoop(() => {
         gridMaterial.uniforms.time.value += 0.05;
         gridMaterial.uniforms.playerPosition.value.copy(player.position); 
-        // ... your other rendering logic ...
     });
 }
 /*---------------------------------------------------------------------------
@@ -4095,7 +4091,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
 
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
-
+createInfinityGridFloor(scene, camera, renderer,player);
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 
