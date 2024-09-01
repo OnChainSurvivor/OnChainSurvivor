@@ -3809,12 +3809,16 @@ const worldTypes = [{
             this.pmremGenerator.dispose();
             scene.environment = this.envMap; 
         });
-        
+    
+ 
     this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
     this.octahedronMesh2.rotation.z += 90;
+    this.octahedronMesh2.scale.set(0.5, 0.5, 0.5);
+    this.octahedronMesh.scale.set(0.5, 0.5, 0.5);
+ 
 
 
     this.octahedronMesh3 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
@@ -3917,7 +3921,7 @@ const worldTypes = [{
                 const attractionSpeed = 0.025;
     
                 const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
-                if (distanceToCenter > 1.5) { 
+                if (distanceToCenter > 1) { 
                     miniOctahedron.position.addScaledVector(direction, attractionSpeed);
                 }
         });
@@ -4094,7 +4098,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, -3.5, playerGridZ);
+        gridMesh.position.set(playerGridX, -4, playerGridZ);
 
 
     }
