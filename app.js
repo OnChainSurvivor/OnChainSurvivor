@@ -3839,8 +3839,11 @@ const worldTypes = [{
     const miniOctahedronMaterial = this.material.clone();
 
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
-
-    const numCrystals = 1024; 
+    miniOctahedronMaterial.wireframe=false;
+    let numCrystals = 1024;
+    if (isMobile)
+    numCrystals = 512 ; 
+  
 
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
