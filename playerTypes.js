@@ -25,7 +25,6 @@ export const playerTypes = [{
     Transparency: 0,
     Consensus: 0,
     abilities: [
-       /// { type: 'Onchain Trail'},
 
     ],
 },{

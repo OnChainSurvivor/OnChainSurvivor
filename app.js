@@ -4402,7 +4402,7 @@ startSpawningEnemies(player);
 
     function createButton(dataType, scale = 1, onClick) {
         const button = document.createElement('button');
-        button.style.width = `${200 * scale}px`;
+        button.style.width = `${190 * scale}px`;
         button.style.margin = '3px';
         button.style.display = 'flex';
         button.style.flexDirection = 'column';
@@ -4632,7 +4632,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-   // createGameMenu()
+    createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -4885,10 +4885,10 @@ function refreshDisplay() {
     const abilitiesContainer = createContainer(['abilities-grid-container']); 
     abilitiesContainer.style.display = 'grid';
     abilitiesContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
-    abilitiesContainer.appendChild(createButton(player, .25));
+    abilitiesContainer.appendChild(createButton(player, .33));
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, 0.25));
+        abilitiesContainer.appendChild(createButton(clonedAbility, 0.33));
     });
     addContainerUI(topUI,'top-container', [xpLoadingContainer, abilitiesContainer]);
     addContainerUI(botUI,'bottom-container', [modeDisplay,timerDisplay,]);
