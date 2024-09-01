@@ -97,7 +97,7 @@ button, div {
     -webkit-background-clip: text;
     background-size: 200% 200%;
     text-align: center;
-    animation: rainbowText 7s linear infinite;
+  
 }
 
 .fade-in {
@@ -189,7 +189,7 @@ html, body {
     height: 100%;
     background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     background-size: 400% 400%;
-    animation: rainbow 5s linear infinite;
+
 }
 
 .choose-menu-title {
@@ -212,7 +212,7 @@ html, body {
     border-image-slice: 1;
     box-sizing: border-box;
     overflow-y: auto;
-    animation: rainbow-border 5s linear infinite;
+
 } 
 
 .choose-menu-grid {
@@ -266,5 +266,5 @@ html, body {
     height: 100%;
     background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
     background-size: 400% 400%;
-    animation: rainbow 5s linear infinite;
+   
 }

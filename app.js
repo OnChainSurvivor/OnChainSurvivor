@@ -3791,6 +3791,7 @@ const worldTypes = [{
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
+        composer.addPass(this.bloomPass);
        
    
         const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
@@ -4492,7 +4493,7 @@ startSpawningEnemies(player);
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('Move to Start! !', 'lazy subtitle too btw', "subtitle");
+        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "subtitle");
         addContainerUI(topUI,'top-container', [mainTitle]);
 
         const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
