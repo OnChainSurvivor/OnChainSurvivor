@@ -166,7 +166,7 @@ const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b008
 let colorIndex = 0;
 
 const xpSpheres = []; 
-const xpsphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
 /*---------------------------------------------------------------------------
                               Utility Functions
@@ -4016,22 +4016,23 @@ world.setup(scene,camera,renderer);
 function createInfinityGridFloor(scene, camera, renderer, player) {
     const gridSize = 5; 
     const divisions = 1; 
-    const numTiles = 100;
+    const numTiles = 30;
 
     const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
 
-    const lightSourceTextureSize = 256; // Adjust based on expected number of lights
+    const lightSourceTextureSize = 256; 
     const lightSourceTextureData = new Float32Array(lightSourceTextureSize * lightSourceTextureSize * 4);
     const lightSourceTexture = new THREE.DataTexture(lightSourceTextureData, lightSourceTextureSize, lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
     lightSourceTexture.needsUpdate = true;
 
     const gridMaterial = new THREE.ShaderMaterial({
         uniforms: {
+            playerInfluenceRadius: { value: 10 } ,
             time: { value: 0 },
             playerPosition: { value: new THREE.Vector3() },
             lightSourceTexture: { value: lightSourceTexture },
             lightSourceCount: { value: 0 },
-            lightSourceTextureSize: { value: lightSourceTextureSize }
+            lightSourceTextureSize: { value: lightSourceTextureSize },
         },
         vertexShader: `
             uniform vec3 playerPosition;
@@ -4059,6 +4060,7 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
             uniform int lightSourceCount;
             uniform int lightSourceTextureSize;
             uniform float time;
+            uniform float playerInfluenceRadius;
 
             varying vec3 vWorldPos;
             varying vec2 vUv;
@@ -4079,12 +4081,12 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
                     vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
                     vec3 lightPos = texture(lightSourceTexture, uv).xyz;
                     float dist = distance(vWorldPos.xz, lightPos.xz);
-                    lightSourceInfluence += smoothstep(10.0, 0.0, dist);
+                    lightSourceInfluence += smoothstep(2.5, 0.0, dist);
                 }
 
                 vec2 cellCoord = floor(vUv);
                 float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
-                float brightness = max(smoothstep(10.0, 0.0, distanceToPlayer), lightSourceInfluence);
+                float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
                 vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
 
                 gl_FragColor = vec4(color, 1.0); 
@@ -4093,13 +4095,12 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         wireframe: true
     });
 
-    // Corrected part
     const offsets = [];
     const halfTiles = Math.floor(numTiles / 2);
 
     for (let x = -halfTiles; x <= halfTiles; x++) {
         for (let z = -halfTiles; z <= halfTiles; z++) {
-            offsets.push(x * gridSize, z * gridSize);  // Corrected loop logic
+            offsets.push(x * gridSize, z * gridSize);  
         }
     }
 
@@ -4109,6 +4110,9 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
     const gridMesh = new THREE.InstancedMesh(gridGeometry, gridMaterial, offsets.length / 2);
     scene.add(gridMesh);
 
+    let radiusTarget = 100;
+    let radiusDirection = 1;
+  
     function updateGridTiles() {
         gridMaterial.uniforms.time.value += 0.01;
         gridMaterial.uniforms.playerPosition.value.copy(player.position);
@@ -4135,14 +4139,41 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
             }
         });
 
+        enemies.forEach(enemy => {
+            if (enemy.visible && lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
+                lightSourceTextureData[lightSourceIndex * 4] = enemy.position.x;
+                lightSourceTextureData[lightSourceIndex * 4 + 1] = enemy.position.y;
+                lightSourceTextureData[lightSourceIndex * 4 + 2] = enemy.position.z;
+                lightSourceIndex++;
+            }
+        });
+
         lightSourceTexture.needsUpdate = true;
         gridMaterial.uniforms.lightSourceCount.value = lightSourceIndex;
 
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
-        gridMesh.position.set(playerGridX, -4, playerGridZ);
-    }
+        gridMesh.position.set(playerGridX, 0, playerGridZ);
+
+
+        if (isMainMenu) {
+            gridMesh.position.set(playerGridX, -4, playerGridZ);
+        } else {
+            if (radiusDirection === 1 && gridMaterial.uniforms.playerInfluenceRadius.value < radiusTarget) {
+                gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
+            } else if (radiusDirection === -1 && gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
+                gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
+            } else {
+                if (radiusDirection === 1) {
+                    radiusDirection = -1;  
+                    radiusTarget = 10;  
+                } else {
+                    radiusDirection = 0; 
+                }
+            }
+
+    }}
 
     gridGeometry.rotateX(-Math.PI / 2);
     renderer.setAnimationLoop(() => {
@@ -4200,10 +4231,10 @@ function updatePlayerMovement() {
 
     xpSpheres.forEach((xpSphere, index) => {
         if (xpSphere.visible) { // Only move visible spheres
-            const direction = new THREE.Vector3().subVectors(player.position, xpSphere.position).normalize();
-            const speed = 0.1; // Adjust the speed as needed
-    
-            xpSphere.position.add(direction.multiplyScalar(speed));
+           // const direction = new THREE.Vector3().subVectors(player.position, xpSphere.position).normalize();
+           // const speed = 0.1; // Adjust the speed as needed
+          //  xpSphere.position.add(direction.multiplyScalar(speed));
+
             xpSphere.boundingBox.setFromObject(xpSphere); // Update bounding box
     
             if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
@@ -4211,7 +4242,9 @@ function updatePlayerMovement() {
                 xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
                 if (player.xp >= player.xpToNextLevel) {
                     LevelUp();  
+                    createParticleEffect(player.position, 'gold', 10); // Use 'gold' color
                 }
+                createParticleEffect(player.position, 'gold', 1); // Use 'gold' color
                 scene.remove(xpSphere);
                 xpSpheres.splice(index, 1);
             }
@@ -4953,12 +4986,10 @@ function animate() {
             updateEnemies();
             updateTimerDisplay();
 
-             if(cameraHeight <= 35)
+             if(cameraHeight <= 20)
             cameraHeight+=0.3;
 
-             if(cameraRadius <= 30)
-                cameraRadius+=0.0075;
-
+          
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
