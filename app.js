@@ -4402,7 +4402,7 @@ startSpawningEnemies(player);
 
     function createButton(dataType, scale = 1, onClick) {
         const button = document.createElement('button');
-        button.style.width = `${190 * scale}px`;
+        button.style.width = `${185 * scale}px`;
         button.style.margin = '3px';
         button.style.display = 'flex';
         button.style.flexDirection = 'column';
