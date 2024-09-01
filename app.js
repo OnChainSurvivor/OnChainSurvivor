@@ -3791,8 +3791,7 @@ const worldTypes = [{
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
-        composer.addPass(this.bloomPass);
-
+       
    
         const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
         const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
