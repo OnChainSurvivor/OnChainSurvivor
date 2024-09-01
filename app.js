@@ -4016,17 +4016,27 @@ world.setup(scene,camera,renderer);
 function createInfinityGridFloor(scene, camera, renderer, player) {
     const gridSize = 5; 
     const divisions = 1; 
-    const numTiles = 4; 
+    const numTiles = 100;
 
     const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
+
+    const lightSourceTextureSize = 256; // Adjust based on expected number of lights
+    const lightSourceTextureData = new Float32Array(lightSourceTextureSize * lightSourceTextureSize * 4);
+    const lightSourceTexture = new THREE.DataTexture(lightSourceTextureData, lightSourceTextureSize, lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
+    lightSourceTexture.needsUpdate = true;
 
     const gridMaterial = new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0 },
-            playerPosition: { value: new THREE.Vector3() }
+            playerPosition: { value: new THREE.Vector3() },
+            lightSourceTexture: { value: lightSourceTexture },
+            lightSourceCount: { value: 0 },
+            lightSourceTextureSize: { value: lightSourceTextureSize }
         },
         vertexShader: `
             uniform vec3 playerPosition;
+            uniform sampler2D lightSourceTexture;
+            uniform int lightSourceCount;
             uniform float time;
 
             attribute vec2 offset;
@@ -4045,12 +4055,14 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
         `,
         fragmentShader: `
             uniform vec3 playerPosition;
+            uniform sampler2D lightSourceTexture;
+            uniform int lightSourceCount;
+            uniform int lightSourceTextureSize;
             uniform float time;
 
             varying vec3 vWorldPos;
             varying vec2 vUv;
 
-            // HSV to RGB conversion (for color transitions)
             vec3 hsv2rgb(vec3 c) {
                 vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
                 vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
@@ -4058,34 +4070,36 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
             }
 
             void main() {
-                // 1. Calculate distance to player on the XZ plane
                 float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
+                float lightSourceInfluence = 0.0;
 
-                // 2. Cell coordinates for color variation 
+                for (int i = 0; i < lightSourceCount; i++) {
+                    int x = i % lightSourceTextureSize;
+                    int y = i / lightSourceTextureSize;
+                    vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
+                    vec3 lightPos = texture(lightSourceTexture, uv).xyz;
+                    float dist = distance(vWorldPos.xz, lightPos.xz);
+                    lightSourceInfluence += smoothstep(10.0, 0.0, dist);
+                }
+
                 vec2 cellCoord = floor(vUv);
-
-                // 3. Calculate hue based on cell coordinates and time 
                 float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
-
-                // 4. Brightness based on player proximity
-                float brightness = smoothstep(10.0, 0.0, distanceToPlayer); 
-
-                // 5. Combine hue and brightness for final color
+                float brightness = max(smoothstep(10.0, 0.0, distanceToPlayer), lightSourceInfluence);
                 vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
 
                 gl_FragColor = vec4(color, 1.0); 
             }
         `,
-        wireframe: true,
-
+        wireframe: true
     });
 
+    // Corrected part
     const offsets = [];
     const halfTiles = Math.floor(numTiles / 2);
 
     for (let x = -halfTiles; x <= halfTiles; x++) {
         for (let z = -halfTiles; z <= halfTiles; z++) {
-            offsets.push(x * gridSize, z * gridSize);
+            offsets.push(x * gridSize, z * gridSize);  // Corrected loop logic
         }
     }
 
@@ -4094,22 +4108,46 @@ function createInfinityGridFloor(scene, camera, renderer, player) {
 
     const gridMesh = new THREE.InstancedMesh(gridGeometry, gridMaterial, offsets.length / 2);
     scene.add(gridMesh);
+
     function updateGridTiles() {
         gridMaterial.uniforms.time.value += 0.01;
         gridMaterial.uniforms.playerPosition.value.copy(player.position);
+
+        let lightSourceIndex = 0;
+        xpSpheres.forEach(sphere => {
+            if (sphere.visible && lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
+                lightSourceTextureData[lightSourceIndex * 4] = sphere.position.x;
+                lightSourceTextureData[lightSourceIndex * 4 + 1] = sphere.position.y;
+                lightSourceTextureData[lightSourceIndex * 4 + 2] = sphere.position.z;
+                lightSourceIndex++;
+            }
+        });
+
+        player.abilities.forEach(ability => {
+            if (ability.title === "Scalping Bot" && 
+                ability.effect.orb && 
+                ability.effect.orb.mesh.visible &&
+                lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
+                lightSourceTextureData[lightSourceIndex * 4] = ability.effect.orb.mesh.position.x;
+                lightSourceTextureData[lightSourceIndex * 4 + 1] = ability.effect.orb.mesh.position.y;
+                lightSourceTextureData[lightSourceIndex * 4 + 2] = ability.effect.orb.mesh.position.z;
+                lightSourceIndex++;
+            }
+        });
+
+        lightSourceTexture.needsUpdate = true;
+        gridMaterial.uniforms.lightSourceCount.value = lightSourceIndex;
 
         const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
         const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
 
         gridMesh.position.set(playerGridX, -4, playerGridZ);
-
-
     }
+
     gridGeometry.rotateX(-Math.PI / 2);
     renderer.setAnimationLoop(() => {
         updateGridTiles();
-        
-        gridGeometry.rotateY(-Math.PI / 2+0.002);
+        gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
     });
 }
 /*---------------------------------------------------------------------------
