@@ -4199,14 +4199,22 @@ function updatePlayerMovement() {
     player.updateAbilities();
 
     xpSpheres.forEach((xpSphere, index) => {
-        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
-            player.xp += 10;
-            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-            if (player.xp >= player.xpToNextLevel) {
-                LevelUp();  
+        if (xpSphere.visible) { // Only move visible spheres
+            const direction = new THREE.Vector3().subVectors(player.position, xpSphere.position).normalize();
+            const speed = 0.1; // Adjust the speed as needed
+    
+            xpSphere.position.add(direction.multiplyScalar(speed));
+            xpSphere.boundingBox.setFromObject(xpSphere); // Update bounding box
+    
+            if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
+                player.xp += 10;
+                xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+                if (player.xp >= player.xpToNextLevel) {
+                    LevelUp();  
+                }
+                scene.remove(xpSphere);
+                xpSpheres.splice(index, 1);
             }
-            scene.remove(xpSphere);
-            xpSpheres.splice(index, 1);
         }
     });
 }
