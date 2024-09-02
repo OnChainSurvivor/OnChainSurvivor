@@ -48,6 +48,11 @@ export const playerTypes = [{
         { type: 'Veil of Decentralization'},
         { type: 'Veil of Decentralization'},
         { type: 'Veil of Decentralization'},
+        { type: 'Code Refactor'}, 
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
+        { type: 'Veil of Decentralization'},
     ],
 },{
     class: 'Survivor',
