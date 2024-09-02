@@ -4644,7 +4644,7 @@ function refreshDisplay() {
 
     const abilitiesContainer = createContainer(['abilities-grid-container']); 
     abilitiesContainer.style.display = 'grid';
-    abilitiesContainer.style.gridTemplateColumns = 'repeat(7, 1fr)';
+    abilitiesContainer.style.gridTemplateColumns = 'repeat(5, 1fr)';
     abilitiesContainer.appendChild(createButton(player, .33));
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
