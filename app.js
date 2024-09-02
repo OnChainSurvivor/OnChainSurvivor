@@ -36,7 +36,11 @@ class Entity extends THREE.Object3D {
             this.initEntity(new THREE.ObjectLoader().parse(serializedModel));
         } else {
             loader.load('Media/Models/Survivor.fbx', (object) => {
-                this.modifyMaterials(object);
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = world.material.clone();
+                    }
+                });
                 const serializedObject = object.toJSON();
                 objectPool.set(modelKey, serializedObject);
                 this.initEntity(object);
@@ -44,14 +48,6 @@ class Entity extends THREE.Object3D {
         }
 
         this.initAbilities(config.abilities);
-    }
-
-    modifyMaterials(object) {
-        object.traverse((child) => {
-            if (child.isMesh) {
-                child.material = world.material.clone();
-            }
-        });
     }
 
     initEntity(object) {
@@ -78,8 +74,8 @@ class Entity extends THREE.Object3D {
 
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
-                const abilityType = abilityTypes.find(type => type.title === entityAbility.type);
-                    const newAbility = new Ability(this, { ...abilityType});
+                const ability = abilityTypes.find(type => type.title === entityAbility.type);
+                    const newAbility = new Ability(this, {ability});
                     this.addAbility(newAbility);
                     newAbility.activate();
             }
@@ -3541,15 +3537,6 @@ const worldTypes = [{
         wireframe : true
     }),
     setup: function(scene, camera, renderer) {
-
-        this.ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-        scene.add(this.ambientLight);
-
-        this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        this.directionalLight.position.set(10, 10, 10);
-        this.directionalLight.castShadow = true;
-        scene.add(this.directionalLight)
-
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
@@ -3570,8 +3557,108 @@ const worldTypes = [{
             this.pmremGenerator.dispose();
             scene.environment = this.envMap; 
         });
-    
  
+            this.gridSize = 5; 
+            this.divisions = 1; 
+            this.numTiles = 30;
+        
+            this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
+        
+            this.lightSourceTextureSize = 256; 
+            this.lightSourceTextureData = new Float32Array( this.lightSourceTextureSize *  this.lightSourceTextureSize * 4);
+            this.lightSourceTexture = new THREE.DataTexture( this.lightSourceTextureData,  this.lightSourceTextureSize,  this.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
+            this.lightSourceTexture.needsUpdate = true;
+        
+            this.gridMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    playerInfluenceRadius: { value: 10 } ,
+                    time: { value: 0 },
+                    playerPosition: { value: new THREE.Vector3() },
+                    lightSourceTexture: { value:  this.lightSourceTexture },
+                    lightSourceCount: { value: 0 },
+                    lightSourceTextureSize: { value:  this.lightSourceTextureSize },
+                },
+                vertexShader: `
+                    uniform vec3 playerPosition;
+                    uniform sampler2D lightSourceTexture;
+                    uniform int lightSourceCount;
+                    uniform float time;
+        
+                    attribute vec2 offset;
+        
+                    varying vec3 vWorldPos;
+                    varying vec2 vUv; 
+        
+                    void main() {
+                        vec3 pos = position;
+                        pos.x += offset.x;
+                        pos.z += offset.y;
+                        vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 playerPosition;
+                    uniform sampler2D lightSourceTexture;
+                    uniform int lightSourceCount;
+                    uniform int lightSourceTextureSize;
+                    uniform float time;
+                    uniform float playerInfluenceRadius;
+        
+                    varying vec3 vWorldPos;
+                    varying vec2 vUv;
+        
+                    vec3 hsv2rgb(vec3 c) {
+                        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+                    }
+        
+                    void main() {
+                        float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
+                        float lightSourceInfluence = 0.0;
+        
+                        for (int i = 0; i < lightSourceCount; i++) {
+                            int x = i % lightSourceTextureSize;
+                            int y = i / lightSourceTextureSize;
+                            vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
+                            vec3 lightPos = texture(lightSourceTexture, uv).xyz;
+                            float dist = distance(vWorldPos.xz, lightPos.xz);
+                            lightSourceInfluence += smoothstep(2.5, 0.0, dist);
+                        }
+        
+                        vec2 cellCoord = floor(vUv);
+                        float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
+                        float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
+                        vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
+        
+                        gl_FragColor = vec4(color, 1.0); 
+                    }
+                `,
+                wireframe: true
+            });
+        
+            const offsets = [];
+            const halfTiles = Math.floor( this.numTiles / 2);
+        
+            for (let x = -halfTiles; x <= halfTiles; x++) {
+                for (let z = -halfTiles; z <= halfTiles; z++) {
+                    offsets.push(x *  this.gridSize, z *  this.gridSize);  
+                }
+            }
+        
+            const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
+            this.gridGeometry.setAttribute('offset', offsetAttribute); 
+            this.gridGeometry.rotateX(-Math.PI / 2);
+            this.gridMesh = new THREE.InstancedMesh( this.gridGeometry,  this.gridMaterial, offsets.length / 2);
+            scene.add( this.gridMesh);
+        
+            this.radiusTarget = 100;
+            this.radiusDirection = 1;
+            const possibleY = [-4,4];
+            this.axisY =possibleY[Math.floor(Math.random() * possibleY.length)];
+
     this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
@@ -3580,8 +3667,6 @@ const worldTypes = [{
     this.octahedronMesh2.scale.set(0.5, 0.5, 0.5);
     this.octahedronMesh.scale.set(0.5, 0.5, 0.5);
  
-
-
     this.octahedronMesh3 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
     scene.add(this.octahedronMesh3);   
     this.octahedronMesh4 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
@@ -3643,12 +3728,11 @@ const worldTypes = [{
         this.miniOctahedrons.push(this.miniOctahedron);
 
     }
-},
+    },
     update: function(scene, camera, renderer) {
         if(isMainMenu){
             this.octahedronMesh.rotation.z -= 0.005;
             this.octahedronMesh2.rotation.z += 0.005;
-        
             this.octahedronMesh3.rotation.z -= 0.005;
             this.octahedronMesh4.rotation.z += 0.005;
             this.octahedronMesh4.material.opacity-=0.002;
@@ -3657,7 +3741,7 @@ const worldTypes = [{
             if (this.octahedronMesh3.material.opacity <= 0) { 
                 scene.remove(this.octahedronMesh4); 
                 scene.remove(this.octahedronMesh3); 
-           }
+            }
 
             player.rotation.y += 0.005;
             player.rotation.y = player.rotation.y % (2 * Math.PI); 
@@ -3667,68 +3751,115 @@ const worldTypes = [{
             miniOctahedron.rotation.y += 0.01;
             const orbitSpeed = 0.5;
             const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
-    
             const phi = Math.PI * index / this.miniOctahedrons.length;
             const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
-    
             const angle = Date.now() * 0.001 * orbitSpeed;
-    
             miniOctahedron.position.set(
                 this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
                 this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
                 this.octahedronMesh.position.z +  orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
             );
             const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
-
-
-                const attractionSpeed = 0.025;
-    
-                const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
-                if (distanceToCenter > 1) { 
-                    miniOctahedron.position.addScaledVector(direction, attractionSpeed);
-                }
+            const attractionSpeed = 0.025;
+            const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
+            if (distanceToCenter > 1) { 
+                miniOctahedron.position.addScaledVector(direction, attractionSpeed);
+            }
         });
-        }else{
-
+        }else if (this.miniOctahedrons.length>1){
             this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
             this.octahedronMesh2.scale.multiplyScalar(1 - 0.05); 
             this.octahedronMesh3.scale.multiplyScalar(1 - 0.05); 
             this.octahedronMesh4.scale.multiplyScalar(1 - 0.05); 
             if (this.octahedronMesh.scale.x <= 0.1) { 
-                scene.remove(this.octahedronMesh); 
+                scene.remove(this.octahedronMesh);
+                scene.remove(this.octahedronMesh2); 
                 scene.remove(this.octahedronMesh3); 
                 scene.remove(this.octahedronMesh4); 
-           }
+            }
             this.miniOctahedrons.forEach((miniOctahedron,index) => {
                 const direction = new THREE.Vector3().subVectors(miniOctahedron.position, this.octahedronMesh.position).normalize();
                 const speed = 0.1; 
                 miniOctahedron.position.addScaledVector(direction, speed); 
                 miniOctahedron.rotation.x += 0.01;
                 miniOctahedron.rotation.y += 0.01;
-
                 const scaleSpeed = 0.005;
                 miniOctahedron.scale.multiplyScalar(1 - scaleSpeed); 
                 if (miniOctahedron.scale.x <= 0.3) { 
                      scene.remove(miniOctahedron); 
-                     this.miniOctahedrons.splice(index, 1); 
+                     this.miniOctahedrons.splice(index, 1);
                 }
             });
         }
+
+        this.gridMaterial.uniforms.time.value += 0.01;
+        this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
+        this.lightSourceIndex = 0;
+
+            xpSpheres.forEach(sphere => {
+                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
+
+            enemies.forEach(enemy => {
+                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
+    
+            this.lightSourceTexture.needsUpdate = true;
+            this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
+            const playerGridX = Math.floor(player.position.x /  this.gridSize) *  this.gridSize;
+            const playerGridZ = Math.floor(player.position.z /  this.gridSize) *  this.gridSize;
+            this.gridMesh.position.set(playerGridX, 0, playerGridZ);
+    
+            if (isMainMenu) {
+                this.gridMesh.position.set(playerGridX,  this.axisY, playerGridZ);
+            } else {
+                if ( this.radiusDirection === 1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value <  this.radiusTarget) {
+                    this.gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
+                } else if ( this.radiusDirection === -1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
+                    this.gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
+                } else {
+                    if ( this.radiusDirection === 1) {
+                        this.radiusDirection = -1;  
+                        this.radiusTarget = 10;  
+                    } else {
+                        this.radiusDirection = 0; 
+                    }
+                }
+        }
+        this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
     },
-    resumeGame: function(){
-       scene.remove(world.octahedronMesh2);
-       this.octahedronMesh.rotation.z = 0;
-  
-    },
+    resumeGame: function(){},
     cleanUp: function(scene) {
-        scene.remove(this.ambientLight);
-        scene.remove(this.directionalLight);
-        
-        this.ambientLight.dispose && this.ambientLight.dispose();
-        this.directionalLight.dispose && this.directionalLight.dispose();
-        
-        this.composer && this.composer.passes.forEach(pass => pass.dispose && pass.dispose());
-        this.composer = null;
+        for (const key in this) {
+            if (this[key] instanceof THREE.Object3D) {
+                scene.remove(this[key]);
+                
+                this[key].traverse((child) => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) child.material.dispose();
+                });
+            } else if (this[key] instanceof THREE.Geometry || 
+                       this[key] instanceof THREE.Material ||
+                       this[key] instanceof THREE.Texture || 
+                       this[key] instanceof THREE.WebGLRenderTarget) {  
+                this[key].dispose();
+            } 
+        }
+        for (const key in this) {
+            if (typeof this[key] !== 'function') {
+                this[key] = null;
+            }
+        }
     }
 }, {
     class: 'World',
@@ -3739,8 +3870,6 @@ const worldTypes = [{
     isLocked: true,
 }
 ];
-
-
 /*---------------------------------------------------------------------------
                               Scene Initialization
 ---------------------------------------------------------------------------*/
@@ -3773,188 +3902,14 @@ window.addEventListener('resize', updateRendererSize);
 ---------------------------------------------------------------------------*/
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
-function createInfinityGridFloor(scene, camera, renderer, player) {
-    const gridSize = 5; 
-    const divisions = 1; 
-    const numTiles = 30;
-
-    const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, divisions, divisions);
-
-    const lightSourceTextureSize = 256; 
-    const lightSourceTextureData = new Float32Array(lightSourceTextureSize * lightSourceTextureSize * 4);
-    const lightSourceTexture = new THREE.DataTexture(lightSourceTextureData, lightSourceTextureSize, lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
-    lightSourceTexture.needsUpdate = true;
-
-    const gridMaterial = new THREE.ShaderMaterial({
-        uniforms: {
-            playerInfluenceRadius: { value: 10 } ,
-            time: { value: 0 },
-            playerPosition: { value: new THREE.Vector3() },
-            lightSourceTexture: { value: lightSourceTexture },
-            lightSourceCount: { value: 0 },
-            lightSourceTextureSize: { value: lightSourceTextureSize },
-        },
-        vertexShader: `
-            uniform vec3 playerPosition;
-            uniform sampler2D lightSourceTexture;
-            uniform int lightSourceCount;
-            uniform float time;
-
-            attribute vec2 offset;
-
-            varying vec3 vWorldPos;
-            varying vec2 vUv; 
-
-            void main() {
-                vec3 pos = position;
-                pos.x += offset.x;
-                pos.z += offset.y;
-                vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            }
-        `,
-        fragmentShader: `
-            uniform vec3 playerPosition;
-            uniform sampler2D lightSourceTexture;
-            uniform int lightSourceCount;
-            uniform int lightSourceTextureSize;
-            uniform float time;
-            uniform float playerInfluenceRadius;
-
-            varying vec3 vWorldPos;
-            varying vec2 vUv;
-
-            vec3 hsv2rgb(vec3 c) {
-                vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-                return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-            }
-
-            void main() {
-                float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
-                float lightSourceInfluence = 0.0;
-
-                for (int i = 0; i < lightSourceCount; i++) {
-                    int x = i % lightSourceTextureSize;
-                    int y = i / lightSourceTextureSize;
-                    vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
-                    vec3 lightPos = texture(lightSourceTexture, uv).xyz;
-                    float dist = distance(vWorldPos.xz, lightPos.xz);
-                    lightSourceInfluence += smoothstep(2.5, 0.0, dist);
-                }
-
-                vec2 cellCoord = floor(vUv);
-                float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
-                float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
-                vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
-
-                gl_FragColor = vec4(color, 1.0); 
-            }
-        `,
-        wireframe: true
-    });
-
-    const offsets = [];
-    const halfTiles = Math.floor(numTiles / 2);
-
-    for (let x = -halfTiles; x <= halfTiles; x++) {
-        for (let z = -halfTiles; z <= halfTiles; z++) {
-            offsets.push(x * gridSize, z * gridSize);  
-        }
-    }
-
-    const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
-    gridGeometry.setAttribute('offset', offsetAttribute);
-
-    const gridMesh = new THREE.InstancedMesh(gridGeometry, gridMaterial, offsets.length / 2);
-    scene.add(gridMesh);
-
-    let radiusTarget = 100;
-    let radiusDirection = 1;
-  
-    function updateGridTiles() {
-        gridMaterial.uniforms.time.value += 0.01;
-        gridMaterial.uniforms.playerPosition.value.copy(player.position);
-
-        let lightSourceIndex = 0;
-        xpSpheres.forEach(sphere => {
-            if (sphere.visible && lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
-                lightSourceTextureData[lightSourceIndex * 4] = sphere.position.x;
-                lightSourceTextureData[lightSourceIndex * 4 + 1] = sphere.position.y;
-                lightSourceTextureData[lightSourceIndex * 4 + 2] = sphere.position.z;
-                lightSourceIndex++;
-            }
-        });
-
-        player.abilities.forEach(ability => {
-            if (ability.title === "Scalping Bot" && 
-                ability.effect.orb && 
-                ability.effect.orb.mesh.visible &&
-                lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
-                lightSourceTextureData[lightSourceIndex * 4] = ability.effect.orb.mesh.position.x;
-                lightSourceTextureData[lightSourceIndex * 4 + 1] = ability.effect.orb.mesh.position.y;
-                lightSourceTextureData[lightSourceIndex * 4 + 2] = ability.effect.orb.mesh.position.z;
-                lightSourceIndex++;
-            }
-        });
-
-        enemies.forEach(enemy => {
-            if (enemy.visible && lightSourceIndex < lightSourceTextureSize * lightSourceTextureSize) {
-                lightSourceTextureData[lightSourceIndex * 4] = enemy.position.x;
-                lightSourceTextureData[lightSourceIndex * 4 + 1] = enemy.position.y;
-                lightSourceTextureData[lightSourceIndex * 4 + 2] = enemy.position.z;
-                lightSourceIndex++;
-            }
-        });
-
-        lightSourceTexture.needsUpdate = true;
-        gridMaterial.uniforms.lightSourceCount.value = lightSourceIndex;
-
-        const playerGridX = Math.floor(player.position.x / gridSize) * gridSize;
-        const playerGridZ = Math.floor(player.position.z / gridSize) * gridSize;
-
-        gridMesh.position.set(playerGridX, 0, playerGridZ);
-
-
-        if (isMainMenu) {
-            gridMesh.position.set(playerGridX, -4, playerGridZ);
-        } else {
-            if (radiusDirection === 1 && gridMaterial.uniforms.playerInfluenceRadius.value < radiusTarget) {
-                gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
-            } else if (radiusDirection === -1 && gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
-                gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
-            } else {
-                if (radiusDirection === 1) {
-                    radiusDirection = -1;  
-                    radiusTarget = 10;  
-                } else {
-                    radiusDirection = 0; 
-                }
-            }
-
-    }}
-
-    gridGeometry.rotateX(-Math.PI / 2);
-    renderer.setAnimationLoop(() => {
-        updateGridTiles();
-        gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
-    });
-}
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
 const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
-
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
-
-createInfinityGridFloor(scene, camera, renderer,player);
-
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
-
 ability = abilityTypes[0] ;
-
 function updatePlayerMovement() {
     if (!canMove) return;
     let direction = new THREE.Vector3();
@@ -4286,7 +4241,7 @@ startSpawningEnemies(player);
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         mainTitle.style.cursor= "pointer"
         mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
-        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "subtitle");
+        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
         addContainerUI(topUI,'top-container', [mainTitle]);
 
         const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
@@ -4623,15 +4578,13 @@ function handleEntitySelection(entity, type) {
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
 let countdown = 300 * 60;
-const modeDisplay = createTitleElement('__________________', 'who even keeps track of these',"subtitle");
+
 const timerDisplay = createTitleElement('', 'who even keeps track of these', "subtitle");
-const coordinateDisplay = createTitleElement('', 'who even keeps track of these',"subtitle");
 function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
     timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    coordinateDisplay.innerText = (`${Math.trunc(player.position.x)},${Math.trunc(player.position.z)}`);
 }
 
 function refreshDisplay() {
@@ -4651,7 +4604,7 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(createButton(clonedAbility, 0.33));
     });
     addContainerUI(topUI,'top-container', [xpLoadingContainer, abilitiesContainer]);
-    addContainerUI(botUI,'bottom-container', [modeDisplay,timerDisplay,]);
+    addContainerUI(botUI,'bottom-container', [timerDisplay,]);
 }
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
@@ -4737,6 +4690,7 @@ function resumeGame() {
 /*---------------------------------------------------------------------------
                             Main loop
 ---------------------------------------------------------------------------*/
+
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
     accumulatedTime += clock.getDelta();
@@ -4745,14 +4699,12 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-
              if(cameraHeight <= 20)
-            cameraHeight+=0.3;
-
-          
+                cameraHeight+=0.3;
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
+    
     world.update(scene,camera,renderer);
     composer.render();
 }
