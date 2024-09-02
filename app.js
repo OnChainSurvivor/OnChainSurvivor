@@ -744,6 +744,15 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
+},{
+    title: "Airdrop",
+    description: "Drops valuable items or buffs to allies.",
+    tooltip: "Free goodies like an airdrop!",
+    thumbnail: 'Media/Abilities/AIRDROP.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
 },
 {
     title: "DeFi Yield",
@@ -892,16 +901,6 @@ const abilityTypes = [
     description: "Creates a duplicate of yourself to confuse enemies.",
     tooltip: "Splitting like a forked chain!",
     thumbnail: 'Media/Abilities/CHAINSPLIT.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Airdrop",
-    description: "Drops valuable items or buffs to allies.",
-    tooltip: "Free goodies like an airdrop!",
-    thumbnail: 'Media/Abilities/AIRDROP.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -4163,7 +4162,7 @@ startSpawningEnemies(player);
 
     function createButton(dataType, scale = 1, onClick) {
         const button = document.createElement('button');
-        button.style.width = `${185 * scale}px`;
+        button.style.width = `${175 * scale}px`;
         button.style.margin = '3px';
         button.style.display = 'flex';
         button.style.flexDirection = 'column';
