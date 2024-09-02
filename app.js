@@ -164,6 +164,8 @@ let colorIndex = 0;
 const xpSpheres = []; 
 const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
+import { keys, initiateJoystick } from './joystick.js';
+initiateJoystick();
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -189,8 +191,59 @@ const handleEntityDeath = (entity, enemies) => {
     const enemyIndex = enemies.indexOf(entity);
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
+
+function createParticleEffect(position, color = 'red', particleCount = 5) {
+    const particleGeometry = new THREE.BufferGeometry();
+    const particles = new Float32Array(particleCount * 3); 
+
+    for (let i = 0; i < particleCount; i++) {
+        particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
+        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 2;
+        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 2;
+    }
+
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+
+    const particleMaterial = new THREE.PointsMaterial({
+        color: color,
+        size: 1, 
+        transparent: true,
+        opacity: .5,
+        blending: THREE.AdditiveBlending,
+    });
+
+    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+
+    scene.add(particleSystem);
+
+    const duration = 1 ; 
+    const startTime = performance.now();
+
+    function animateParticles() {
+        const elapsedTime = (performance.now() - startTime) / 1000;
+
+        for (let i = 0; i < particleCount; i++) {
+            particleGeometry.attributes.position.array[i * 3] += (Math.random() - 0.5) * 0.05;
+            particleGeometry.attributes.position.array[i * 3 + 1] += (Math.random() - 0.5) * 0.05;
+            particleGeometry.attributes.position.array[i * 3 + 2] += (Math.random() - 0.5) * 0.05;
+        }
+
+        particleGeometry.attributes.position.needsUpdate = true;
+        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration));
+
+        if (elapsedTime < duration) {
+            requestAnimationFrame(animateParticles);
+        } else {
+            scene.remove(particleSystem);
+            particleGeometry.dispose();
+            particleMaterial.dispose();
+        }
+    }
+
+    animateParticles();
+}
 /*---------------------------------------------------------------------------
-                              Ability Blueprints
+                               Ability Blueprints
 ---------------------------------------------------------------------------*/
 const abilityTypes = [
 {
@@ -3903,13 +3956,14 @@ window.addEventListener('resize', updateRendererSize);
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
 /*---------------------------------------------------------------------------
+                            Abilities Controller
+---------------------------------------------------------------------------*/
+ability = abilityTypes[0];
+/*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
-const initialPlayerPosition = new THREE.Vector3(0, 0, 0);
-player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), initialPlayerPosition);
-import { keys, initiateJoystick } from './joystick.js';
-initiateJoystick();
-ability = abilityTypes[0] ;
+player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+
 function updatePlayerMovement() {
     if (!canMove) return;
     let direction = new THREE.Vector3();
@@ -3966,61 +4020,6 @@ function updatePlayerMovement() {
         }
     });
 }
-function createParticleEffect(position, color = 'red', particleCount = 5) {
-    const particleGeometry = new THREE.BufferGeometry();
-    const particles = new Float32Array(particleCount * 3); 
-
-    for (let i = 0; i < particleCount; i++) {
-        particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
-        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 2;
-        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 2;
-    }
-
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
-
-    const particleMaterial = new THREE.PointsMaterial({
-        color: color,
-        size: 1, 
-        transparent: true,
-        opacity: .5,
-        blending: THREE.AdditiveBlending,
-    });
-
-    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-
-    scene.add(particleSystem);
-
-    const duration = 1 ; 
-    const startTime = performance.now();
-
-    function animateParticles() {
-        const elapsedTime = (performance.now() - startTime) / 1000;
-
-        for (let i = 0; i < particleCount; i++) {
-            particleGeometry.attributes.position.array[i * 3] += (Math.random() - 0.5) * 0.05;
-            particleGeometry.attributes.position.array[i * 3 + 1] += (Math.random() - 0.5) * 0.05;
-            particleGeometry.attributes.position.array[i * 3 + 2] += (Math.random() - 0.5) * 0.05;
-        }
-
-        particleGeometry.attributes.position.needsUpdate = true;
-        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration));
-
-        if (elapsedTime < duration) {
-            requestAnimationFrame(animateParticles);
-        } else {
-            scene.remove(particleSystem);
-            particleGeometry.dispose();
-            particleMaterial.dispose();
-        }
-    }
-
-    animateParticles();
-}
-
-Entity.prototype.die = function() {
-    handleEntityDeath(this, enemies);
-    createParticleEffect(this.position);
-};
 
 function LevelUp() {
     canMove = false;
@@ -4050,11 +4049,9 @@ function LevelUp() {
     }
     createChooseMenu(upgradeOptions, "\nUpgrade 🔱", "Upgrade");
 }
-    
 /*---------------------------------------------------------------------------
                               Enemies Controller
 ---------------------------------------------------------------------------*/
-
 const enemies = [];
 
 function updateEnemies() {
@@ -4094,15 +4091,19 @@ function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, n
 }
 startSpawningEnemies(player);
 
+Entity.prototype.die = function() {
+    handleEntityDeath(this, enemies);
+    createParticleEffect(this.position);
+};
 /*---------------------------------------------------------------------------
                                 UI UTILITIES 
 ---------------------------------------------------------------------------*/
 
-    function createTitleElement(text, title, fontSize) {
+    function createTitleElement(text, title, classCSS) {
         const element = document.createElement('div');
         element.innerText = text;
         element.title = title;
-        element.classList.add(fontSize); 
+        element.classList.add(classCSS); 
         element.classList.add('rainbow-text'); 
         return element;
     }
@@ -4112,6 +4113,26 @@ startSpawningEnemies(player);
         classNames.forEach(className => container.classList.add(className));
         Object.assign(container.style, styles);
         document.body.appendChild(container);
+        return container;
+    }
+
+    function createTitleContainer(text,tooltip) {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-title');
+        const title = createTitleElement(text, tooltip, "title"); 
+        container.appendChild(title);
+        return container;
+    }
+
+    function createGridContainer() {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-grid'); 
+        return container;
+    }
+
+    function createPopUpContainer() {
+        const container = document.createElement('div');
+        container.classList.add('choose-menu-container'); 
         return container;
     }
 
@@ -4208,24 +4229,52 @@ startSpawningEnemies(player);
         setTimeout(() => { container.classList.add('hide'); }, 10);
     }
 
-    function createPopUpContainer() {
-        const container = document.createElement('div');
-        container.classList.add('choose-menu-container'); 
-        return container;
-    }
     
-    function createTitleContainer(text,tooltip) {
-        const container = document.createElement('div');
-        container.classList.add('choose-menu-title');
-        const title = createTitleElement(text, tooltip, "title"); 
-        container.appendChild(title);
-        return container;
-    }
+    const spinningStates = {
+        class: true,
+        ability: true,
+        world: true
+    };
     
-    function createGridContainer() {
-        const container = document.createElement('div');
-        container.classList.add('choose-menu-grid'); 
-        return container;
+    function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
+        if (!spinningStates[category])
+        return;
+        const imgContainer = document.createElement('div');
+        imgContainer.style.position = 'relative';
+        imgContainer.style.height = `${150 * scale}px`; 
+        imgContainer.style.width = `${150 * scale}px`; 
+    
+        images = images.concat(images); 
+    
+        images.forEach((src) => {
+            const img = document.createElement('img');
+            img.src = src;
+            img.style.width = `${150 * scale}px`;
+            img.style.height = `${150 * scale}px`;
+            img.style.display = 'block';
+            imgContainer.appendChild(img);
+        });
+    
+        button.innerHTML = ''; 
+        button.appendChild(imgContainer);
+    
+        const totalHeight = images.length * 150 * scale;
+        let currentTop = 0;
+        let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
+        function spin() {
+            if (spinningStates[category]) {
+                currentTop -= speed;
+                if (currentTop <= -totalHeight / 2) {
+                    currentTop = 0;
+                }
+                imgContainer.style.transform = `translateY(${currentTop}px)`;
+            }
+            requestAnimationFrame(spin); 
+        }
+        spin();
+        button.parentElement.addEventListener('click', () => {
+            spinningStates[category] = false;
+        });
     }
 
     let topUI = createContainer(['top-container', 'fade-in']);
@@ -4239,66 +4288,54 @@ startSpawningEnemies(player);
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
-        mainTitle.style.cursor= "pointer"
-        mainTitle.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        addContainerUI(topUI,'top-container', [mainTitle]);
-
+        const web3Container = createContainer(['top-container'], { left: '130%' })
+        const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
         const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
-        sponsor.onclick = function() { window.open('https://x.com/OnChainSurvivor', '_blank'); };  //debt: explain the sponsor gameplay mechanics
+        web3Container.appendChild(web3Title);
 
-        addContainerUI(botUI,'bottom-container', [subTitle,sponsor]);
+        web3Title.onclick = async () => {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    const address = accounts[0];
+     
+                    let ensName = null;
+                    try {
+                        ensName = await web3.eth.ens.lookup(address);
+                    } catch (error) {
+                        console.error('Error looking up ENS:', error);
+                    }
+        
+                    const displayName = ensName || address;
+                    localStorage.setItem('metaMaskAddress', address); 
+                    displayWeb3Menu(displayName); 
+        
+                } catch (error) {
+                    if (error.code === 4902) {
+                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                    } else {
+                        console.error('Error:', error);
+                    }
+                }
+            } else {
+                alert('MetaMask is not installed. Please install it to use this feature.');
+            }
+        };
+
+        addContainerUI(topUI,'top-container', [mainTitle,web3Container]);
+
+        addContainerUI(botUI,'bottom-container', [subTitle]);
+
     };
+    
     createGameTitle();
 /*---------------------------------------------------------------------------
                                 MAIN MENU
 ---------------------------------------------------------------------------*/
-const spinningStates = {
-    class: true,
-    ability: true,
-    world: true
-};
-
-function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
-    if (!spinningStates[category])
-    return;
-    const imgContainer = document.createElement('div');
-    imgContainer.style.position = 'relative';
-    imgContainer.style.height = `${150 * scale}px`; 
-    imgContainer.style.width = `${150 * scale}px`; 
-
-    images = images.concat(images); 
-
-    images.forEach((src) => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.style.width = `${150 * scale}px`;
-        img.style.height = `${150 * scale}px`;
-        img.style.display = 'block';
-        imgContainer.appendChild(img);
-    });
-
-    button.innerHTML = ''; 
-    button.appendChild(imgContainer);
-
-    const totalHeight = images.length * 150 * scale;
-    let currentTop = 0;
-    let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
-    function spin() {
-        if (spinningStates[category]) {
-            currentTop -= speed;
-            if (currentTop <= -totalHeight / 2) {
-                currentTop = 0;
-            }
-            imgContainer.style.transform = `translateY(${currentTop}px)`;
-        }
-        requestAnimationFrame(spin); 
-    }
-    spin();
-    button.parentElement.addEventListener('click', () => {
-        spinningStates[category] = false;
-    });
-}
 function createGameMenu() {
     const classImages = playerTypes.map(player => player.thumbnail);
     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
@@ -4396,7 +4433,7 @@ function handleEntitySelection(entity, type) {
     } else if (type === "Survivor") {
         player.deactivateAbilities();
         scene.remove(player);
-        player = new Entity(playerTypes.find(t => t === entity),initialPlayerPosition);
+        player = new Entity(playerTypes.find(t => t === entity),new THREE.Vector3(0, 0, 0));
         createGameMenu();
     } else if (type === "Ability") {
         ability = entity;
@@ -4408,60 +4445,6 @@ function handleEntitySelection(entity, type) {
     canMove = true;
     hideContainerUI(centerUI);
 }
-
-/*---------------------------------------------------------------------------
-                                    WEB3 Connect Menu
----------------------------------------------------------------------------*/
-    const web3Container = createContainer(['fade-in', 'top-container'], { left: '130%' });
-    const buttonConnect = document.createElement('button');
-    const subTitle = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-    buttonConnect.style.backgroundColor = 'transparent';
-    buttonConnect.style.border = 'transparent';
-    buttonConnect.style.cursor = 'pointer';
-    buttonConnect.appendChild(subTitle);
-    web3Container.appendChild(buttonConnect);
-    topUI.appendChild(web3Container);
-    setTimeout(() => { web3Container.classList.add('show'); }, 10); 
-
-    buttonConnect.onclick = async () => {
-        if (window.ethereum) {
-            const web3 = new Web3(window.ethereum);
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const address = accounts[0];
- 
-                let ensName = null;
-                try {
-                    ensName = await web3.eth.ens.lookup(address);
-                } catch (error) {
-                    console.error('Error looking up ENS:', error);
-                }
-    
-                const displayName = ensName || address;
-                localStorage.setItem('metaMaskAddress', address); 
-                displayWeb3Menu(displayName); 
-    
-            } catch (error) {
-                if (error.code === 4902) {
-                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-                } else {
-                    console.error('Error:', error);
-                }
-            }
-        } else {
-            alert('MetaMask is not installed. Please install it to use this feature.');
-        }
-    };
-
-    window.addEventListener('load', async () => {
-        const storedAddress = localStorage.getItem('metaMaskAddress');
-        if (storedAddress) {
-            const web3 = new Web3(window.ethereum);
-            displayWeb3Menu(storedAddress);
-        }
-    });
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
@@ -4499,7 +4482,7 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleContainer(`Welcome Home, Survivor.eth!`, 'lazy subtitle too btw');
+        const subTitle = createTitleContainer(`Welcome, Survivor.eth!`, 'lazy subtitle too btw');
         
         const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
@@ -4531,7 +4514,7 @@ function handleEntitySelection(entity, type) {
             const goal = 1000000; 
             const percentage = (currentAmount / goal) * 100;
             loadingBar.style.width = percentage + '%';
-            loadingText.innerText =' ❤️ Goal '+percentage.toFixed(2) + '% ❤️';
+            loadingText.innerText =' ❤️ Sponsor ' + percentage.toFixed(2) + '% ❤️';
             loadingText.classList.add('rainbow-text'); 
         }
      
@@ -4574,6 +4557,14 @@ function handleEntitySelection(entity, type) {
              createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
              createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     }
+
+    window.addEventListener('load', async () => {
+        const storedAddress = localStorage.getItem('metaMaskAddress');
+        if (storedAddress) {
+            const web3 = new Web3(window.ethereum);
+            displayWeb3Menu(storedAddress);
+        }
+    });
 /*---------------------------------------------------------------------------
                                    IN-GAME UI 
 ---------------------------------------------------------------------------*/
