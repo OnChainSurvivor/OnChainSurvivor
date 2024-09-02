@@ -446,12 +446,21 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {} 
     },
-},
-{
-    title: "Double Spend Prevention",
+},{
+    title: "Copy Trading",
     description: "Creates a shield that absorbs multiple hits.",
     tooltip: "No double-spending here, buddy!",
-    thumbnail: "A broken coin split in half.",
+    thumbnail: 'Media/Abilities/COPYTRADING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Double Spend Prevention ",
+    description: "Creates a shield that absorbs multiple hits.",
+    tooltip: "No double-spending here, buddy!",
+    thumbnail: 'Media/Abilities/DOUBLESPENDPREVENTION.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -461,7 +470,7 @@ const abilityTypes = [
     title: "Overclock",
     description: "Greatly increases attack power for a brief period.",
     tooltip: "Overclocked like a mining rig in a bull run!",
-    thumbnail: "A CPU with a glowing overclock symbol.",
+    thumbnail: 'Media/Abilities/OVERCLOCK.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -471,7 +480,7 @@ const abilityTypes = [
     title: "Mining Rig",
     description: "Deploys a stationary turret that automatically attacks enemies.",
     tooltip: "Mining while you sleep!",
-    thumbnail: "A turret with mining gear.",
+    thumbnail: 'Media/Abilities/MININGRIG.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -481,7 +490,7 @@ const abilityTypes = [
     title: "Energy Surge",
     description: "Temporarily increases attack speed and movement speed.",
     tooltip: "Surging like the latest meme coin!",
-    thumbnail: "A lightning bolt with gears.",
+    thumbnail: 'Media/Abilities/ENERGYSURGE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -491,7 +500,7 @@ const abilityTypes = [
     title: "PoS Migration",
     description: "Increases the player's defense.",
     tooltip: "Migrated to PoS and feeling safe!",
-    thumbnail: "A shield with 'PoS' written on it.",
+    thumbnail: 'Media/Abilities/POSMIGRATION.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -501,7 +510,7 @@ const abilityTypes = [
     title: "Governance Vote",
     description: "Grants a random beneficial effect based on player needs.",
     tooltip: "DAO voted, gains distributed!",
-    thumbnail: "A voting card with a checkmark.",
+    thumbnail: 'Media/Abilities/GOVERNANCEVOTE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -511,10 +520,229 @@ const abilityTypes = [
     title: "Protocol Upgrade",
     description: "Improves all abilities for a limited time.",
     tooltip: "Upgraded like ETH 2.0!",
-    thumbnail: "A progress bar with a checkmark.",
+    thumbnail: "Media/Abilities/PROTOCOLUPGRADE.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Network Upgrade ",
+    description: "Grants a significant buff to a random ability.",
+    tooltip: "Upgrade the network. Buff a random ability.",
+    thumbnail: "Media/Abilities/NETWORKUPGRADE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Quantum Encryption",
+    description: "Creates a shield that reduces incoming damage.",
+    tooltip: "Encrypt your defenses. Reduce damage taken.",
+    thumbnail: "Media/Abilities/QUANTUMENCRYPTION.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Transaction Fee",
+    description: "Reduces the cooldown of all abilities.",
+    tooltip: "Pay the fee, cut the wait. Reduce your cooldowns.",
+    thumbnail: 'Media/Abilities/TRANSACTIONFEE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Transaction Fee Burn",
+    description: "Reduces enemy resources by burning their assets.",
+    tooltip: "Burned like gas fees in a bull run!",
+    thumbnail: 'Media/Abilities/FEEBURN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Blockchain Backup",
+    description: "Creates a backup of resources for recovery.",
+    tooltip: "Backing up like a secure blockchain!",
+    thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Block Reward",
+    description: "Heals the player for a portion of damage dealt.",
+    tooltip: "Reward yourself with health for your efforts.",
+    thumbnail: 'Media/Abilities/BLOCKREWARD.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Crypto MultiSig",
+    description: "Secures resources with multiple signatures.",
+    tooltip: "Securing like a multi-signature wallet!",
+    thumbnail: 'Media/Abilities/CRYPTOMULTISIG.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Transaction Sign",
+    description: "Secures resources with a single signature.",
+    tooltip: "Securing like a multi-signature wallet!",
+    thumbnail: 'Media/Abilities/CRYPTOSIGN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Staking Rewards",
+    description: "Provides periodic healing to all allies.",
+    tooltip: "Stake and earn. Heal over time.",
+    thumbnail: 'Media/Abilities/STAKINGREWARD.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "DAO Governance",
+    description: "Empowers allies with decision-making buffs.",
+    tooltip: "Collective power like a DAO!",
+    thumbnail: 'Media/Abilities/DAOGOVERNANCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Surprise Liquidation",
+    description: "Causes a massive area-of-effect damage.",
+    tooltip: "Liquidated harder than a leveraged trade gone wrong!",
+    thumbnail: "Media/Abilities/LIQUIDATIONEVENT.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Compliance Order",
+    description: "Forces enemies to move towards the player, taking damage over time.",
+    tooltip: "Issue a compliance order. Force enemies to move towards you and take damage.",
+    thumbnail: "Media/Abilities/COMPLIANCEORDER.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Entanglement",
+    description: "Links enemies, causing damage to spread among them.",
+    tooltip: "Entangle your enemies. Damage spreads.",
+    thumbnail: "Media/Abilities/ENTANGLEMENT.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Decentralized Network",
+    description: "Summons allies to assist in battle.",
+    tooltip: "Rally the network. Summon allies to join the fight.",
+    thumbnail: 'Media/Abilities/DECENTRALIZEDNETWORK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Liquidity Pool",
+    description: "Creates a pool that heals allies and damages enemies.",
+    tooltip: "Providing liquidity like a degen in a farm!",
+    thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Initial DEX Offering",
+    description: "Increases allies' attack power.",
+    tooltip: "Launch on the DEX. Pump up those attacks.",
+    thumbnail: 'Media/Abilities/INITIALDEXOFFERING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "No Coin FUD ❗",
+    description: "Decreases enemy attack power and movement speed.",
+    tooltip: "Spread FUD. Decrease enemy attack power and speed.",
+    thumbnail: "Media/Abilities/NOCOINFUD.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Network Effect",
+    description: "Increases the effectiveness of all abilities.",
+    tooltip: "Network effect in action. Boost all your powers.",
+    thumbnail: 'Media/Abilities/NETWORKEFFECT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "FOMO Wave",
+    description: "Induces fear of missing out, causing enemies to rush towards the player.",
+    tooltip: "Create a wave of FOMO. Draw enemies towards you.",
+    thumbnail: "Media/Abilities/FOMOWAVE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Liquidation Wave",
+    description: "Deals area-of-effect damage and reduces enemy defenses.",
+    tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
+    thumbnail: "Media/Abilities/LIQUIDATIONWAVE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Quick Flip",
+    description: "Deals instant damage to nearby enemies.",
+    tooltip: "Quick flip. Deal instant damage.",
+    thumbnail: "Media/Abilities/QUICKFLIP.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Dollar Cost average",
+    description: "Deals Slow damage to nearby enemies.",
+    tooltip: "Deal Slow damage.",
+    thumbnail: "Media/Abilities/DCA.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Jackpot",
+    description: "Hits the jackpot, dealing massive damage to all enemies and providing significant buffs to allies.",
+    tooltip: "Hit the jackpot. Massive damage and significant buffs.",
+    thumbnail: "Media/Abilities/JACKPOT.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
@@ -522,16 +750,6 @@ const abilityTypes = [
     description: "Periodically grants a boost in resources.",
     tooltip: "APY like a degen farm!",
     thumbnail: "A yield sign with coins.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {} 
-    },
-},
-{
-    title: "Flash Loan Attack",
-    description: "Deals a burst of damage to a single target.",
-    tooltip: "One-shot wonder like a flash loan!",
-    thumbnail: "A lightning bolt striking a target.",
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -558,30 +776,10 @@ const abilityTypes = [
     },
 },
 {
-    title: "Liquidation Event",
-    description: "Causes a massive area-of-effect damage.",
-    tooltip: "Liquidated harder than a leveraged trade gone wrong!",
-    thumbnail: "A graph plummeting with red arrows.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {} 
-    },
-},
-{
     title: "Chain Reorg",
     description: "Rewinds time slightly to undo recent events.",
     tooltip: "Reorg'd like a 51% attack!",
     thumbnail: "A clock turning backward.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {} 
-    },
-},
-{
-    title: "Staking Rewards",
-    description: "Grants a boost to resources over time.",
-    tooltip: "Compounding gains like a staking pro!",
-    thumbnail: "A pile of tokens growing over time.",
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -628,15 +826,6 @@ const abilityTypes = [
         this.update = () => {}
         // Implement the effect logic here
     }
-},{
-    title: "Liquidity Pool",
-    description: "Creates a pool that heals allies and damages enemies.",
-    tooltip: "Providing liquidity like a degen in a farm!",
-    thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
 },
 {
     title: "MEV Bot",
@@ -663,16 +852,6 @@ const abilityTypes = [
     description: "Grants temporary immunity to damage.",
     tooltip: "Protected by the wisdom of Satoshi!",
     thumbnail: 'Media/Abilities/WHITEPAPERSHIELD.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Transaction Fee Burn",
-    description: "Reduces enemy resources by burning their assets.",
-    tooltip: "Burned like gas fees in a bull run!",
-    thumbnail: 'Media/Abilities/TRANSACTIONFEEBURN.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -753,16 +932,6 @@ const abilityTypes = [
     description: "Instantly removes buffs from enemies.",
     tooltip: "Rugged like a failed project!",
     thumbnail: 'Media/Abilities/RUGPULL.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "DAO Governance",
-    description: "Empowers allies with decision-making buffs.",
-    tooltip: "Collective power like a DAO!",
-    thumbnail: 'Media/Abilities/DAOGOVERNANCE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -889,16 +1058,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Crypto Airdrop",
-    description: "Distributes resources to allies.",
-    tooltip: "Airdropped like free tokens!",
-    thumbnail: 'Media/Abilities/CRYPTOAIRDROP.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Crypto Bear",
     description: "Reduces enemies' attack power.",
     tooltip: "Bearish like a market downturn!",
@@ -993,16 +1152,6 @@ const abilityTypes = [
     description: "Creates a duplicate of an ability for a short time.",
     tooltip: "Forking like a blockchain split!",
     thumbnail: 'Media/Abilities/CRYPTOFORK.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Crypto Fee",
-    description: "Charges a fee to enemies for using abilities.",
-    tooltip: "Charging like a transaction fee!",
-    thumbnail: 'Media/Abilities/CRYPTOFEE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1119,16 +1268,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Crypto MultiSig",
-    description: "Secures resources with multiple signatures.",
-    tooltip: "Securing like a multi-signature wallet!",
-    thumbnail: 'Media/Abilities/CRYPTOMULTISIG.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "NFT Disruptor",
     description: "Temporarily disables the effects of enemy NFTs.",
     tooltip: "Disrupt like a true NFT master!",
@@ -1198,16 +1337,7 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
-{
-    title: "Blockchain Backup",
-    description: "Creates a backup of resources for recovery.",
-    tooltip: "Backing up like a secure blockchain!",
-    thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {} 
-    },
-},
+
 {
     title: "Crypto Validator",
     description: "Ensures the integrity of resource transactions.",
@@ -1245,16 +1375,6 @@ const abilityTypes = [
     tooltip: "Lay down the mines. Enemies beware.",
     thumbnail: 'Media/Abilities/MINEFIELD.png',
 
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {} 
-    },
-},
-{
-    title: "Block Reward",
-    description: "Heals the player for a portion of damage dealt.",
-    tooltip: "Reward yourself with health for your efforts.",
-    thumbnail: 'Media/Abilities/BLOCKREWARD.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
@@ -1331,26 +1451,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Decentralized Network",
-    description: "Summons allies to assist in battle.",
-    tooltip: "Rally the network. Summon allies to join the fight.",
-    thumbnail: 'Media/Abilities/DECENTRALIZEDNETWORK.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Network Effect",
-    description: "Increases the effectiveness of all abilities.",
-    tooltip: "Network effect in action. Boost all your powers.",
-    thumbnail: 'Media/Abilities/NETWORKEFFECT.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Multilayer Design",
     description: "Adds an additional layer of defense.",
     tooltip: "Layer up! More defense, less worry.",
@@ -1395,16 +1495,6 @@ const abilityTypes = [
     description: "Sets up a turret that automatically attacks enemies.",
     tooltip: "Deploy the contract. Let the turret handle it.",
     thumbnail: 'Media/Abilities/DEPLOYCONTRACT.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Transaction Fee",
-    description: "Reduces the cooldown of all abilities.",
-    tooltip: "Pay the fee, cut the wait. Reduce your cooldowns.",
-    thumbnail: 'Media/Abilities/TRANSACTIONFEE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1461,16 +1551,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Flash Loan",
-    description: "Instantly grants a large amount of resources.",
-    tooltip: "Get instant liquidity. Just don't get rekt.",
-    thumbnail: 'Media/Abilities/FLASHLOAN.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Liquidity Pool",
     description: "Creates a pool that buffs allies' attack speed.",
     tooltip: "Add liquidity, boost the pool. Attack faster.",
@@ -1490,36 +1570,7 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
-{
-    title: "Airdrop",
-    description: "Grants random buffs to all allies.",
-    tooltip: "Receive the airdrop. Enjoy the random goodies.",
-    thumbnail: 'Media/Abilities/AIRDROP.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Initial DEX Offering",
-    description: "Increases allies' attack power.",
-    tooltip: "Launch on the DEX. Pump up those attacks.",
-    thumbnail: 'Media/Abilities/INITIALDEXOFFERING.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Staking Rewards",
-    description: "Provides periodic healing to all allies.",
-    tooltip: "Stake and earn. Heal over time.",
-    thumbnail: 'Media/Abilities/STAKINGREWARDS.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
+
 {
     title: "Validator Uptime",
     description: "Increases the duration of all buffs.",
@@ -1535,16 +1586,6 @@ const abilityTypes = [
     description: "Reduces damage taken from critical hits.",
     tooltip: "Protect against slashing. Reduce crit damage.",
     thumbnail: 'Media/Abilities/SLASHINGPROTECTION.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Governance Vote",
-    description: "Grants temporary invulnerability to all allies.",
-    tooltip: "Vote and secure. Gain temporary invulnerability.",
-    thumbnail: 'Media/Abilities/GOVERNANCEVOTE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1711,10 +1752,10 @@ const abilityTypes = [
     },
 },
 {
-    title: "Ultimate: Survivor's Resolve 🔥",
+    title: "Survivor's Resolve",
     description: "Temporarily makes the player invincible and greatly increases attack power.",
     tooltip: "Unbreakable resolve. Become invincible and unleash your power.",
-    thumbnail: 'Media/Abilities/ULTIMATESURVIVORSRESOLVE.png',
+    thumbnail: 'Media/Abilities/SURVIVORSRESOLVE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1735,16 +1776,6 @@ const abilityTypes = [
     description: "Creates a zone that damages enemies over time.",
     tooltip: "Lay down the mines. Enemies beware.",
     thumbnail: 'Media/Abilities/MINEFIELD.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Block Reward 💎",
-    description: "Heals the player for a portion of damage dealt.",
-    tooltip: "Reward yourself with health for your efforts.",
-    thumbnail: 'Media/Abilities/BLOCKREWARD.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1861,17 +1892,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Code Refactor 🖥️",
-    description: "Rewrites the player's abilities, reducing their cooldowns.",
-    tooltip: "Refactor your code. Reduce cooldowns.",
-    thumbnail: "A refactored code.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Deploy Patch 🛠️",
+    title: "Deploy Patch",
     description: "Creates a temporary area that boosts allies' defenses.",
     tooltip: "Deploy a patch. Boost allies' defenses.",
     thumbnail: "A patch being deployed.",
@@ -1911,7 +1932,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Sanction 🛑",
+    title: "Sanction",
     description: "Targets a single enemy, greatly reducing its speed and defense.",
     tooltip: "Impose sanctions. Weaken a single enemy.",
     thumbnail: "A stop sign.",
@@ -1931,40 +1952,10 @@ const abilityTypes = [
     },
 },
 {
-    title: "Quantum Encryption 🛡️",
-    description: "Creates a shield that reduces incoming damage.",
-    tooltip: "Encrypt your defenses. Reduce damage taken.",
-    thumbnail: "A quantum shield.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Entanglement 🕸️",
-    description: "Links enemies, causing damage to spread among them.",
-    tooltip: "Entangle your enemies. Damage spreads.",
-    thumbnail: "Entangled particles.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Quantum Key Exchange 🔑",
     description: "Transfers health from enemies to the player.",
     tooltip: "Exchange health. Transfer from enemies to you.",
     thumbnail: "A key exchange.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Ultimate: Quantum Overload ⚡",
-    description: "Overloads the quantum field, dealing massive area damage and stunning enemies.",
-    tooltip: "Overload the field. Massive damage and stun.",
-    thumbnail: "A quantum explosion.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2151,16 +2142,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "FOMO Wave 🌊",
-    description: "Induces fear of missing out, causing enemies to rush towards the player.",
-    tooltip: "Create a wave of FOMO. Draw enemies towards you.",
-    thumbnail: "A wave symbol.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Hype Train 🚂",
     description: "Summons a stampede of followers that trample enemies.",
     tooltip: "Summon the hype train. Trample your enemies.",
@@ -2231,16 +2212,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Whale 🐋",
-    description: "Focuses on high-impact, single-target attacks.",
-    tooltip: "Be the whale. Deliver high-impact attacks.",
-    thumbnail: "A whale.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Market Puppeteer 🎭",
     description: "Controls and manipulates multiple enemies.",
     tooltip: "Puppet master. Control and manipulate enemies.",
@@ -2255,16 +2226,6 @@ const abilityTypes = [
     description: "Creates a chaotic event that massively disrupts enemy abilities and resources while providing significant buffs to allies.",
     tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     thumbnail: "A black swan.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Quick Flip 🤑",
-    description: "Deals instant damage to nearby enemies.",
-    tooltip: "Quick flip. Deal instant damage.",
-    thumbnail: "A dollar sign and a lightning bolt.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2431,30 +2392,10 @@ const abilityTypes = [
     },
 },
 {
-    title: "Ultimate: Jackpot 💰",
-    description: "Hits the jackpot, dealing massive damage to all enemies and providing significant buffs to allies.",
-    tooltip: "Hit the jackpot. Massive damage and significant buffs.",
-    thumbnail: "A jackpot slot machine.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Margin Call 📉",
     description: "Forces enemies to take damage over time.",
     tooltip: "Issue a margin call. Inflict damage over time.",
     thumbnail: "A falling chart with a phone.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Liquidation Wave 🌊",
-    description: "Deals area-of-effect damage and reduces enemy defenses.",
-    tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
-    thumbnail: "A crashing wave.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2520,15 +2461,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "No Coin FUD ❗",
-    description: "Decreases enemy attack power and movement speed.",
-    tooltip: "Spread FUD. Decrease enemy attack power and speed.",
-    thumbnail: "A warning sign.",    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Crypto Critic 📉",
     description: "Enhances debuffs and controls enemy behavior.",
     tooltip: "Critique crypto. Enhance debuffs and control enemies.",
@@ -2560,15 +2492,6 @@ const abilityTypes = [
     description: "Temporarily reveals enemy weaknesses and increases damage dealt.",
     tooltip: "Review code. Reveal weaknesses and increase damage.",
     thumbnail: "A checklist.",    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Bug Fix 🔧",
-    description: "Removes debuffs from allies and restores health.",
-    tooltip: "Fix bugs. Remove debuffs and restore health.",
-    thumbnail: "A wrench and a bug.",    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2752,16 +2675,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Flash Loan Attack ⚡",
-    description: "Temporarily boosts attack power and speed.",
-    tooltip: "Execute a flash loan attack. Boost attack power and speed.",
-    thumbnail: "A lightning bolt.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Protocol Raider 🏴",
     description: "Focuses on high-damage, single-target attacks.",
     tooltip: "Raid protocols. High-damage, single-target attacks.",
@@ -2802,36 +2715,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Sybil Attack 🎭",
-    description: "Creates decoys that distract and damage enemies.",
-    tooltip: "Execute a Sybil attack. Distract and damage enemies.",
-    thumbnail: "Multiple masks.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Vote Manipulation 🗳️",
-    description: "Temporarily controls enemy movements.",
-    tooltip: "Manipulate votes. Control enemy movements.",
-    thumbnail: "A ballot box with strings.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Airdrop Fraud ✈️",
-    description: "Steals resources from enemies and redistributes them to allies.",
-    tooltip: "Commit airdrop fraud. Steal resources and redistribute.",
-    thumbnail: "An airplane dropping coins.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Identity Forger 🛠️",
     description: "Specializes in creating decoys and controlling enemies.",
     tooltip: "Forge identities. Create decoys and control enemies.",
@@ -2846,46 +2729,6 @@ const abilityTypes = [
     description: "Completely takes over the battlefield, drastically buffing allies and debuffing enemies.",
     tooltip: "Execute a total takeover. Drastically buff allies and debuff enemies.",
     thumbnail: "A world with chains.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Confirm Block 🧱",
-    description: "Temporarily increases defense and regenerates health.",
-    tooltip: "Confirm a block. Increase defense and regenerate health.",
-    thumbnail: "A confirmed block symbol.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Finality ⏳",
-    description: "Grants temporary invincibility to all nearby players.",
-    tooltip: "Achieve finality. Grant temporary invincibility.",
-    thumbnail: "An hourglass.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Double Spend Prevention 🛡️",
-    description: "Creates a shield that absorbs multiple hits.",
-    tooltip: "Prevent double spend. Create a shield.",
-    thumbnail: "A shield with a double spend symbol.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Veil of Decentralization 🕸️",
-    description: "Provides a shield that absorbs damage.",
-    tooltip: "A veil of protection. Stay safe out there.",
-    thumbnail: "A veil covering the player.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2946,26 +2789,6 @@ const abilityTypes = [
     description: "Triggers a mining frenzy, drastically increasing attack power and speed for a short period.",
     tooltip: "Enter a mining frenzy. Drastically increase attack power and speed.",
     thumbnail: "A pickaxe and a lightning bolt.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Governance Vote 🗳️",
-    description: "Grants a random beneficial effect based on player needs.",
-    tooltip: "Cast a governance vote. Grant a random beneficial effect.",
-    thumbnail: "A ballot box.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Protocol Upgrade 🆙",
-    description: "Permanently enhances one of the player's abilities.",
-    tooltip: "Execute a protocol upgrade. Permanently enhance an ability.",
-    thumbnail: "An upgrade symbol.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3132,16 +2955,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Token Airdrop 🎁",
-    description: "Airdrops valuable tokens to allies, providing temporary buffs and resources.",
-    tooltip: "Free tokens for everyone! Enjoy the perks of being an NFT creator.",
-    thumbnail: "A gift box with tokens.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Smart Contract Art 🖼️",
     description: "Deploys a smart contract-based artwork that creates a protective barrier.",
     tooltip: "Art meets security. This smart contract art keeps you safe and sound.",
@@ -3196,16 +3009,6 @@ const abilityTypes = [
     description: "Summons allies to assist in battle.",
     tooltip: "The power of many. Amplify your abilities.",
     thumbnail: "A network diagram with a ripple effect.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Network Effect 🌟",
-    description: "Increases the effectiveness of all abilities.",
-    tooltip: "The network effect amplifies all abilities.",
-    thumbnail: "A glowing network node.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3332,16 +3135,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Network Upgrade 🆙",
-    description: "Grants a significant buff to a random ability.",
-    tooltip: "Upgrade the network. Buff a random ability.",
-    thumbnail: "An upgrade arrow.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Sharding Upgrade 💎",
     description: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
     tooltip: "Divide and conquer! Your attacks hit multiple targets.",
@@ -3376,16 +3169,6 @@ const abilityTypes = [
     description: "Reveals and debuffs all enemies in a targeted area.",
     tooltip: "Conduct an inspection. Reveal and debuff enemies.",
     thumbnail: "A magnifying glass.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Compliance Order 📜",
-    description: "Forces enemies to move towards the player, taking damage over time.",
-    tooltip: "Issue a compliance order. Force enemies to move towards you and take damage.",
-    thumbnail: "A compliance document.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3436,16 +3219,6 @@ const abilityTypes = [
     description: "Executes a policy overhaul, providing massive buffs to allies and drastically debuffing enemies across the battlefield.",
     tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     thumbnail: "A document with major changes.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Network Upgrade 🔧",
-    description: "Increases the attack and defense of all nearby allies.",
-    tooltip: "Upgrade the network. Boost attack and defense of allies.",
-    thumbnail: "A network with an upward arrow.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3622,7 +3395,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Malware Injection 🐛",
+    title: "Malware Injection ",
     description: "Inflicts damage over time and reduces enemy attack speed.",
     tooltip: "Inject malware. Damage and slow your enemies.",
     thumbnail: "A bug with a syringe.",
@@ -3676,16 +3449,6 @@ const abilityTypes = [
     description: "Teleports the player to a safe location.",
     tooltip: "Execute your escape plan. Teleport to safety.",
     thumbnail: "An open door.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Ultimate: Scalping Frenzy ⚡",
-    description: "Temporarily boosts attack speed and movement speed to maximum levels.",
-    tooltip: "Unleash scalping frenzy. Maximize attack and movement speed.",
-    thumbnail: "A lightning-fast figure.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3793,7 +3556,6 @@ const worldTypes = [{
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
        
-   
         const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
         const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
         camera.position.set(cameraX, cameraHeight, cameraZ);
@@ -3844,7 +3606,6 @@ const worldTypes = [{
     if (isMobile)
     numCrystals = 512 ; 
   
-
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
     const possibleRadii = [1, 25, 50, 75];
