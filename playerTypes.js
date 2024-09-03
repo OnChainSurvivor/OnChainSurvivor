@@ -42,9 +42,7 @@ export const playerTypes = [{
     level:0,
     isLocked: false,
     abilities: [
-
-        { type: 'Veil of Decentralization'},
- 
+      //  { type: 'Veil of Decentralization'},
     ],
 },{
     class: 'Survivor',
