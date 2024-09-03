@@ -39,20 +39,12 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
-    
     level:0,
     isLocked: false,
     abilities: [
-        { type: 'Code Refactor'}, 
+
         { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
-        { type: 'Code Refactor'}, 
-        { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
-        { type: 'Veil of Decentralization'},
+ 
     ],
 },{
     class: 'Survivor',

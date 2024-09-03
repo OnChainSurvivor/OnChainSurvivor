@@ -75,7 +75,7 @@ class Entity extends THREE.Object3D {
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
                 const ability = abilityTypes.find(type => type.title === entityAbility.type);
-                    const newAbility = new Ability(this, {ability});
+                    const newAbility = new Ability(this, {...ability});
                     this.addAbility(newAbility);
                     newAbility.activate();
             }
@@ -615,6 +615,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Whale Power",
+    description: "Increases all stats for a short duration.",
+    tooltip: "Unleash the whale power. Dominate the field.",
+    thumbnail: "Media/Abilities/WHALEPOWER.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Blockchain Backup",
     description: "Creates a backup of resources for recovery.",
     tooltip: "Backing up like a secure blockchain!",
@@ -804,54 +814,164 @@ const abilityTypes = [
     },
 },
 {
+    title: "Oracle Insight",
+    description: "Predicts enemy movements, increasing evasion.",
+    tooltip: "Seeing the future like an oracle!",
+    thumbnail: 'Media/Abilities/ORACLEINSIGHT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Whale Buy 🐋",
+    description: "Unleashes a powerful area-of-effect attack, representing a large buy order.",
+    tooltip: "Make a whale buy. Execute a powerful area-of-effect attack.",
+    thumbnail: "Media/Ability/WHALEBUY.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "DeFi Yield",
     description: "Periodically grants a boost in resources.",
     tooltip: "APY like a degen farm!",
-    thumbnail: "A yield sign with coins.",
+    thumbnail: 'Media/Abilities/DEFIYIELD.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Liquidity Vampire",
+    description: "Steals resources and buffs self and allies.",
+    tooltip: "Be a liquidity vampire. Steal resources and buff allies.",
+    thumbnail: "Media/Abilities/LIQUIDITYVAMPIRE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
     title: "Frontrunning Bot",
     description: "Increases movement speed and prioritizes attacks.",
     tooltip: "Faster than your FOMO trades!",
-    thumbnail: "A racing bot with a trail.",
+    thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Malware Injection ",
+    description: "Inflicts damage over time and reduces enemy attack speed.",
+    tooltip: "Inject malware. Damage and slow your enemies.",
+    thumbnail: "Media/Abilities/BUG.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title:  "Network Consensus",
+    description: "Achieves network consensus, significantly boosting allies' defense and providing damage immunity for a short period.",
+    tooltip: "Achieve network consensus. Boost defense and provide damage immunity.",
+    thumbnail: "Media/Abilities/CONSENSUS.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
     title: "Exploit Finder",
     description: "Scans for enemy weaknesses and exploits them.",
     tooltip: "Finding bugs like a true degen!",
-    thumbnail: "A magnifying glass over a bug.",
+    thumbnail: "Media/Abilities/EXPLOITFINDER.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Chain Split",
+    description: "Creates a duplicate of yourself to confuse enemies.",
+    tooltip: "Splitting like a forked chain!",
+    thumbnail: 'Media/Abilities/CHAINSPLIT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Validator Uptime",
+    description: "Increases the duration of all buffs.",
+    tooltip: "Stay online. Extend those buffs.",
+    thumbnail: 'Media/Abilities/VALIDATORUPTIME.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
     title: "Chain Reorg",
     description: "Rewinds time slightly to undo recent events.",
     tooltip: "Reorg'd like a 51% attack!",
-    thumbnail: "A clock turning backward.",
+    thumbnail: 'Media/Abilities/REORG.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
 },
 {
+    title: "Congestion",
+    description: "Slows all enemies for a short duration.",
+    tooltip: "Freeze the network! Slow down all activity.",
+    thumbnail: "Media/Abilities/CONGESTION.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "DDoS Attack",
     description: "Stuns all enemies for a short duration.",
     tooltip: "Overloaded like a cheap DDoS script!",
-
-    thumbnail: "A wave crashing into a server.",
+    tooltip: "Freeze the network! Slow down all activity.",
+    thumbnail: "Media/Abilities/DDOS.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Data Blob",
+    description: "Provides a significant health boost.",
+    tooltip: " More health, more power.",
+    thumbnail: 'Media/Abilities/BLOB.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Monolithic Design",
+    description: "Provides a significant health boost.",
+    tooltip: "Built like a monolith. More health, more power.",
+    thumbnail: 'Media/Abilities/MONOLITHICDESIGN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Sidechains",
+    description: "Allows the player to create decoys that distract enemies.",
+    tooltip: "Sidechains for sidekicks! Distract your enemies.",
+    thumbnail: "Media/Abilities/SIDECHAINS.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
@@ -867,7 +987,7 @@ const abilityTypes = [
     title: "Whale Alert",
     description: "Marks the strongest enemy, increasing damage dealt to them",
     tooltip: "Spotted a whale in the arena!",
-    thumbnail: "A whale icon with a radar.",
+    thumbnail: "Media/Abilities/WHALEALERT.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -940,16 +1060,6 @@ const abilityTypes = [
     description: "Briefly stuns all enemies in the area.",
     tooltip: "Stunning like a sudden market crash!",
     thumbnail: 'Media/Abilities/FLASHCRASH.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Chain Split",
-    description: "Creates a duplicate of yourself to confuse enemies.",
-    tooltip: "Splitting like a forked chain!",
-    thumbnail: 'Media/Abilities/CHAINSPLIT.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1030,16 +1140,6 @@ const abilityTypes = [
     description: "Reduces damage taken.",
     tooltip: "Stable like a top-tier stablecoin!",
     thumbnail: 'Media/Abilities/STABLECOINSHIELD.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Oracle Insight",
-    description: "Predicts enemy movements, increasing evasion.",
-    tooltip: "Seeing the future like an oracle!",
-    thumbnail: 'Media/Abilities/ORACLEINSIGHT.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1509,26 +1609,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Monolithic Design",
-    description: "Provides a significant health boost.",
-    tooltip: "Built like a monolith. More health, more power.",
-    thumbnail: 'Media/Abilities/MONOLITHICDESIGN.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Sidechains",
-    description: "Allows the player to create decoys that distract enemies.",
-    tooltip: "Sidechains for sidekicks! Distract your enemies.",
-    thumbnail: 'Media/Abilities/SIDECHAINS.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Layer 2 Scaling",
     description: "Reduces the cost and cooldown of all abilities.",
     tooltip: "Scale up and save! Reduce costs and cooldowns.",
@@ -1618,17 +1698,6 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
-
-{
-    title: "Validator Uptime",
-    description: "Increases the duration of all buffs.",
-    tooltip: "Stay online. Extend those buffs.",
-    thumbnail: 'Media/Abilities/VALIDATORUPTIME.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
 {
     title: "Slashing Protection",
     description: "Reduces damage taken from critical hits.",
@@ -1700,16 +1769,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Orderbook",
-    description: "Provides a large amount of resources based on order book data.",
-    tooltip: "Consult the order book. Gain a wealth of resources.",
-    thumbnail: 'Media/Abilities/ORDERBOOK.png',
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "See HP Bars",
     description: "Displays HP bars for all entities in the game.",
     tooltip: "Reveal the HP. Monitor health bars of all entities.",
@@ -1754,16 +1813,6 @@ const abilityTypes = [
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
     tooltip: "Pump it up, then brace for the dump.",
     thumbnail: "A graph with a sharp rise and fall.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Whale Power",
-    description: "Increases all stats for a short duration.",
-    tooltip: "Unleash the whale power. Dominate the field.",
-    thumbnail: "A whale swimming through a sea of tokens.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2733,26 +2782,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Liquidity Vampire 🧛",
-    description: "Steals resources and buffs self and allies.",
-    tooltip: "Be a liquidity vampire. Steal resources and buff allies.",
-    thumbnail: "A vampire and a dollar sign.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Congestion ❄️",
-    description: "Slows all enemies for a short duration.",
-    tooltip: "Freeze the network! Slow down all activity.",
-    thumbnail: "A clock with ice crystals.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Ultimate: Protocol Drain 🌀",
     description: "Drains multiple protocols simultaneously, dealing massive damage to all enemies and providing significant resources to allies.",
     tooltip: "Drain multiple protocols. Massive damage and resource gain.",
@@ -2777,16 +2806,6 @@ const abilityTypes = [
     description: "Completely takes over the battlefield, drastically buffing allies and debuffing enemies.",
     tooltip: "Execute a total takeover. Drastically buff allies and debuff enemies.",
     thumbnail: "A world with chains.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Ultimate: Network Consensus 🌐",
-    description: "Achieves network consensus, significantly boosting allies' defense and providing damage immunity for a short period.",
-    tooltip: "Achieve network consensus. Boost defense and provide damage immunity.",
-    thumbnail: "A globe with connected nodes.",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -3073,26 +3092,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Monolithic Design 🏛️",
-    description: "Provides a significant health boost.",
-    tooltip: "Strong, sturdy, and monolithic – just like your health.",
-    thumbnail: "A large, imposing monolith.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
-    title: "Sidechains 🔗",
-    description: "Allows the player to create decoys that distract enemies.",
-    tooltip: "Sidechains for sidekicks! Distract your enemies.",
-    thumbnail: "A chain with multiple branches.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Layer 2 Scaling 📊",
     description: "Reduces the cost and cooldown of all abilities.",
     tooltip: "Scale up and save! Reduce costs and cooldowns.",
@@ -3333,16 +3332,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Whale Buy 🐋",
-    description: "Unleashes a powerful area-of-effect attack, representing a large buy order.",
-    tooltip: "Make a whale buy. Execute a powerful area-of-effect attack.",
-    thumbnail: "A whale with a coin.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Ultimate: HODL Triumph 🎉",
     description: "Unleashes a triumphant display of resilience, massively boosting defense and health while delivering a devastating area attack.",
     tooltip: "Triumph with HODL. Boost defense, health, and deliver a massive area attack.",
@@ -3443,16 +3432,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Malware Injection ",
-    description: "Inflicts damage over time and reduces enemy attack speed.",
-    tooltip: "Inject malware. Damage and slow your enemies.",
-    thumbnail: "A bug with a syringe.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Firewall Defense 🛡️",
     description: "Increases the player's defense temporarily.",
     tooltip: "Raise your firewall. Increase defense.",
@@ -3523,16 +3502,6 @@ const abilityTypes = [
     },
 },
 {
-    title: "Order Book 📖",
-    description: "Summons an order book that blocks enemy projectiles.",
-    tooltip: "Summon the order book. Block incoming projectiles.",
-    thumbnail: "An open book.",
-    isLocked: false,
-    effect(user) { 
-        this.update = () => {}
-    },
-},
-{
     title: "Ultimate: Market Manipulation Master 🧠",
     description: "Gains full control over the market, drastically buffing allies and debuffing enemies.",
     tooltip: "Master the market. Drastically buff allies and debuff enemies.",
@@ -3594,14 +3563,7 @@ const worldTypes = [{
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
-       
-        const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
-        const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
-        camera.position.set(cameraX, cameraHeight, cameraZ);
-    
-        this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-        this.octahedronGeometry.scale(4.5,5.25,3.75); 
-        
+
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
@@ -3712,6 +3674,9 @@ const worldTypes = [{
             const possibleY = [-4,4];
             this.axisY =possibleY[Math.floor(Math.random() * possibleY.length)];
 
+    this.octahedronGeometry = new THREE.OctahedronGeometry(1);
+    this.octahedronGeometry.scale(4.5,5.25,3.75); 
+            
     this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
@@ -3732,7 +3697,11 @@ const worldTypes = [{
     this.octahedronMesh4.material.wireframe=false;
     this.octahedronMesh4.rotation.z += 90;
 
+    const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
+    camera.position.set(cameraX, cameraHeight, cameraZ);
     camera.lookAt(this.octahedronMesh.position);
+
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.2);
     const miniOctahedronMaterial = this.material.clone();
@@ -3893,27 +3862,22 @@ const worldTypes = [{
     },
     resumeGame: function(){},
     cleanUp: function(scene) {
-        for (const key in this) {
-            if (this[key] instanceof THREE.Object3D) {
-                scene.remove(this[key]);
-                
-                this[key].traverse((child) => {
-                    if (child.geometry) child.geometry.dispose();
-                    if (child.material) child.material.dispose();
-                });
-            } else if (this[key] instanceof THREE.Geometry || 
-                       this[key] instanceof THREE.Material ||
-                       this[key] instanceof THREE.Texture || 
-                       this[key] instanceof THREE.WebGLRenderTarget) {  
-                this[key].dispose();
-            } 
-        }
-        for (const key in this) {
-            if (typeof this[key] !== 'function') {
-                this[key] = null;
-            }
-        }
-    }
+
+    // Remove the grid mesh
+    scene.remove(this.gridMesh); 
+
+    // Remove the octahedrons
+    scene.remove(this.octahedronMesh);
+    scene.remove(this.octahedronMesh2);
+    scene.remove(this.octahedronMesh3);
+    scene.remove(this.octahedronMesh4); 
+
+    // Remove the mini octahedrons 
+    this.miniOctahedrons.forEach(miniOctahedron => {
+        scene.remove(miniOctahedron);
+    });
+
+    }       
 }, {
     class: 'World',
     title: 'Digital Goldland',
@@ -4384,7 +4348,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-   // createGameMenu()
+    createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -4439,7 +4403,9 @@ function handleEntitySelection(entity, type) {
         ability = entity;
         createGameMenu();
     } else if (type === "World") {
+        world.cleanUp();
         world = entity;
+        world.setup(scene,camera,renderer);
         createGameMenu();
     }
     canMove = true;
