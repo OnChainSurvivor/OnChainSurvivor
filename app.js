@@ -2003,7 +2003,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-    createGameMenu()
+    //createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -2135,7 +2135,7 @@ function handleEntitySelection(entity, type) {
             const goal = 1000000; 
             const percentage = (currentAmount / goal) * 100;
             loadingBar.style.width = percentage + '%';
-            loadingText.innerText =' ❤️ Sponsor ' + percentage.toFixed(2) + '% ❤️';
+            loadingText.innerText ='❤️ Sponsor Countdown ❤️ \n' + percentage.toFixed(2) + '%';
             loadingText.classList.add('rainbow-text'); 
         }
      
@@ -2154,7 +2154,7 @@ function handleEntitySelection(entity, type) {
      }
      
         setTimeout(() => { 
-            addContainerUI(topUI, 'top-container', [subTitle,galleryButtonsContainer]);
+            addContainerUI(topUI, 'top-container', [subTitle]);
             addContainerUI(botUI,'bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer,subTitleLogout]);
             simulateLoading(); 
         }, 1050);
