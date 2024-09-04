@@ -118,41 +118,6 @@ export const playerTypes = [{
     ],
 },{
     class: 'Survivor',
-    title: 'Trader',
-    description: 'Fast and agile, traders can move quickly around the arena but have lower health. They have unique abilities related to market dynamics.',
-    tooltip: '',    
-    health: 1,
-    movementspeed:0.2,
-    xp: 0,
-    evasion: 50,
-    tags: ['player'],
-    thumbnail: 'Media/Classes/Trader/MTRADER.png',
-    
-    level:0,
-    isLocked: false, 
-    abilities: [
-
-    ],
-},{
-    class: 'Survivor',
-    title: 'Trader',
-    description: 'Fast and agile, traders can move quickly around the arena but have lower health. They have unique abilities related to market dynamics.',
-    tooltip: '',    
-    health: 1,
-    movementspeed:0.2,
-    xp: 0,
-    evasion: 50,
-    tags: ['player'],
-    thumbnail: 'Media/Classes/Trader/FTRADER.png',
-    
-
-    level:0,
-    isLocked: false, 
-    abilities: [
-
-    ],
-},{
-    class: 'Survivor',
     title: 'Developer',
     description: 'Versatile and strategic, developers can modify the environment and create powerful code-based attacks.',
     tooltip: '',    
