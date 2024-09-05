@@ -1405,6 +1405,15 @@ const worldTypes = [{
         this.miniOctahedrons.push(this.miniOctahedron);
 
     }
+
+this.sceneObjects = [];
+this.sceneObjects.push(this.gridMesh);
+this.sceneObjects.push(this.octahedronMesh);
+this.sceneObjects.push(this.octahedronMesh2);
+this.sceneObjects.push(this.octahedronMesh3);
+this.sceneObjects.push(this.octahedronMesh4);
+this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahedron)); 
+
     },
     update: function(scene, camera, renderer) {
         if(isMainMenu){
@@ -1517,29 +1526,384 @@ const worldTypes = [{
     },
     resumeGame: function(){},
     cleanUp: function(scene) {
-
-    // Remove the grid mesh
-    scene.remove(this.gridMesh); 
-
-    // Remove the octahedrons
-    scene.remove(this.octahedronMesh);
-    scene.remove(this.octahedronMesh2);
-    scene.remove(this.octahedronMesh3);
-    scene.remove(this.octahedronMesh4); 
-
-    // Remove the mini octahedrons 
-    this.miniOctahedrons.forEach(miniOctahedron => {
-        scene.remove(miniOctahedron);
-    });
-
+        this.sceneObjects.forEach(object => scene.remove(object));
+        this.sceneObjects = []; 
     }       
 }, {
     class: 'World',
     title: 'Digital Goldland',
-    description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes here are made and lost in the blink of an eye.',
+    description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes made and lost in the blink of an eye.',
     tooltip:'15.000 U S D O L L A R S 💀',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    isLocked: true,
+    isLocked: false,
+    material: new THREE.MeshPhysicalMaterial({
+        reflectivity: 1.0,          
+        roughness: 0,            
+        metalness: 1.0,            
+        clearcoat: 1.0,            
+        clearcoatRoughness: 0.05,   
+        transmission: 0.0,         
+        ior: 1.45,                  
+        thickness: 0.0,          
+        sheen: new THREE.Color('gold'), 
+        sheenRoughness: 0.2,       
+        color: new THREE.Color(0xffd700), 
+        emissive: new THREE.Color(0x331a00),  
+        emissiveIntensity: 0.3,    
+        envMapIntensity: 2.0,      
+        sheenRoughness: 0.1         
+    }),
+    setup: function(scene, camera, renderer) {
+        this.renderScene = new THREE.RenderPass(scene, camera);
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .05, .5, 0.01); 
+        this.afterimagePass = new THREE.AfterimagePass(.8);
+        composer.addPass(this.renderScene);
+       composer.addPass(this.bloomPass);
+     composer.addPass(this.afterimagePass); 
+
+        this.pmremGenerator = new THREE.PMREMGenerator(renderer);
+        this.pmremGenerator.compileEquirectangularShader();
+        
+        //Terrible hack  HDRuntil i find a good HDR pic 
+        this.envTexture = new THREE.TextureLoader().load('Media/HDR.png', texture => {
+            this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
+            this.pmremGenerator.dispose();
+            scene.environment = this.envMap; 
+        });
+ 
+            this.gridSize = 15; 
+            this.divisions = 1; 
+            this.numTiles = 7;
+
+        const pointLight = new THREE.PointLight(0xffffff, .5);
+        pointLight.position.set(10, 10, 10); 
+        scene.add(pointLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, .1); 
+        directionalLight.position.set(-5, 5, 5); 
+        scene.add(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.3); 
+        scene.add(ambientLight);
+
+        this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
+            this.lightSourceTextureSize = 256; 
+            this.lightSourceTextureData = new Float32Array( this.lightSourceTextureSize *  this.lightSourceTextureSize * 4);
+            this.lightSourceTexture = new THREE.DataTexture( this.lightSourceTextureData,  this.lightSourceTextureSize,  this.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
+            this.lightSourceTexture.needsUpdate = true;
+            this.gridMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    playerInfluenceRadius: { value: 1 },
+                    time: { value: 0 },
+                    playerPosition: { value: new THREE.Vector3() },
+                    lightSourceTexture: { value: this.lightSourceTexture },
+                    lightSourceCount: { value: 0 },
+                    lightSourceTextureSize: { value: this.lightSourceTextureSize },
+                    goldColor: { value: new THREE.Color('gold') },
+                    reflectivity: { value: 0.9 }, 
+                    shininess: { value: 1000 }, 
+                    emissiveColor: { value: new THREE.Color(0xffcc00) }, 
+                    rippleOrigin: { value: new THREE.Vector2(0.0, 0.0) }, 
+                    rippleAmplitude: { value: 1 }, 
+                    rippleFrequency: { value: 2 }, 
+                    rippleSpeed: { value: 1.0 } 
+                },
+                vertexShader: `
+                uniform vec3 playerPosition;
+                uniform float time;
+                uniform vec2 rippleOrigin;
+                uniform float rippleAmplitude;
+                uniform float rippleFrequency;
+                uniform float rippleSpeed;
+            
+                attribute vec2 offset;
+            
+                varying vec3 vWorldPos;
+                varying vec2 vUv;
+                varying vec3 vNormal; // Declare vNormal as a varying
+            
+                void main() {
+                    vec3 pos = position;
+                    pos.x += offset.x;
+                    pos.z += offset.y;
+            
+                    // Calculate ripple effect
+                    float distanceToOrigin = distance(pos.xz, rippleOrigin);
+                    float rippleEffect = rippleAmplitude * sin(rippleFrequency * distanceToOrigin - rippleSpeed * time);
+                   // pos.y += rippleEffect; 
+            
+                    vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
+                    vUv = uv;
+            
+                    // Calculate vNormal
+                    vNormal = normalize(normalMatrix * normal);
+            
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                }
+            `,
+                fragmentShader: `
+                    uniform vec3 playerPosition;
+                    uniform sampler2D lightSourceTexture;
+                    uniform int lightSourceCount;
+                    uniform int lightSourceTextureSize;
+                    uniform float time;
+                    uniform float playerInfluenceRadius;
+                    uniform vec3 goldColor;
+                    uniform float reflectivity;
+                    uniform float shininess;
+                    uniform vec3 emissiveColor;
+                    uniform vec2 rippleOrigin;
+                    uniform float rippleAmplitude;
+                    uniform float rippleFrequency;
+                    uniform float rippleSpeed;
+            
+                    varying vec3 vWorldPos;
+                    varying vec2 vUv;
+                    varying vec3 vNormal;
+            
+                    // Convert HSV to RGB
+                    vec3 hsv2rgb(vec3 c) {
+                        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+                    }
+            
+                    void main() {
+                        float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
+                        float lightSourceInfluence = 0.0;
+            
+                        // Light sources influence
+                        for (int i = 0; i < lightSourceCount; i++) {
+                            int x = i % lightSourceTextureSize;
+                            int y = i / lightSourceTextureSize;
+                            vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
+                            vec3 lightPos = texture(lightSourceTexture, uv).xyz;
+                            float dist = distance(vWorldPos.xz, lightPos.xz);
+                            lightSourceInfluence += smoothstep(2.5, 0.0, dist);
+                        }
+            
+                        // Lighting calculation
+                        vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0)); 
+                        vec3 viewDir = normalize(-vWorldPos);
+                        vec3 reflectDir = reflect(-lightDir, vNormal);
+                        float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+            
+                        // Ripple effect
+                        float distanceToOrigin = distance(vWorldPos.xz, rippleOrigin);
+                        float rippleEffect = rippleAmplitude * sin(rippleFrequency * distanceToOrigin - rippleSpeed * time);
+                        
+                        // Create a temporary position variable
+                        vec3 modifiedWorldPos = vWorldPos;
+                        modifiedWorldPos.y += rippleEffect; // Apply ripple to the temporary variable
+            
+                        vec3 color = goldColor;
+                        
+                        // Increase brightness closer to player
+                        float rippleIntensity = smoothstep(5.0, 0.0, distanceToPlayer);
+                        color = mix(color, vec3(1.0, 0.8, 0.0), rippleIntensity * 0.5);
+            
+                        // Emissive glowing gridlines
+                        vec2 cellCoord = floor(vUv);
+                        float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
+                        float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
+            
+                        vec3 emissiveGlow = emissiveColor * rippleIntensity;
+                        color = color * brightness + emissiveGlow + spec * reflectivity * vec3(1.0, 0.9, 0.7);
+            
+                        gl_FragColor = vec4(color, 1.0); 
+                    }
+                `,
+            });
+            
+            const offsets = [];
+            const halfTiles = Math.floor( this.numTiles / 2);
+        
+            for (let x = -halfTiles; x <= halfTiles; x++) {
+                for (let z = -halfTiles; z <= halfTiles; z++) {
+                    offsets.push(x *  this.gridSize, z *  this.gridSize);  
+                }
+            }
+        
+            const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
+            this.gridGeometry.setAttribute('offset', offsetAttribute); 
+            this.gridGeometry.rotateX(-Math.PI / 2);
+            this.gridMesh = new THREE.InstancedMesh( this.gridGeometry,  this.gridMaterial, offsets.length / 2);
+            scene.add( this.gridMesh);
+        
+            this.radiusTarget = 100;
+            this.radiusDirection = 1;
+            const possibleY = [-4,4];
+            this.axisY =possibleY[Math.floor(Math.random() * possibleY.length)];
+
+    this.octahedronGeometry = new THREE.SphereGeometry(1);
+    this.octahedronGeometry.scale(4,4,4); 
+            
+    this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
+    scene.add(this.octahedronMesh);   
+    this.octahedronMesh.scale.set(0, 0, 0);
+
+    const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
+    const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
+    camera.position.set(cameraX, cameraHeight, cameraZ);
+    camera.lookAt(this.octahedronMesh.position);
+
+    this.miniOctahedrons = [];
+    const miniOctahedronGeometry =  new THREE.SphereGeometry(1);
+    const miniOctahedronMaterial = this.material.clone();
+
+    miniOctahedronGeometry.scale(0.15,0.15,0.15)
+    miniOctahedronMaterial.wireframe=false;
+    let numCrystals = 1024;
+    if (isMobile)
+    numCrystals = 512 ; 
+  
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+    const possibleRadii = [1, 25];
+    const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+    const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+    const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+
+    const possibleRoot = [1,2,3];
+    const possibleSqrt = [0.1,0.5,1,2];
+
+    const root =possibleRoot[Math.floor(Math.random() * possibleRoot.length)];
+    const Sqrt =possibleSqrt[Math.floor(Math.random() * possibleSqrt.length)];
+
+    for (let i = 0; i < numCrystals; i++) {
+        this.miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
+
+        const y = 1 - (i / (numCrystals - 1)) * root; 
+        const radius = Math.sqrt(Sqrt - y * y); 
+
+        const phi = goldenAngle * i; 
+        const theta = Math.atan2(radius, y); 
+
+        this.miniOctahedron.position.set(
+            radiusx* Math.cos(phi) * Math.sin(theta),
+            radiusy* y,
+            radiusz* Math.sin(phi) * Math.sin(theta)
+        );
+ 
+        this.miniOctahedron.rotation.set(
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI
+        );
+
+        scene.add(this.miniOctahedron);
+        this.miniOctahedrons.push(this.miniOctahedron);
+
+    }
+
+this.sceneObjects = [];
+this.sceneObjects.push(this.gridMesh);
+this.sceneObjects.push(this.octahedronMesh);
+this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahedron)); 
+    },
+    update: function(scene, camera, renderer) {
+        this.gridMaterial.uniforms.time.value = performance.now() / 1000; 
+ 
+        if(isMainMenu){
+            this.octahedronMesh.rotation.z -= 0.005;
+
+            player.rotation.y += 0.005;
+            player.rotation.y = player.rotation.y % (2 * Math.PI); 
+    
+            this.miniOctahedrons.forEach((miniOctahedron,index) => {
+            miniOctahedron.rotation.x += 0.01;
+            miniOctahedron.rotation.y += 0.01;
+            const orbitSpeed = 0.5;
+            const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
+            const phi = Math.PI * index / this.miniOctahedrons.length;
+            const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
+            const angle = Date.now() * 0.001 * orbitSpeed;
+            miniOctahedron.position.set(
+                this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
+                this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
+                this.octahedronMesh.position.z +  orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
+            );
+            const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
+            const attractionSpeed = 0.025;
+            const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
+            if (distanceToCenter > 1) { 
+                miniOctahedron.position.addScaledVector(direction, attractionSpeed);
+            }
+        });
+        }else if (this.miniOctahedrons.length>1){
+            this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
+ 
+            if (this.octahedronMesh.scale.x <= 0.1) { 
+                scene.remove(this.octahedronMesh); 
+            }
+            this.miniOctahedrons.forEach((miniOctahedron,index) => {
+                const direction = new THREE.Vector3().subVectors(miniOctahedron.position, this.octahedronMesh.position).normalize();
+                const speed = 0.1; 
+                miniOctahedron.position.addScaledVector(direction, speed); 
+                miniOctahedron.rotation.x += 0.01;
+                miniOctahedron.rotation.y += 0.01;
+                const scaleSpeed = 0.005;
+                miniOctahedron.scale.multiplyScalar(1 - scaleSpeed); 
+                if (miniOctahedron.scale.x <= 0.3) { 
+                     scene.remove(miniOctahedron); 
+                     this.miniOctahedrons.splice(index, 1);
+                }
+            });
+        }
+
+        this.gridMaterial.uniforms.time.value += 0.01;
+        this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
+        this.lightSourceIndex = 0;
+
+            xpSpheres.forEach(sphere => {
+                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
+
+            enemies.forEach(enemy => {
+                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
+    
+            this.lightSourceTexture.needsUpdate = true;
+            this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
+            const playerGridX = Math.floor(player.position.x /  this.gridSize) *  this.gridSize;
+            const playerGridZ = Math.floor(player.position.z /  this.gridSize) *  this.gridSize;
+            this.gridMesh.position.set(playerGridX, 0, playerGridZ);
+
+    
+            if (isMainMenu) {
+                this.gridMesh.position.set(playerGridX,  this.axisY, playerGridZ);
+            } else {
+                if ( this.radiusDirection === 1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value <  this.radiusTarget) {
+                    this.gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
+                } else if ( this.radiusDirection === -1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
+                    this.gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
+                } else {
+                    if ( this.radiusDirection === 1) {
+                        this.radiusDirection = -1;  
+                        this.radiusTarget = 10;  
+                    } else {
+                        this.radiusDirection = 0; 
+                    }
+                }
+        }
+
+       /// this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
+    },
+    resumeGame: function(){},
+    cleanUp: function(scene) {
+        this.sceneObjects.forEach(object => scene.remove(object));
+        this.sceneObjects = []; 
+    }      
 }
 ];
 /*---------------------------------------------------------------------------
@@ -1814,7 +2178,14 @@ Entity.prototype.die = function() {
         button.appendChild(description);
         
         if (onClick) button.onclick = onClick;
-        //img.style.filter = 'grayscale(100%) blur(5px)';
+
+
+        if(world.title==='Digital Goldland'){
+            img.style.filter = 'sepia(100%)';
+            title.style.color = 'gold';
+            description.style.color = 'gold';
+            button.style.borderImageSource = 'linear-gradient(45deg, gold, gold)';
+        }
         if(dataType.isLocked){
         button.style.color = 'gray';
         button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
@@ -2003,7 +2374,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-    //createGameMenu()
+//createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -2058,7 +2429,7 @@ function handleEntitySelection(entity, type) {
         ability = entity;
         createGameMenu();
     } else if (type === "World") {
-        world.cleanUp();
+        world.cleanUp(scene);
         world = entity;
         world.setup(scene,camera,renderer);
         createGameMenu();
