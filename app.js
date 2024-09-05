@@ -994,6 +994,36 @@ const abilityTypes = [
     },
 },
 {
+    title: "Exit Scam",
+    description: "Teleports to a safe location and leaves a damaging decoy behind.",
+    tooltip: "Execute an exit scam. Teleport and leave a damaging decoy.",
+    thumbnail: 'Media/Abilities/EXITSCAM.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Protocol Crash",
+    description: "Creates a zone where enemies take increased damage and have reduced speed.",
+    tooltip: "Crash the protocol. Increase damage and slow enemies.",
+    thumbnail: 'Media/Abilities/PROTOCOLCRASH.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Exit Hatch ",
+    description: "Grants one extra life.",
+    tooltip: "One chance to escape from a L2+.",
+    thumbnail: 'Media/Abilities/EXITHATCH.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Chain Reorg",
     description: "Rewinds time slightly to undo recent events.",
     tooltip: "Reorg'd like a 51% attack!",
@@ -1169,6 +1199,66 @@ const abilityTypes = [
     description: "Allows the player to create decoys that distract enemies.",
     tooltip: "Sidechains for sidekicks! Distract your enemies.",
     thumbnail: "Media/Abilities/SIDECHAIN.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Gas Limit",
+    description: "Reduces the speed of all enemies in a large area.",
+    tooltip: "Set a gas limit. Reduce enemy speed in a large area.",
+    thumbnail: "Media/Abilities/GASLIMIT.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Critical Patch",
+    description: "Deploys a critical patch, significantly buffing all allies and debuffing all enemies.",
+    tooltip: "Deploy a critical patch. Buff allies and debuff enemies.",
+    thumbnail: "Media/Abilities/CRITICALPATCH.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Investigation",
+    description: "Buffs self and allies based on revealed enemy locations.",
+    tooltip: "Investigate crypto. Buff self and allies based on enemy locations.",
+    thumbnail: "Media/Abilities/CRYPTOINVESTIGATION.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Criminal Hunt ",
+    description: "Deals extra damage to recently revealed enemies.",
+    tooltip: "Hunt criminals. Deal extra damage to revealed enemies.",
+    thumbnail: "Media/Abilities/CRIMINALHUNT.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Transaction Trace",
+    description: "Temporarily reduces enemy speed and reveals weak points.",
+    tooltip: "Trace transactions. Reduce speed and reveal weak points.",
+    thumbnail: "Media/Abilities/TXTRACE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Protocol Drain",
+    description: "Drains multiple protocols simultaneously, dealing massive damage to all enemies and providing significant resources to allies.",
+    tooltip: "Drain multiple protocols. Massive damage and resource gain.",
+    thumbnail: "Media/Abilities/DRAIN.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
