@@ -1075,6 +1075,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Layer 2 Scaling",
+    description: "Reduces the cost and cooldown of all abilities.",
+    tooltip: "Scale up and save! Reduce costs and cooldowns.",
+    thumbnail: 'Media/Abilities/LAYERSCALING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Liquidity Mining",
     description: "Generates resources over time.",
     tooltip: "Earning passively like liquidity mining!",
@@ -1083,7 +1093,68 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
-},{
+},
+{
+    title: "Gas Optimization",
+    description: "Decreases mana cost of all abilities.",
+    tooltip: "Optimize your gas, save on costs. Efficiency wins.",
+    thumbnail: 'Media/Abilities/GASOPTIMIZATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Bearish Sentiment",
+    description: "Reduces enemies' attack power.",
+    tooltip: "Bearish like a market downturn!",
+    thumbnail: 'Media/Abilities/BEARISHSENTIMENT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Whale",
+    description: "Uses overwhelming power to crush enemies.",
+    tooltip: "Whale-sized like a market mover!",
+    thumbnail: 'Media/Abilities/CRYPTOWHALE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Bullish Sentiment",
+    description: "Increases allies' attack power.",
+    tooltip: "Bullish like a market rally!",
+    thumbnail: 'Media/Abilities/BULLISHSENTIMENT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Signal",
+    description: "Calls for reinforcements to aid in battle.",
+    tooltip: "Signaling like a trading bot!",
+    thumbnail: 'Media/Abilities/CRYPTOSIGNAL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Flash Loan",
+    description: "Temporarily boosts resources for a short period.",
+    tooltip: "Leveraged like a flash loan exploit!",
+    thumbnail: 'Media/Abilities/FLASHLOAN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Token Swap",
     description: "Exchanges debuffs for buffs with enemies.",
     tooltip: "Swapped like a dex trade!",
