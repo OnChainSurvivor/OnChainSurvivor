@@ -39,7 +39,7 @@ Note:  Random difficulty factor $B(t)$ that is extracted from the latest block i
 
 ##  📚 Basic Interaction Models 🕹️
 
-As frictionless as possible, the game's first priority is FUN. If the game is not fun then it will not be sustainable
+As frictionless as possible, the game's first priority is FUN. If the game is not fun then it will not be sustainable! 
 
 ```mermaid
 graph TD

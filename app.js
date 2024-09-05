@@ -1075,6 +1075,25 @@ const abilityTypes = [
     },
 },
 {
+    title: "Liquidity Mining",
+    description: "Generates resources over time.",
+    tooltip: "Earning passively like liquidity mining!",
+    thumbnail: 'Media/Abilities/LIQUIDITYMINING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},{
+    title: "Token Swap",
+    description: "Exchanges debuffs for buffs with enemies.",
+    tooltip: "Swapped like a dex trade!",
+    thumbnail: 'Media/Abilities/COINSWAP.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Sidechains",
     description: "Allows the player to create decoys that distract enemies.",
     tooltip: "Sidechains for sidekicks! Distract your enemies.",
@@ -1564,7 +1583,7 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
-        //Terrible hack  HDRuntil i find a good HDR pic 
+        //Terrible hack HDR  until i find a good HDR pic 
         this.envTexture = new THREE.TextureLoader().load('Media/HDR.png', texture => {
             this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
             this.pmremGenerator.dispose();
