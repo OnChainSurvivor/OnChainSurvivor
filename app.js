@@ -1466,7 +1466,7 @@ const enemyTypes = [{
 const worldTypes = [{
     class: 'World',
     title: 'Ethereumverse',
-    description:'An open futuristic, digital landscape where data flows freely. Forever. 12 seconds at a time thought. ',
+    description:'Survive 5 Minutes in Ethereum, an open neutral and futuristic landscape where data flows freely, Forever.',
     tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     material:new THREE.MeshPhysicalMaterial({
@@ -1802,8 +1802,8 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
 }, {
     class: 'World',
     title: 'Digital Goldland',
-    description:'Endless wealth and opportunity. Everything gleams in Virtual gold, fortunes made and lost in the blink of an eye.',
-    tooltip:'15.000 U S D O L L A R S 💀',
+    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
+    tooltip:'15.000 U S D O L L A R S 💀 \n THERE IS NO SECOND BEST',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     isLocked: false,
     material: new THREE.MeshPhysicalMaterial({
@@ -2292,7 +2292,7 @@ function LevelUp() {
     player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
-    for (let i = 0; i < 4 && upgradableAbilities.length > 0; i++) {
+    for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
         const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
         abilityToUpgrade.isLocked = false; 
@@ -2300,7 +2300,7 @@ function LevelUp() {
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
-    createChooseMenu(upgradeOptions, "\nUpgrade 🔱", "Upgrade");
+    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n Choose one skill", "Upgrade");
 }
 /*---------------------------------------------------------------------------
                               Enemies Controller
@@ -2650,15 +2650,13 @@ createGameMenu()
 ---------------------------------------------------------------------------*/
 function createChooseMenu(entityList, text, type) {
     const popUpContainer = createPopUpContainer();
-    const titleContainer = createTitleContainer(text,'Test');
+    const titleContainer = createTitleContainer(text,'For now it trully doesnt matter what you choose');
     const gridContainer = createGridContainer();
 
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
         gridContainer.appendChild(itemButton);
-
         itemButton.onclick = () => handleEntitySelection(entity, type);
-
         if (type === "Survivor") {
            const abilitiesOfClassContainer = document.createElement('div');
            abilitiesOfClassContainer.classList.add('abilities-grid');
@@ -2675,9 +2673,10 @@ function createChooseMenu(entityList, text, type) {
            gridContainer.appendChild(abilitiesOfClassContainer);
         }   
     });
-
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
+
+
     addContainerUI(centerUI, 'center-container', [popUpContainer]);
 }
 
@@ -2850,15 +2849,84 @@ function refreshDisplay() {
 
     const abilitiesContainer = createContainer(['abilities-grid-container']); 
     abilitiesContainer.style.display = 'grid';
-    abilitiesContainer.style.gridTemplateColumns = 'repeat(5, 1fr)';
-    abilitiesContainer.appendChild(createButton(player, .33));
+    abilitiesContainer.style.gridTemplateColumns = 'repeat(10, 1fr)';
+    const playerButton = createButton(player, .2);
+    const worldButton = createButton(world, .2);
+    abilitiesContainer.appendChild(playerButton);
+    abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, 0.33));
+        abilitiesContainer.appendChild(createButton(clonedAbility, 0.2));
     });
+
+    topUI.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideContainerUI(topUI);
+        hideContainerUI(botUI); 
+        createPlayerInfoMenu();
+    };
+    botUI.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideContainerUI(topUI);
+        hideContainerUI(botUI); 
+        createPlayerInfoMenu();
+    };
     addContainerUI(topUI,'top-container', [xpLoadingContainer, abilitiesContainer]);
-    addContainerUI(botUI,'bottom-container', [timerDisplay,]);
+    addContainerUI(botUI,'bottom-container', [timerDisplay]);
 }
+
+
+function createPlayerInfoMenu() {
+    const popUpContainer = createPopUpContainer();
+
+    const statusButton = createTitleContainer('\nGame paused', 'Return to the game', "subtitle");
+
+    statusButton.style.cursor = 'pointer';
+    statusButton.onclick = () => {
+      canMove = true;
+      hideContainerUI(centerUI);
+      refreshDisplay();
+    };
+    popUpContainer.appendChild(statusButton);
+
+    const objectiveButton = createTitleElement('Your current run:', 'Return to the game', "subtitle");
+    popUpContainer.appendChild(objectiveButton);
+
+    const playerClassContainer = document.createElement('div');
+    playerClassContainer.classList.add('abilities-grid');
+    const classButton = createButton(player, 1);
+    const worldButton = createButton(world, 1);
+    playerClassContainer.appendChild(classButton);
+    playerClassContainer.appendChild(worldButton);
+
+  
+    player.abilities.forEach(ability => {
+      const clonedAbility = { ...ability, isLocked: false };
+      const abilityButton = createButton(clonedAbility, 1);
+      playerClassContainer.appendChild(abilityButton);
+    });
+
+    popUpContainer.appendChild(playerClassContainer);
+    const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    goBackButton.onclick = () => {
+        canMove = true;
+        hideContainerUI(centerUI);
+        refreshDisplay();
+    };
+    popUpContainer.appendChild(goBackButton);
+    for (const button of playerClassContainer.children) {
+        button.onclick = () => {
+            canMove = true;
+            hideContainerUI(centerUI);
+            refreshDisplay();
+        };
+    }
+
+    addContainerUI(centerUI, 'center-container', [popUpContainer]);
+  }
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
