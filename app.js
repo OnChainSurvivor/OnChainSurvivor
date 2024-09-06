@@ -1265,6 +1265,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "NFT Masterpiece",
+    description: "Creates a stunning piece of digital art that distracts enemies and boosts allies' morale.",
+    tooltip: "A true masterpiece! Watch as enemies are mesmerized and allies are inspired.",
+    thumbnail: "Media/Abilities/DRAIN.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Whale Alert",
     description: "Marks the strongest enemy, increasing damage dealt to them",
     tooltip: "Spotted a whale in the arena!",
@@ -1307,10 +1317,70 @@ const abilityTypes = [
     },
 },
 {
+    title: "Quantum Key Exchange 🔑",
+    description: "Transfers health from enemies to the player.",
+    tooltip: "Exchange health. Transfer from enemies to you.",
+    thumbnail: 'Media/Abilities/QKEYEX.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Anti-Rug Bot",
+    description: "Detects and disables rug traps.",
+    tooltip: "No more rug-pulls for you. Detect and disable rug traps.",
+    thumbnail: 'Media/Abilities/RUGBOT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Bot Swarm",
+    description: "Summons additional bots to assist in battle.",
+    tooltip: "Summon a bot swarm. Increase your firepower.",
+    thumbnail: 'Media/Abilities/SWARM.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Bot Armada",
+    description: "Summons an entire armada of bots for massive support and damage.",
+    tooltip: "Call in the bot armada. Maximum support and damage.",
+    thumbnail: 'Media/Abilities/ARMADA.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "MEV Bot",
     description: "Drains health from enemies based on their movements.",
     tooltip: "Front-running like an MEV bot!",
     thumbnail: 'Media/Abilities/MEVBOT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Sniping Bot",
+    description: "Enhances critical hit chances and accuracy.",
+    tooltip: "Get the perfect shot. Increase critical hit chances and accuracy.",
+    thumbnail: 'Media/Abilities/SNIPEBOT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Fear Spread 😱",
+    description: "Spreads fear, causing enemies to flee in random directions.",
+    tooltip: "Spread fear. Enemies flee.",
+    thumbnail: 'Media/Abilities/FEAR.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
