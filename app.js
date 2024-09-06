@@ -904,6 +904,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Crop Rotation",
+    description: "Switches between different buffs to suit the player's needs.",
+    tooltip: "Rotate crops. Switch between buffs.",
+    thumbnail: 'Media/Abilities/ROTATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Crypto Dapp",
     description: "Creates a decentralized application for resource generation.",
     tooltip: "Building like a dApp developer!",
@@ -1031,6 +1041,16 @@ const abilityTypes = [
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Pact with the Devil",
+    description: "Grants a significant boost in power at the cost of health.",
+    tooltip: "Make a pact. Gain power, but lose health.",
+    thumbnail: 'Media/Abilities/PACTWITHTHEDEVIL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
@@ -1268,7 +1288,7 @@ const abilityTypes = [
     title: "NFT Masterpiece",
     description: "Creates a stunning piece of digital art that distracts enemies and boosts allies' morale.",
     tooltip: "A true masterpiece! Watch as enemies are mesmerized and allies are inspired.",
-    thumbnail: "Media/Abilities/DRAIN.png",
+    thumbnail: "Media/Abilities/NFTMASTERPIECE.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1377,7 +1397,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Fear Spread 😱",
+    title: "Fear Spread",
     description: "Spreads fear, causing enemies to flee in random directions.",
     tooltip: "Spread fear. Enemies flee.",
     thumbnail: 'Media/Abilities/FEAR.png',
@@ -2624,7 +2644,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-//createGameMenu()
+createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
