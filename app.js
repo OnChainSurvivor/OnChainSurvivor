@@ -2546,7 +2546,7 @@ Entity.prototype.die = function() {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('Onchain Survivor\n🏆⚔️🔗', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         const web3Container = createContainer(['top-container'], { left: '130%' })
         const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Container.appendChild(web3Title);
