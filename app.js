@@ -556,6 +556,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "PoW Migration ",
+    description: "Increases the player's attack power.",
+    tooltip: "Proof of Whacking! Stronger attacks.",
+    thumbnail: 'Media/Abilities/POWMIGRATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Governance Vote",
     description: "Grants a random beneficial effect based on player needs.",
     tooltip: "DAO voted, gains distributed!",
@@ -901,6 +911,117 @@ const abilityTypes = [
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "ICO Hype",
+    description: "Temporarily boosts all stats.",
+    tooltip: "Hyped like an ICO!",
+    thumbnail: 'Media/Abilities/ICOHYPE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Rally",
+    description: "Temporarily boosts all allies' speed.",
+    tooltip: "Rallying like a bull market!",
+    thumbnail: 'Media/Abilities/RALLY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Whitelist",
+    description: "Grants immunity to debuffs.",
+    tooltip: "Protected like a whitelist spot!",
+    thumbnail: 'Media/Abilities/WHITELIST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Token Lock',
+    description: "Locks an enemy's abilities temporarily.",
+    tooltip: "Locked like funds in a smart contract!",
+    thumbnail: 'Media/Abilities/TOKENLOCK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Token Burn",
+    description: "Permanently removes a portion of enemy resources.",
+    tooltip: "Burned like tokens in a supply reduction!",
+    thumbnail: 'Media/Abilities/TOKENBURN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Delegation",
+    description: "Allows the player to share buffs with allies.",
+    tooltip: "Delegate and elevate. Share the wealth.",
+    thumbnail: 'Media/Abilities/DELEGATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Debate",
+    description: "Temporarily silences and weakens enemies.",
+    tooltip: "Engage in debate. Silence and weaken enemies.",
+    thumbnail: 'Media/Abilities/DEBATE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Code Review",
+    description: "Temporarily reveals enemy weaknesses and increases damage dealt.",
+    tooltip: "Review code. Reveal weaknesses and increase damage.",
+    thumbnail: 'Media/Abilities/REVIEW.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "QA",
+    description: "Enhances ally buffs and reduces enemy effectiveness.",
+    tooltip: "Quality assurance. Enhance buffs and reduce enemy effectiveness.",
+    thumbnail: 'Media/Abilities/QUALITYASSURANCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Let him Cook",
+    description: "Over time, gains stats exponentially.",
+    tooltip: "Burned like tokens in a supply reduction!",
+    thumbnail: 'Media/Abilities/COOK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
+    title: 'Token UnLock',
+    description: "Locks an enemy's abilities temporarily.",
+    tooltip: "Locked like funds in a smart contract!",
+    thumbnail: 'Media/Abilities/TOKENUNLOCK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
