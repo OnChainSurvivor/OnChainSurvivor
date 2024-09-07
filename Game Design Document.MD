@@ -8,7 +8,7 @@
 **Technology**: Web3, Blockchain Integration
 **Objective**: Survive for 30 minutes in a blockchain-themed arena, defeating enemies, leveling up, and upgrading abilities.
 
-Onchain Survivors aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
 
 ## Gameplay Mechanics 🔧
 

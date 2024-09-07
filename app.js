@@ -1638,7 +1638,7 @@ const worldTypes = [{
   
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-    const possibleRadii = [1, 25, 50, 75];
+    const possibleRadii = [1, 25, 50];
     const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
     const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
     const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
@@ -2546,11 +2546,9 @@ Entity.prototype.die = function() {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
-        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
+        const mainTitle = createTitleContainer('Onchain Survivor\n🏆⚔️🔗', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         const web3Container = createContainer(['top-container'], { left: '130%' })
         const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-        const sponsor = createTitleElement('Sponsor: Nobody yet!', 'lazy subtitle too btw', "subtitle");
         web3Container.appendChild(web3Title);
 
         web3Title.onclick = async () => {
@@ -2568,7 +2566,6 @@ Entity.prototype.die = function() {
                     } catch (error) {
                         console.error('Error looking up ENS:', error);
                     }
-        
                     const displayName = ensName || address;
                     localStorage.setItem('metaMaskAddress', address); 
                     displayWeb3Menu(displayName); 
@@ -2585,12 +2582,24 @@ Entity.prototype.die = function() {
             }
         };
 
-        addContainerUI(topUI,'top-container', [mainTitle,web3Container]);
+        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
+        const infoContainer = createContainer(['bottom-container'], { left: '140%' })
+        const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
+        infoContainer.appendChild(aboutTitle);
 
-        addContainerUI(botUI,'bottom-container', [subTitle]);
+        addContainerUI(topUI,'top-container', [mainTitle,web3Container]);
+        addContainerUI(botUI,'bottom-container', [aboutTitle,subTitle]);
+
+        botUI.onclick = () => {
+            canMove = false;
+            isPaused = true;
+            hideContainerUI(topUI);
+            hideContainerUI(botUI); 
+            createInfoMenu();
+        };
+        botUI.style.cursor = 'pointer';
 
     };
-    
     createGameTitle();
 /*---------------------------------------------------------------------------
                                 MAIN MENU
@@ -2643,7 +2652,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-createGameMenu()
+//createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -2742,7 +2751,7 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleContainer(`Welcome, Survivor.eth!`, 'lazy subtitle too btw');
+        const subTitle = createTitleContainer(`Welcome, 0x!`, 'lazy subtitle too btw');
         
         const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
@@ -2807,11 +2816,11 @@ function handleEntitySelection(entity, type) {
            //          } else if (button === classAbilityContainer) {
            //              createGallery(abilityTypes, "Your Abilities ⚔️","Ability");
            //          } else if (button === worldContainer) {
-           //              createGallery(worldTypes, "Your Chains 🔗","World");
+          //              createGallery(worldTypes, "Your Chains 🔗","World");
           //           }
           //           hideContainerUI(center);
           //       });
-         //    });
+          //    });
 
              createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
              createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
@@ -2851,8 +2860,7 @@ function refreshDisplay() {
     
     abilitiesContainer.style.gridTemplateColumns =  'repeat(9, 1fr)';
 
-    const miniButtonScale = isMobile ? .2 : .33;
-
+    const miniButtonScale = (window.innerWidth <= 830) ? .2 : .33;
 
     const playerButton = createButton(player, miniButtonScale);
     const worldButton = createButton(world, miniButtonScale);
@@ -2931,7 +2939,69 @@ function createPlayerInfoMenu() {
     }
 
     addContainerUI(centerUI, 'center-container', [popUpContainer]);
-  }
+}
+
+function createInfoMenu() {
+    const popUpContainer = createPopUpContainer();
+
+    const statusButton = createTitleContainer('\n Different gameplay everyday!', 'Return to the game', "subtitle");
+    statusButton.style.cursor = 'pointer';
+    statusButton.onclick = () => {
+      canMove = true;
+      hideContainerUI(centerUI);
+      refreshDisplay();
+    };
+    popUpContainer.appendChild(statusButton);
+
+    const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(aboutButton);
+
+    const worldContainer = document.createElement('div');
+    worldContainer.classList.add('abilities-grid');
+    const worldButton = createButton(world, 1);
+    worldContainer.appendChild(worldButton);
+    popUpContainer.appendChild(worldContainer);
+
+    const objectiveText = createTitleElement('\nEach playrun has an objective, and \nafter you succesfully finish it, inscribe \n your record to the hall of survivors \n and become a winner for all of ethernity. \n\n Today`s Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(objectiveText);
+
+    const todaysPlayerContainer = document.createElement('div');
+    todaysPlayerContainer.classList.add('abilities-grid');
+    const classButton = createButton(player, 1);
+    todaysPlayerContainer.appendChild(classButton);
+    popUpContainer.appendChild(todaysPlayerContainer);
+
+    const instructionsText = createTitleElement('\n As a survivor you can only \n move, choose and Survive! \n each class has different innate abilities.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(instructionsText);
+
+    const todaysAbilityContainer = document.createElement('div');
+    todaysAbilityContainer.classList.add('abilities-grid');
+    const abilButton = createButton(ability, 1);
+    todaysAbilityContainer.appendChild(abilButton);
+    popUpContainer.appendChild(todaysAbilityContainer);
+
+    const abilText = createTitleElement('\n Install many abilities during your run. \n let your creativity and intuition guide you, \n as some abilities are very sinergetic\n with each other. Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(abilText);
+
+    const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    goBackButton.onclick = () => {
+        canMove = true;
+        hideContainerUI(centerUI);
+        createGameTitle();
+    };
+    popUpContainer.appendChild(goBackButton);
+    for (const button of popUpContainer.children) {
+        button.onclick = () => {
+            canMove = true;
+            hideContainerUI(centerUI);
+            createGameTitle();
+        };
+    }
+
+    addContainerUI(centerUI, 'center-container', [popUpContainer]);
+}
+
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
