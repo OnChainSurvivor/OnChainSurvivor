@@ -2299,7 +2299,7 @@ function LevelUp() {
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
-    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n Choose one skill", "Upgrade");
+    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n Choose one ability.", "Upgrade");
 }
 /*---------------------------------------------------------------------------
                               Enemies Controller
@@ -2588,16 +2588,16 @@ Entity.prototype.die = function() {
         infoContainer.appendChild(aboutTitle);
 
         addContainerUI(topUI,'top-container', [mainTitle,web3Container]);
-        addContainerUI(botUI,'bottom-container', [aboutTitle,subTitle]);
+        addContainerUI(botUI,'bottom-container', [subTitle,infoContainer]);
 
-        botUI.onclick = () => {
+        infoContainer.onclick = () => {
             canMove = false;
             isPaused = true;
             hideContainerUI(topUI);
             hideContainerUI(botUI); 
             createInfoMenu();
         };
-        botUI.style.cursor = 'pointer';
+        infoContainer.style.cursor = 'pointer';
 
     };
     createGameTitle();
