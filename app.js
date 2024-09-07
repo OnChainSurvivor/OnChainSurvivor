@@ -1632,7 +1632,6 @@ const worldTypes = [{
     const miniOctahedronMaterial = this.material.clone();
 
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
-    miniOctahedronMaterial.wireframe=false;
     let numCrystals = 1024;
     if (isMobile)
     numCrystals = 512 ; 
@@ -2849,14 +2848,19 @@ function refreshDisplay() {
 
     const abilitiesContainer = createContainer(['abilities-grid-container']); 
     abilitiesContainer.style.display = 'grid';
-    abilitiesContainer.style.gridTemplateColumns = 'repeat(10, 1fr)';
-    const playerButton = createButton(player, .2);
-    const worldButton = createButton(world, .2);
+    
+    abilitiesContainer.style.gridTemplateColumns =  'repeat(9, 1fr)';
+
+    const miniButtonScale = isMobile ? .2 : .33;
+
+
+    const playerButton = createButton(player, miniButtonScale);
+    const worldButton = createButton(world, miniButtonScale);
     abilitiesContainer.appendChild(playerButton);
     abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, 0.2));
+        abilitiesContainer.appendChild(createButton(clonedAbility, miniButtonScale));
     });
 
     topUI.onclick = () => {
@@ -2866,6 +2870,7 @@ function refreshDisplay() {
         hideContainerUI(botUI); 
         createPlayerInfoMenu();
     };
+
     botUI.onclick = () => {
         canMove = false;
         isPaused = true;
