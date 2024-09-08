@@ -2152,23 +2152,23 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
         this.lightSourceIndex = 0;
 
-            xpSpheres.forEach(sphere => {
-                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
+          //  xpSpheres.forEach(sphere => {
+          //      if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+          //          this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
+          //          this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
+          //          this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
+          //          this.lightSourceIndex++;
+          //      }
+          //  });
 
-            enemies.forEach(enemy => {
-                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
+          //  enemies.forEach(enemy => {
+          //      if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+          //         this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
+          //         this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
+          //         this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
+          //          this.lightSourceIndex++;
+          //      }
+          //  });
     
             this.lightSourceTexture.needsUpdate = true;
             this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
@@ -3501,7 +3501,7 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-             if(cameraHeight <= 20)
+             if(cameraHeight <= 30)
                 cameraHeight+=0.3;
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
