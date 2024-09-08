@@ -166,6 +166,8 @@ const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
+
+let topUI,centerUI,botUI;
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -981,7 +983,7 @@ const abilityTypes = [
     title: "Final Release",
     description: "Launches the final release, significantly buffing all allies and debuffing all enemies.",
     tooltip: "Release the final version. Buff allies and debuff enemies.",
-    thumbnail: 'Media/Abilities/FINNALRELEASE.png',
+    thumbnail: 'Media/Abilities/FINALRELEASE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2663,8 +2665,10 @@ function updatePlayerMovement() {
 function LevelUp() {
     canMove = false;
     isPaused = true;
-    hideContainerUI(topUI);
-    hideContainerUI(botUI); 
+
+    hideContainerUI(topUI );
+    hideContainerUI(botUI);
+
     player.xp = 0;  
 
     const upgradableAbilities = player.getUpgradableAbilities();
@@ -2851,9 +2855,10 @@ Entity.prototype.die = function() {
         return button;
     }
 
-    function addContainerUI(container,location,uiElements){
-        container.innerHTML='';
-        container.className = ''; 
+    function addContainerUI(location,uiElements){
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+
         container.classList.add(location, 'fade-in');
       
         uiElements.forEach(element => {
@@ -2861,14 +2866,20 @@ Entity.prototype.die = function() {
         });
 
         setTimeout(() => {container.classList.add('show'); }, 10);
+        return container;
     }    
 
     function hideContainerUI(container){
         container.classList.add('fade-out'); 
         setTimeout(() => { container.classList.add('hide'); }, 10);
+        setTimeout(() => {
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        container.parentNode.removeChild(container);
+        }, 1000);
     }
 
-    
     const spinningStates = {
         class: true,
         ability: true,
@@ -2915,13 +2926,6 @@ Entity.prototype.die = function() {
             spinningStates[category] = false;
         });
     }
-
-    let topUI = createContainer(['top-container', 'fade-in']);
-        
-    let centerUI = createContainer(['center-container', 'fade-in']);
-
-    let botUI = createContainer(['bottom-container', 'fade-in']);
-
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
@@ -2967,14 +2971,14 @@ Entity.prototype.die = function() {
         const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
         infoContainer.appendChild(aboutTitle);
 
-        addContainerUI(topUI,'top-container', [mainTitle,web3Container]);
-        addContainerUI(botUI,'bottom-container', [subTitle,infoContainer]);
+       topUI = addContainerUI('top-container', [mainTitle,web3Container]);
+       botUI = addContainerUI('bottom-container', [subTitle,infoContainer]);
 
         infoContainer.onclick = () => {
             canMove = false;
             isPaused = true;
             hideContainerUI(topUI);
-            hideContainerUI(botUI); 
+            hideContainerUI(botUI);
             createInfoMenu();
         };
         infoContainer.style.cursor = 'pointer';
@@ -3012,7 +3016,7 @@ function createGameMenu() {
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
     const subTitle = createTitleElement('Move to quick start !', 'lazy subtitle too btw', "subtitle");
-    addContainerUI(botUI, 'bottom-container', [subTitle,menuButtonsContainer]);
+    botUI = addContainerUI('bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
@@ -3032,7 +3036,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-createGameMenu()
+//createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -3041,6 +3045,8 @@ function createChooseMenu(entityList, text, type) {
     const titleContainer = createTitleContainer(text,'For now it trully doesnt matter what you choose');
     const gridContainer = createGridContainer();
 
+
+    centerUI = addContainerUI('center-container', [popUpContainer]);
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
         gridContainer.appendChild(itemButton);
@@ -3064,8 +3070,6 @@ function createChooseMenu(entityList, text, type) {
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
 
-
-    addContainerUI(centerUI, 'center-container', [popUpContainer]);
 }
 
 function handleEntitySelection(entity, type) {
@@ -3099,10 +3103,8 @@ function handleEntitySelection(entity, type) {
 ---------------------------------------------------------------------------*/
     function displayWeb3Menu(address) {
         canMove=false;
-
-        hideContainerUI(botUI);
-        hideContainerUI(topUI);
-        hideContainerUI(centerUI);
+        hideContainerUI(topUI );
+        hideContainerUI(bottomUI);
 
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
@@ -3182,8 +3184,8 @@ function handleEntitySelection(entity, type) {
      }
      
         setTimeout(() => { 
-            addContainerUI(topUI, 'top-container', [subTitle]);
-            addContainerUI(botUI,'bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer,subTitleLogout]);
+            topUI = addContainerUI('top-container', [subTitle]);
+            botUI = addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer,subTitleLogout]);
             simulateLoading(); 
         }, 1050);
      
@@ -3251,11 +3253,14 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(createButton(clonedAbility, miniButtonScale));
     });
 
+    topUI = addContainerUI('top-container', [xpLoadingContainer, abilitiesContainer]);
+    botUI = addContainerUI('bottom-container', [timerDisplay]);
+
     topUI.onclick = () => {
         canMove = false;
         isPaused = true;
         hideContainerUI(topUI);
-        hideContainerUI(botUI); 
+        hideContainerUI(botUI);
         createPlayerInfoMenu();
     };
 
@@ -3263,11 +3268,10 @@ function refreshDisplay() {
         canMove = false;
         isPaused = true;
         hideContainerUI(topUI);
-        hideContainerUI(botUI); 
+        hideContainerUI(botUI);
         createPlayerInfoMenu();
     };
-    addContainerUI(topUI,'top-container', [xpLoadingContainer, abilitiesContainer]);
-    addContainerUI(botUI,'bottom-container', [timerDisplay]);
+
 }
 
 
@@ -3304,6 +3308,10 @@ function createPlayerInfoMenu() {
     popUpContainer.appendChild(playerClassContainer);
     const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
+
+
+    centerUI = addContainerUI('center-container', [popUpContainer]);
+
     goBackButton.onclick = () => {
         canMove = true;
         hideContainerUI(centerUI);
@@ -3318,7 +3326,6 @@ function createPlayerInfoMenu() {
         };
     }
 
-    addContainerUI(centerUI, 'center-container', [popUpContainer]);
 }
 
 function createInfoMenu() {
@@ -3365,6 +3372,8 @@ function createInfoMenu() {
 
     const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
+    
+    centerUI = addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
         canMove = true;
         hideContainerUI(centerUI);
@@ -3379,7 +3388,7 @@ function createInfoMenu() {
         };
     }
 
-    addContainerUI(centerUI, 'center-container', [popUpContainer]);
+
 }
 
 /*---------------------------------------------------------------------------
@@ -3452,11 +3461,10 @@ function resumeGame() {
     if(isMainMenu){ 
     world.resumeGame();
     isMainMenu = false;
+
     hideContainerUI(topUI);
-    hideContainerUI(centerUI);
     hideContainerUI(botUI);
     setTimeout(() => { refreshDisplay() }, 1050);
-
     const newAbility = new Ability(player, { ...ability});
     player.addAbility(newAbility);
     newAbility.activate();
