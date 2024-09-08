@@ -1887,8 +1887,16 @@ const worldTypes = [{
         });
  
             this.gridSize = 5; 
-            this.divisions = 1; 
+            if(isMobile) 
+            this.gridSize = 20; 
+
+            this.divisions = 1;
+            if(isMobile) 
+            this.divisions = 2; 
+
             this.numTiles = 30;
+            if(isMobile) 
+            this.numTiles = 6; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
         
