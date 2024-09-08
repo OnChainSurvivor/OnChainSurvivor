@@ -18,14 +18,17 @@ export const playerTypes = [{
     Ag:0,
     Lu:0,
     In:0,
-    Security: 0,
-    Scalability: 0,
-    Decentralization: 0,
-    Immutability: 0,
-    Transparency: 0,
-    Consensus: 0,
     abilities: [
-
+      //  { type: 'Veil of Decentralization' }, // Evasion, Survivability
+      //  { type: 'Code Refactor' }, // Utility, Cooldown Reduction 
+      //  { type: 'Onchain Trail' }, // Damage Over Time, Area Denial
+      //  { type: 'Double Spend Prevention' }, // Damage Absorption, Defense
+      //  { type: 'Energy Surge' }, // Mobility, Attack Speed
+      //  { type: 'Governance Vote' }, // Adaptability, Random Beneficial Effect
+      //  { type: 'Blockchain Backup' }, // Resource Management, Recovery
+      //  { type: 'Staking Rewards' }, // Support, Ally Healing
+     //   { type: 'Quick Flip' }, // Burst Damage 
+     //   { type: 'Dollar Cost Average' } // Consistent Damage Over Time
     ],
 },{
     class: 'Survivor',
@@ -58,7 +61,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/MMINER.png',
     
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -76,7 +79,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/FMINER.png',
     
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -94,7 +97,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Staker/MSTAKER.png',  
     
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -112,7 +115,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Staker/FSTAKER.png', 
     
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -130,7 +133,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -148,7 +151,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -164,7 +167,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Trader/MTRADER.png',
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
     ],
 },{
@@ -179,7 +182,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Trader/FTRADER.png',
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
     ],
 },{
@@ -196,7 +199,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -214,7 +217,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -232,7 +235,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -250,7 +253,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -268,7 +271,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -286,7 +289,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -304,7 +307,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -322,7 +325,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -341,7 +344,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -360,7 +363,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -379,7 +382,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
     ],
@@ -398,7 +401,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
 
 
@@ -417,7 +420,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -435,7 +438,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -453,7 +456,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -471,7 +474,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -489,7 +492,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -507,7 +510,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -525,7 +528,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -543,7 +546,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -561,7 +564,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -579,7 +582,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -597,7 +600,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -615,7 +618,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -633,7 +636,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -651,7 +654,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -669,7 +672,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -687,7 +690,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -705,7 +708,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -723,7 +726,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -741,7 +744,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -759,7 +762,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -777,7 +780,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -795,7 +798,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -814,7 +817,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -833,7 +836,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -851,7 +854,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -870,7 +873,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -888,7 +891,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -907,7 +910,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -925,7 +928,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -943,7 +946,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -961,7 +964,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -978,7 +981,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -994,7 +997,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1011,7 +1014,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1027,7 +1030,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Sniper/MSNIPER.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1043,7 +1046,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Sniper/FSNIPER.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1060,7 +1063,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1078,7 +1081,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1096,7 +1099,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1114,7 +1117,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1133,7 +1136,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1151,7 +1154,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1169,7 +1172,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1187,7 +1190,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1205,7 +1208,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1223,7 +1226,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false, 
+    isLocked: true, 
     abilities: [
 
     ],
@@ -1241,7 +1244,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1259,7 +1262,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1277,7 +1280,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1295,7 +1298,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1313,7 +1316,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1331,7 +1334,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1349,7 +1352,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1367,7 +1370,7 @@ export const playerTypes = [{
     
 
     level:0,
-    isLocked: false,
+    isLocked: true,
     abilities: [
   
     ],
@@ -1386,7 +1389,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1403,7 +1406,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1420,7 +1423,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1437,7 +1440,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1454,7 +1457,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1471,7 +1474,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1488,7 +1491,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1505,7 +1508,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1522,7 +1525,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1539,7 +1542,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1556,7 +1559,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1573,7 +1576,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1592,7 +1595,7 @@ export const playerTypes = [{
 .BoxGeometry(1, 1, 1),
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1609,7 +1612,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1626,7 +1629,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1643,7 +1646,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1660,7 +1663,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1677,7 +1680,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1694,7 +1697,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1711,7 +1714,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1728,7 +1731,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1745,7 +1748,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1762,7 +1765,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1779,7 +1782,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1796,7 +1799,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1813,7 +1816,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1830,7 +1833,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1847,7 +1850,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1861,7 +1864,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Bagholder/MBAGHOLDER.png', 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1875,7 +1878,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Bagholder/FBAGHOLDER.png', 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1889,7 +1892,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Community Member/MCOMMUNITYMEMBER.png', 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -1903,7 +1906,7 @@ export const playerTypes = [{
     tags: ['player'],
     thumbnail: 'Media/Classes/Community Member/FCOMMUNITYMEMBER.png', 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1920,7 +1923,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1937,7 +1940,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1954,7 +1957,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1971,7 +1974,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -1988,7 +1991,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2005,7 +2008,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 
@@ -2023,7 +2026,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2040,7 +2043,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2057,7 +2060,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2074,7 +2077,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2091,7 +2094,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2108,7 +2111,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2125,7 +2128,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2142,7 +2145,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2159,7 +2162,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2176,7 +2179,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2193,7 +2196,7 @@ export const playerTypes = [{
     
 
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2209,7 +2212,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Beggar/FBEGGAR.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2225,7 +2228,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Protagonist/MPROTAG.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2241,7 +2244,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Protagonist/FPROTAG.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2257,7 +2260,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Intern/MINTERN.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2273,7 +2276,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Intern/FINTERN.png', 
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2289,7 +2292,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Mod/MMOD.png',
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },
 {
@@ -2305,7 +2308,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Mod/FMOD.png',
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -2320,7 +2323,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Seedless/MSEEDLESS.png',
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 },{
     class: 'Survivor',
@@ -2335,7 +2338,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Seedless/FSEEDLESS.png',
     
     level: 0,
-    isLocked: false,
+    isLocked: true,
     abilities: [],
 }
 ];

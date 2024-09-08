@@ -2185,7 +2185,7 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.sceneObjects = []; 
     }       
 },
-{
+ {
     class: 'World',
     title: 'Digital Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
