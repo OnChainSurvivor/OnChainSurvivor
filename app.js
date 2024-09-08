@@ -967,6 +967,48 @@ const abilityTypes = [
     },
 },
 {
+    title: "Stake Defense",
+    description: "Increases defense for a short period.",
+    tooltip: "Strengthen your defenses with stakes.",
+    thumbnail: 'Media/Abilities/STAKEDEFENSE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+ 
+{
+    title: "Final Release",
+    description: "Launches the final release, significantly buffing all allies and debuffing all enemies.",
+    tooltip: "Release the final version. Buff allies and debuff enemies.",
+    thumbnail: 'Media/Abilities/FINNALRELEASE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Security Lockdown",
+    description: "Reduces damage taken for a short period.",
+    tooltip: "Lock it down, secure the bag. Take less damage.",
+    thumbnail: 'Media/Abilities/LOCKDOWN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Scalability Boost",
+    description: "Increases attack speed and movement speed.",
+    tooltip: "Scaling up like a true degen, moving fast and striking hard.",
+    thumbnail: 'Media/Abilities/SCALABILITYBOOST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
     title: "ICO Hype",
     description: "Temporarily boosts all stats.",
     tooltip: "Hyped like an ICO!",
@@ -991,6 +1033,27 @@ const abilityTypes = [
     description: "Grants immunity to debuffs.",
     tooltip: "Protected like a whitelist spot!",
     thumbnail: 'Media/Abilities/WHITELIST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
+    title: "Pump and Dump",
+    description: "Increases attack power significantly for a short duration, followed by a debuff.",
+    tooltip: "Pump it up, then brace for the dump.",
+    thumbnail: 'Media/Abilities/PND.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Lending Protocol',
+    description: "Lends resources to allies temporarily.",
+    tooltip: "Lending like a DeFi protocol!",
+    thumbnail: 'Media/Abilities/LENDING.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2772,13 +2835,6 @@ Entity.prototype.die = function() {
         
         if (onClick) button.onclick = onClick;
 
-
-        if(world.title==='Digital Goldland'){
-            img.style.filter = 'sepia(100%)';
-            title.style.color = 'gold';
-            description.style.color = 'gold';
-            button.style.borderImageSource = 'linear-gradient(45deg, gold, gold)';
-        }
         if(dataType.isLocked){
         button.style.color = 'gray';
         button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
