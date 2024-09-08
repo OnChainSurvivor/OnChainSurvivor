@@ -2,8 +2,8 @@
                               Classes
 ---------------------------------------------------------------------------*/
 const loader = new THREE.FBXLoader();
-const objectPool = new Map(); 
-
+const objectMap = new Map(); 
+const objectPool= [];
 class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config });
@@ -31,9 +31,8 @@ class Entity extends THREE.Object3D {
 
         const modelKey = 'SurvivorModel';
 
-        if (objectPool.has(modelKey)) {
-            const serializedModel = objectPool.get(modelKey);
-            this.initEntity(new THREE.ObjectLoader().parse(serializedModel));
+        if (objectMap.has(modelKey)) {
+            this.initEntity(objectPool.pop());
         } else {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
@@ -42,7 +41,12 @@ class Entity extends THREE.Object3D {
                     }
                 });
                 const serializedObject = object.toJSON();
-                objectPool.set(modelKey, serializedObject);
+                objectMap.set(modelKey, serializedObject);
+
+                for (let index = 0; index <1000; index++) {
+                    objectPool.push(new THREE.ObjectLoader().parse(objectMap.get(modelKey)))
+                }
+
                 this.initEntity(object);
             });
         }
@@ -1876,7 +1880,7 @@ const worldTypes = [{
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
-
+        
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
@@ -2081,6 +2085,7 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
 
     },
     update: function(scene, camera, renderer) {
+
         if(isMainMenu){
             this.octahedronMesh.rotation.z -= 0.005;
             this.octahedronMesh2.rotation.z += 0.005;
@@ -2173,10 +2178,13 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
     
             if (isMainMenu) {
                 this.gridMesh.position.set(playerGridX,  this.axisY, playerGridZ);
+                this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
             } else {
                 if ( this.radiusDirection === 1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value <  this.radiusTarget) {
+                    this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
                     this.gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
                 } else if ( this.radiusDirection === -1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
+                    this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
                     this.gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
                 } else {
                     if ( this.radiusDirection === 1) {
@@ -2187,7 +2195,7 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
                     }
                 }
         }
-        this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
+ 
     },
     resumeGame: function(){},
     cleanUp: function(scene) {
@@ -2706,18 +2714,20 @@ function LevelUp() {
 const enemies = [];
 
 function updateEnemies() {
+    const direction = new THREE.Vector3();
+    const playerPositionDifference = player.position.clone(); 
+
     enemies.forEach(enemy => {
-        const direction = new THREE.Vector3().subVectors(player.position, enemy.position).normalize();
-        enemy.position.add(direction.multiplyScalar(enemy.movementspeed/2));
-        const targetRotation = Math.atan2(direction.x, direction.z);
-        enemy.rotation.y = targetRotation;
+        direction.copy(playerPositionDifference).sub(enemy.position).normalize();
+        enemy.position.addScaledVector(direction, enemy.movementspeed / 2); 
+        enemy.rotation.y = Math.atan2(direction.x, direction.z);
         enemy.boundingBox.setFromObject(enemy.mesh);
-        enemy.updateMesh();
-        enemy.updateAbilities();
+        //enemy.updateMesh(); 
+       // enemy.updateAbilities(); 
     });
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 2) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
