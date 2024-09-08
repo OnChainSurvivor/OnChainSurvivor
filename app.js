@@ -1038,7 +1038,6 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
-
 {
     title: "Pump and Dump",
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
@@ -2185,7 +2184,8 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.sceneObjects.forEach(object => scene.remove(object));
         this.sceneObjects = []; 
     }       
-}, {
+},
+{
     class: 'World',
     title: 'Digital Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
@@ -2214,8 +2214,8 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .05, .5, 0.01); 
         this.afterimagePass = new THREE.AfterimagePass(.8);
         composer.addPass(this.renderScene);
-       composer.addPass(this.bloomPass);
-     composer.addPass(this.afterimagePass); 
+        composer.addPass(this.bloomPass);
+        composer.addPass(this.afterimagePass); 
 
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
