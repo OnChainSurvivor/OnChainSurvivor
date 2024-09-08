@@ -672,7 +672,8 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
-},{
+},
+{
     title: "Staking Rewards",
     description: "Provides periodic healing to all allies.",
     tooltip: "Stake and earn. Heal over time.",
@@ -691,7 +692,18 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
-},{
+},
+{
+    title: "Finger Pointing",
+    description: "Implements a major change, significantly debuffing enemies.",
+    tooltip: "Implement protocol governance. Buff allies and debuff enemies.",
+    thumbnail: 'Media/Abilities/FINGER.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Surprise Liquidation",
     description: "Causes a massive area-of-effect damage.",
     tooltip: "Liquidated harder than a leveraged trade gone wrong!",
@@ -699,6 +711,16 @@ const abilityTypes = [
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Price Divergence ",
+    description: "Confuses enemies, causing them to attack each other.",
+    tooltip: "Create price divergence. Confuse enemies to attack each other.",
+    thumbnail: "Media/Abilities/DIVERGENCE.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
@@ -767,6 +789,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Chain Reaction",
+    description: "Causes a chain reaction, revealing all enemies and drastically debuffing them while significantly buffing allies.",
+    tooltip: "Trigger a chain reaction. Reveal, debuff enemies, and buff allies.",
+    thumbnail: 'Media/Abilities/CHAINREACTION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "FOMO Wave",
     description: "Induces fear of missing out, causing enemies to rush towards the player.",
     tooltip: "Create a wave of FOMO. Draw enemies towards you.",
@@ -775,7 +807,18 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
-},{
+},
+{
+    title: "Chain Analysis",
+    description: "Reveals hidden enemies and tracks their movements.",
+    tooltip: "Analyze the chain. Reveal and track enemies.",
+    thumbnail: "Media/Abilities/ANALYSIS.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Liquidation Wave",
     description: "Deals area-of-effect damage and reduces enemy defenses.",
     tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
@@ -818,6 +861,16 @@ const abilityTypes = [
     description: "Drops valuable items or buffs to allies.",
     tooltip: "Free goodies like an airdrop!",
     thumbnail: 'Media/Abilities/AIRDROP.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Stress Test ",
+    description: "Creates a zone where enemies take increased damage and have reduced speed.",
+    tooltip: "Conduct a stress test. Increase enemy damage and reduce speed.",
+    thumbnail: 'Media/Abilities/STRESSTEST.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1135,10 +1188,140 @@ const abilityTypes = [
     },
 },
 {
+    title: "Sellout",
+    description: "Trades a portion of your resources for a temporary power boost.",
+    tooltip: "Sellout for power. Trade resources for a boost.",
+    thumbnail: 'Media/Abilities/SELLOUT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Protocol Crash",
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
     tooltip: "Crash the protocol. Increase damage and slow enemies.",
     thumbnail: 'Media/Abilities/PROTOCOLCRASH.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Trading Frenzy",
+    description: "Increases speed and critical hit chance drastically for a short time.",
+    tooltip: "Enter a trading frenzy. Maximum speed and precision.",
+    thumbnail: 'Media/Abilities/TRADINGFRENZY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Hash Power",
+    description: "Temporarily increases attack power.",
+    tooltip: "Harness the power of the hash. Strike with more force.",
+    thumbnail: 'Media/Abilities/HASHPOWER.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Miner Network",
+    description: "Creates a zone that damages enemies over time.",
+    tooltip: "Lay down the mines. Enemies beware.",
+    thumbnail: 'Media/Abilities/MINERNETWORK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Validator Support",
+    description: "Summons a temporary ally to aid in battle.",
+    tooltip: "Call in support from a trusted validator.",
+    thumbnail: 'Media/Abilities/VALIDATORSUPPORT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {} 
+    },
+},
+{
+    title: "Diamond Hands ",
+    description: "Reduces damage taken significantly for a short period.",
+    tooltip: "Hold with diamond hands. Reduce damage taken.",
+    thumbnail: 'Media/Abilities/DIAMONDHANDS.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "HODL",
+    description: "Increases the player's defense.",
+    tooltip: "HODL strong. Boost your defense.",
+    thumbnail: 'Media/Abilities/HODL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Titanium Support ",
+    description: "Creates a barrier that absorbs damage.",
+    tooltip: "HODL the line. Create a damage-absorbing barrier.",
+    thumbnail: 'Media/Abilities/SUPPORT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'The Citadel',
+    description: "Constructs a powerful fortress that provides extensive protection to allies and significantly disrupts enemies.",
+    tooltip: "Build a network fortress. Offer extensive protection and disrupt enemies.",
+    thumbnail: 'Media/Abilities/CITADEL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Total Shutdown",
+    description: "Shuts down all enemy abilities and greatly reduces their stats for a short period.",
+    tooltip: "Initiate total shutdown. Disable and weaken enemies.",
+    thumbnail: 'Media/Abilities/SHUTDOWN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Market Stabilization',
+    description: "Stabilizes prices, reducing enemy attack power and increasing ally defense.",
+    tooltip: "Stabilize prices. Reduce enemy attack power and boost ally defense.",
+    thumbnail: 'Media/Abilities/STABILIZATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Contract Breach",
+    description: "Disables enemy abilities for a short period.",
+    tooltip: "Breach their systems. Disable enemy abilities.",
+    thumbnail: 'Media/Abilities/BREACH.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Single Stake",
+    description: "Increases health regeneration based on a single stake.",
+    tooltip: "Stake your claim. Boost health regeneration.",
+    thumbnail: 'Media/Abilities/SINGLESTAKE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1256,6 +1439,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Market Patience",
+    description: "Gradually regenerates health over time.",
+    tooltip: "Show market patience. Gradually regenerate health.",
+    thumbnail: 'Media/Abilities/PATIENCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Liquidity Mining",
     description: "Generates resources over time.",
     tooltip: "Earning passively like liquidity mining!",
@@ -1360,6 +1553,16 @@ const abilityTypes = [
     description: "Deploys a critical patch, significantly buffing all allies and debuffing all enemies.",
     tooltip: "Deploy a critical patch. Buff allies and debuff enemies.",
     thumbnail: "Media/Abilities/CRITICALPATCH.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Light Node Run',
+    description: "Increases movement speed.",
+    tooltip: "Light on your feet, quick on your toes.",
+    thumbnail: "Media/Abilities/LNRUN.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2773,7 +2976,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-//createGameMenu()
+createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
