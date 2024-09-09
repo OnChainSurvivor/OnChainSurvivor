@@ -2152,24 +2152,25 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
         this.lightSourceIndex = 0;
 
-          //  xpSpheres.forEach(sphere => {
-          //      if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-          //          this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
-          //          this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
-          //          this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
-          //          this.lightSourceIndex++;
-          //      }
-          //  });
+        if(!isMobile){
+            xpSpheres.forEach(sphere => {
+                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
 
-          //  enemies.forEach(enemy => {
-          //      if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-          //         this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
-          //         this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
-          //         this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
-          //          this.lightSourceIndex++;
-          //      }
-          //  });
-    
+            enemies.forEach(enemy => {
+                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
+                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
+                    this.lightSourceIndex++;
+                }
+            });
+        }
             this.lightSourceTexture.needsUpdate = true;
             this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
             const playerGridX = Math.floor(player.position.x /  this.gridSize) *  this.gridSize;
@@ -3263,16 +3264,29 @@ function refreshDisplay() {
     const miniButtonScale = (window.innerWidth <= 830) ? .2 : .33;
 
     const playerButton = createButton(player, miniButtonScale);
-    const worldButton = createButton(world, miniButtonScale);
-    abilitiesContainer.appendChild(playerButton);
-    abilitiesContainer.appendChild(worldButton);
-    player.abilities.forEach(ability => {
+   // const worldButton = createButton(world, miniButtonScale);
+  //  abilitiesContainer.appendChild(playerButton);
+ //   abilitiesContainer.appendChild(worldButton);
+    player.abilities.slice(1).forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
         abilitiesContainer.appendChild(createButton(clonedAbility, miniButtonScale));
     });
 
+    const todaysContainer = document.createElement('div');
+    todaysContainer.classList.add('abilities-grid');
+    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+    const miniplayerButton = createButton(player, miniButtonScale);
+    const miniworldButton = createButton(world, miniButtonScale);
+    const miniabilityButton = createButton(ability, miniButtonScale);
+    todaysContainer.appendChild(miniplayerButton);
+    todaysContainer.appendChild(miniworldButton);
+    todaysContainer.appendChild(miniabilityButton);
+
+    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+
+
     topUI = addContainerUI('top-container', [xpLoadingContainer, abilitiesContainer]);
-    botUI = addContainerUI('bottom-container', [timerDisplay]);
+    botUI = addContainerUI('bottom-container', [todaysContainer,timerDisplay]);
 
     topUI.onclick = () => {
         canMove = false;
@@ -3324,7 +3338,7 @@ function createPlayerInfoMenu() {
     });
 
     popUpContainer.appendChild(playerClassContainer);
-    const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
+    const goBackButton = createTitleContainer('\n - Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
 
 
@@ -3358,7 +3372,19 @@ function createInfoMenu() {
     };
     popUpContainer.appendChild(statusButton);
 
-    const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const todaysContainer = document.createElement('div');
+    todaysContainer.classList.add('abilities-grid');
+    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+    const miniplayerButton = createButton(player, .6);
+    const miniworldButton = createButton(world, .6);
+    const miniabilityButton = createButton(ability, .6);
+    todaysContainer.appendChild(miniplayerButton);
+    todaysContainer.appendChild(miniworldButton);
+    todaysContainer.appendChild(miniabilityButton);
+    popUpContainer.appendChild(todaysContainer);
+
+
+    const aboutButton = createTitleElement('\nWelcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const worldContainer = document.createElement('div');
@@ -3388,7 +3414,7 @@ function createInfoMenu() {
     const abilText = createTitleElement('\n Install many abilities during your run. \n let your creativity and intuition guide you, \n as some abilities are very sinergetic\n with each other. Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(abilText);
 
-    const goBackButton = createTitleContainer('\n◀ Go back ▶', 'Return to the game', "subtitle");
+    const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
     
     centerUI = addContainerUI('center-container', [popUpContainer]);
@@ -3501,8 +3527,8 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-             if(cameraHeight <= 30)
-                cameraHeight+=0.3;
+             if(cameraHeight <= (isMobile ? 35:30))
+                cameraHeight+=0.25;
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
