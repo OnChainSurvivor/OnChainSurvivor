@@ -69,9 +69,6 @@ class Entity extends THREE.Object3D {
     updateMesh() {
         if (this.mesh) {
             this.mesh.mixer.update(.01);
-            this.mesh.position.set(0, 0, 0); 
-            this.mesh.rotation.set(0, 0, 0); 
-            this.mesh.updateMatrixWorld(true);
             this.boundingBox.setFromObject(this.mesh);
         }
     }
@@ -873,7 +870,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Stress Test ",
+    title: "Blockchain Stress Test ",
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
     tooltip: "Conduct a stress test. Increase enemy damage and reduce speed.",
     thumbnail: 'Media/Abilities/STRESSTEST.png',
@@ -2622,61 +2619,77 @@ ability = abilityTypes[0];
 ---------------------------------------------------------------------------*/
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
 
+const direction = new THREE.Vector3();
+const cameraDirection = new THREE.Vector3();
+const moveDirection = new THREE.Vector3();
+const rotationAxis = new THREE.Vector3(0, 1, 0);  
+const rotationSpeed = 0.1;
+let xpSphereUpdateFrame = 0; 
+
 function updatePlayerMovement() {
     if (!canMove) return;
-    let direction = new THREE.Vector3();
 
-    if (keys.s) direction.z -= player.movementspeed;
-    if (keys.w) direction.z += player.movementspeed;
-    if (keys.a) direction.x += player.movementspeed;
-    if (keys.d) direction.x -= player.movementspeed;
+    direction.set(0, 0, 0);
 
-    if (direction.length() > 0) {
+    if (keys.s) direction.z -= 1;
+    if (keys.w) direction.z += 1;
+    if (keys.a) direction.x += 1;
+    if (keys.d) direction.x -= 1;
+
+    if (direction.lengthSq() > 0) { 
         isPaused = false;
         direction.normalize();
-        
-        const cameraDirection = new THREE.Vector3();
         camera.getWorldDirection(cameraDirection);
         cameraDirection.y = 0;
         cameraDirection.normalize();
-        const moveDirection = direction.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(cameraDirection.x, cameraDirection.z));
+        moveDirection.copy(direction).applyAxisAngle(rotationAxis, Math.atan2(cameraDirection.x, cameraDirection.z));
         player.position.add(moveDirection.multiplyScalar(player.movementspeed));
         const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-        const rotationSpeed = 0.1;
+
         const angleDifference = targetRotation - player.rotation.y;
         const adjustedAngle = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
         player.rotation.y += Math.sign(adjustedAngle) * Math.min(rotationSpeed, Math.abs(adjustedAngle));
         player.updateMesh();
     }
 
-    const cameraX = player.position.x + cameraRadius * Math.cos(cameraAngle);
-    const cameraZ = player.position.z + cameraRadius * Math.sin(cameraAngle);
-    camera.position.set(cameraX, cameraHeight, cameraZ);
+    const cosAngle = Math.cos(cameraAngle); 
+    const sinAngle = Math.sin(cameraAngle);
+    camera.position.set(
+        player.position.x + cameraRadius * cosAngle,
+        cameraHeight,
+        player.position.z + cameraRadius * sinAngle
+    );
     camera.lookAt(player.position);
 
     player.updateAbilities();
 
-    xpSpheres.forEach((xpSphere, index) => {
-        if (xpSphere.visible) { // Only move visible spheres
-           // const direction = new THREE.Vector3().subVectors(player.position, xpSphere.position).normalize();
-           // const speed = 0.1; // Adjust the speed as needed
-          //  xpSphere.position.add(direction.multiplyScalar(speed));
+    if (xpSphereUpdateFrame++ % 4 === 0) {
+        updateXPSpheres();
+    }
+}
 
-            xpSphere.boundingBox.setFromObject(xpSphere); // Update bounding box
-    
-            if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
-                player.xp += 10;
-                xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-                if (player.xp >= player.xpToNextLevel) {
-                    LevelUp();  
-                    createParticleEffect(player.position, 'gold', 10); // Use 'gold' color
-                }
-                createParticleEffect(player.position, 'gold', 1); // Use 'gold' color
-                scene.remove(xpSphere);
-                xpSpheres.splice(index, 1);
+// Throttled XP Sphere update function
+function updateXPSpheres() {
+    for (let i = xpSpheres.length - 1; i >= 0; i--) {
+        const xpSphere = xpSpheres[i];
+        if (!xpSphere.visible) continue; 
+
+        xpSphere.boundingBox.setFromObject(xpSphere);
+
+        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
+            player.xp += 10;
+            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+            
+            if (player.xp >= player.xpToNextLevel) {
+                LevelUp();  
+                createParticleEffect(player.position, 'gold', 10);  
             }
+
+            createParticleEffect(player.position, 'gold', 1);
+            scene.remove(xpSphere);  
+            xpSpheres.splice(i, 1); 
         }
-    });
+    }
 }
 
 function LevelUp() {
@@ -2713,22 +2726,25 @@ function LevelUp() {
                               Enemies Controller
 ---------------------------------------------------------------------------*/
 const enemies = [];
+let enemiesUpdateFrame = 0; 
+const playerPositionDifference = new THREE.Vector3();  
+const enemydirection = new THREE.Vector3();           
 
 function updateEnemies() {
-    const direction = new THREE.Vector3();
-    const playerPositionDifference = player.position.clone(); 
-
-    enemies.forEach(enemy => {
-        direction.copy(playerPositionDifference).sub(enemy.position).normalize();
-        enemy.position.addScaledVector(direction, enemy.movementspeed / 2); 
-        enemy.rotation.y = Math.atan2(direction.x, direction.z);
+    if (enemiesUpdateFrame++ % 2 !== 0) return;
+    playerPositionDifference.copy(player.position);
+    for (let i = 0; i < enemies.length; i++) {
+        const enemy = enemies[i];
+        enemy.mesh.mixer.update(0.02);
         enemy.boundingBox.setFromObject(enemy.mesh);
-        //enemy.updateMesh(); 
-       // enemy.updateAbilities(); 
-    });
+        enemy.needsBoundingBoxUpdate = false;
+        enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
+        enemy.position.addScaledVector(enemydirection, enemy.movementspeed);
+        enemy.rotation.y = Math.atan2(enemydirection.x, enemydirection.z);
+    }
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 2) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 50) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
@@ -3305,7 +3321,6 @@ function refreshDisplay() {
     };
 
 }
-
 
 function createPlayerInfoMenu() {
     const popUpContainer = createPopUpContainer();
