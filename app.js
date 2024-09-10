@@ -2940,9 +2940,9 @@ Entity.prototype.die = function() {
         const todaysContainer = document.createElement('div');
         todaysContainer.classList.add('abilities-grid');
         todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-        const miniplayerButton = createButton(player, .5);
-        const miniworldButton = createButton(world, .5);
-        const miniabilityButton = createButton(ability, .5);
+        const miniplayerButton = createButton(player, isMobile ? 0.3 : 0.5);
+        const miniworldButton = createButton(world, isMobile ? 0.3 : 0.5);
+        const miniabilityButton = createButton(ability,isMobile ? 0.3 : 0.5);
         todaysContainer.appendChild(miniplayerButton);
         todaysContainer.appendChild(miniworldButton);
         todaysContainer.appendChild(miniabilityButton);
