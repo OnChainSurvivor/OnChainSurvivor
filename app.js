@@ -43,7 +43,7 @@ class Entity extends THREE.Object3D {
                 const serializedObject = object.toJSON();
                 objectMap.set(modelKey, serializedObject);
 
-                for (let index = 0; index <1000; index++) {
+                for (let index = 0; index <2000; index++) {
                     objectPool.push(new THREE.ObjectLoader().parse(objectMap.get(modelKey)))
                 }
 
@@ -183,8 +183,6 @@ const dropXpSphere = (position) => {
 
 const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0) triggerGameOver();
-    
-
    // TODO: Make drops super rare, no longer guarantee  
     dropXpSphere(entity.position);
 
@@ -2696,15 +2694,15 @@ const playerPositionDifference = new THREE.Vector3();
 const enemydirection = new THREE.Vector3();           
 
 function updateEnemies() {
-    if (enemiesUpdateFrame++ % 2 !== 0) return;
+    if (enemiesUpdateFrame++ % 3 !== 0) return;
     playerPositionDifference.copy(player.position);
     for (let i = 0; i < enemies.length; i++) {
         const enemy = enemies[i];
-        enemy.mesh.mixer.update(0.02);
+        enemy.mesh.mixer.update(0.025);
         enemy.boundingBox.setFromObject(enemy.mesh);
         enemy.needsBoundingBoxUpdate = false;
         enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
-        enemy.position.addScaledVector(enemydirection, enemy.movementspeed);
+        enemy.position.addScaledVector(enemydirection, enemy.movementspeed * 1.5);
         enemy.rotation.y = Math.atan2(enemydirection.x, enemydirection.z);
     }
 }
@@ -2877,7 +2875,7 @@ Entity.prototype.die = function() {
         }
         container.parentNode.removeChild(container);
         }, 1000);
-    })
+        })
         uiContainers.length = 0;
     }
 
