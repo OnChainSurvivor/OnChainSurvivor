@@ -168,7 +168,7 @@ const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 
-let topUI,centerUI,botUI,cornerUI;
+let topUI,centerUI,botUI,cornerUI,connectUI;
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -2935,9 +2935,9 @@ Entity.prototype.die = function() {
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
-        const web3Container = createContainer(['top-container'], { left: '130%' })
+
         const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-        web3Container.appendChild(web3Title);
+
 
         web3Title.onclick = async () => {
             if (window.ethereum) {
@@ -2973,9 +2973,10 @@ Entity.prototype.die = function() {
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
         const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
 
-       topUI = addContainerUI('top-container', [mainTitle,web3Container]);
+       topUI = addContainerUI('top-container', [mainTitle]);
        botUI = addContainerUI('bottom-container', [subTitle]);
        cornerUI = addContainerUI('corner-container', [aboutTitle]);
+       connectUI= addContainerUI('connect-container', [web3Title]);
        aboutTitle.onclick = () => {
             canMove = false;
             isPaused = true;
@@ -3316,7 +3317,7 @@ function createPlayerInfoMenu() {
 function createInfoMenu() {
     const popUpContainer = createPopUpContainer();
 
-    const statusButton = createTitleContainer('\n Different gameplay everyday!', 'Return to the game', "subtitle");
+    const statusButton = createTitleContainer('\nUpdated\neveryday!', 'Return to the game', "subtitle");
     statusButton.style.cursor = 'pointer';
     statusButton.onclick = () => {
       canMove = true;

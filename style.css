@@ -135,6 +135,14 @@ button, div {
     display: flex;
 }
 
+.connect-container {
+    position: fixed;
+    top: 10px;     
+    right: 10px;   
+    display: flex;
+}
+
+
 
 .bottom-container{
     position : absolute;
@@ -250,10 +258,12 @@ html, body {
     }
     .title {
         font-size: 10vw;
+        white-space: nowrap;
     }
     
     .subtitle {
         font-size: 4vw;
+        white-space: nowrap; 
     }
 }
 
