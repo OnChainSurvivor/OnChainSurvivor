@@ -2937,8 +2937,6 @@ Entity.prototype.die = function() {
         const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
 
         const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-
-
         web3Title.onclick = async () => {
             if (window.ethereum) {
                 const web3 = new Web3(window.ethereum);
@@ -2975,14 +2973,15 @@ Entity.prototype.die = function() {
 
        topUI = addContainerUI('top-container', [mainTitle]);
        botUI = addContainerUI('bottom-container', [subTitle]);
-       cornerUI = addContainerUI('corner-container', [aboutTitle]);
-       connectUI= addContainerUI('connect-container', [web3Title]);
+       cornerUI = addContainerUI('TL-container', [aboutTitle]);
+       connectUI= addContainerUI('TR-container', [web3Title]);
        aboutTitle.onclick = () => {
             canMove = false;
             isPaused = true;
             hideContainerUI(topUI);
             hideContainerUI(botUI);
             hideContainerUI(cornerUI);
+            hideContainerUI(connectUI);
             createInfoMenu();
         };
         aboutTitle.style.cursor = 'pointer';
@@ -3108,8 +3107,9 @@ function handleEntitySelection(entity, type) {
     function displayWeb3Menu(address) {
         canMove=false;
         hideContainerUI(topUI );
-        hideContainerUI(bottomUI);
-
+        hideContainerUI(botUI);
+        hideContainerUI(connectUI);
+        hideContainerUI(cornerUI);
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -3139,7 +3139,7 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(worldContainer);
         const subTitle = createTitleContainer(`Welcome, 0x!`, 'lazy subtitle too btw');
         
-        const subTitleRun = createTitleElement('⌛️ Start Run ⌛️', 'lazy subtitle too btw', "subtitle");
+        const subTitleRun = createTitleElement('⌛️ Global Run ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
          
         const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw',"subtitle");
@@ -3148,7 +3148,7 @@ function handleEntitySelection(entity, type) {
         const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw',"subtitle");
         subTitleHall.style.cursor = 'pointer';
  
-        const subTitleLogout = createTitleElement('♢Log Out ♢', 'lazy subtitle too btw',"subtitle");
+        const subTitleLogout = createTitleElement('♢\nLog Out\n♢', 'lazy subtitle too btw',"subtitle");
         subTitleLogout.style.cursor = 'pointer';
         subTitleLogout.onclick = () => {
             localStorage.removeItem('metaMaskAddress');
@@ -3169,7 +3169,7 @@ function handleEntitySelection(entity, type) {
             const goal = 1000000; 
             const percentage = (currentAmount / goal) * 100;
             loadingBar.style.width = percentage + '%';
-            loadingText.innerText ='❤️ Sponsor Countdown ❤️ \n' + percentage.toFixed(2) + '%';
+            loadingText.innerText ='❤️ Next Run: ' + percentage.toFixed(2) + '%❤️';
             loadingText.classList.add('rainbow-text'); 
         }
      
@@ -3189,7 +3189,8 @@ function handleEntitySelection(entity, type) {
      
         setTimeout(() => { 
             topUI = addContainerUI('top-container', [subTitle]);
-            botUI = addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer,subTitleLogout]);
+            botUI = addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer]);
+            connectUI= addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
         }, 1050);
      
@@ -3255,7 +3256,7 @@ function refreshDisplay() {
     });
 
     topUI = addContainerUI('bottom-container',[timerDisplay]);
-    cornerUI = addContainerUI('corner-container', [xpLoadingContainer,playerContainer]);
+    cornerUI = addContainerUI('TL-container', [xpLoadingContainer,playerContainer]);
 
     topUI.onclick = () => {
         canMove = false;
@@ -3462,6 +3463,7 @@ function resumeGame() {
     hideContainerUI(cornerUI);
     hideContainerUI(topUI);
     hideContainerUI(botUI);
+    hideContainerUI(connectUI);
     setTimeout(() => { refreshDisplay() }, 1050);
     const newAbility = new Ability(player, { ...ability});
     player.addAbility(newAbility);

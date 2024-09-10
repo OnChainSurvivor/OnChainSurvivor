@@ -128,14 +128,14 @@ button, div {
     flex-direction: column;
 }
 
-.corner-container {
+.TL-container {
     position: fixed;
-    bottom: 10px;     
-    right: 10px;   
+    top: 10px;     
+    left: 10px;   
     display: flex;
 }
 
-.connect-container {
+.TR-container {
     position: fixed;
     top: 10px;     
     right: 10px;   
