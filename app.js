@@ -184,7 +184,11 @@ const dropXpSphere = (position) => {
 
 const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0) triggerGameOver();
+    
+
+   // TODO: Make drops super rare, no longer guarantee  
     dropXpSphere(entity.position);
+
     entity.deactivateAbilities();
     scene.remove(entity);
 
@@ -2003,21 +2007,9 @@ const worldTypes = [{
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
-    this.octahedronMesh2.rotation.z += 90;
-    this.octahedronMesh2.scale.set(0.5, 0.5, 0.5);
-    this.octahedronMesh.scale.set(0.5, 0.5, 0.5);
- 
-    this.octahedronMesh3 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
-    scene.add(this.octahedronMesh3);   
-    this.octahedronMesh4 = new THREE.Mesh(this.octahedronGeometry, this.material.clone());
-    scene.add(this.octahedronMesh4); 
-    this.octahedronMesh3.material.transparent=true;
-    this.octahedronMesh3.material.opacity=1;
-    this.octahedronMesh3.material.wireframe=false;
-    this.octahedronMesh4.material.transparent=true;
-    this.octahedronMesh4.material.opacity=1;
-    this.octahedronMesh4.material.wireframe=false;
-    this.octahedronMesh4.rotation.z += 90;
+    this.octahedronMesh2.scale.set(1, 0.75, 0.75);
+    this.octahedronMesh.scale.set(1, 0.75, 0.75);
+
 
     const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
     const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
@@ -2076,126 +2068,119 @@ this.sceneObjects = [];
 this.sceneObjects.push(this.gridMesh);
 this.sceneObjects.push(this.octahedronMesh);
 this.sceneObjects.push(this.octahedronMesh2);
-this.sceneObjects.push(this.octahedronMesh3);
-this.sceneObjects.push(this.octahedronMesh4);
 this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahedron)); 
-
-    },
+this.orbitSpeed = 0.5;
+this.attractionSpeed = 0.025;
+this.rotationIncrement = 0.005;
+this.miniRotationIncrement = 0.01;
+this.scaleDecayFactor = 0.95;
+this.miniScaleSpeed = 0.005;
+this.radiusSpeed = 0.50;
+this.gridRotationSpeed = 0.002;
+this.scaleThreshold = 0.3;
+this.meshScaleThreshold = 0.1;
+this.frameCount = 0;
+},
     update: function(scene, camera, renderer) {
-
-        if(isMainMenu){
-            this.octahedronMesh.rotation.z -= 0.005;
-            this.octahedronMesh2.rotation.z += 0.005;
-            this.octahedronMesh3.rotation.z -= 0.005;
-            this.octahedronMesh4.rotation.z += 0.005;
-            this.octahedronMesh4.material.opacity-=0.002;
-            this.octahedronMesh3.material.opacity-=0.002;
-
-            if (this.octahedronMesh3.material.opacity <= 0) { 
-                scene.remove(this.octahedronMesh4); 
-                scene.remove(this.octahedronMesh3); 
-            }
-
-            player.rotation.y += 0.005;
-            player.rotation.y = player.rotation.y % (2 * Math.PI); 
+        if (this.frameCount++ % 2 !== 0) return;  
+        const timeNow = Date.now() * 0.001;
+        if (isMainMenu) {
+            if (player.mesh) player.mesh.scale.set(0, 0, 0);
     
-            this.miniOctahedrons.forEach((miniOctahedron,index) => {
-            miniOctahedron.rotation.x += 0.01;
-            miniOctahedron.rotation.y += 0.01;
-            const orbitSpeed = 0.5;
-            const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
-            const phi = Math.PI * index / this.miniOctahedrons.length;
-            const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
-            const angle = Date.now() * 0.001 * orbitSpeed;
-            miniOctahedron.position.set(
-                this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
-                this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
-                this.octahedronMesh.position.z +  orbitRadius * Math.sin(angle + theta) * Math.sin(phi),
-            );
-            const direction = new THREE.Vector3(0, 0, 0).sub(miniOctahedron.position).normalize();
-            const attractionSpeed = 0.025;
-            const distanceToCenter = miniOctahedron.position.distanceTo(new THREE.Vector3(0, 0, 0));
-            if (distanceToCenter > 1) { 
-                miniOctahedron.position.addScaledVector(direction, attractionSpeed);
+            this.octahedronMesh.rotation.z -= this.rotationIncrement;
+            this.octahedronMesh2.rotation.z += this.rotationIncrement;
+    
+            this.miniOctahedrons.forEach((miniOctahedron, index) => {
+                miniOctahedron.rotation.x += this.miniRotationIncrement;
+                miniOctahedron.rotation.y += this.miniRotationIncrement;
+    
+                const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
+                const phi = Math.PI * index / this.miniOctahedrons.length;
+                const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
+                const angle = timeNow * this.orbitSpeed;
+    
+                miniOctahedron.position.set(
+                    this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
+                    this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
+                    this.octahedronMesh.position.z + orbitRadius * Math.sin(angle + theta) * Math.sin(phi)
+                );
+    
+                const direction = miniOctahedron.position.clone().normalize().negate();
+                if (miniOctahedron.position.length() > 1) {
+                    miniOctahedron.position.addScaledVector(direction, this.attractionSpeed);
+                }
+            });
+        } else if (this.miniOctahedrons.length > 1) {
+            this.octahedronMesh.scale.multiplyScalar(this.scaleDecayFactor);
+            this.octahedronMesh2.scale.multiplyScalar(this.scaleDecayFactor);
+    
+            if (this.octahedronMesh.scale.x <= this.meshScaleThreshold) {
+                scene.remove(this.octahedronMesh, this.octahedronMesh2);
             }
-        });
-        }else if (this.miniOctahedrons.length>1){
-            this.octahedronMesh.scale.multiplyScalar(1 - 0.05); 
-            this.octahedronMesh2.scale.multiplyScalar(1 - 0.05); 
-            this.octahedronMesh3.scale.multiplyScalar(1 - 0.05); 
-            this.octahedronMesh4.scale.multiplyScalar(1 - 0.05); 
-            if (this.octahedronMesh.scale.x <= 0.1) { 
-                scene.remove(this.octahedronMesh);
-                scene.remove(this.octahedronMesh2); 
-                scene.remove(this.octahedronMesh3); 
-                scene.remove(this.octahedronMesh4); 
-            }
-            this.miniOctahedrons.forEach((miniOctahedron,index) => {
-                const direction = new THREE.Vector3().subVectors(miniOctahedron.position, this.octahedronMesh.position).normalize();
-                const speed = 0.1; 
-                miniOctahedron.position.addScaledVector(direction, speed); 
-                miniOctahedron.rotation.x += 0.01;
-                miniOctahedron.rotation.y += 0.01;
-                const scaleSpeed = 0.005;
-                miniOctahedron.scale.multiplyScalar(1 - scaleSpeed); 
-                if (miniOctahedron.scale.x <= 0.3) { 
-                     scene.remove(miniOctahedron); 
-                     this.miniOctahedrons.splice(index, 1);
+    
+            this.miniOctahedrons.forEach((miniOctahedron, index) => {
+                miniOctahedron.position.addScaledVector(
+                    miniOctahedron.position.clone().sub(this.octahedronMesh.position).normalize(),
+                    0.1
+                );
+                miniOctahedron.rotation.x += this.miniRotationIncrement;
+                miniOctahedron.rotation.y += this.miniRotationIncrement;
+                miniOctahedron.scale.multiplyScalar(1 - this.miniScaleSpeed);
+    
+                if (miniOctahedron.scale.x <= this.scaleThreshold) {
+                    scene.remove(miniOctahedron);
+                    this.miniOctahedrons.splice(index, 1);
                 }
             });
         }
-
+    
         this.gridMaterial.uniforms.time.value += 0.01;
         this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
-        this.lightSourceIndex = 0;
-
-        if(!isMobile){
-            xpSpheres.forEach(sphere => {
-                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
-
-            enemies.forEach(enemy => {
-                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
-        }
-            this.lightSourceTexture.needsUpdate = true;
-            this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
-            const playerGridX = Math.floor(player.position.x /  this.gridSize) *  this.gridSize;
-            const playerGridZ = Math.floor(player.position.z /  this.gridSize) *  this.gridSize;
-            this.gridMesh.position.set(playerGridX, 0, playerGridZ);
     
-            if (isMainMenu) {
-                this.gridMesh.position.set(playerGridX,  this.axisY, playerGridZ);
-                this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
-            } else {
-                if ( this.radiusDirection === 1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value <  this.radiusTarget) {
-                    this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
-                    this.gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
-                } else if ( this.radiusDirection === -1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value > 10) {
-                    this.gridGeometry.rotateY(-Math.PI / 2 + 0.002);
-                    this.gridMaterial.uniforms.playerInfluenceRadius.value -= 0.50;
-                } else {
-                    if ( this.radiusDirection === 1) {
-                        this.radiusDirection = -1;  
-                        this.radiusTarget = 10;  
-                    } else {
-                        this.radiusDirection = 0; 
-                    }
+        if (!isMobile) {
+            this.lightSourceIndex = 0;
+            const addLightSource = (obj) => {
+                if (obj.visible && this.lightSourceIndex < this.lightSourceTextureSize * this.lightSourceTextureSize) {
+                    this.lightSourceTextureData.set([obj.position.x, obj.position.y, obj.position.z], this.lightSourceIndex * 4);
+                    this.lightSourceIndex++;
                 }
+            };
+            xpSpheres.forEach(addLightSource);
+            enemies.forEach(addLightSource);
         }
- 
+    
+        this.lightSourceTexture.needsUpdate = true;
+        this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
+    
+        const playerGridX = Math.floor(player.position.x / this.gridSize) * this.gridSize;
+        const playerGridZ = Math.floor(player.position.z / this.gridSize) * this.gridSize;
+        this.gridMesh.position.set(playerGridX, isMainMenu ? this.axisY : 0, playerGridZ);
+    
+        if (isMainMenu) {
+            this.gridMesh.position.set(playerGridX, this.axisY, playerGridZ);
+            this.gridGeometry.rotateY(this.gridRotationSpeed);
+        } else {
+            const influenceRadius = this.gridMaterial.uniforms.playerInfluenceRadius.value;
+            if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
+                this.gridGeometry.rotateY(this.gridRotationSpeed);
+                this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
+            } else if (this.radiusDirection === -1 && influenceRadius > 10) {
+                this.gridGeometry.rotateY(this.gridRotationSpeed);
+                this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
+            } else {
+                if (this.radiusDirection === 1) {
+                    this.radiusDirection = -1;
+                    this.radiusTarget = 10;
+                } else {
+                    this.radiusDirection = 0;
+                }
+            }
+        }
     },
-    resumeGame: function(){},
+    
+    resumeGame: function(){
+        player.mesh.scale.set(2,2,2);
+    },
     cleanUp: function(scene) {
         this.sceneObjects.forEach(object => scene.remove(object));
         this.sceneObjects = []; 
@@ -2472,8 +2457,12 @@ this.sceneObjects = [];
 this.sceneObjects.push(this.gridMesh);
 this.sceneObjects.push(this.octahedronMesh);
 this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahedron)); 
-    },
+this.frameCount = 0;
+},
     update: function(scene, camera, renderer) {
+        this.frameCount++;
+        if (this.frameCount % 3 !== 0) return;  
+    
         this.gridMaterial.uniforms.time.value = performance.now() / 1000; 
  
         if(isMainMenu){
@@ -2526,24 +2515,6 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
         this.gridMaterial.uniforms.time.value += 0.01;
         this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
         this.lightSourceIndex = 0;
-
-            xpSpheres.forEach(sphere => {
-                if (sphere.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = sphere.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = sphere.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = sphere.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
-
-            enemies.forEach(enemy => {
-                if (enemy.visible &&  this.lightSourceIndex <  this.lightSourceTextureSize *  this.lightSourceTextureSize) {
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4] = enemy.position.x;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 1] = enemy.position.y;
-                    this.lightSourceTextureData[ this.lightSourceIndex * 4 + 2] = enemy.position.z;
-                    this.lightSourceIndex++;
-                }
-            });
     
             this.lightSourceTexture.needsUpdate = true;
             this.gridMaterial.uniforms.lightSourceCount.value =  this.lightSourceIndex;
@@ -2624,7 +2595,7 @@ const cameraDirection = new THREE.Vector3();
 const moveDirection = new THREE.Vector3();
 const rotationAxis = new THREE.Vector3(0, 1, 0);  
 const rotationSpeed = 0.1;
-let xpSphereUpdateFrame = 0; 
+let dropUpdateFrame = 0; 
 
 function updatePlayerMovement() {
     if (!canMove) return;
@@ -2663,13 +2634,12 @@ function updatePlayerMovement() {
 
     player.updateAbilities();
 
-    if (xpSphereUpdateFrame++ % 4 === 0) {
-        updateXPSpheres();
+    if (dropUpdateFrame++ % 4 === 0) {
+        updateDrops();
     }
 }
 
-// Throttled XP Sphere update function
-function updateXPSpheres() {
+function updateDrops() {
     for (let i = xpSpheres.length - 1; i >= 0; i--) {
         const xpSphere = xpSpheres[i];
         if (!xpSphere.visible) continue; 
