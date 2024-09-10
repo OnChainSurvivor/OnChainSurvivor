@@ -1875,7 +1875,7 @@ const worldTypes = [{
     }),
     setup: function(scene, camera, renderer) {
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
         
@@ -2933,10 +2933,41 @@ Entity.prototype.die = function() {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
-
+        const mainTitle = createTitleContainer('Onchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        //🏆\n⚔️\n🔗\n
         const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
-        web3Title.onclick = async () => {
+        web3Title.style.cursor = 'pointer';
+        const todaysContainer = document.createElement('div');
+        todaysContainer.classList.add('abilities-grid');
+        todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+        const miniplayerButton = createButton(player, .5);
+        const miniworldButton = createButton(world, .5);
+        const miniabilityButton = createButton(ability, .5);
+        todaysContainer.appendChild(miniplayerButton);
+        todaysContainer.appendChild(miniworldButton);
+        todaysContainer.appendChild(miniabilityButton);
+        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
+        const aboutTitle = createTitleElement('ⓘ\n⚙️\n🎵', 'lazy subtitle too btw', "subtitle");
+        const settingsTitle = createTitleElement('', 'lazy subtitle too btw', "title");
+        const audioTitle = createTitleElement('', 'lazy subtitle too btw', "title");
+     
+
+       addContainerUI('BR-container', [aboutTitle]);
+       addContainerUI('top-container', [todaysContainer,mainTitle]);
+      // addContainerUI('TL-container', [audioTitle]);
+      // addContainerUI('BL-container', [settingsTitle]);
+        uiContainers.forEach(container => {
+            container.style.cursor = 'pointer';
+            container.onclick = () => {
+            canMove = false;
+            isPaused = true;
+            hideUI();
+            createInfoMenu();
+        };})
+
+  
+        addContainerUI('bottom-container', [subTitle]);
+        addContainerUI('TR-container', [web3Title]).onclick = async () => {
             if (window.ethereum) {
                 const web3 = new Web3(window.ethereum);
                 try {
@@ -2966,35 +2997,6 @@ Entity.prototype.die = function() {
                 alert('MetaMask is not installed. Please install it to use this feature.');
             }
         };
-        const todaysContainer = document.createElement('div');
-        todaysContainer.classList.add('abilities-grid');
-        todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-        const miniplayerButton = createButton(player, .2);
-        const miniworldButton = createButton(world, .2);
-        const miniabilityButton = createButton(ability, .2);
-        todaysContainer.appendChild(miniplayerButton);
-        todaysContainer.appendChild(miniworldButton);
-        todaysContainer.appendChild(miniabilityButton);
-        const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "title");
-        const settingsTitle = createTitleElement('⚙️', 'lazy subtitle too btw', "title");
-        const audioTitle = createTitleElement('🎵', 'lazy subtitle too btw', "title");
-      //  todaysContainer.appendChild(aboutTitle);
-       addContainerUI('BR-container', [aboutTitle]);
-       addContainerUI('TL-container', [audioTitle]);
-       addContainerUI('BL-container', [settingsTitle]);
-        uiContainers.forEach(container => {
-            container.style.cursor = 'pointer';
-            container.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            createInfoMenu();
-            };})
-
-        addContainerUI('top-container', [mainTitle]);
-        addContainerUI('bottom-container', [subTitle]);
-        addContainerUI('TR-container', [web3Title]);
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
@@ -3318,19 +3320,7 @@ function createInfoMenu() {
       refreshDisplay();
     };
     popUpContainer.appendChild(statusButton);
-
-    const todaysContainer = document.createElement('div');
-    todaysContainer.classList.add('abilities-grid');
-    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-    const miniplayerButton = createButton(player, .6);
-    const miniworldButton = createButton(world, .6);
-    const miniabilityButton = createButton(ability, .6);
-    todaysContainer.appendChild(miniplayerButton);
-    todaysContainer.appendChild(miniworldButton);
-    todaysContainer.appendChild(miniabilityButton);
-    popUpContainer.appendChild(todaysContainer);
-
-    const aboutButton = createTitleElement('\nWelcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const worldContainer = document.createElement('div');
