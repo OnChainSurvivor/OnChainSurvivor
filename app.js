@@ -168,7 +168,7 @@ const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 
-let topUI,centerUI,botUI;
+let topUI,centerUI,botUI,cornerUI;
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -2082,7 +2082,7 @@ this.meshScaleThreshold = 0.1;
 this.frameCount = 0;
 },
     update: function(scene, camera, renderer) {
-        if (this.frameCount++ % 2 !== 0) return;  
+       //if (this.frameCount++ % 2 !== 0) return;  
         const timeNow = Date.now() * 0.001;
         if (isMainMenu) {
             if (player.mesh) player.mesh.scale.set(0, 0, 0);
@@ -2177,7 +2177,6 @@ this.frameCount = 0;
             }
         }
     },
-    
     resumeGame: function(){
         player.mesh.scale.set(2,2,2);
     },
@@ -2667,7 +2666,7 @@ function LevelUp() {
     isPaused = true;
 
     hideContainerUI(topUI );
-    hideContainerUI(botUI);
+    hideContainerUI(cornerUI);
 
     player.xp = 0;  
 
@@ -2972,21 +2971,20 @@ Entity.prototype.die = function() {
         };
 
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        const infoContainer = createContainer(['bottom-container'], { left: '140%' })
         const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
-        infoContainer.appendChild(aboutTitle);
 
        topUI = addContainerUI('top-container', [mainTitle,web3Container]);
-       botUI = addContainerUI('bottom-container', [subTitle,infoContainer]);
-
-        infoContainer.onclick = () => {
+       botUI = addContainerUI('bottom-container', [subTitle]);
+       cornerUI = addContainerUI('corner-container', [aboutTitle]);
+       aboutTitle.onclick = () => {
             canMove = false;
             isPaused = true;
             hideContainerUI(topUI);
             hideContainerUI(botUI);
+            hideContainerUI(cornerUI);
             createInfoMenu();
         };
-        infoContainer.style.cursor = 'pointer';
+        aboutTitle.style.cursor = 'pointer';
 
     };
     createGameTitle();
@@ -3231,7 +3229,7 @@ function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive The Ethereumverse`;
 }
 
 function refreshDisplay() {
@@ -3242,51 +3240,35 @@ function refreshDisplay() {
     xpLoadingBar.id = 'xpLoadingBar';
     xpLoadingContainer.appendChild(xpLoadingBar);
 
-    const abilitiesContainer = createContainer(['abilities-grid-container']); 
-    abilitiesContainer.style.display = 'grid';
-    
-    abilitiesContainer.style.gridTemplateColumns =  'repeat(9, 1fr)';
-
-    const miniButtonScale = (window.innerWidth <= 830) ? .2 : .33;
-
-    const playerButton = createButton(player, miniButtonScale);
-   // const worldButton = createButton(world, miniButtonScale);
-  //  abilitiesContainer.appendChild(playerButton);
- //   abilitiesContainer.appendChild(worldButton);
-    player.abilities.slice(1).forEach(ability => {
+    const abilitiesContainer = createContainer(['abilities-grid']); 
+    const playerContainer = createContainer(['abilities-grid']); 
+    playerContainer.style.gridTemplateColumns =  'repeat(1, auto)';
+    const playerButton = createButton(player, .5);
+    const worldButton = createButton(world, .22);
+    playerContainer.appendChild(playerButton);
+    playerContainer.appendChild(abilitiesContainer);
+    abilitiesContainer.appendChild(worldButton);
+    player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, miniButtonScale));
+        abilitiesContainer.appendChild(createButton(clonedAbility, .22));
     });
 
-    const todaysContainer = document.createElement('div');
-    todaysContainer.classList.add('abilities-grid');
-    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-    const miniplayerButton = createButton(player, miniButtonScale);
-    const miniworldButton = createButton(world, miniButtonScale);
-    const miniabilityButton = createButton(ability, miniButtonScale);
-    todaysContainer.appendChild(miniplayerButton);
-    todaysContainer.appendChild(miniworldButton);
-    todaysContainer.appendChild(miniabilityButton);
-
-    todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-
-
-    topUI = addContainerUI('top-container', [xpLoadingContainer, abilitiesContainer]);
-    botUI = addContainerUI('bottom-container', [todaysContainer,timerDisplay]);
+    topUI = addContainerUI('bottom-container',[timerDisplay]);
+    cornerUI = addContainerUI('corner-container', [xpLoadingContainer,playerContainer]);
 
     topUI.onclick = () => {
         canMove = false;
         isPaused = true;
         hideContainerUI(topUI);
-        hideContainerUI(botUI);
+        hideContainerUI(cornerUI);
         createPlayerInfoMenu();
     };
 
-    botUI.onclick = () => {
+    cornerUI.onclick = () => {
         canMove = false;
         isPaused = true;
         hideContainerUI(topUI);
-        hideContainerUI(botUI);
+        hideContainerUI(cornerUI);
         createPlayerInfoMenu();
     };
 
@@ -3295,24 +3277,17 @@ function refreshDisplay() {
 function createPlayerInfoMenu() {
     const popUpContainer = createPopUpContainer();
 
-    const statusButton = createTitleContainer('\nGame paused', 'Return to the game', "subtitle");
-
-    statusButton.style.cursor = 'pointer';
-    statusButton.onclick = () => {
-      canMove = true;
-      hideContainerUI(centerUI);
-      refreshDisplay();
-    };
+    const statusButton = createTitleContainer('\nRun Status', 'Return to the game', "subtitle");
     popUpContainer.appendChild(statusButton);
 
-    const objectiveButton = createTitleElement('Your current run:', 'Return to the game', "subtitle");
-    popUpContainer.appendChild(objectiveButton);
-
+    const playerOnlyContainer = document.createElement('div');
+    playerOnlyContainer.classList.add('abilities-grid');
+    const classButton = createButton(player, 1);
+    playerOnlyContainer.appendChild(classButton);
+    popUpContainer.appendChild(playerOnlyContainer);
     const playerClassContainer = document.createElement('div');
     playerClassContainer.classList.add('abilities-grid');
-    const classButton = createButton(player, 1);
     const worldButton = createButton(world, 1);
-    playerClassContainer.appendChild(classButton);
     playerClassContainer.appendChild(worldButton);
 
   
@@ -3325,23 +3300,16 @@ function createPlayerInfoMenu() {
     popUpContainer.appendChild(playerClassContainer);
     const goBackButton = createTitleContainer('\n - Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
-
-
+    popUpContainer.appendChild(goBackButton);
     centerUI = addContainerUI('center-container', [popUpContainer]);
 
-    goBackButton.onclick = () => {
-        canMove = true;
-        hideContainerUI(centerUI);
-        refreshDisplay();
-    };
-    popUpContainer.appendChild(goBackButton);
-    for (const button of playerClassContainer.children) {
-        button.onclick = () => {
+
+        centerUI.onclick = () => {
             canMove = true;
             hideContainerUI(centerUI);
             refreshDisplay();
         };
-    }
+    
 
 }
 
@@ -3490,7 +3458,7 @@ function resumeGame() {
     if(isMainMenu){ 
     world.resumeGame();
     isMainMenu = false;
-
+    hideContainerUI(cornerUI);
     hideContainerUI(topUI);
     hideContainerUI(botUI);
     setTimeout(() => { refreshDisplay() }, 1050);
