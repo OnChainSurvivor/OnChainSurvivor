@@ -2173,6 +2173,7 @@ this.frameCount = 0;
                 }
             }
         }
+        
     },
     resumeGame: function(){
         player.mesh.scale.set(2,2,2);
@@ -2628,6 +2629,9 @@ function updatePlayerMovement() {
     );
     camera.lookAt(player.position);
 
+    if(cameraHeight <= (isMobile ? 35:30))
+    cameraHeight+=0.25;
+
     player.updateAbilities();
 
     if (dropUpdateFrame++ % 4 === 0) {
@@ -2965,26 +2969,32 @@ Entity.prototype.die = function() {
         const todaysContainer = document.createElement('div');
         todaysContainer.classList.add('abilities-grid');
         todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
-        const miniplayerButton = createButton(player, .4);
-        const miniworldButton = createButton(world, .4);
-        const miniabilityButton = createButton(ability, .4);
+        const miniplayerButton = createButton(player, .2);
+        const miniworldButton = createButton(world, .2);
+        const miniabilityButton = createButton(ability, .2);
         todaysContainer.appendChild(miniplayerButton);
         todaysContainer.appendChild(miniworldButton);
         todaysContainer.appendChild(miniabilityButton);
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
-
-       addContainerUI('top-container', [mainTitle]);
-       addContainerUI('bottom-container', [subTitle,todaysContainer]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createInfoMenu();
-    };
+        const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "title");
+        const settingsTitle = createTitleElement('⚙️', 'lazy subtitle too btw', "title");
+        const audioTitle = createTitleElement('🎵', 'lazy subtitle too btw', "title");
+      //  todaysContainer.appendChild(aboutTitle);
        addContainerUI('BR-container', [aboutTitle]);
-       addContainerUI('TR-container', [web3Title]);
-    aboutTitle.style.cursor = 'pointer';
+       addContainerUI('TL-container', [audioTitle]);
+       addContainerUI('BL-container', [settingsTitle]);
+        uiContainers.forEach(container => {
+            container.style.cursor = 'pointer';
+            container.onclick = () => {
+            canMove = false;
+            isPaused = true;
+            hideUI();
+            createInfoMenu();
+            };})
 
+        addContainerUI('top-container', [mainTitle]);
+        addContainerUI('bottom-container', [subTitle]);
+        addContainerUI('TR-container', [web3Title]);
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
@@ -3224,7 +3234,7 @@ function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive The Ethereumverse`;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.`;
 }
 
 function refreshDisplay() {
@@ -3461,8 +3471,6 @@ function animate() {
             updatePlayerMovement();
             updateEnemies();
             updateTimerDisplay();
-             if(cameraHeight <= (isMobile ? 35:30))
-                cameraHeight+=0.25;
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
