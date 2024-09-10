@@ -167,8 +167,7 @@ const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
-
-let topUI,centerUI,botUI,cornerUI,connectUI;
+const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
@@ -2664,10 +2663,7 @@ function updateDrops() {
 function LevelUp() {
     canMove = false;
     isPaused = true;
-
-    hideContainerUI(topUI );
-    hideContainerUI(cornerUI);
-
+   hideUI();
     player.xp = 0;  
 
     const upgradableAbilities = player.getUpgradableAbilities();
@@ -2862,18 +2858,17 @@ Entity.prototype.die = function() {
     function addContainerUI(location,uiElements){
         const container = document.createElement('div');
         document.body.appendChild(container);
-
         container.classList.add(location, 'fade-in');
-      
         uiElements.forEach(element => {
             container.appendChild(element);
         });
-
+        uiContainers.push(container); // Add the container to the array
         setTimeout(() => {container.classList.add('show'); }, 10);
         return container;
     }    
 
-    function hideContainerUI(container){
+    function hideUI(){
+        uiContainers.forEach(container => {
         container.classList.add('fade-out'); 
         setTimeout(() => { container.classList.add('hide'); }, 10);
         setTimeout(() => {
@@ -2882,6 +2877,8 @@ Entity.prototype.die = function() {
         }
         container.parentNode.removeChild(container);
         }, 1000);
+    })
+        uiContainers.length = 0;
     }
 
     const spinningStates = {
@@ -2967,24 +2964,28 @@ Entity.prototype.die = function() {
                 alert('MetaMask is not installed. Please install it to use this feature.');
             }
         };
-
+        const todaysContainer = document.createElement('div');
+        todaysContainer.classList.add('abilities-grid');
+        todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+        const miniplayerButton = createButton(player, .4);
+        const miniworldButton = createButton(world, .4);
+        const miniabilityButton = createButton(ability, .4);
+        todaysContainer.appendChild(miniplayerButton);
+        todaysContainer.appendChild(miniworldButton);
+        todaysContainer.appendChild(miniabilityButton);
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
         const aboutTitle = createTitleElement('ⓘ', 'lazy subtitle too btw', "subtitle");
 
-       topUI = addContainerUI('top-container', [mainTitle]);
-       botUI = addContainerUI('bottom-container', [subTitle]);
-       cornerUI = addContainerUI('TL-container', [aboutTitle]);
-       connectUI= addContainerUI('TR-container', [web3Title]);
-       aboutTitle.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideContainerUI(topUI);
-            hideContainerUI(botUI);
-            hideContainerUI(cornerUI);
-            hideContainerUI(connectUI);
-            createInfoMenu();
-        };
-        aboutTitle.style.cursor = 'pointer';
+       addContainerUI('top-container', [mainTitle]);
+       addContainerUI('bottom-container', [subTitle,todaysContainer]).onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createInfoMenu();
+    };
+       addContainerUI('BR-container', [aboutTitle]);
+       addContainerUI('TR-container', [web3Title]);
+    aboutTitle.style.cursor = 'pointer';
 
     };
     createGameTitle();
@@ -3019,27 +3020,23 @@ function createGameMenu() {
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
     const subTitle = createTitleElement('Move to quick start !', 'lazy subtitle too btw', "subtitle");
-    botUI = addContainerUI('bottom-container', [subTitle,menuButtonsContainer]);
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
+                hideUI();
                 canMove=false;
-                if (button === classContainer) {
-                    createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
-                } else if (button === classAbilityContainer) {
-                    createChooseMenu(abilityTypes, "\nChoose an Ability ⚔️","Ability");
-                } else if (button === worldContainer) {
-                    createChooseMenu(worldTypes, "\nChoose a Chain 🔗","World");
-                }
-                hideContainerUI(botUI);
+                if (button === classContainer)  createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
+                if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nChoose an Ability ⚔️","Ability");
+                if(button === worldContainer) createChooseMenu(worldTypes, "\nChoose a Chain 🔗","World");
+
             });
         });
- 
+        addContainerUI('center-container', [subTitle,menuButtonsContainer]);
         createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-//createGameMenu()
+   // createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -3047,9 +3044,7 @@ function createChooseMenu(entityList, text, type) {
     const popUpContainer = createPopUpContainer();
     const titleContainer = createTitleContainer(text,'For now it trully doesnt matter what you choose');
     const gridContainer = createGridContainer();
-
-
-    centerUI = addContainerUI('center-container', [popUpContainer]);
+    addContainerUI('center-container', [popUpContainer]);
     entityList.forEach(entity => {
         const itemButton = createButton(entity, 1);
         gridContainer.appendChild(itemButton);
@@ -3081,6 +3076,7 @@ function handleEntitySelection(entity, type) {
         const newAbility = new Ability(player, { ...entity});
         player.addAbility(newAbility);
         newAbility.activate();
+        hideUI();
         refreshDisplay();
     } else if (entity.isLocked) {
         return;
@@ -3088,28 +3084,27 @@ function handleEntitySelection(entity, type) {
         player.deactivateAbilities();
         scene.remove(player);
         player = new Entity(playerTypes.find(t => t === entity),new THREE.Vector3(0, 0, 0));
+        hideUI();
         createGameMenu();
     } else if (type === "Ability") {
         ability = entity;
+        hideUI();
         createGameMenu();
     } else if (type === "World") {
         world.cleanUp(scene);
         world = entity;
         world.setup(scene,camera,renderer);
+        hideUI();
         createGameMenu();
     }
     canMove = true;
-    hideContainerUI(centerUI);
 }
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
     function displayWeb3Menu(address) {
         canMove=false;
-        hideContainerUI(topUI );
-        hideContainerUI(botUI);
-        hideContainerUI(connectUI);
-        hideContainerUI(cornerUI);
+        hideUI();
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -3188,9 +3183,9 @@ function handleEntitySelection(entity, type) {
      }
      
         setTimeout(() => { 
-            topUI = addContainerUI('top-container', [subTitle]);
-            botUI = addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer]);
-            connectUI= addContainerUI('TR-container', [subTitleLogout]);
+            addContainerUI('top-container', [subTitle]);
+            addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer]);
+            addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
         }, 1050);
      
@@ -3205,7 +3200,7 @@ function handleEntitySelection(entity, type) {
            //          } else if (button === worldContainer) {
           //              createGallery(worldTypes, "Your Chains 🔗","World");
           //           }
-          //           hideContainerUI(center);
+          //           hideUI();
           //       });
           //    });
 
@@ -3245,35 +3240,29 @@ function refreshDisplay() {
     const abilitiesContainer = createContainer(['abilities-grid']); 
     const playerContainer = createContainer(['abilities-grid']); 
     playerContainer.style.gridTemplateColumns =  'repeat(1, auto)';
-    const playerButton = createButton(player, .5);
-    const worldButton = createButton(world, .22);
+    const playerButton = createButton(player, isMobile? .25:.5 );
+    const worldButton = createButton(world,  isMobile? .11:.22 );
     playerContainer.appendChild(playerButton);
     playerContainer.appendChild(abilitiesContainer);
     abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, .22));
+        abilitiesContainer.appendChild(createButton(clonedAbility,  isMobile? .11:.22));
     });
 
-    topUI = addContainerUI('bottom-container',[timerDisplay]);
-    cornerUI = addContainerUI('TL-container', [xpLoadingContainer,playerContainer]);
-
-    topUI.onclick = () => {
+    addContainerUI('bottom-container',[timerDisplay]).onclick = () => {
         canMove = false;
         isPaused = true;
-        hideContainerUI(topUI);
-        hideContainerUI(cornerUI);
+        hideUI();
         createPlayerInfoMenu();
     };
 
-    cornerUI.onclick = () => {
+    addContainerUI('TL-container', [xpLoadingContainer,playerContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
-        hideContainerUI(topUI);
-        hideContainerUI(cornerUI);
+        hideUI();
         createPlayerInfoMenu();
     };
-
 }
 
 function createPlayerInfoMenu() {
@@ -3303,16 +3292,11 @@ function createPlayerInfoMenu() {
     const goBackButton = createTitleContainer('\n - Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
     popUpContainer.appendChild(goBackButton);
-    centerUI = addContainerUI('center-container', [popUpContainer]);
-
-
-        centerUI.onclick = () => {
+    addContainerUI('center-container', [popUpContainer]).onclick = () => {
             canMove = true;
-            hideContainerUI(centerUI);
+            hideUI();
             refreshDisplay();
-        };
-    
-
+    };
 }
 
 function createInfoMenu() {
@@ -3322,7 +3306,7 @@ function createInfoMenu() {
     statusButton.style.cursor = 'pointer';
     statusButton.onclick = () => {
       canMove = true;
-      hideContainerUI(centerUI);
+      hideUI();
       refreshDisplay();
     };
     popUpContainer.appendChild(statusButton);
@@ -3337,7 +3321,6 @@ function createInfoMenu() {
     todaysContainer.appendChild(miniworldButton);
     todaysContainer.appendChild(miniabilityButton);
     popUpContainer.appendChild(todaysContainer);
-
 
     const aboutButton = createTitleElement('\nWelcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
@@ -3372,17 +3355,17 @@ function createInfoMenu() {
     const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
     
-    centerUI = addContainerUI('center-container', [popUpContainer]);
+addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
         canMove = true;
-        hideContainerUI(centerUI);
+        hideUI();
         createGameTitle();
     };
     popUpContainer.appendChild(goBackButton);
     for (const button of popUpContainer.children) {
         button.onclick = () => {
             canMove = true;
-            hideContainerUI(centerUI);
+            hideUI();
             createGameTitle();
         };
     }
@@ -3460,10 +3443,7 @@ function resumeGame() {
     if(isMainMenu){ 
     world.resumeGame();
     isMainMenu = false;
-    hideContainerUI(cornerUI);
-    hideContainerUI(topUI);
-    hideContainerUI(botUI);
-    hideContainerUI(connectUI);
+    hideUI();
     setTimeout(() => { refreshDisplay() }, 1050);
     const newAbility = new Ability(player, { ...ability});
     player.addAbility(newAbility);
