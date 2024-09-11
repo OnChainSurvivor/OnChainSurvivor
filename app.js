@@ -881,6 +881,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Feature Test ",
+    description: "Temporarily boosts allies' abilities.",
+    tooltip: "Test features. Temporarily boost ally abilities.",
+    thumbnail: 'Media/Abilities/FEATURETEST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Oracle Insight",
     description: "Predicts enemy movements, increasing evasion.",
     tooltip: "Seeing the future like an oracle!",
@@ -901,6 +911,16 @@ const abilityTypes = [
     },
 },
 {
+    title: " Trilemma Mastery",
+    description: "Master the trilemma by providing significant buffs to attack, defense, and movement speed while weakening enemies.",
+    tooltip: "Achieve trilemma mastery. Boost attack, defense, and movement speed while weakening enemies.",
+    thumbnail: "Media/Abilities/LAW.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Oracle Manipulation",
     description: "Disrupts enemy abilities based on false data.",
     tooltip: "Manipulated just like those price feeds!",
@@ -908,6 +928,36 @@ const abilityTypes = [
     isLocked: false,
     effect(user) { 
         this.update = () => {} 
+    },
+},
+{
+    title: "Market Manipulation ",
+    description: "Temporarily controls enemy movements.",
+    tooltip: "Manipulate the market. Control enemy movements.",
+    thumbnail: "Media/Abilities/MARKETMANIPULATION.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Impermanent Loss",
+    description: "Reduces damage taken from all sources.",
+    tooltip: "Shield against impermanent loss. Take less damage.",
+    thumbnail: 'Media/Abilities/IMPERMANENTLOSS.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Tripool",
+    description: "Creates three separate pools that buff allies' attack power.",
+    tooltip: "Triple the pools, triple the power. Buff your allies.",
+    thumbnail: 'Media/Abilities/TRIPOOL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
     },
 },
 {
@@ -925,6 +975,16 @@ const abilityTypes = [
     description: "Focuses on sustained damage and debuffs.",
     tooltip: "Be the debt collector. Sustain damage and apply debuffs.",
     thumbnail: "Media/Abilities/DEBTCOLLECTOR.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Market Swing",
+    description: "Temporarily increases critical hit chance and attack speed.",
+    tooltip: "Ride the market swing. Increase critical hit chance and attack speed.",
+    thumbnail: "Media/Abilities/MARKETSWING.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -955,6 +1015,16 @@ const abilityTypes = [
     description: "Transfers resources between allies.",
     tooltip: "Bridging like cross-chain assets!",
     thumbnail: 'Media/Abilities/BRIDGE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Buyout Power",
+    description: "Temporarily takes control of an enemy, turning them into an ally.",
+    tooltip: "Leverage your buyout power. Control an enemy.",
+    thumbnail: 'Media/Abilities/BUYPOWER.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -992,6 +1062,36 @@ const abilityTypes = [
     },
 },
 {
+    title: "Crypto Fork",
+    description: "Creates a duplicate of an ability for a short time.",
+    tooltip: "Forking like a blockchain split!",
+    thumbnail: 'Media/Abilities/CRYPTOFORK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Wallet",
+    description: "Stores resources securely.",
+    tooltip: "Storing like a hardware wallet!",
+    thumbnail: 'Media/Abilities/WALLET.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Slashing Protection",
+    description: "Reduces damage taken from critical hits.",
+    tooltip: "Protect against slashing. Reduce crit damage.",
+    thumbnail: 'Media/Abilities/SLASHINGPROTECTION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Security Lockdown",
     description: "Reduces damage taken for a short period.",
     tooltip: "Lock it down, secure the bag. Take less damage.",
@@ -1023,6 +1123,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "ReBalancing ",
+    description: "Spreads damage taken to nearby enemies.",
+    tooltip: "Balance the load. Spread damage to nearby enemies.",
+    thumbnail: 'Media/Abilities/REBALANCING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Crypto Rally",
     description: "Temporarily boosts all allies' speed.",
     tooltip: "Rallying like a bull market!",
@@ -1047,6 +1157,16 @@ const abilityTypes = [
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
     tooltip: "Pump it up, then brace for the dump.",
     thumbnail: 'Media/Abilities/PND.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Pump",
+    description: "Increases attack power significantly for a short duration",
+    tooltip: "Pump it up.",
+    thumbnail: 'Media/Abilities/PUMP.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1097,6 +1217,26 @@ const abilityTypes = [
     description: "Temporarily silences and weakens enemies.",
     tooltip: "Engage in debate. Silence and weaken enemies.",
     thumbnail: 'Media/Abilities/DEBATE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Regulatory Framework ",
+    description: "Creates a barrier that blocks enemy movement.",
+    tooltip: "Establish a regulatory framework. Block enemy movement.",
+    thumbnail: 'Media/Abilities/REGULATORYFRAMEWORK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Transaction Revert",
+    description: "Teleports the player to a previous location, avoiding damage.",
+    tooltip: "Revert to a previous location. Avoid damage.",
+    thumbnail: 'Media/Abilities/TXREVERT.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1183,6 +1323,7 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
+
 {
     title: "Frontrunning Bot",
     description: "Increases movement speed and prioritizes attacks.",
@@ -1394,6 +1535,106 @@ const abilityTypes = [
     },
 },
 {
+    title: "Capital Injection ",
+    description: "Provides a significant health boost to the player or an ally.",
+    tooltip: "Inject capital. Boost health significantly.",
+    thumbnail: 'Media/Abilities/CAPITALINJECTION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Due Diligence",
+    description: "Reveals enemies' weaknesses and reduces their defenses.",
+    tooltip: "Conduct due diligence. Know and weaken your enemies.",
+    thumbnail: 'Media/Abilities/DD.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Funding Boost ",
+    description: "Increases resource generation for a short period.",
+    tooltip: "Boost your funding. Increase resource generation.",
+    thumbnail: 'Media/Abilities/FUNDINGBOOST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Firewall Fort",
+    description: "Increases the player's defense temporarily.",
+    tooltip: "Raise your firewall. Increase defense.",
+    thumbnail: 'Media/Abilities/FIREWALL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "DeFi Supremacy",
+    description: "Establishes complete DeFi dominance, significantly enhancing all aspects of resource generation and providing massive buffs to allies.",
+    tooltip: "Achieve DeFi supremacy. Enhance resource generation and buff allies extensively.",
+    thumbnail: 'Media/Abilities/DEFISUPREMACY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Leveraged Yield",
+    description: "Increases resource generation for a short period.",
+    tooltip: "Boost yield. Increase resource generation temporarily.",
+    thumbnail: 'Media/Abilities/LEVERAGEDYIELD.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Collector Frenzy",
+    description: "Calls upon devoted collectors to swarm enemies, dealing massive damage.",
+    tooltip: "Collectors are on the hunt! Unleash their frenzy on your foes.",
+    thumbnail: 'Media/Abilities/COLLECTORSFRENZY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Capitulation',
+    description: "Spreads widespread fear and panic, causing enemies to lose resources and morale.",
+    tooltip: "Instill capitulation. Cause widespread fear and resource loss.",
+    thumbnail: 'Media/Abilities/CAPITULATION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Maxi Ascendancy",
+    description: "Ascends to a state of maximum power, drastically increasing all stats and providing powerful buffs to allies for a short period.",
+    tooltip: "Achieve maxi ascendancy. Drastically boost stats and buff allies.",
+    thumbnail: 'Media/Abilities/MAXIAS.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Inspection",
+    description: "Reveals and debuffs all enemies in a targeted area.",
+    tooltip: "Conduct an inspection. Reveal and debuff enemies.",
+    thumbnail: 'Media/Abilities/INSPECTION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Exit Hatch ",
     description: "Grants one extra life.",
     tooltip: "One chance to escape from a L2+.",
@@ -1545,7 +1786,7 @@ const abilityTypes = [
     },
 },
 {
-    title: "Crypto Whale",
+    title: "Whale Games",
     description: "Uses overwhelming power to crush enemies.",
     tooltip: "Whale-sized like a market mover!",
     thumbnail: 'Media/Abilities/CRYPTOWHALE.png',
@@ -1559,6 +1800,46 @@ const abilityTypes = [
     description: "Increases allies' attack power.",
     tooltip: "Bullish like a market rally!",
     thumbnail: 'Media/Abilities/BULLISHSENTIMENT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Vampire ATTACK",
+    description: "Steals resources.",
+    tooltip: "Steal resources and buff allies.",
+    thumbnail: "Media/Abilities/VAMPIREATTACK.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Black Swan Event",
+    description: "Creates a chaotic event that massively disrupts enemy abilities and resources while providing significant buffs to allies.",
+    tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
+    thumbnail: "Media/Abilities/BLACKSWAM.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "White Swan Event",
+    description: "Creates an event that massively benefits all market participants providing significant buffs.",
+    tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
+    thumbnail: "Media/Abilities/WHITESWAM.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crab Market Action ",
+    description: "Reverses buff and debuffs of everyone for the rest of the game .",
+    tooltip: "Trigger a Crab market action.",
+    thumbnail: "Media/Abilities/CRABACTION.png",
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1585,10 +1866,30 @@ const abilityTypes = [
     },
 },
 {
+    title: "All In",
+    description: "Deals massive damage to a single target but leaves the player vulnerable.",
+    tooltip: "Go all in. Deal massive damage but become vulnerable.",
+    thumbnail: 'Media/Abilities/ALLIN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Token Swap",
     description: "Exchanges debuffs for buffs with enemies.",
     tooltip: "Swapped like a dex trade!",
     thumbnail: 'Media/Abilities/COINSWAP.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Bug Fixing',
+    description: "Fixes bugs in the code, restoring a small amount of health.",
+    tooltip: "Fix the bugs. Restore your health.",
+    thumbnail: 'Media/Abilities/ASSISTEDBUGFIXING.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2935,7 +3236,7 @@ Entity.prototype.die = function() {
     function createGameTitle(){
         const mainTitle = createTitleContainer('Onchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         //🏆\n⚔️\n🔗\n
-        const web3Title = createTitleElement('♦️\nConnect\n♦️', 'lazy subtitle too btw', "subtitle");
+        const web3Title = createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = document.createElement('div');
         todaysContainer.classList.add('abilities-grid');
@@ -3045,7 +3346,7 @@ function createGameMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
         createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     };
-   // createGameMenu()
+ //createGameMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -3141,9 +3442,9 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleContainer(`Welcome, 0x!`, 'lazy subtitle too btw');
+        const subTitle = createTitleContainer(`Welcome,\n Survivor!`, 'lazy subtitle too btw');
         
-        const subTitleRun = createTitleElement('⌛️ Global Run ⌛️', 'lazy subtitle too btw', "subtitle");
+        const subTitleRun = createTitleElement('⌛️ Set Run ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
          
         const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw',"subtitle");
@@ -3173,7 +3474,7 @@ function handleEntitySelection(entity, type) {
             const goal = 1000000; 
             const percentage = (currentAmount / goal) * 100;
             loadingBar.style.width = percentage + '%';
-            loadingText.innerText ='❤️ Next Run: ' + percentage.toFixed(2) + '%❤️';
+            loadingText.innerText ='❤️ Current Run : ' + percentage.toFixed(2) + '%❤️';
             loadingText.classList.add('rainbow-text'); 
         }
      
