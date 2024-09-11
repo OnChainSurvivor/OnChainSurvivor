@@ -2951,7 +2951,6 @@ Entity.prototype.die = function() {
         const settingsTitle = createTitleElement('', 'lazy subtitle too btw', "title");
         const audioTitle = createTitleElement('', 'lazy subtitle too btw', "title");
      
-
        addContainerUI('BR-container', [aboutTitle]);
        addContainerUI('top-container', [todaysContainer,mainTitle]);
       // addContainerUI('TL-container', [audioTitle]);

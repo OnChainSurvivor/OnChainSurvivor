@@ -37,19 +37,39 @@ where:
 
 Note:  Random difficulty factor $B(t)$ that is extracted from the latest block in the blockchain. The factor $B(t)$ could be based on various metrics from the blockchain, such as transaction volume, block size, or other relevant activities. The term $βB(t)$ allows the difficulty to adapt dynamically based on real-time blockchain data, adding an element of unpredictability and aligning with the decentralized nature of blockchain games. 
 
-##  📚 Basic Interaction Models 🕹️
+##  📚  Interaction Models 🕹️
 
-As frictionless as possible, the game's first priority is FUN. If the game is not fun then it will not be sustainable! 
+As frictionless and simple as possible, No wallet requires to enjoy the fun, the game's first priority is FUN. If the game is not fun then it will not be sustainable! 
 
 ```mermaid
 graph TD
 A[Welcome Screen] -->B[Quick Free to play mode]
 A[Welcome Screen] --> D{Connect Wallet}
 A --> C[Join a survivors Official Run]
-D --> E[Request a Run]
+D --> E[Request/Bid  a Run]
 D --> z[Sponsor Official Run]
 D --> G[Write run records]
 ```
+
+Rank based auction system with periodic reset model, giving chances for all the supported chains to be able to write into the Hall of survivors!
+
+```mermaid
+graph TD
+    A[ L1 and L2 Players] -->|Place Bids to own the game state| B{Bid Pool}
+    B -->|Sorted by Global Bid Value| C{Daily Ranked List}
+    C --> D1[1st Place chain]
+    C --> D2[2nd Place]
+    C --> D3[3rd Place]
+  
+    C --> D12[11th...12th... N chain]
+    
+    %% At midnight reset logic
+    D1 -->| Owns the game for a day | E[Resets at midnight, other chains gain a rank]
+    E -->|Winner Becomes Last, must bid or wait his turn| C
+
+    F[Rebidding Process] -->|Outbid to Regain #1| B
+```
+Final design of onchain survivor, a peer-to-peer multiplayer, trustless, descentralized  game that keeps the survivors honest cryptography! 
 
 ```mermaid
    sequenceDiagram
