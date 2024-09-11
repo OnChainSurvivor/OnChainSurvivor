@@ -3670,7 +3670,95 @@ addContainerUI('center-container', [popUpContainer]);
 
 
 }
+function createTransparencyReport() {
+    const popUpContainer = createPopUpContainer();
 
+    const titleButton = createTitleContainer('\nTransparency\nReport\n⚖️', 'Return to the game', "subtitle");
+    titleButton.style.cursor = 'pointer';
+    titleButton.onclick = () => {
+      canMove = true;
+      hideUI();
+     // refreshDisplay();
+    };
+    popUpContainer.appendChild(titleButton);
+    const aboutButton = createTitleElement(' You can read and run every single line \n of code of the onchain survivor client !\n\n Repository:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(aboutButton);
+
+    const githubContainer = document.createElement('div');
+    githubContainer.classList.add('abilities-grid');
+    const githubButton = createButton({
+        title: "Read Onchain Survivor Code",
+        description: "Allows you to check the client source code, line by line, public for everyone to verify.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/???.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    githubContainer.appendChild(githubButton);
+    popUpContainer.appendChild(githubContainer);
+
+    const rankingText = createTitleElement('\nYou can verify the Global Ranking smart \n contract powering the survivor system\n\n Ranking Smart Contract:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(rankingText);
+
+    const rankingContainer = document.createElement('div');
+    rankingContainer.classList.add('abilities-grid');
+    const rankingButton = createButton({
+        title: "Verify Ranking Smart Contract",
+        description: "Allows you to check the Ranking Smart Contract source code, line by line, public for everyone to verify.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/???.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    rankingContainer.appendChild(rankingButton);
+    popUpContainer.appendChild(rankingContainer);
+
+    const sponsorText = createTitleElement('\n You can also verify the Rollup Centric \n Sponsor Contract that settles in Ethereum!\n\n Sponsor Smart Contract:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(sponsorText);
+
+    const sponsorContainer = document.createElement('div');
+    sponsorContainer.classList.add('abilities-grid');
+    const sponsorButton = createButton({
+        title: "Verify Sponsor Smart Contract",
+        description: "Allows you to check the Sponsor Smart Contract source code, line by line, public for everyone to verify.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/???.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    sponsorContainer.appendChild(sponsorButton);
+    popUpContainer.appendChild(sponsorContainer);
+
+    const disclaimerText = createTitleElement('\n None of the smart contracts hold balance. \n Every sponsor transaction is final. \n Timeframes might change for the players! \n Theres only one social media account.\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(disclaimerText);
+
+    const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    
+addContainerUI('center-container', [popUpContainer]);
+    goBackButton.onclick = () => {
+        canMove = true;
+        hideUI();
+        createGameTitle();
+    };
+    popUpContainer.appendChild(goBackButton);
+    for (const button of popUpContainer.children) {
+        button.onclick = () => {
+            canMove = true;
+            hideUI();
+            createGameTitle();
+        };
+    }
+
+
+}
+//createTransparencyReport();
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
