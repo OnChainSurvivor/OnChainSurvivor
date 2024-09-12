@@ -21,7 +21,7 @@ Onchain Survivor is a web-based top-down arena shooter survival roguelite game t
 
 ### 🥇 Phase 1 🥇: Rank-Based Auction with Periodic reset to control the game state
 
-This auction system integrates both L1 (Ethereum) and L2 blockchains, allowing users  from these networks to collectively bid for a position on a ranked list. The bidding system is competitive, with each user placing bids to secure the top positions on the leaderboard. The bidding structure is dynamic and ONLY the winner resets daily, ensuring opportunities for all participant chains.
+This auction system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to bid for a position on a ranked list. The bidding system is competitive, with each user placing bids to secure the top positions on the leaderboard. The bidding structure is dynamic and ONLY the winner resets daily, ensuring opportunities for all participant chains.
 
 Auction Process
 

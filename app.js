@@ -1153,6 +1153,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Crypto Blacklist",
+    description: "Grants immunity to buffs.",
+    tooltip: "Blocked",
+    thumbnail: 'Media/Abilities/BLACKLIST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Pump and Dump",
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
     tooltip: "Pump it up, then brace for the dump.",
@@ -3284,7 +3294,8 @@ Entity.prototype.die = function() {
                     }
                     const displayName = ensName || address;
                     localStorage.setItem('metaMaskAddress', address); 
-                    displayWeb3Menu(displayName); 
+                    hideUI();
+                    createWeb3Menu(displayName); 
         
                 } catch (error) {
                     if (error.code === 4902) {
@@ -3412,9 +3423,8 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
-    function displayWeb3Menu(address) {
+    function createWeb3Menu(address) {
         canMove=false;
-        hideUI();
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -3443,29 +3453,74 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
         const subTitle = createTitleContainer(`Welcome,\n Survivor!`, 'lazy subtitle too btw');
+    
+        const hallreportContainer = document.createElement('div');
+        hallreportContainer.classList.add('abilities-grid');
+        const hallButton = createButton({
+            title: "Visit Hall of survivors",
+            description: "Allows you to Sponsor, accumulate, add official runs. Can also check the full list of survivors.",
+            tooltip: "...",
+            thumbnail: 'Media/Abilities/HALL.png',
+            isLocked: false,
+            effect(user) { 
+                this.update = () => {} 
+            },
+        }, 1);
+
+        hallreportContainer.appendChild(hallButton);
+        hallButton.onclick = () => {
+            hideUI();
+            createTransparencyReport();
+        };
+
+        const reportButton = createButton({
+            title: "Visit Transparency Report",
+            description: "Fun. Decentralization and transparency. View the transparency report in real time.",
+            tooltip: "...",
+            thumbnail: 'Media/Abilities/LAW.png',
+            isLocked: false,
+            effect(user) { 
+                this.update = () => {} 
+            },
+        }, 1);
+        reportButton.onclick = () => {
+            hideUI();
+            createTransparencyReport();
+        };
         
-        const subTitleRun = createTitleElement('⌛️ Set Run ⌛️', 'lazy subtitle too btw', "subtitle");
+        hallreportContainer.appendChild(reportButton);
+
+
+        const subTitleRun = createTitleElement('⌛️ About Runs ⌛️', 'lazy subtitle too btw', "subtitle");
         subTitleRun.style.cursor = 'pointer';
-         
+        subTitleRun.onclick = () => {
+            hideUI();
+            createRunMenu();
+        };
         const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw',"subtitle");
         subTitleReport.style.cursor = 'pointer';
- 
-        const subTitleHall = createTitleElement('💎 Hall of Survivors 💎', 'lazy subtitle too btw',"subtitle");
+        subTitleReport.onclick = () => {
+            hideUI();
+            createTransparencyReport();
+        };
+
+
+        const subTitleHall = createTitleElement(' Hall of Survivors 💎', 'lazy subtitle too btw',"subtitle");
         subTitleHall.style.cursor = 'pointer';
  
         const subTitleLogout = createTitleElement('♢\nLog Out\n♢', 'lazy subtitle too btw',"subtitle");
         subTitleLogout.style.cursor = 'pointer';
         subTitleLogout.onclick = () => {
+            canMove=true;
             localStorage.removeItem('metaMaskAddress');
-            location.reload(); 
+            hideUI();
+            createGameTitle();
         };
  
         const loadingContainer = document.createElement('div');
-        loadingContainer.classList.add('loading-container');
-             
+        loadingContainer.classList.add('loading-container'); 
         const loadingBar = document.createElement('div');
         loadingBar.classList.add('loading-bar');
-         
         const loadingText =  createTitleElement('', 'who even keeps track of these', "subtitle");
         loadingContainer.appendChild(loadingBar);
 
@@ -3474,7 +3529,7 @@ function handleEntitySelection(entity, type) {
             const goal = 1000000; 
             const percentage = (currentAmount / goal) * 100;
             loadingBar.style.width = percentage + '%';
-            loadingText.innerText ='❤️ Current Run : ' + percentage.toFixed(2) + '%❤️';
+            loadingText.innerText ='❤️ Blocks Left: ' + percentage.toFixed(2) + '%❤️';
             loadingText.classList.add('rainbow-text'); 
         }
      
@@ -3493,8 +3548,8 @@ function handleEntitySelection(entity, type) {
      }
      
         setTimeout(() => { 
-            addContainerUI('top-container', [subTitle]);
-            addContainerUI('bottom-container', [subTitleRun,subTitleHall,subTitleReport,loadingText,loadingContainer]);
+            addContainerUI('top-container', [subTitle,hallreportContainer]);
+            addContainerUI('bottom-container', [subTitleRun,loadingText,loadingContainer]);
             addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
         }, 1050);
@@ -3514,16 +3569,17 @@ function handleEntitySelection(entity, type) {
           //       });
           //    });
 
-             createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
-             createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
-             createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
+           //  createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
+           //  createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
+            // createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     }
 
     window.addEventListener('load', async () => {
         const storedAddress = localStorage.getItem('metaMaskAddress');
         if (storedAddress) {
             const web3 = new Web3(window.ethereum);
-            displayWeb3Menu(storedAddress);
+            hideUI();
+            createWeb3Menu(storedAddress);
         }
     });
 /*---------------------------------------------------------------------------
@@ -3609,7 +3665,7 @@ function createPlayerInfoMenu() {
     };
 }
 
-function createInfoMenu() {
+function createInfoMenu( ) {
     const popUpContainer = createPopUpContainer();
 
     const statusButton = createTitleContainer('\nUpdated\neveryday!', 'Return to the game', "subtitle");
@@ -3620,7 +3676,9 @@ function createInfoMenu() {
       refreshDisplay();
     };
     popUpContainer.appendChild(statusButton);
-    const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n  a free to play, open source,\n roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+
+
+    const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n a roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const worldContainer = document.createElement('div');
@@ -3629,7 +3687,7 @@ function createInfoMenu() {
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
-    const objectiveText = createTitleElement('\nEach playrun has an objective, and \nafter you succesfully finish it, inscribe \n your record to the hall of survivors \n and become a winner for all of ethernity. \n\n Today`s Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const objectiveText = createTitleElement('\nEach playrun has an objective, and \nafter you survive, inscribe  your records \nto the hall of survivors for all of ethernity. \n\n Today`s Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
     const todaysPlayerContainer = document.createElement('div');
@@ -3647,7 +3705,7 @@ function createInfoMenu() {
     todaysAbilityContainer.appendChild(abilButton);
     popUpContainer.appendChild(todaysAbilityContainer);
 
-    const abilText = createTitleElement('\n Install many abilities during your run. \n let your creativity and intuition guide you, \n as some abilities are very sinergetic\n with each other. Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const abilText = createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities are very sinergetic. Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(abilText);
 
     const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
@@ -3667,21 +3725,16 @@ addContainerUI('center-container', [popUpContainer]);
             createGameTitle();
         };
     }
-
-
 }
+
 function createTransparencyReport() {
     const popUpContainer = createPopUpContainer();
 
     const titleButton = createTitleContainer('\nTransparency\nReport\n⚖️', 'Return to the game', "subtitle");
-    titleButton.style.cursor = 'pointer';
-    titleButton.onclick = () => {
-      canMove = true;
-      hideUI();
-     // refreshDisplay();
-    };
+   // titleButton.style.cursor = 'pointer';
+
     popUpContainer.appendChild(titleButton);
-    const aboutButton = createTitleElement(' You can read and run every single line \n of code of the onchain survivor client !\n\n Repository:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = createTitleElement(' You can read and run offline every line \n of code of the onchain survivor client !\n\n Repository:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const githubContainer = document.createElement('div');
@@ -3745,20 +3798,102 @@ addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
         canMove = true;
         hideUI();
-        createGameTitle();
+        createWeb3Menu();
     };
     popUpContainer.appendChild(goBackButton);
-    for (const button of popUpContainer.children) {
-        button.onclick = () => {
-            canMove = true;
-            hideUI();
-            createGameTitle();
-        };
-    }
-
-
 }
 //createTransparencyReport();
+
+function createRunMenu() {
+    const popUpContainer = createPopUpContainer();
+
+    const titleButton = createTitleContainer('\nAbout \nSponsor Runs ⌛️', 'Return to the game', "subtitle");
+    popUpContainer.appendChild(titleButton);
+
+    const aboutButton = createTitleElement(' \nEvery day (7152 Ξ blocks) the game will\n change according to the top ranked sponsor,\nchoosing the chain, class, abilities of that day! \n\n Current top 10 chains:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(aboutButton);
+
+    const firstContainer = createContainer(['abilities-grid']); 
+    firstContainer.style.gridTemplateColumns =  'repeat(1, auto)';
+    const playerButton = createButton(player, .5 );
+    firstContainer.appendChild(playerButton);
+
+    const secondthirdContainer = createContainer(['abilities-grid']);
+    secondthirdContainer.style.gridTemplateColumns =  'repeat(2, auto)';
+    secondthirdContainer.appendChild(createButton(world,  .5 ));
+    secondthirdContainer.appendChild(createButton(world, .5 ));
+
+    const fourthContainer = createContainer(['abilities-grid']);
+    fourthContainer.style.gridTemplateColumns =  'repeat(3, auto)';
+    fourthContainer.appendChild(createButton(world,.5));
+    fourthContainer.appendChild(createButton(world, .5));
+    fourthContainer.appendChild(createButton(world, .5 ));
+
+    const fifthContainer = createContainer(['abilities-grid']);
+    fifthContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+    fifthContainer.appendChild(createButton(world,.5));
+    fifthContainer.appendChild(createButton(world, .5));
+    fifthContainer.appendChild(createButton(world, .5 ));
+    fifthContainer.appendChild(createButton(world, .5 ));
+
+    popUpContainer.appendChild(firstContainer);
+    popUpContainer.appendChild(secondthirdContainer);
+    popUpContainer.appendChild(fourthContainer);
+    popUpContainer.appendChild(fifthContainer);
+
+    const rankingText = createTitleElement('\n The 1st ranked sponsor gets recorded in the \n hall of survivors, and all the other sponsors\n rank up one spot to eventually set the game! \n\n Current Top 3 Ranking:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(rankingText);
+
+    const topbidContainer = createContainer(['abilities-grid']);
+    topbidContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+    topbidContainer.appendChild(createTitleElement('1° 0x...2', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+    topbidContainer.appendChild(createButton(playerTypes[0], .33));
+    topbidContainer.appendChild(createButton(abilityTypes[3], .33 ));
+    topbidContainer.appendChild(createButton(worldTypes[0], .33 ));
+    topbidContainer.appendChild(createTitleElement('2° 0x...0', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+    topbidContainer.appendChild(createButton(playerTypes[1], .33));
+    topbidContainer.appendChild(createButton(abilityTypes[6], .33 ));
+    topbidContainer.appendChild(createButton(worldTypes[1], .33 ));
+    topbidContainer.appendChild(createTitleElement('3° 0x...7', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+    topbidContainer.appendChild(createButton(playerTypes[0], .33));
+    topbidContainer.appendChild(createButton(abilityTypes[9], .33));
+    topbidContainer.appendChild(createButton(worldTypes[1], .33));
+    popUpContainer.appendChild(topbidContainer);
+
+
+    const sponsorText = createTitleElement('\nSponsors from any chain can add any amount\n  and accumulate until they get the first rank!\nKeep in mind that you cannot cancel once sent! \n\n Sponsor Smart Contract:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(sponsorText);
+
+    const sponsorContainer = document.createElement('div');
+    sponsorContainer.classList.add('abilities-grid');
+    const sponsorButton = createButton({
+        title: "Verify Sponsor Smart Contract",
+        description: "Allows you to check the Sponsor Smart Contract source code, line by line, public for everyone to verify.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/???.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    sponsorContainer.appendChild(sponsorButton);
+    popUpContainer.appendChild(sponsorContainer);
+
+    const disclaimerText = createTitleElement('\n sponsoring the game lets me develop \n fulltime and dedicate all day into it.\n thanks for believing in Onchain Survivor!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    popUpContainer.appendChild(disclaimerText);
+
+    const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    
+addContainerUI('center-container', [popUpContainer]);
+    goBackButton.onclick = () => {
+        canMove = true;
+        hideUI();
+        createWeb3Menu();
+    };
+    popUpContainer.appendChild(goBackButton);
+}
+//createRunMenu();
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
