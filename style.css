@@ -282,7 +282,8 @@ html, body {
 
 .loading-container {
     position: relative;
-    width: 100%;
+    width: 50%;
+    left: 25%;
     height: 10px;
     background-color: black;
     box-sizing: border-box;
@@ -297,4 +298,34 @@ html, body {
     background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
     background-size: 400% 400%;
     animation: rainbow 5s linear infinite;
+}
+
+.rainbow-input {
+    background-color: black;
+    color: transparent;
+    border: 0.1px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    padding: 10px;
+    animation: rainbowBorder 5s linear infinite;
+}
+
+.rainbow-button {
+    background-color: black;
+    color: white;
+    border: 0.1px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    padding: 10px 20px; 
+    cursor: pointer;
+    animation: rainbowBorder 5s linear infinite;
+    margin-left: 5px; 
+}
+.rainbow-input::placeholder, .rainbow-input {
+    color: transparent; 
+    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    background-clip: text; 
+    -webkit-background-clip: text; 
+    background-size: 200% 200%;
+    animation: rainbowText 7s linear infinite;
 }

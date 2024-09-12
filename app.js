@@ -3361,6 +3361,18 @@ function createGameMenu() {
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
+function createInput(type, attributes = {}) {
+    const input = document.createElement('input');
+    input.type = type; 
+
+    for (const [key, value] of Object.entries(attributes)) {
+        input.setAttribute(key, value);
+    }
+    input.classList.add('rainbow-input'); 
+    input.classList.add('subtitle'); 
+    return input;
+}
+
 function createChooseMenu(entityList, text, type) {
     const popUpContainer = createPopUpContainer();
     const titleContainer = createTitleContainer(text,'For now it trully doesnt matter what you choose');
@@ -3425,89 +3437,44 @@ function handleEntitySelection(entity, type) {
 ---------------------------------------------------------------------------*/
     function createWeb3Menu(address) {
         canMove=false;
+
+        const sponsorRun = createTitleElement('\nSponsor Run \n🎖️', 'sorry for all the gimmicky words, technically it is true tho', "title")
+
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
      
         const classContainer = document.createElement('div');
-        const classSubTitle = createTitleElement('🏆 100%', 'lazy subtitle too btw', "subtitle");
+        const classSubTitle = createTitleElement('🏆 ', 'lazy subtitle too btw', "subtitle");
         const classButton = createButton(player, isMobile ? 0.6 : 0.75);
         classContainer.appendChild(classButton);
         classContainer.appendChild(classSubTitle);
      
-        const abilitiesSubTitle = createTitleElement('⚔️ 50%', 'lazy subtitle too btw', "subtitle");
+        const abilitiesSubTitle = createTitleElement('⚔️', 'lazy subtitle too btw', "subtitle");
         ability.isLocked=false;
         const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
         const classAbilityContainer = document.createElement('div');
         classAbilityContainer.appendChild(abilitiesButton);
         classAbilityContainer.appendChild(abilitiesSubTitle);
      
-        const worldSubTitle = createTitleElement('🔗 10%', 'lazy subtitle too btw', "subtitle");
+        const worldSubTitle = createTitleElement('🔗', 'lazy subtitle too btw', "subtitle");
         const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
         const worldContainer = document.createElement('div');
         worldContainer.appendChild(worldButton);
         worldContainer.appendChild(worldSubTitle);
      
-        const galleryButtonsContainer = createContainer([], { display: 'flex' });
+        const galleryButtonsContainer = createContainer([], { display: 'flex',justifyContent: 'center' });
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-        const subTitle = createTitleContainer(`Welcome,\n Survivor!`, 'lazy subtitle too btw');
-    
-        const hallreportContainer = document.createElement('div');
-        hallreportContainer.classList.add('abilities-grid');
-        const hallButton = createButton({
-            title: "Visit Hall of survivors",
-            description: "Allows you to Sponsor, accumulate, add official runs. Can also check the full list of survivors.",
-            tooltip: "...",
-            thumbnail: 'Media/Abilities/HALL.png',
-            isLocked: false,
-            effect(user) { 
-                this.update = () => {} 
-            },
-        }, 1);
 
-        hallreportContainer.appendChild(hallButton);
-        hallButton.onclick = () => {
-            hideUI();
-            createTransparencyReport();
-        };
-
-        const reportButton = createButton({
-            title: "Visit Transparency Report",
-            description: "Fun. Decentralization and transparency. View the transparency report in real time.",
-            tooltip: "...",
-            thumbnail: 'Media/Abilities/LAW.png',
-            isLocked: false,
-            effect(user) { 
-                this.update = () => {} 
-            },
-        }, 1);
-        reportButton.onclick = () => {
-            hideUI();
-            createTransparencyReport();
-        };
-        
-        hallreportContainer.appendChild(reportButton);
-
-
-        const subTitleRun = createTitleElement('⌛️ About Runs ⌛️', 'lazy subtitle too btw', "subtitle");
-        subTitleRun.style.cursor = 'pointer';
-        subTitleRun.onclick = () => {
+        const howItWorksTitle = createTitleElement('\nⓘ How it works', 'lazy subtitle too btw', "subtitle");
+        howItWorksTitle.style.cursor = 'pointer';
+        howItWorksTitle.onclick = () => {
             hideUI();
             createRunMenu();
         };
-        const subTitleReport = createTitleElement('⚖️ Transparency Report ⚖️', 'lazy subtitle too btw',"subtitle");
-        subTitleReport.style.cursor = 'pointer';
-        subTitleReport.onclick = () => {
-            hideUI();
-            createTransparencyReport();
-        };
 
-
-        const subTitleHall = createTitleElement(' Hall of Survivors 💎', 'lazy subtitle too btw',"subtitle");
-        subTitleHall.style.cursor = 'pointer';
- 
         const subTitleLogout = createTitleElement('♢\nLog Out\n♢', 'lazy subtitle too btw',"subtitle");
         subTitleLogout.style.cursor = 'pointer';
         subTitleLogout.onclick = () => {
@@ -3517,61 +3484,152 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
  
-        const loadingContainer = document.createElement('div');
-        loadingContainer.classList.add('loading-container'); 
-        const loadingBar = document.createElement('div');
-        loadingBar.classList.add('loading-bar');
-        const loadingText =  createTitleElement('', 'who even keeps track of these', "subtitle");
-        loadingContainer.appendChild(loadingBar);
+     const yourSpot = createTitleElement('\nYour Current Sponsorship', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const yourContainer = createContainer(['abilities-grid']);
+     yourContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+     yourContainer.appendChild(createTitleElement('120° ', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+     yourContainer.appendChild(createButton(playerTypes[0], .33));
+     yourContainer.appendChild(createButton(abilityTypes[3], .33 ));
+     yourContainer.appendChild(createButton(worldTypes[0], .33 ));
 
-        //debt: push real data here, eventually
-        function updateLoadingBar(currentAmount) {
-            const goal = 1000000; 
-            const percentage = (currentAmount / goal) * 100;
-            loadingBar.style.width = percentage + '%';
-            loadingText.innerText ='❤️ Blocks Left: ' + percentage.toFixed(2) + '%❤️';
-            loadingText.classList.add('rainbow-text'); 
-        }
-     
-     //debt: delete  after simulation not needed 
+     const checkRanks = createTitleElement('\nLive Ranking \n🥇', 'sorry for all the gimmicky words, technically it is true tho', "title")
+
+     const loadingContainer = document.createElement('div');
+     loadingContainer.classList.add('loading-container'); 
+     const loadingBar = document.createElement('div');
+     loadingBar.classList.add('loading-bar');
+     const loadingText =  createTitleElement('', 'who even keeps track of these', "subtitle");
+  
+     loadingContainer.appendChild(loadingBar);
+     function updateLoadingBar(currentAmount) {
+         const goal = 1000000; 
+         const percentage = (currentAmount / goal) * 100;
+         loadingBar.style.width = percentage + '%';
+         loadingText.innerText ='\n' + percentage.toFixed(2) + '% Blocks left';
+         loadingText.classList.add('rainbow-text'); 
+     }
      function simulateLoading() {
          let currentAmount = 0;
          const increment = 10000; 
          const loadingInterval = setInterval(() => {
              if (currentAmount >= 1000000) {
-               //TODO
+             //TODO
              } else {
                  currentAmount += increment;
                  updateLoadingBar(currentAmount);
              }
          }, 50); 
      }
-     
+
+
+     const topSponsorText = createTitleElement('\nNext Round\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+
+     const topSponsorContainer = createContainer(['abilities-grid']);
+     topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+     topSponsorContainer.appendChild(createTitleElement('1° 0x...2', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+     topSponsorContainer.appendChild(createButton(playerTypes[0], .33));
+     topSponsorContainer.appendChild(createButton(abilityTypes[3], .33 ));
+     topSponsorContainer.appendChild(createButton(worldTypes[0], .33 ));
+     topSponsorContainer.appendChild(createTitleElement('2° 0x...0', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+     topSponsorContainer.appendChild(createButton(playerTypes[1], .33));
+     topSponsorContainer.appendChild(createButton(abilityTypes[6], .33 ));
+     topSponsorContainer.appendChild(createButton(worldTypes[1], .33 ));
+     topSponsorContainer.appendChild(createTitleElement('3° 0x...7', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+     topSponsorContainer.appendChild(createButton(playerTypes[0], .33));
+     topSponsorContainer.appendChild(createButton(abilityTypes[9], .33));
+     topSponsorContainer.appendChild(createButton(worldTypes[1], .33));
+     topSponsorContainer.appendChild(createTitleElement('4° 0x...3', 'sorry for all the gimmicky words, technically it is true tho', "title"));
+     topSponsorContainer.appendChild(createButton(playerTypes[0], .33));
+     topSponsorContainer.appendChild(createButton(abilityTypes[12], .33 ));
+     topSponsorContainer.appendChild(createButton(worldTypes[0], .33 ));
+
+     const checkRecords = createTitleElement('\nOther Records \n 👻', 'sorry for all the gimmicky words, technically it is true tho', "title")
+   
+     const hallreportContainer = document.createElement('div');
+     hallreportContainer.classList.add('abilities-grid');
+     const hallButton = createButton({
+         title: "Visit Hall of survivors",
+         description: "Allows you to verify previous official runs. Can also check the full list of survivors.",
+         tooltip: "...",
+         thumbnail: 'Media/Abilities/HALL.png',
+         isLocked: false,
+         effect(user) { 
+             this.update = () => {} 
+         },
+     }, 1);
+
+     hallreportContainer.appendChild(hallButton);
+     hallButton.onclick = () => {
+         hideUI();
+         createTransparencyReport();
+     };
+
+     const reportButton = createButton({
+         title: "Visit Transparency Report",
+         description: "Fun. Decentralization and transparency. View the transparency report in real time.",
+         tooltip: "...",
+         thumbnail: 'Media/Abilities/LAW.png',
+         isLocked: false,
+         effect(user) { 
+             this.update = () => {} 
+         },
+     }, 1);
+     reportButton.onclick = () => {
+         hideUI();
+         createTransparencyReport();
+     };
+     hallreportContainer.appendChild(reportButton);
+
+    const inputContainer = document.createElement('div');
+    const sponsorAmount = createInput('number', { placeholder: '0.001', id: 'sponsorAmount' });
+    const submitButton = document.createElement('button'); 
+    submitButton.innerText = 'Add';
+    submitButton.classList.add('rainbow-button'); 
+    submitButton.classList.add('subtitle'); 
+    inputContainer.appendChild(sponsorAmount);
+    inputContainer.appendChild(submitButton);
+
+    const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    
+     const popUpContainer = createPopUpContainer();
+     popUpContainer.appendChild(sponsorRun);
+     popUpContainer.appendChild(howItWorksTitle);
+     popUpContainer.appendChild(yourSpot);
+     popUpContainer.appendChild(inputContainer);
+     popUpContainer.appendChild(galleryButtonsContainer);
+     popUpContainer.appendChild(checkRanks);
+     popUpContainer.appendChild(topSponsorText);
+     popUpContainer.appendChild(topSponsorContainer);
+     popUpContainer.appendChild(loadingText);
+     popUpContainer.appendChild(loadingContainer);
+     popUpContainer.appendChild(checkRecords);
+     popUpContainer.appendChild(hallreportContainer);
+     popUpContainer.appendChild(goBackButton);
+
         setTimeout(() => { 
-            addContainerUI('top-container', [subTitle,hallreportContainer]);
-            addContainerUI('bottom-container', [subTitleRun,loadingText,loadingContainer]);
+            addContainerUI('center-container', [popUpContainer]);
             addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
         }, 1050);
      
-            // Debt: Gallery functionality after withdrawing data from the blockchain
-         //    galleryButtonsContainer.childNodes.forEach(button => {
-            //     button.addEventListener('click', () => {
-            //         canMove=false;
-            //         if (button === classContainer) {
-           //              createGallery(playerTypes, "Your Survivors 🏆","Survivor");
-           //          } else if (button === classAbilityContainer) {
-           //              createGallery(abilityTypes, "Your Abilities ⚔️","Ability");
-           //          } else if (button === worldContainer) {
-          //              createGallery(worldTypes, "Your Chains 🔗","World");
-          //           }
-          //           hideUI();
-          //       });
-          //    });
+            galleryButtonsContainer.childNodes.forEach(button => {
+                button.addEventListener('click', () => {
+                    canMove=false;
+                    hideUI();
+                    if (button === classContainer) {
+                        createChooseMenu(playerTypes, "🏆 Survivors 🏆","Survivor");
+                   } else if (button === classAbilityContainer) {
+                        createChooseMenu(abilityTypes, "⚔️ Abilities ⚔️","Ability");
+                    } else if (button === worldContainer) {
+                        createChooseMenu(worldTypes, " 🔗 Chains 🔗","World");
+                    }
+                });
+             });
 
-           //  createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
-           //  createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
-            // createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
+            createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
+            createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
+            createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
     }
 
     window.addEventListener('load', async () => {
