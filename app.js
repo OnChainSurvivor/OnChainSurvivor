@@ -3447,15 +3447,43 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const sponsorRun = createTitleElement('\nSponsor \n Global Run', 'sorry for all the gimmicky words, technically it is true tho', "title")
+        const checkRanks = createTitleElement('\nDaily Sponsor\nLive Rank!', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
-        const howItWorksTitle = createTitleElement('\nⓘ Guide', 'lazy subtitle too btw', "subtitle");
+        const howItWorksTitle = createTitleElement('\n󠀠ⓘ Guide\n󠀠', 'lazy subtitle too btw', "subtitle");
         howItWorksTitle.style.cursor = 'pointer';
         howItWorksTitle.onclick = () => {
             hideUI();
             createRunMenu();
         };
 
+        const topSponsorContainer = createContainer(['abilities-grid']);
+        topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+        topSponsorContainer.appendChild(createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topSponsorContainer.appendChild(createButton(playerTypes[0], .6));
+        topSponsorContainer.appendChild(createButton(abilityTypes[3], .6 ));
+        topSponsorContainer.appendChild(createButton(worldTypes[0], .6 ));
+        topSponsorContainer.appendChild(createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topSponsorContainer.appendChild(createButton(playerTypes[1], .6));
+        topSponsorContainer.appendChild(createButton(abilityTypes[6], .6 ));
+        topSponsorContainer.appendChild(createButton(worldTypes[1], .6 ));
+        topSponsorContainer.appendChild(createTitleElement('3°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topSponsorContainer.appendChild(createButton(playerTypes[3], .6));
+        topSponsorContainer.appendChild(createButton(abilityTypes[9], .6));
+        topSponsorContainer.appendChild(createButton(worldTypes[1], .6));
+        topSponsorContainer.appendChild(createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topSponsorContainer.appendChild(createButton(playerTypes[3], .6));
+        topSponsorContainer.appendChild(createButton(abilityTypes[10], .6));
+        topSponsorContainer.appendChild(createButton(worldTypes[0], .6));
+        topSponsorContainer.appendChild(createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topSponsorContainer.appendChild(createButton(playerTypes[0], .6));
+        topSponsorContainer.appendChild(createButton(abilityTypes[20], .6));
+        topSponsorContainer.appendChild(createButton(worldTypes[0], .6));
+   
+        const topSponsorText = createTitleElement('Expand List.\n\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+   
+        const yourRank = createTitleElement('\nYour Rank: 156', 'sorry for all the gimmicky words, technically it is true tho', "title")
+
+  
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -3481,29 +3509,24 @@ function handleEntitySelection(entity, type) {
         worldContainer.appendChild(worldSubTitle);
         worldContainer.appendChild(worldButton);
 
-     
         const galleryButtonsContainer = createContainer([], { display: 'flex',justifyContent: 'center' });
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
 
-     const yourSpot = createTitleElement('\nRank: None° (0.00Ξ)\n Add and modify (optional) until you win.\n Txs cannot be reversed!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
-     const yourContainer = createContainer(['abilities-grid']);
-     yourContainer.style.gridTemplateColumns =  'repeat(3, auto)';
-     yourContainer.appendChild(createButton(playerTypes[0], .33));
-     yourContainer.appendChild(createButton(abilityTypes[3], .33 ));
-     yourContainer.appendChild(createButton(worldTypes[0], .33 ));
 
      const inputContainer = document.createElement('div');
-     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ', id: 'sponsorAmount' });
+     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ (Across all)', id: 'sponsorAmount' });
      const submitButton = document.createElement('button'); 
      submitButton.classList.add('rainbow-button'); 
      submitButton.classList.add('subtitle'); 
-     submitButton.innerText = 'Add to (0.00Ξ)';
+     submitButton.innerText = 'Add';
      inputContainer.appendChild(sponsorAmount);
      inputContainer.appendChild(submitButton); 
 
-     const checkRanks = createTitleElement('\nLive\nRanking\n🥇', 'sorry for all the gimmicky words, technically it is true tho', "title")
+     const yourSpot = createTitleElement('Adding 0.00Ξ gains you 0 ranks!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const addInfo = createTitleElement('\nOnly 1 Global entry per wallet\nYou can edit selection by adding dust.\n All adds are irreversible!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
@@ -3516,7 +3539,7 @@ function handleEntitySelection(entity, type) {
          const goal = 1000000; 
          const percentage = (currentAmount / goal) * 100;
          loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='Next Round: 15  Blocks\n󠀠  ';
+         loadingText.innerText ='Round end: 9 Blocks';
          loadingText.classList.add('rainbow-text'); 
      }
      function simulateLoading() {
@@ -3531,24 +3554,6 @@ function handleEntitySelection(entity, type) {
              }
          }, 50); 
      }
-
-
-     const topSponsorText = createTitleElement('Expand List\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
-
-     const topSponsorContainer = createContainer(['abilities-grid']);
-     topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
-     topSponsorContainer.appendChild(createTitleElement('1° 0x...2', 'sorry for all the gimmicky words, technically it is true tho', "title"));
-     topSponsorContainer.appendChild(createButton(playerTypes[0], .33));
-     topSponsorContainer.appendChild(createButton(abilityTypes[3], .33 ));
-     topSponsorContainer.appendChild(createButton(worldTypes[0], .33 ));
-     topSponsorContainer.appendChild(createTitleElement('2° 0x...0', 'sorry for all the gimmicky words, technically it is true tho', "title"));
-     topSponsorContainer.appendChild(createButton(playerTypes[1], .33));
-     topSponsorContainer.appendChild(createButton(abilityTypes[6], .33 ));
-     topSponsorContainer.appendChild(createButton(worldTypes[1], .33 ));
-     topSponsorContainer.appendChild(createTitleElement('3° 0x...7', 'sorry for all the gimmicky words, technically it is true tho', "title"));
-     topSponsorContainer.appendChild(createButton(playerTypes[3], .33));
-     topSponsorContainer.appendChild(createButton(abilityTypes[9], .33));
-     topSponsorContainer.appendChild(createButton(worldTypes[1], .33));
 
      const checkRecords = createTitleElement('\nOther Records \n 👻', 'sorry for all the gimmicky words, technically it is true tho', "title")
    
@@ -3587,20 +3592,21 @@ function handleEntitySelection(entity, type) {
      };
      hallreportContainer.appendChild(reportButton);
 
-    const goBackButton = createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
-    goBackButton.style.cursor = 'pointer';
+    const goBackButton = createTitleContainer('\nFun First!', 'Return to the game', "subtitle");
+    //goBackButton.style.cursor = 'pointer';
     
      const popUpContainer = createPopUpContainer();
      popUpContainer.appendChild(checkRanks);
-     popUpContainer.appendChild(loadingContainer);
-     popUpContainer.appendChild(loadingText);
+     popUpContainer.appendChild(howItWorksTitle);
      popUpContainer.appendChild(topSponsorContainer);
      popUpContainer.appendChild(topSponsorText);
-     popUpContainer.appendChild(sponsorRun);
-     popUpContainer.appendChild(howItWorksTitle);
-     popUpContainer.appendChild(yourSpot);
+     popUpContainer.appendChild(loadingText);
+     popUpContainer.appendChild(loadingContainer);
+     popUpContainer.appendChild(yourRank);
      popUpContainer.appendChild(galleryButtonsContainer);
      popUpContainer.appendChild(inputContainer);
+     popUpContainer.appendChild(yourSpot);
+     popUpContainer.appendChild(addInfo)
      popUpContainer.appendChild(checkRecords);
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
@@ -3690,7 +3696,7 @@ function refreshDisplay() {
 function createPlayerInfoMenu() {
     const popUpContainer = createPopUpContainer();
 
-    const statusButton = createTitleContainer('\nRun Status', 'Return to the game', "subtitle");
+    const statusButton = createTitleContainer('\nGlobal Run\nStatus', 'Return to the game', "subtitle");
     popUpContainer.appendChild(statusButton);
 
     const playerOnlyContainer = document.createElement('div');

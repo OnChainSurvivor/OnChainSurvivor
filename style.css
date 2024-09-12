@@ -265,13 +265,11 @@ html, body {
     font-size: 2vw;
 }
 
-
-
 .loading-container {
     position: relative;
     width: 25%;
     left: 37.5%;
-    height: 10px;
+    height: 50px;
     background-color: black;
     box-sizing: border-box;
     border: 0.5px solid;
@@ -297,7 +295,7 @@ html, body {
         position: relative;
         width: 50%;
         left: 25%;
-        height: 10px;
+        height: 50px;
         background-color: black;
         box-sizing: border-box;
         border: 0.5px solid;
