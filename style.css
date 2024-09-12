@@ -265,6 +265,20 @@ html, body {
     font-size: 2vw;
 }
 
+
+
+.loading-container {
+    position: relative;
+    width: 25%;
+    left: 37.5%;
+    height: 10px;
+    background-color: black;
+    box-sizing: border-box;
+    border: 0.5px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+}
+
 @media (max-width: 830px) {
     .choose-menu-grid {
         grid-template-columns: repeat(2, auto); 
@@ -278,18 +292,18 @@ html, body {
         font-size: 4.5vw;
         white-space: nowrap; 
     }
-}
 
-.loading-container {
-    position: relative;
-    width: 50%;
-    left: 25%;
-    height: 10px;
-    background-color: black;
-    box-sizing: border-box;
-    border: 0.5px solid;
-    border-image-slice: 1;
-    border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+    .loading-container {
+        position: relative;
+        width: 50%;
+        left: 25%;
+        height: 10px;
+        background-color: black;
+        box-sizing: border-box;
+        border: 0.5px solid;
+        border-image-slice: 1;
+        border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+    }
 }
 
 .loading-bar {

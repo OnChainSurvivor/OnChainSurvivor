@@ -77,9 +77,8 @@ export const playerTypes = [{
     xpToNextLevel:10,
     tags: ['player'],
     thumbnail: 'Media/Classes/Miner/FMINER.png',
-    
     level:0,
-    isLocked: true,
+    isLocked: false,
     abilities: [
 
     ],
