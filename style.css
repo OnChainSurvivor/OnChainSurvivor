@@ -252,9 +252,11 @@ html, body {
 
 .abilities-grid {
     display: grid;
-    justify-content: center;
-    margin: 0 auto;
-    grid-template-columns: repeat(2, auto);
+    justify-content: center; /* Centers horizontally within its container */
+    align-content: center;   /* Centers vertically within its container */
+    margin: 0 auto;         /* Centers the entire grid horizontally on the page */
+    grid-template-columns: repeat(2, auto); 
+    place-items: center;     /* Centers items both horizontally and vertically within their grid cells */
 }
 
 .title {
@@ -265,11 +267,16 @@ html, body {
     font-size: 2vw;
 }
 
+.minititle {
+    font-size: 1.5vw;
+    white-space: nowrap; 
+}
+
 .loading-container {
     position: relative;
     width: 25%;
     left: 37.5%;
-    height: 50px;
+    height: 30px;
     background-color: black;
     box-sizing: border-box;
     border: 0.5px solid;
@@ -291,11 +298,16 @@ html, body {
         white-space: nowrap; 
     }
 
+    .minititle {
+        font-size: 3.5vw;
+        white-space: nowrap; 
+    }
+
     .loading-container {
         position: relative;
         width: 50%;
         left: 25%;
-        height: 50px;
+        height: 30px;
         background-color: black;
         box-sizing: border-box;
         border: 0.5px solid;

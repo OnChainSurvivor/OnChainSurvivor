@@ -3244,28 +3244,29 @@ Entity.prototype.die = function() {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     function createGameTitle(){
-        const mainTitle = createTitleContainer('Onchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        const mainTitle = createTitleContainer('\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         //🏆\n⚔️\n🔗\n
         const web3Title = createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = document.createElement('div');
         todaysContainer.classList.add('abilities-grid');
-        todaysContainer.style.gridTemplateColumns= 'repeat(3, auto)';
+        todaysContainer.style.gridTemplateColumns= 'repeat(4, auto)';
+        const challengeTitle = createTitleElement("Today's\nChallenge:", 'lazy subtitle too btw', "minititle");
+
         const miniplayerButton = createButton(player, isMobile ? 0.3 : 0.5);
         const miniworldButton = createButton(world, isMobile ? 0.3 : 0.5);
         const miniabilityButton = createButton(ability,isMobile ? 0.3 : 0.5);
+        todaysContainer.appendChild(challengeTitle);
         todaysContainer.appendChild(miniplayerButton);
-        todaysContainer.appendChild(miniworldButton);
         todaysContainer.appendChild(miniabilityButton);
+        todaysContainer.appendChild(miniworldButton);
         const subTitle = createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
         const aboutTitle = createTitleElement('ⓘ\n⚙️\n🎵', 'lazy subtitle too btw', "subtitle");
-        const settingsTitle = createTitleElement('', 'lazy subtitle too btw', "title");
-        const audioTitle = createTitleElement('', 'lazy subtitle too btw', "title");
+
      
        addContainerUI('BR-container', [aboutTitle]);
-       addContainerUI('top-container', [todaysContainer,mainTitle]);
-      // addContainerUI('TL-container', [audioTitle]);
-      // addContainerUI('BL-container', [settingsTitle]);
+       addContainerUI('top-container', [mainTitle]);
+        addContainerUI('bottom-container', [subTitle,todaysContainer]);
         uiContainers.forEach(container => {
             container.style.cursor = 'pointer';
             container.onclick = () => {
@@ -3275,8 +3276,6 @@ Entity.prototype.die = function() {
             createInfoMenu();
         };})
 
-  
-        addContainerUI('bottom-container', [subTitle]);
         addContainerUI('TR-container', [web3Title]).onclick = async () => {
             if (window.ethereum) {
                 const web3 = new Web3(window.ethereum);
@@ -3447,14 +3446,7 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = createTitleElement('\nDaily Sponsor\nLive Rank!', 'sorry for all the gimmicky words, technically it is true tho', "title")
-
-        const howItWorksTitle = createTitleElement('\n󠀠ⓘ Guide\n󠀠', 'lazy subtitle too btw', "subtitle");
-        howItWorksTitle.style.cursor = 'pointer';
-        howItWorksTitle.onclick = () => {
-            hideUI();
-            createRunMenu();
-        };
+        const checkRanks = createTitleElement('\nStart a\nChallenge', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
         const topSponsorContainer = createContainer(['abilities-grid']);
         topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
@@ -3463,27 +3455,24 @@ function handleEntitySelection(entity, type) {
         topSponsorContainer.appendChild(createButton(abilityTypes[3], .6 ));
         topSponsorContainer.appendChild(createButton(worldTypes[0], .6 ));
         topSponsorContainer.appendChild(createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-        topSponsorContainer.appendChild(createButton(playerTypes[1], .6));
-        topSponsorContainer.appendChild(createButton(abilityTypes[6], .6 ));
-        topSponsorContainer.appendChild(createButton(worldTypes[1], .6 ));
+        topSponsorContainer.appendChild(createButton(playerTypes[1], .5));
+        topSponsorContainer.appendChild(createButton(abilityTypes[6], .5 ));
+        topSponsorContainer.appendChild(createButton(worldTypes[1], .5 ));
         topSponsorContainer.appendChild(createTitleElement('3°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-        topSponsorContainer.appendChild(createButton(playerTypes[3], .6));
-        topSponsorContainer.appendChild(createButton(abilityTypes[9], .6));
-        topSponsorContainer.appendChild(createButton(worldTypes[1], .6));
+        topSponsorContainer.appendChild(createButton(playerTypes[3], .4));
+        topSponsorContainer.appendChild(createButton(abilityTypes[9], .4));
+        topSponsorContainer.appendChild(createButton(worldTypes[1], .4));
         topSponsorContainer.appendChild(createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-        topSponsorContainer.appendChild(createButton(playerTypes[3], .6));
-        topSponsorContainer.appendChild(createButton(abilityTypes[10], .6));
-        topSponsorContainer.appendChild(createButton(worldTypes[0], .6));
+        topSponsorContainer.appendChild(createButton(playerTypes[3], .3));
+        topSponsorContainer.appendChild(createButton(abilityTypes[10], .3));
+        topSponsorContainer.appendChild(createButton(worldTypes[0], .3));
         topSponsorContainer.appendChild(createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-        topSponsorContainer.appendChild(createButton(playerTypes[0], .6));
-        topSponsorContainer.appendChild(createButton(abilityTypes[20], .6));
-        topSponsorContainer.appendChild(createButton(worldTypes[0], .6));
+        topSponsorContainer.appendChild(createButton(playerTypes[0], .2));
+        topSponsorContainer.appendChild(createButton(abilityTypes[20], .2));
+        topSponsorContainer.appendChild(createButton(worldTypes[0], .2));
    
-        const topSponsorText = createTitleElement('Expand List.\n\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+        const topSponsorText = createTitleElement('and gets recorded in the Hall of Survivors.\n while all the others rank up once!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
    
-        const yourRank = createTitleElement('\nYour Rank: 156', 'sorry for all the gimmicky words, technically it is true tho', "title")
-
-  
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -3513,10 +3502,9 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classContainer);
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
-
-
+ 
      const inputContainer = document.createElement('div');
-     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ (Across all)', id: 'sponsorAmount' });
+     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ', id: 'sponsorAmount' });
      const submitButton = document.createElement('button'); 
      submitButton.classList.add('rainbow-button'); 
      submitButton.classList.add('subtitle'); 
@@ -3524,9 +3512,7 @@ function handleEntitySelection(entity, type) {
      inputContainer.appendChild(sponsorAmount);
      inputContainer.appendChild(submitButton); 
 
-     const yourSpot = createTitleElement('Adding 0.00Ξ gains you 0 ranks!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
-     const addInfo = createTitleElement('\nOnly 1 Global entry per wallet\nYou can edit selection by adding dust.\n All adds are irreversible!', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
-
+     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
@@ -3539,7 +3525,7 @@ function handleEntitySelection(entity, type) {
          const goal = 1000000; 
          const percentage = (currentAmount / goal) * 100;
          loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='Round end: 9 Blocks';
+         loadingText.innerText ='\nRank 1° Challenge starts in 9 blocks!';
          loadingText.classList.add('rainbow-text'); 
      }
      function simulateLoading() {
@@ -3555,10 +3541,46 @@ function handleEntitySelection(entity, type) {
          }, 50); 
      }
 
-     const checkRecords = createTitleElement('\nOther Records \n 👻', 'sorry for all the gimmicky words, technically it is true tho', "title")
+     const checkRecords = createTitleElement('\nMenu\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
    
      const hallreportContainer = document.createElement('div');
      hallreportContainer.classList.add('abilities-grid');
+
+
+     const tutButton = createButton({
+        title: "Sponsor Run Tutorial",
+        description: "Allows you to revisit how ranking works. Can also check the full list of survivors.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/HALL.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    hallreportContainer.appendChild(tutButton);
+    hallreportContainer.appendChild(tutButton);
+    tutButton.onclick = () => {
+        hideUI();
+        createRunMenu();
+    };
+
+    const rankButton = createButton({
+        title: "Current rank",
+        description: "Allows you to visit the current ranking. Can also check the full list of survivors.",
+        tooltip: "...",
+        thumbnail: 'Media/Abilities/HALL.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, 1);
+    hallreportContainer.appendChild(rankButton);
+    hallreportContainer.appendChild(rankButton);
+    rankButton.onclick = () => {
+        hideUI();
+        createRunMenu();
+    };
+
      const hallButton = createButton({
          title: "Visit Hall of survivors",
          description: "Allows you to verify previous official Sponsors. Can also check the full list of survivors.",
@@ -3592,21 +3614,19 @@ function handleEntitySelection(entity, type) {
      };
      hallreportContainer.appendChild(reportButton);
 
-    const goBackButton = createTitleContainer('\nFun First!', 'Return to the game', "subtitle");
+    const goBackButton = createTitleContainer('\n2024, Made with ❤️', 'Return to the game', "subtitle");
     //goBackButton.style.cursor = 'pointer';
     
      const popUpContainer = createPopUpContainer();
      popUpContainer.appendChild(checkRanks);
-     popUpContainer.appendChild(howItWorksTitle);
-     popUpContainer.appendChild(topSponsorContainer);
-     popUpContainer.appendChild(topSponsorText);
+     popUpContainer.appendChild(galleryButtonsContainer);
+popUpContainer.appendChild(yourSpot);
+ popUpContainer.appendChild(inputContainer);
+
      popUpContainer.appendChild(loadingText);
      popUpContainer.appendChild(loadingContainer);
-     popUpContainer.appendChild(yourRank);
-     popUpContainer.appendChild(galleryButtonsContainer);
-     popUpContainer.appendChild(inputContainer);
-     popUpContainer.appendChild(yourSpot);
-     popUpContainer.appendChild(addInfo)
+   /// popUpContainer.appendChild(topSponsorText);
+     popUpContainer.appendChild(topSponsorContainer);
      popUpContainer.appendChild(checkRecords);
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
@@ -3730,7 +3750,7 @@ function createPlayerInfoMenu() {
 function createInfoMenu( ) {
     const popUpContainer = createPopUpContainer();
 
-    const statusButton = createTitleContainer('\nUpdated\neveryday!', 'Return to the game', "subtitle");
+    const statusButton = createTitleContainer('\nGame Changes \neveryday!', 'Return to the game', "subtitle");
     statusButton.style.cursor = 'pointer';
     statusButton.onclick = () => {
       canMove = true;
