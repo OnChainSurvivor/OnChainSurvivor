@@ -3446,10 +3446,14 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = createTitleElement('\nStart a\nChallenge', 'sorry for all the gimmicky words, technically it is true tho', "title")
+        const checkRanks = createTitleElement('\nChallenge\nRanking', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
         const topSponsorContainer = createContainer(['abilities-grid']);
         topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
+        topSponsorContainer.appendChild(createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
+        topSponsorContainer.appendChild(createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
+        topSponsorContainer.appendChild(createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
+        topSponsorContainer.appendChild(createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
         topSponsorContainer.appendChild(createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topSponsorContainer.appendChild(createButton(playerTypes[0], .6));
         topSponsorContainer.appendChild(createButton(abilityTypes[3], .6 ));
@@ -3504,7 +3508,7 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(worldContainer);
  
      const inputContainer = document.createElement('div');
-     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ', id: 'sponsorAmount' });
+     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ, Rank: ----', id: 'sponsorAmount' });
      const submitButton = document.createElement('button'); 
      submitButton.classList.add('rainbow-button'); 
      submitButton.classList.add('subtitle'); 
@@ -3512,7 +3516,21 @@ function handleEntitySelection(entity, type) {
      inputContainer.appendChild(sponsorAmount);
      inputContainer.appendChild(submitButton); 
 
-     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     sponsorAmount.addEventListener('input', async () => {
+        const amount = sponsorAmount.value; 
+        if (amount) {
+          const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); // Convert to Wei
+          if (rank !== null) {
+            rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
+          } else {
+            rankInfo.innerText = "Error fetching rank"; 
+          }
+        } else {
+          rankInfo.innerText = "Enter an amount"; 
+        }
+      });
+
+     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.\nYou will rank up daily as challenges start.\n At #1, everyone plays your selection ! \n\nMenu:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
@@ -3525,7 +3543,7 @@ function handleEntitySelection(entity, type) {
          const goal = 1000000; 
          const percentage = (currentAmount / goal) * 100;
          loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='\nRank 1° Challenge starts in 9 blocks!';
+         loadingText.innerText ='\nNext Challenge (#1°) starts in 9 blocks!';
          loadingText.classList.add('rainbow-text'); 
      }
      function simulateLoading() {
@@ -3541,7 +3559,7 @@ function handleEntitySelection(entity, type) {
          }, 50); 
      }
 
-     const checkRecords = createTitleElement('\nMenu\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
+     const checkRecords = createTitleElement('\nEdit your challenge\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
    
      const hallreportContainer = document.createElement('div');
      hallreportContainer.classList.add('abilities-grid');
@@ -3614,20 +3632,23 @@ function handleEntitySelection(entity, type) {
      };
      hallreportContainer.appendChild(reportButton);
 
-    const goBackButton = createTitleContainer('\n2024, Made with ❤️', 'Return to the game', "subtitle");
-    //goBackButton.style.cursor = 'pointer';
-    
-     const popUpContainer = createPopUpContainer();
-     popUpContainer.appendChild(checkRanks);
-     popUpContainer.appendChild(galleryButtonsContainer);
-popUpContainer.appendChild(yourSpot);
- popUpContainer.appendChild(inputContainer);
+    const goBackButton = createTitleContainer('\n Made in 2024 ❤️Ξ', 'Return to the game', "subtitle");
 
+     const popUpContainer = createPopUpContainer();
+     popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+     popUpContainer.appendChild(checkRanks);
      popUpContainer.appendChild(loadingText);
      popUpContainer.appendChild(loadingContainer);
-   /// popUpContainer.appendChild(topSponsorText);
      popUpContainer.appendChild(topSponsorContainer);
+
      popUpContainer.appendChild(checkRecords);
+     popUpContainer.appendChild(galleryButtonsContainer);
+ popUpContainer.appendChild(inputContainer);
+     popUpContainer.appendChild(yourSpot);
+
+
+   /// popUpContainer.appendChild(topSponsorText);
+
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
 
@@ -3750,7 +3771,7 @@ function createPlayerInfoMenu() {
 function createInfoMenu( ) {
     const popUpContainer = createPopUpContainer();
 
-    const statusButton = createTitleContainer('\nGame Changes \neveryday!', 'Return to the game', "subtitle");
+    const statusButton = createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
     statusButton.style.cursor = 'pointer';
     statusButton.onclick = () => {
       canMove = true;
@@ -3892,7 +3913,7 @@ function createRunMenu() {
     const titleButton = createTitleContainer('\nAbout\nGlobal Runs 🏃🏻‍♂️', 'Return to the game', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = createTitleElement(' \nEvery day (7152 Ξ blocks) the game will\n change according to the top ranked sponsor,\nchoosing the chain, class, abilities of that day! \n\n Current top 10 chains:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = createTitleElement(' \nEvery day (7152 Ξ blocks) the game will\n change according to the top ranked sponsor,\nchoosing the Chain, Class & Ability of that day! \n\n Current top 10 chains:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const firstContainer = createContainer(['abilities-grid']); 
