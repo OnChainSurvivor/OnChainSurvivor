@@ -3519,7 +3519,7 @@ function handleEntitySelection(entity, type) {
      sponsorAmount.addEventListener('input', async () => {
         const amount = sponsorAmount.value; 
         if (amount) {
-          const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); // Convert to Wei
+          const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); 
           if (rank !== null) {
             rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
           } else {
@@ -3530,7 +3530,7 @@ function handleEntitySelection(entity, type) {
         }
       });
 
-     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.\nYou will rank up daily as challenges start.\n At #1, everyone plays your selection ! \n\nMenu:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.\nYou will rank up daily as challenges start.\n At #1, everyone plays your Challenge! \n\nMenu:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
