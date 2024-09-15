@@ -3446,11 +3446,11 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = createTitleElement('\nChallenge\nRanking', 'sorry for all the gimmicky words, technically it is true tho', "title")
+        const checkRanks = createTitleElement('\nChallenge\nQueue', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
         const topSponsorContainer = createContainer(['abilities-grid']);
         topSponsorContainer.style.gridTemplateColumns =  'repeat(4, auto)';
-        topSponsorContainer.appendChild(createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
+        topSponsorContainer.appendChild(createTitleElement('\n#\nSpot', 'lazy subtitle too btw', "subtitle"));
         topSponsorContainer.appendChild(createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
         topSponsorContainer.appendChild(createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
         topSponsorContainer.appendChild(createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
@@ -3530,7 +3530,7 @@ function handleEntitySelection(entity, type) {
         }
       });
 
-     const yourSpot = createTitleElement('Add 0.01Ξ for rank 24°.\nYou will rank up daily as challenges start.\n At #1, everyone plays your Challenge! \n\nMenu:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const yourSpot = createTitleElement('Add 0.01Ξ for spot 24°.\nYou will rank up daily as challenges start.\n At #1, everyone plays your Challenge! \n \n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
