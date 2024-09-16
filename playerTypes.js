@@ -19,16 +19,7 @@ export const playerTypes = [{
     Lu:0,
     In:0,
     abilities: [
-      //  { type: 'Veil of Decentralization' }, // Evasion, Survivability
-      //  { type: 'Code Refactor' }, // Utility, Cooldown Reduction 
-      //  { type: 'Onchain Trail' }, // Damage Over Time, Area Denial
-      //  { type: 'Double Spend Prevention' }, // Damage Absorption, Defense
-      //  { type: 'Energy Surge' }, // Mobility, Attack Speed
-      //  { type: 'Governance Vote' }, // Adaptability, Random Beneficial Effect
-      //  { type: 'Blockchain Backup' }, // Resource Management, Recovery
-      //  { type: 'Staking Rewards' }, // Support, Ally Healing
-     //   { type: 'Quick Flip' }, // Burst Damage 
-     //   { type: 'Dollar Cost Average' } // Consistent Damage Over Time
+      //  { type: 'Veil of Decentralization' }, 
     ],
 },{
     class: 'Survivor',
@@ -45,7 +36,6 @@ export const playerTypes = [{
     level:0,
     isLocked: false,
     abilities: [
-      //  { type: 'Veil of Decentralization'},
     ],
 },{
     class: 'Survivor',
@@ -147,8 +137,6 @@ export const playerTypes = [{
     evasion: 50,
     tags: ['player'],
     thumbnail: 'Media/Classes/Developer/FDEVELOPER.png',
-    
-
     level:0,
     isLocked: true, 
     abilities: [
