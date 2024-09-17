@@ -2105,7 +2105,17 @@ const abilityTypes = [
     },
 },
 {
-    title: "Male Astrology Believer",
+    title: 'Unicorn Startup',
+    description: 'a very rare sight.',
+    tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
+    thumbnail: 'Media/Abilities/UNICORN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Male Astrology",
     description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
     tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     thumbnail: 'Media/Abilities/ASTROLOGY.png',
@@ -2114,6 +2124,89 @@ const abilityTypes = [
         this.update = () => {}
     }
 },
+{
+    title: "NFT Enhancer",
+    description: "Boosts the effects of your NFTs.",
+    tooltip: "Enhancing like an NFT upgrade!",
+    thumbnail: 'Media/Abilities/NFTREWORK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
+    title: "Debt Drown ",
+    description: "Provides a temporary boost to defense and health regeneration.",
+    tooltip: "Unyielding spirit. Boost your defense and health regen.",
+    thumbnail: 'Media/Abilities/DEBTDROWN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "NFT Marketplace",
+    description: "Increases the drop rate of rare items.",
+    tooltip: "Trade NFTs. Find rare items more often.",
+    thumbnail: 'Media/Abilities/NFTMARKET.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Sanction",
+    description: "Targets a single enemy, greatly reducing its speed and defense.",
+    tooltip: "Impose sanctions. Weaken a single enemy.",
+    thumbnail: 'Media/Abilities/SANCTION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Scam Alert ",
+    description: "Temporarily decreases enemies' attack power and movement speed.",
+    tooltip: "Sound the scam alert. Weaken your enemies.",
+    thumbnail: 'Media/Abilities/SCAM.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
+    title: "Double or Nothing ",
+    description: "Randomly buffs or debuffs the player.",
+    tooltip: "Double or nothing. Randomly buff or debuff yourself.",
+    thumbnail: 'Media/Abilities/DOUBLEORNOTHING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Skeptical Scholar",
+    description: "Buffs allies' defense and reduces enemy effectiveness.",
+    tooltip: "Skeptical scholar. Buff allies' defense and reduce enemy effectiveness.",
+    thumbnail: 'Media/Abilities/SKEPTIC.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: 'Policy Overhaul',
+    description: "Executes a policy overhaul, providing massive buffs to allies and drastically debuffing enemies across the battlefield.",
+    tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
+    thumbnail: 'Media/Abilities/OVERHAUL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
 {
     title: "Lunar Cycle ",
     description: "Provides buffs or debuffs based on the current moon phase.",
