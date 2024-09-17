@@ -1031,6 +1031,36 @@ const abilityTypes = [
     },
 },
 {
+    title: "Merkle Proof",
+    description: "Verifies resources securely.  preventing theft",
+    tooltip: "Proof like a Merkle tree!",
+    thumbnail: 'Media/Abilities/MERKLE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Compliance Check",
+    description: "Forces enemies to slow down and take damage over time.",
+    tooltip: "Ensure compliance. Slow down enemies and deal damage.",
+    thumbnail: 'Media/Abilities/COMPLIANCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Crypto Portfolio",
+    description: "Increases the efficiency of resource gathering.",
+    tooltip: "Boosting like a diversified portfolio!",
+    thumbnail: 'Media/Abilities/FOLIO.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "DeFi Yield",
     description: "Periodically grants a boost in resources.",
     tooltip: "APY like a degen farm!",
@@ -1050,7 +1080,106 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
-
+{
+    title: 'Bitcoin Dominance ',
+    description: "Temporarily controls all enemies, making them fight each other.",
+    tooltip: "Take total control. Enemies turn on each other.",
+    thumbnail: 'Media/Abilities/DOMINANCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "NFT Disruptor",
+    description: "Temporarily disables the effects of enemy NFTs.",
+    tooltip: "Disrupt like a true NFT master!",
+    thumbnail: 'Media/Abilities/NFTDISRUPTOR.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Blockchain Analysis",
+    description: "Provides insights to increase strategy effectiveness.",
+    tooltip: "Analyzing like a blockchain expert!",
+    thumbnail: 'Media/Abilities/BLOCKANALYSIS.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Decentralized Finance Expertise",
+    description: "Increases the effectiveness of all resource-gathering abilities.",
+    tooltip: "Go DeFi. Boost your resource gains.",
+    thumbnail: 'Media/Abilities/EXPERTISE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Trader's Instinct ",
+    description: "Enhances movement speed and reduces skill cooldowns in critical moments.",
+    tooltip: "Instincts kick in. Move faster and reduce cooldowns when it matters most.",
+    thumbnail: 'Media/Abilities/INTUITION.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Margin Call ",
+    description: "Forces enemies to take damage over time.",
+    tooltip: "Issue a margin call. Inflict damage over time.",
+    thumbnail: 'Media/Abilities/MARGINCALL.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Perfect Arbitrage",
+    description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
+    tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
+    thumbnail: 'Media/Abilities/ARBITRAGE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Temperature Check",
+    description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
+    tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
+    thumbnail: 'Media/Abilities/TEMPCHECK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Treasury Allocation",
+    description: "Provides a large amount of resources to all allies.",
+    tooltip: "Allocate the treasury. Distribute the wealth.",
+    thumbnail: 'Media/Abilities/TREASURYALLOC.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Lucky Streak",
+    description: "Temporarily increases critical hit chance and dodge rate.",
+    tooltip: "Ride a lucky streak. Increase critical hit chance and dodge rate.",
+    thumbnail: 'Media/Abilities/STREAK.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
 {
     title: "Self Custody",
     description: "Protects resources from being stolen.",
@@ -1234,6 +1363,26 @@ const abilityTypes = [
     },
 },
 {
+    title: "Locked In",
+    description: "Maximize your profits and outpace the competition with unparalleled focus and strategic insight.",
+    tooltip: "Locked in and loaded! Maximize your profits and outpace the competition with unparalleled focus.",
+    thumbnail: 'Media/Abilities/LOCKEDIN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Adaptive Trading",
+    description: "Adapts to the situation, dealing damage based on the player's needs.",
+    tooltip: "Adapt and overcome. Your strikes change to fit the need.",
+    thumbnail: 'Media/Abilities/ADAPTIVETRADING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Token Burn",
     description: "Permanently removes a portion of enemy resources.",
     tooltip: "Burned like tokens in a supply reduction!",
@@ -1254,10 +1403,60 @@ const abilityTypes = [
     },
 },
 {
+    title: "Protocol Mastery",
+    description: "Master protocols to provide comprehensive buffs to all allies and debuff enemies significantly.",
+    tooltip: "Achieve protocol mastery. Provide extensive buffs and debuffs.",
+    thumbnail: 'Media/Abilities/MASTERY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Protocol Exploit ",
+    description: "Deals significant damage to a single target and restores health.",
+    tooltip: "Exploit vulnerabilities. Deal damage and restore health.",
+    thumbnail: 'Media/Abilities/EXPLOIT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Protocol Patch",
+    description: "Creates a temporary area that boosts allies' defenses.",
+    tooltip: "Deploy a patch. Boost allies' defenses.",
+    thumbnail: 'Media/Abilities/PATCHDEPLOY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Inside Info",
+    description: "Reveals hidden enemies and weak points.",
+    tooltip: "Gain inside information. Reveal hidden enemies and weak points.",
+    thumbnail: 'Media/Abilities/INSIDEINFO.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Debate",
     description: "Temporarily silences and weakens enemies.",
     tooltip: "Engage in debate. Silence and weaken enemies.",
     thumbnail: 'Media/Abilities/DEBATE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Profit Taker ",
+    description: "Buffs self and allies after defeating enemies.",
+    tooltip: "Take profits. Buff self and allies after defeating enemies.",
+    thumbnail: 'Media/Abilities/PROFITTAKING.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1867,6 +2066,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Dead Cat Bounce",
+    description: "Temporarily makes the player invincible and greatly increases attack power.",
+    tooltip: "Unbreakable resolve. Become invincible and unleash your power.",
+    thumbnail: 'Media/Abilities/DEADCATBOUNCE.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "White Swan Event",
     description: "Creates an event that massively benefits all market participants providing significant buffs.",
     tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
@@ -1881,6 +2090,16 @@ const abilityTypes = [
     description: "Reverses buff and debuffs of everyone for the rest of the game .",
     tooltip: "Trigger a Crab market action.",
     thumbnail: "Media/Abilities/CRABACTION.png",
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Lunar Cycle ",
+    description: "Provides buffs or debuffs based on the current moon phase.",
+    tooltip: "Harness the power of the moon. Buffs and debuffs change with each phase.",
+    thumbnail: 'Media/Abilities/LUNARCYCLE.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -1936,6 +2155,27 @@ const abilityTypes = [
         this.update = () => {}
     },
 },
+{
+    title: ' Upgrade Shiping ',
+    description: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
+    tooltip: "Divide and conquer! Your attacks hit multiple targets.",
+    thumbnail: 'Media/Abilities/SHIPPING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Protocol Raider",
+    description: "Focuses on high-damage, single-target attacks.",
+    tooltip: "Raid protocols. High-damage, single-target attacks.",
+    thumbnail: 'Media/Abilities/RAIDING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
 {
     title: "Sidechains",
     description: "Allows the player to create decoys that distract enemies.",
@@ -3632,7 +3872,7 @@ function handleEntitySelection(entity, type) {
          thumbnail: 'Media/Abilities/LAW.png',
          isLocked: false,
          effect(user) { 
-            
+
              this.update = () => {} 
          },
      }, 1);
