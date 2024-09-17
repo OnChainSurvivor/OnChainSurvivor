@@ -10,6 +10,17 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiSurvivor interactions. Navigate a 3D Blockchained environment to do what they do best... Survive Together!
 
+
+## Game Overview 🎮
+
+**Title**: Onchain Survivors
+**Genre**: Top-Down Arena Shooter, Survival Roguelite
+**Platform**: Web
+**Technology**: Web3, Blockchain Integration
+**Objective**: Complete challenges in a blockchain-themed arena, defeating enemies, leveling up, and upgrading abilities.
+
+Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+
 ### 🔑Key Features🔑
 
 - **Decentralized Gameplay**: Enjoy a truly decentralized multiSurvivor experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend!. 
@@ -18,22 +29,75 @@ Onchain Survivor is a web-based top-down arena shooter survival roguelite game t
 - **Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
 - **Variable Gameplay**: Every experience is different, Guaranteed. 
 - **Meta Progress**: As the game progresses and the user plays more of the game, he discovers unlocks classes, powerups. 
+- **Daily Challenges**: The player must complete challenges in an arena filled with enemies.
+Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, players can choose from various abilities.
+- **Power-Ups**: Enemies may drop power-ups, very low chances.
 
-### 🥇 Phase 1 🥇: Rank-Based Auction with Periodic reset to control the game state
+## Art Style 🎨
 
-This auction system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to bid for a position on a ranked list. The bidding system is competitive, with each user placing bids to secure the top positions on the leaderboard. The bidding structure is dynamic and ONLY the winner resets daily, ensuring opportunities for all participant chains.
+**Top-Down View**: 3D Low poly, varies by chain.
+**Color Palette**: Bright and vibrant neon colors to distinguish different elements and enemies.
+**Animation**: AI powered animations for characters, enemies, and effects.
 
-Auction Process
+## Sound Design 🎵
 
-**Bidding**: Users from Ethereum (L1) and various L2 blockchains submit bids into the centralized bid pool. The bid values determine the ranking, where the highest bid secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are filled.
+**Background Music**: Upbeat, electronic AI made music to match the fast-paced gameplay.
+**Sound Effects**: Distinct sounds for enemy attacks, power-ups, and level-ups.
+**Voiceovers**: Occasional voice lines for level-ups, power-up pickups, and mini-events.
 
-**Daily Reset**: At midnight, the top-ranked bidder wins the game state for the set period of time, becoming the last rank spot and making room for the second-highest bidder to claim the number one spot. All other positions advance one spot too. 
+## Blockchain Integration 🔗
 
-**Rebidding**: If the previous day's top-ranked bidder wants to secure the first rank again, they must rebid with a higher amount to reclaim their position and own the game for consecutive days.
+**Smart Contracts**: Secure and transparent mechanics for upgrades and power-ups, The blockchain will serve official runs so the player can have their records stored forever.
+**Decentralized Multiplayer**: Peer-to-peer multiplayer interactions using Peer to Peer technologies, this is for later in development.
 
-This system ensures fairness by regularly refreshing the highest bidder, preventing any one user from monopolizing the top position without consistently maintaining the highest bid.
+## Development Roadmap 🛠️
 
-### Phase 2: NFT Communities compete for Control the Survivor
+Not a roadmap per se, but More or less a loose list of the current development cycle, as certain items are all being executing in parallel in real time.
+
+**Prototype Development**: Basic mechanics, character movement, and enemy AI.
+**Core Mechanics**: Implement leveling up, power-ups, and upgrades.
+**UI Design**: Develop and integrate the UI elements.
+**Blockchain Integration**: Integrate Web3 technologies for decentralized interactions.
+**Art and Sound Design**: Develop and integrate art assets and sound effects.
+**Testing**: Conduct playtesting and debugging.
+**Launch**: Deploy the game on the web platform.
+**Constant Content Updates**: Regular updates with new content, events, and features.
+
+## Icons 🖼️
+
+- **Upgrades:** AI generated Icons representing different upgrade types (e.g., a footprint for Onchain Trail).
+- **Power-Ups:** 3D models in the arena representing different power-ups (e.g., a hatch on the floor for the Exit hatch Ability).
+
+## Arena Design 🏟️
+For the initial survivors arena, 
+- **Theme:** Blockchain-themed elements (e.g., nodes, blocks, chains).
+- **Obstacles:** Various blockchain-related obstacles (e.g., smart contracts, consensus mechanisms).
+- **Environmental Hazards:** Dynamic elements such as gas clouds, electric fields, and node failures that add challenges.
+
+## Marketing Strategy 📈
+Product is still in development, but as it gains more shape, there are many plans to expand the playerbase!
+- **Peer to Peer, Word of mouth**: The best of the best method to gain users. a fun game that everyone wants to play with friends. 
+- **Community Engagement:** Leverage blockchain and their communities for promotion.
+- **Social Media:** Utilize social media platforms to share updates and engage with players.
+- **Partnerships:** Collaborate with blockchain projects and influencers for cross-promotion.
+- **Content Creators:** Engage streamers and content creators to showcase gameplay and mechanics.
+- **Events:** Host in-game events and challenges with other Communities.
+
+### 🥇 Phase 1 🥇: Daily Game Challenges, by players for players!
+
+This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the queue. The  system is competitive, with each user placing their challengesaiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenge.
+
+Queue Process
+
+**Bidding**: Users from Ethereum (L1) and various L2 blockchains submit bids into the centralized bid pool. The bid values determine the ranking, where the highest bid secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
+
+**Daily Reset**: At midnight, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
+
+**Adding**: If the previous day's top-ranked in the Challenge Queue wants to secure the first rank again, they must re add with a higher amount to reclaim their position and set the game Challenge for consecutive days.
+
+This system ensures fairness by regularly refreshing the queue, preventing any one user from monopolizing the top position.
+
+### Phase 2: NFT Communities compete for Control the Game 
 ### Phase 3: Players compete for the Hall of Survivors
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈

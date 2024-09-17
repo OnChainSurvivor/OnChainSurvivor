@@ -1041,6 +1041,37 @@ const abilityTypes = [
     },
 },
 {
+    title: 'Escrow Services',
+    description: "Holds resources in escrow, releasing them after a delay.",
+    tooltip: "Escrow like a smart contract!",
+    thumbnail: 'Media/Abilities/ESCROW.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+
+{
+    title: "Self Custody",
+    description: "Protects resources from being stolen.",
+    tooltip: "Secure like a custody service!",
+    thumbnail: 'Media/Abilities/CUSTODY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Flash Crash",
+    description: "Briefly stuns all enemies in the area.",
+    tooltip: "Stunning like a sudden market crash!",
+    thumbnail: 'Media/Abilities/MARKETCRASH.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
     title: "Stake Defense",
     description: "Increases defense for a short period.",
     tooltip: "Strengthen your defenses with stakes.",
@@ -3601,6 +3632,7 @@ function handleEntitySelection(entity, type) {
          thumbnail: 'Media/Abilities/LAW.png',
          isLocked: false,
          effect(user) { 
+            
              this.update = () => {} 
          },
      }, 1);
@@ -3762,24 +3794,24 @@ async function createInfoMenu( ) {
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
-    //Debt: calculate time left  using the Smart contract blocks left 
-    let currentBlockNumber = "Time left: Loading...";
-    const blockCounter = UI.createTitleElement(`Time left: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
+    //Debt:  DOES NOT WORK WITHOUT METAMASK. calculate time left  using the Smart contract blocks left 
+    let currentBlockNumber = "Next Challlenge: Loading...";
+    const blockCounter = UI.createTitleElement(`Next Challlenge: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
     async function updateBlockNumber() {
          try {
              if (window.ethereum) {
                  const web3 = new Web3(window.ethereum);
                  currentBlockNumber = await web3.eth.getBlockNumber();
                  // **Update the UI element**
-                 blockCounter.innerText = `Time left: ${currentBlockNumber}`;
+                 blockCounter.innerText = `Next Challlenge: ${currentBlockNumber}`;
              } else {
                  currentBlockNumber = "MetaMask Not Found";
-                 challengeTitle.innerText = `Time left: ${currentBlockNumber}`;
+                 challengeTitle.innerText = `Next Challlenge: ${currentBlockNumber}`;
              }
          } catch (error) {
              console.error('Error fetching block number:', error);
              currentBlockNumber = "Error";
-             challengeTitle.innerText = `Time left: ${currentBlockNumber}`;
+             challengeTitle.innerText = `Next Challlenge: ${currentBlockNumber}`;
          }
      }
      updateBlockNumber(); 
