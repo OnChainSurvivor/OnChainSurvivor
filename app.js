@@ -3004,25 +3004,21 @@ function LevelUp() {
                               Enemies Controller
 ---------------------------------------------------------------------------*/
 const enemies = [];
-let enemiesUpdateFrame = 0; 
 const playerPositionDifference = new THREE.Vector3();  
 const enemydirection = new THREE.Vector3();           
 
 function updateEnemies() {
-    if (enemiesUpdateFrame++ % 3 !== 0) return;
     playerPositionDifference.copy(player.position);
     for (let i = 0; i < enemies.length; i++) {
         const enemy = enemies[i];
-        enemy.mesh.mixer.update(0.025);
-        enemy.boundingBox.setFromObject(enemy.mesh);
-        enemy.needsBoundingBoxUpdate = false;
         enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
-        enemy.position.addScaledVector(enemydirection, enemy.movementspeed * 1.5);
+        enemy.position.addScaledVector(enemydirection, enemy.movementspeed/2);
         enemy.rotation.y = Math.atan2(enemydirection.x, enemydirection.z);
+        enemy.updateMesh();
     }
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 50) {
+function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 25) {
     const spawnEnemy = () => {
         if(isPaused) return;
         for (let i = 0; i < numberOfEnemies; i++) {
@@ -3232,13 +3228,14 @@ UI.createTitleContainer= function (text,tooltip) {
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
-    function createGameTitle(){
+    async function createGameTitle(){
         const mainTitle = UI.createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
         const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-        const challengeTitle = UI.createTitleElement("Today's\nChallenge:", 'lazy subtitle too btw', "minititle");
 
+    const challengeTitle = UI.createTitleElement(`Today's\n Challenge:`, 'lazy subtitle too btw', "minititle");
+    
         const miniplayerButton = createButton(player, isMobile ? 0.3 : 0.5);
         const miniworldButton = createButton(world, isMobile ? 0.3 : 0.5);
         const miniabilityButton = createButton(ability,isMobile ? 0.3 : 0.5);
@@ -3745,7 +3742,7 @@ function createPlayerInfoMenu() {
     };
 }
 
-function createInfoMenu( ) {
+async function createInfoMenu( ) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
     const statusButton = UI.createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
     statusButton.style.cursor = 'pointer';
@@ -3764,6 +3761,30 @@ function createInfoMenu( ) {
     const worldButton = createButton(world, 1);
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
+
+    //Debt: calculate time left  using the Smart contract blocks left 
+    let currentBlockNumber = "Time left: Loading...";
+    const blockCounter = UI.createTitleElement(`Time left: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
+    async function updateBlockNumber() {
+         try {
+             if (window.ethereum) {
+                 const web3 = new Web3(window.ethereum);
+                 currentBlockNumber = await web3.eth.getBlockNumber();
+                 // **Update the UI element**
+                 blockCounter.innerText = `Time left: ${currentBlockNumber}`;
+             } else {
+                 currentBlockNumber = "MetaMask Not Found";
+                 challengeTitle.innerText = `Time left: ${currentBlockNumber}`;
+             }
+         } catch (error) {
+             console.error('Error fetching block number:', error);
+             currentBlockNumber = "Error";
+             challengeTitle.innerText = `Time left: ${currentBlockNumber}`;
+         }
+     }
+     updateBlockNumber(); 
+     setInterval(updateBlockNumber, 5000);
+     popUpContainer.appendChild(blockCounter);
 
     const objectiveText = UI.createTitleElement('\nEach playrun has an objective, and \nafter you survive, inscribe  your records \nto the hall of survivors for all of ethernity. \n\n Today`s Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
