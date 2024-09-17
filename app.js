@@ -1059,6 +1059,15 @@ const abilityTypes = [
     effect(user) { 
         this.update = () => {}
     },
+},{
+    title: "Zodiac Prediction ",
+    description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
+    tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
+    thumbnail: 'Media/Abilities/ZODIAC.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    }
 },
 {
     title: "DeFi Yield",
@@ -2096,6 +2105,16 @@ const abilityTypes = [
     },
 },
 {
+    title: "Male Astrology Believer",
+    description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
+    tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
+    thumbnail: 'Media/Abilities/ASTROLOGY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    }
+},
+{
     title: "Lunar Cycle ",
     description: "Provides buffs or debuffs based on the current moon phase.",
     tooltip: "Harness the power of the moon. Buffs and debuffs change with each phase.",
@@ -2120,6 +2139,106 @@ const abilityTypes = [
     description: "Temporarily boosts resources for a short period.",
     tooltip: "Leveraged like a flash loan exploit!",
     thumbnail: 'Media/Abilities/FLASHLOAN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Star Alignment ",
+    description: "Increases critical hit chance and attack power when stars align.",
+    tooltip: "The stars have aligned! Your attacks become more powerful.",
+    thumbnail: 'Media/Abilities/ALIGNMENT.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Risk Taker",
+    description: "High-risk, high-reward abilities.",
+    tooltip: "Take a risk. High-risk, high-reward abilities.",
+    thumbnail: 'Media/Abilities/RISKTAKER.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Shill",
+    description: "Temporarily increases allies' attack power and speed.",
+    tooltip: "Shill your way to victory. Boost ally attack power and speed.",
+    thumbnail: 'Media/Abilities/SHILLING.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Compound Interest ",
+    description: "Gradually increases attack power and defense over time.",
+    tooltip: "Compound interest. Gradually increase attack power and defense.",
+    thumbnail: 'Media/Abilities/COMPOUND.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Hype Train",
+    description: "Summons a stampede of followers that trample enemies.",
+    tooltip: "Summon the hype train. Trample your enemies.",
+    thumbnail: 'Media/Abilities/HYPETRAIN.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Virality ",
+    description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
+    tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
+    thumbnail: 'Media/Abilities/VIRALITY.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Viral Spread ",
+    description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
+    tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
+    thumbnail: 'Media/Abilities/SPREAD.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Second Best ",
+    description: "Gradually increases attack power and defense over time.",
+    tooltip: "Compound interest. Gradually increase attack power and defense.",
+    thumbnail: 'Media/Abilities/SECONDBEST.png',
+    isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "Martket Impact",
+    description: "Enhances debuffs and controls enemy behavior.",
+    tooltip: "Critique crypto. Enhance debuffs and control enemies.",
+    thumbnail: 'Media/Abilities/MARKETIMPACT.png',
+        isLocked: false,
+    effect(user) { 
+        this.update = () => {}
+    },
+},
+{
+    title: "It's Over ",
+    description: "over.",
+    tooltip: "Declare the end. Reduce enemy effectiveness and cause them to falter.",
+    thumbnail: 'Media/Abilities/OVER.png',
     isLocked: false,
     effect(user) { 
         this.update = () => {}
@@ -2156,7 +2275,7 @@ const abilityTypes = [
     },
 },
 {
-    title: ' Upgrade Shiping ',
+    title: 'Upgrade Shiping',
     description: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
     tooltip: "Divide and conquer! Your attacks hit multiple targets.",
     thumbnail: 'Media/Abilities/SHIPPING.png',
@@ -3548,7 +3667,9 @@ UI.createTitleContainer= function (text,tooltip) {
                     const displayName = ensName || address;
                     localStorage.setItem('metaMaskAddress', address); 
                     hideUI();
-                    createWeb3Menu(displayName); 
+                    setTimeout(() => {
+                        createWeb3Menu(displayName);
+                    }, 1100);
         
                 } catch (error) {
                     if (error.code === 4902) {
@@ -3872,7 +3993,6 @@ function handleEntitySelection(entity, type) {
          thumbnail: 'Media/Abilities/LAW.png',
          isLocked: false,
          effect(user) { 
-
              this.update = () => {} 
          },
      }, 1);
@@ -3902,11 +4022,10 @@ function handleEntitySelection(entity, type) {
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
 
-        setTimeout(() => { 
             addContainerUI('center-container', [popUpContainer]);
             addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
-        }, 1050);
+
      
             galleryButtonsContainer.childNodes.forEach(button => {
                 button.addEventListener('click', () => {
@@ -3932,7 +4051,7 @@ function handleEntitySelection(entity, type) {
         if (storedAddress) {
             const web3 = new Web3(window.ethereum);
             hideUI();
-            createWeb3Menu(storedAddress);
+                createWeb3Menu(storedAddress);
         }
     });
 /*---------------------------------------------------------------------------
