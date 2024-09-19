@@ -86,7 +86,7 @@ button, div {
 
 @keyframes rainbowText {
     0% { background-position: 0% 50%; }
-    100% { background-position: 1000% 50%; }
+    100% { background-position: 300% 50%; }
 }
 
 .rainbow-text {
@@ -94,9 +94,9 @@ button, div {
     background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     background-clip: text;
     -webkit-background-clip: text;
-    background-size: 200% 200%;
+    background-size: 300% 100%;
     text-align: center;
-    animation: rainbowText 7s linear infinite;
+    animation: rainbowText 5s linear infinite;
 }
 
 .fade-in {
