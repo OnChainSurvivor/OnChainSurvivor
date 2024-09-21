@@ -1,3 +1,7 @@
+:root {
+    --image-filter: ''; /* Define the variable with an empty string */
+}
+  
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -39,6 +43,7 @@ img {
     -webkit-user-select: none; 
     -ms-user-select: none;
     pointer-events: none;
+    filter: brightness(150%) var(--image-filter); 
 }
 
 button, div {
@@ -69,7 +74,26 @@ button, div {
     visibility: visible;
     opacity: 1;
 }
-
+.rainbow-slider {
+    height: 10px; /* Adjust this value for the desired height */
+    -webkit-appearance: none; /* Remove default styles for more control */
+    width: 200px; /* Set a width for the slider */
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); /* Example rainbow gradient */
+    outline: none; 
+    border-radius: 10px; /* Rounded corners */
+    filter: var(--image-filter); 
+  }
+  
+  .rainbow-slider::-webkit-slider-thumb { /* Style the slider thumb */
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; /* Circular thumb */
+    background: white;
+    cursor: pointer;
+    filter: var(--image-filter); 
+  }
 @keyframes rainbowBorder {
     0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
     10% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
@@ -97,6 +121,8 @@ button, div {
     background-size: 300% 100%;
     text-align: center;
     animation: rainbowText 5s linear infinite;
+    filter: var(--image-filter); 
+
 }
 
 .fade-in {
@@ -332,6 +358,7 @@ html, body {
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     padding: 10px;
     animation: rainbowBorder 5s linear infinite;
+    filter: var(--image-filter); 
 }
 
 .rainbow-button {
@@ -344,6 +371,7 @@ html, body {
     cursor: pointer;
     animation: rainbowBorder 5s linear infinite;
     margin-left: 5px; 
+    filter: var(--image-filter); 
 }
 .rainbow-input::placeholder, .rainbow-input {
     color: transparent; 
@@ -352,4 +380,5 @@ html, body {
     -webkit-background-clip: text; 
     background-size: 200% 200%;
     animation: rainbowText 7s linear infinite;
+    filter: var(--image-filter); 
 }

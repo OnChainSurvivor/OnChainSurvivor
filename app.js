@@ -3572,11 +3572,10 @@ UI.createTitleContainer= function (text,tooltip) {
         button.style.padding = '0';
         button.style.cursor = 'pointer';
         button.style.fontFamily = 'Arial, sans-serif';
-        button.style.border = '.1px solid';
+        button.style.border = '2px solid';
         button.style.borderImageSlice = 1;
-        button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
 
-        // button.style.animation = 'rainbowBorder 5s linear infinite';
+        button.style.animation = 'rainbowBorder 5s linear infinite';
 
         button.title = dataType.tooltip;
     
@@ -3597,9 +3596,8 @@ UI.createTitleContainer= function (text,tooltip) {
         img.src = dataType.thumbnail;
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
-        
-        img.style.filter = 'brightness(130%)'; 
-    
+       // img.style.filter = `brightness(150%)`;
+
         const description = document.createElement('div');
         description.innerText = `${dataType.description}`;
         description.style.fontSize = `${14.5 * scale}px`;
@@ -3630,9 +3628,10 @@ UI.createTitleContainer= function (text,tooltip) {
         description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
-        img.style.filter = 'grayscale(100%) blur(5px)';
+        img.style.filter = 'blur(5px)';
         button.title = 'Insert unlock hint here'
     }
+    
         return button;
     }
 
@@ -4247,40 +4246,93 @@ async function createInfoMenu( ) {
     };
     popUpContainer.appendChild(statusButton);
 
-    // 1. Mute Checkbox 
-    const muteContainer = UI.createContainer(['mute-container']); 
-    const muteCheckbox = document.createElement('input');
-    muteCheckbox.type = 'checkbox';
-    muteCheckbox.id = 'muteCheckbox';
-    muteCheckbox.classList.add('rainbow-checkbox'); // Apply your custom styling
+  // 1. FX Volume Slider
+  const fxVolumeContainer = UI.createContainer(['volume-container']); 
+  const fxVolumeSlider = document.createElement('input');
+  fxVolumeSlider.type = 'range'
+  fxVolumeSlider.min = '0';
+  fxVolumeSlider.max = '100';
+  fxVolumeSlider.value = '50'; // Default FX volume
+  fxVolumeSlider.id = 'fxVolumeSlider';
+  fxVolumeSlider.classList.add('rainbow-slider');
 
-    const muteLabel = document.createElement('label');
-    muteLabel.htmlFor = 'muteCheckbox';
-    muteLabel.innerText = 'Mute';
-    muteLabel.classList.add('rainbow-text'); // Apply your custom styling
+  const fxVolumeLabel = document.createElement('label');
+  fxVolumeLabel.htmlFor = 'fxVolumeSlider';
+  fxVolumeLabel.innerText = ' FX Volume: ';
+  fxVolumeLabel.classList.add('rainbow-text'); 
 
-   // muteContainer.appendChild(muteCheckbox);
-   // muteContainer.appendChild(muteLabel);
-   // popUpContainer.appendChild(muteContainer);
+  fxVolumeContainer.appendChild(fxVolumeLabel);
+  fxVolumeContainer.appendChild(fxVolumeSlider);
+  popUpContainer.appendChild(fxVolumeContainer)
 
-    // 2. Volume Slider
-    const volumeContainer = UI.createContainer(['volume-container']); 
-    const volumeSlider = document.createElement('input');
-    volumeSlider.type = 'range';
-    volumeSlider.min = '0';
-    volumeSlider.max = '100';
-    volumeSlider.value = '50'; // Default volume
-    volumeSlider.id = 'volumeSlider';
-    volumeSlider.classList.add('rainbow-text'); // Apply your custom styling
+const volumeContainer = UI.createContainer(['volume-container']); 
+const volumeSlider = document.createElement('input');
+volumeSlider.type = 'range';
+volumeSlider.min = '0';
+volumeSlider.max = '100';
+volumeSlider.value = '50'; 
+volumeSlider.id = 'volumeSlider';
+volumeSlider.classList.add('rainbow-slider'); 
 
-    const volumeLabel = document.createElement('label');
-    volumeLabel.htmlFor = 'volumeSlider';
-    volumeLabel.innerText = '\nMaster Volume\n\n';
-    volumeLabel.classList.add('rainbow-text'); // Apply your custom styling
-    volumeContainer.appendChild(volumeSlider);
+const volumeLabel = document.createElement('label');
+volumeLabel.htmlFor = 'volumeSlider';
+volumeLabel.innerText = ' Music Volume: ';
+volumeLabel.classList.add('rainbow-text'); 
+volumeContainer.appendChild(volumeLabel);
+volumeContainer.appendChild(volumeSlider);
+popUpContainer.appendChild(volumeContainer); 
 
-    volumeContainer.appendChild(volumeLabel);
-    popUpContainer.appendChild(volumeContainer);
+
+const themeContainer = UI.createContainer(['volume-container']);
+const themeLabel = document.createElement('label');
+themeLabel.innerText = ' Theme: ';
+themeLabel.classList.add('rainbow-text');
+themeContainer.appendChild(themeLabel);
+
+const themeOptions = [
+    { id: 'rainbowCheckbox', label: 'Rainbow', filter: 'sepia(0%)' }, 
+    { id: 'sepiaCheckbox', label: 'Gold', filter: 'sepia(100%)' },
+    { id: 'grayscaleCheckbox', label: 'Metallic', filter: 'grayscale(100%)' }
+];
+
+themeOptions.forEach(option => {
+    const checkboxContainer = document.createElement('div');
+    checkboxContainer.style.display = 'flex';
+    checkboxContainer.style.alignItems = 'center'; 
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = option.id;
+    checkbox.classList.add('rainbow-checkbox'); 
+
+    const label = document.createElement('label');
+    label.htmlFor = option.id;
+    label.innerText = option.label;
+    label.classList.add('rainbow-text'); 
+    label.style.marginLeft = '5px';
+
+    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(label);
+    themeContainer.appendChild(checkboxContainer);
+
+    checkbox.addEventListener('change', (event) => {
+        themeOptions.forEach(otherOption => {
+            if (otherOption.id !== option.id) {
+                document.getElementById(otherOption.id).checked = false;
+            }
+        });
+
+        if (event.target.checked) { 
+          document.documentElement.style.setProperty('--image-filter', option.filter);
+        } else {
+          document.documentElement.style.setProperty('--image-filter', '');
+        }
+    });
+});
+
+popUpContainer.appendChild(themeContainer);
+
+
 
     const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
