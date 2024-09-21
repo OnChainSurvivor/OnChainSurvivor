@@ -4189,7 +4189,6 @@ function updateTimerDisplay() {
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.id = 'xpLoadingContainer';
-
     xpLoadingBar = document.createElement('div');
     xpLoadingBar.id = 'xpLoadingBar';
     xpLoadingContainer.appendChild(xpLoadingBar);
@@ -4206,7 +4205,7 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(createButton(clonedAbility,  isMobile? .11:.22));
     });
 
-    addContainerUI('bottom-container',[timerDisplay]).onclick = () => {
+    addContainerUI('top-container',[timerDisplay]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
@@ -4219,6 +4218,13 @@ function refreshDisplay() {
         hideUI();
         createPlayerInfoMenu();
     };
+
+
+    const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
+    addContainerUI('bottom-container', [pauseDisplay]).onclick = () => {
+        isPaused = true;
+    };
+
 }
 
 function createPlayerInfoMenu() {
