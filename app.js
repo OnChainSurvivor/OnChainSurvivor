@@ -4046,8 +4046,8 @@ function handleEntitySelection(entity, type) {
     };
 
     const rankButton = createButton({
-        title: "Current rank",
-        description: "Allows you to visit the current ranking. Can also check the full list of survivors.",
+        title: "Visit Hall of Challengers ",
+        description: "Allows you to verify previous official Challengers. Can also check the full list of Challengers.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/HALL.png',
         isLocked: false,
@@ -4064,7 +4064,7 @@ function handleEntitySelection(entity, type) {
 
      const hallButton = createButton({
          title: "Visit Hall of survivors",
-         description: "Allows you to verify previous official Sponsors. Can also check the full list of survivors.",
+         description: "Allows you to verify previous official Survivors. Can also check the full list of Survivors.",
          tooltip: "...",
          thumbnail: 'Media/Abilities/HALL.png',
          isLocked: false,
