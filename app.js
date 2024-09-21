@@ -3779,6 +3779,8 @@ UI.createTitleContainer= function (text,tooltip) {
                     localStorage.setItem('metaMaskAddress', address); 
                     hideUI();
                     setTimeout(() => {
+                        canMove = false;
+                        isPaused = true;
                         createRunMenu();
                     }, 1100);
         
@@ -4062,6 +4064,8 @@ function handleEntitySelection(entity, type) {
     }, 1);
     hallreportContainer.appendChild(rankButton);
     rankButton.onclick = () => {
+        canMove = false;
+        isPaused = true;
         hideUI();
         createRunMenu();
     };
@@ -4111,6 +4115,8 @@ function handleEntitySelection(entity, type) {
     }, 1);
     hallreportContainer.appendChild(tutButton);
     tutButton.onclick = () => {
+        canMove = false;
+        isPaused = true;
         hideUI();
         createRunMenu();
     };
@@ -4161,6 +4167,8 @@ function handleEntitySelection(entity, type) {
         const storedAddress = localStorage.getItem('metaMaskAddress');
         if (storedAddress) {
             const web3 = new Web3(window.ethereum);
+            canMove = false;
+            isPaused = true;
             hideUI();
             createRunMenu();
         }
@@ -4215,7 +4223,7 @@ function refreshDisplay() {
 
 function createPlayerInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']); 
-    const statusButton = UI.createTitleContainer('\nGlobal Run\nStatus', 'Return to the game', "subtitle");
+    const statusButton = UI.createTitleContainer('\nChallenge\nStatus', 'Return to the game', "subtitle");
     popUpContainer.appendChild(statusButton);
 
     const playerOnlyContainer = UI.createContainer(['abilities-grid']); 
@@ -4237,11 +4245,12 @@ function createPlayerInfoMenu() {
     const goBackButton = UI.createTitleContainer('\n - Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
     popUpContainer.appendChild(goBackButton);
-    addContainerUI('center-container', [popUpContainer]).onclick = () => {
-            canMove = true;
-            hideUI();
-            refreshDisplay();
-    };
+    addContainerUI('center-container', [popUpContainer]);
+      goBackButton.onclick = () => {
+        canMove = true;
+        hideUI();
+        refreshDisplay();
+};
 }
 function createSettingsMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
@@ -4355,7 +4364,6 @@ function createSettingsMenu() {
   const languageSelect = document.createElement('select');
   languageSelect.classList.add('rainbow-select'); 
   
-  // Curated list of languages
   const languageOptions = [
       { value: "en", label: "English" },
       { value: "es", label: "Español" }, 
@@ -4378,16 +4386,14 @@ function createSettingsMenu() {
   
   langContainer.appendChild(languageSelect);
   popUpContainer.appendChild(langContainer); 
-
-
-  const goBackButton = UI.createTitleContainer('\n\n- Go back -', 'Return to the game', "subtitle");
+  const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
   goBackButton.style.cursor = 'pointer';
   
 addContainerUI('center-container', [popUpContainer]);
   goBackButton.onclick = () => {
-      canMove = true;
-      hideUI();
-      createGameTitle();
+    canMove = true;
+    hideUI();
+    createGameTitle();
   };
   popUpContainer.appendChild(goBackButton);
 
@@ -4460,7 +4466,8 @@ async function createInfoMenu() {
     
 addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
-        canMove = true;
+        canMove = false;
+        isPaused = true;
         hideUI();
         createGameTitle();
     };
@@ -4534,7 +4541,8 @@ function createTransparencyReport() {
     
 addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
-        canMove = true;
+        canMove = false;
+        isPaused = true;
         hideUI();
         createWeb3Menu();
     };
@@ -4685,7 +4693,8 @@ function createRunMenu() {
     
 addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
-        canMove = true;
+        canMove = false;
+        isPaused = true;
         hideUI();
         createWeb3Menu();
     };
