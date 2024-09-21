@@ -4237,6 +4237,40 @@ async function createInfoMenu( ) {
     };
     popUpContainer.appendChild(statusButton);
 
+    // 1. Mute Checkbox 
+    const muteContainer = UI.createContainer(['mute-container']); 
+    const muteCheckbox = document.createElement('input');
+    muteCheckbox.type = 'checkbox';
+    muteCheckbox.id = 'muteCheckbox';
+    muteCheckbox.classList.add('rainbow-checkbox'); // Apply your custom styling
+
+    const muteLabel = document.createElement('label');
+    muteLabel.htmlFor = 'muteCheckbox';
+    muteLabel.innerText = 'Mute';
+    muteLabel.classList.add('rainbow-text'); // Apply your custom styling
+
+   // muteContainer.appendChild(muteCheckbox);
+   // muteContainer.appendChild(muteLabel);
+   // popUpContainer.appendChild(muteContainer);
+
+    // 2. Volume Slider
+    const volumeContainer = UI.createContainer(['volume-container']); 
+    const volumeSlider = document.createElement('input');
+    volumeSlider.type = 'range';
+    volumeSlider.min = '0';
+    volumeSlider.max = '100';
+    volumeSlider.value = '50'; // Default volume
+    volumeSlider.id = 'volumeSlider';
+    volumeSlider.classList.add('rainbow-text'); // Apply your custom styling
+
+    const volumeLabel = document.createElement('label');
+    volumeLabel.htmlFor = 'volumeSlider';
+    volumeLabel.innerText = '\nMaster Volume\n\n';
+    volumeLabel.classList.add('rainbow-text'); // Apply your custom styling
+    volumeContainer.appendChild(volumeSlider);
+
+    volumeContainer.appendChild(volumeLabel);
+    popUpContainer.appendChild(volumeContainer);
 
     const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
@@ -4388,7 +4422,7 @@ function createRunMenu() {
     const titleButton = UI.createTitleContainer('\nAbout\nGlobal Runs 🏃🏻‍♂️', 'Return to the game', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game will\n change according to the top ranked sponsor,\nchoosing the Chain, Class & Ability of that day! \n\n Current top 10 chains:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game will\n change according to the top ranked Challenger,\nchoosing the Chain, Class & Ability of that day! \n\n Current top 10 chains:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const firstContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
@@ -4415,7 +4449,7 @@ function createRunMenu() {
     popUpContainer.appendChild(fourthContainer);
     popUpContainer.appendChild(fifthContainer);
 
-    const rankingText = UI.createTitleElement('\n The 1st ranked sponsor gets recorded in the \n hall of survivors, and all the other sponsors\n rank up one spot to eventually set the game! \n\n Current Top 3 Ranking:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const rankingText = UI.createTitleElement('\n The 1st ranked Challenger gets recorded in the \n hall of Challengers, and all the others rank up\n one spot to eventually set the Challenge! \n\n Current Top 3 Ranking:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(rankingText);
 
     const topbidContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
