@@ -253,12 +253,8 @@ html, body {
     height: 100vh;
     width: 100vw;
     transform: translate(0%, -50%);
-    border: 5px solid;
-    border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
-    border-image-slice: 1;
     box-sizing: border-box;
     overflow-y: auto;
-    animation: rainbow-border 5s linear infinite;
 } 
 
 .choose-menu-grid {
@@ -270,11 +266,11 @@ html, body {
 
 .abilities-grid {
     display: grid;
-    justify-content: center; /* Centers horizontally within its container */
-    align-content: center;   /* Centers vertically within its container */
-    margin: 0 auto;         /* Centers the entire grid horizontally on the page */
+    justify-content: center;
+    align-content: center; 
+    margin: 0 auto;       
     grid-template-columns: repeat(2, auto); 
-    place-items: center;     /* Centers items both horizontally and vertically within their grid cells */
+    place-items: center;    
 }
 
 .title {

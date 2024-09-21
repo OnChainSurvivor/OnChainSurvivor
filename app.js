@@ -4380,7 +4380,7 @@ function createSettingsMenu() {
   popUpContainer.appendChild(langContainer); 
 
 
-  const goBackButton = UI.createTitleContainer('- Go back -', 'Return to the game', "subtitle");
+  const goBackButton = UI.createTitleContainer('\n\n- Go back -', 'Return to the game', "subtitle");
   goBackButton.style.cursor = 'pointer';
   
 addContainerUI('center-container', [popUpContainer]);
