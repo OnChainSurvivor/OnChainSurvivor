@@ -36,6 +36,9 @@ canvas {
     display: inline-block;
     cursor: pointer;
 }
+button {
+    filter: var(--image-filter); 
+}
 img {
     user-select: none; 
     -moz-user-select: none; 
@@ -43,7 +46,6 @@ img {
     -webkit-user-select: none; 
     -ms-user-select: none;
     pointer-events: none;
-    filter: brightness(150%) var(--image-filter); 
 }
 
 button, div {
@@ -94,19 +96,8 @@ button, div {
     cursor: pointer;
     filter: var(--image-filter); 
   }
-@keyframes rainbowBorder {
-    0% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-    10% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
-    20% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
-    30% { border-image-source: linear-gradient(45deg, green, deepskyblue, blueviolet, violet, red, orange, yellow); }
-    40% { border-image-source: linear-gradient(45deg, deepskyblue, blueviolet, violet, red, orange, yellow, green); }
-    50% { border-image-source: linear-gradient(45deg, blueviolet, violet, red, orange, yellow, green, deepskyblue); }
-    60% { border-image-source: linear-gradient(45deg, violet, red, orange, yellow, green, deepskyblue, blueviolet); }
-    70% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-    80% { border-image-source: linear-gradient(45deg, orange, yellow, green, deepskyblue, blueviolet, violet, red); }
-    90% { border-image-source: linear-gradient(45deg, yellow, green, deepskyblue, blueviolet, violet, red, orange); }
-    100% { border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); }
-}
+
+  
 
 @keyframes rainbowText {
     0% { background-position: 0% 50%; }
@@ -357,7 +348,6 @@ html, body {
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     padding: 10px;
-    animation: rainbowBorder 5s linear infinite;
     filter: var(--image-filter); 
 }
 
@@ -369,7 +359,6 @@ html, body {
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     padding: 10px 20px; 
     cursor: pointer;
-    animation: rainbowBorder 5s linear infinite;
     margin-left: 5px; 
     filter: var(--image-filter); 
 }
@@ -382,3 +371,49 @@ html, body {
     animation: rainbowText 7s linear infinite;
     filter: var(--image-filter); 
 }
+
+
+
+/* Checkbox Styles */
+.rainbow-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 40px; 
+    height: 40px; 
+    background-color: black; 
+    border: 2px solid transparent; 
+    border-radius: 5px; 
+    border-image-slice: 1; 
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    cursor: pointer;
+    filter: var(--image-filter);
+  }
+  
+  .rainbow-checkbox:checked {
+    background-color: white; /* Or any other color you want for the checked state */
+   background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  
+  /* Select Box Styles */
+  .rainbow-select {
+    background-color: black;
+    color: white;
+    border: 1px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    padding: 10px; 
+    cursor: pointer;
+   
+    filter: var(--image-filter);
+  }
+  
+  .rainbow-select option { 
+    background-color: black;
+    color: white; 
+  }
+  
+  .rainbow-select option:hover { 
+    background-color: #333; 
+  }

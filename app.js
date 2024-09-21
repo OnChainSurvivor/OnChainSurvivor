@@ -3572,10 +3572,10 @@ UI.createTitleContainer= function (text,tooltip) {
         button.style.padding = '0';
         button.style.cursor = 'pointer';
         button.style.fontFamily = 'Arial, sans-serif';
-        button.style.border = '2px solid';
-        button.style.borderImageSlice = 1;
 
-        button.style.animation = 'rainbowBorder 5s linear infinite';
+        button.style.border = '2px solid transparent'; 
+        button.style.borderImageSlice = 1; 
+        button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)'; 
 
         button.title = dataType.tooltip;
     
@@ -3596,8 +3596,7 @@ UI.createTitleContainer= function (text,tooltip) {
         img.src = dataType.thumbnail;
         img.style.width = `${150 * scale}px`;
         img.style.height = `${150 * scale}px`;
-       // img.style.filter = `brightness(150%)`;
-
+    
         const description = document.createElement('div');
         description.innerText = `${dataType.description}`;
         description.style.fontSize = `${14.5 * scale}px`;
@@ -3619,13 +3618,13 @@ UI.createTitleContainer= function (text,tooltip) {
         if (onClick) button.onclick = onClick;
 
         if(dataType.isLocked){
-        button.style.color = 'gray';
-        button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
+      //  button.style.color = 'gray';
+       // button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
         button.style.cursor = 'not-allowed';
         button.style.opacity = '0.5';
         title.innerText="???"
-        title.style.color = 'gray';
-        description.style.color = 'gray';
+       // title.style.color = 'gray';
+       // description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
         img.style.filter = 'blur(5px)';
@@ -3726,10 +3725,10 @@ UI.createTitleContainer= function (text,tooltip) {
         todaysContainer.appendChild(miniabilityButton);
         todaysContainer.appendChild(miniworldButton);
         const subTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        const aboutTitle = UI.createTitleElement('ⓘ\n⚙️\n🎵', 'lazy subtitle too btw', "subtitle");
+        const aboutTitle = UI.createTitleElement('\n⚙️\n', 'lazy subtitle too btw', "subtitle");
 
      
-       addContainerUI('BR-container', [aboutTitle]);
+
        addContainerUI('top-container', [mainTitle]);
         uiContainers.forEach(container => {
             container.style.cursor = 'pointer';
@@ -3739,6 +3738,15 @@ UI.createTitleContainer= function (text,tooltip) {
             hideUI();
             createInfoMenu();
         };})
+
+        addContainerUI('BR-container', [aboutTitle]);
+        aboutTitle.style.cursor = 'pointer';
+        aboutTitle.onclick = () => {
+            canMove = false;
+            isPaused = true;
+            hideUI();
+            createSettingsMenu();
+        }
 
         addContainerUI('bottom-container', [subTitle,todaysContainer]);
         todaysContainer.style.cursor = 'pointer';
@@ -4149,6 +4157,7 @@ function handleEntitySelection(entity, type) {
     }
 
     window.addEventListener('load', async () => {
+        document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
         const storedAddress = localStorage.getItem('metaMaskAddress');
         if (storedAddress) {
             const web3 = new Web3(window.ethereum);
@@ -4234,105 +4243,153 @@ function createPlayerInfoMenu() {
             refreshDisplay();
     };
 }
-
-async function createInfoMenu( ) {
-    const popUpContainer = UI.createContainer(['choose-menu-container']);;
-    const statusButton = UI.createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
-    statusButton.style.cursor = 'pointer';
-    statusButton.onclick = () => {
-      canMove = true;
-      hideUI();
-      refreshDisplay();
-    };
+function createSettingsMenu() {
+    const popUpContainer = UI.createContainer(['choose-menu-container']);
+    const statusButton = UI.createTitleContainer('\n Settings', 'Return to the game', "subtitle");
     popUpContainer.appendChild(statusButton);
 
-  // 1. FX Volume Slider
-  const fxVolumeContainer = UI.createContainer(['volume-container']); 
+    const volumesTitle = UI.createTitleElement('- Volume -\n\n', 'Return to the game', "subtitle");
+    popUpContainer.appendChild(volumesTitle);
+
+  const volumesContainer =UI.createContainer(['abilities-grid']);
   const fxVolumeSlider = document.createElement('input');
   fxVolumeSlider.type = 'range'
   fxVolumeSlider.min = '0';
   fxVolumeSlider.max = '100';
-  fxVolumeSlider.value = '50'; // Default FX volume
+  fxVolumeSlider.value = '50'; 
   fxVolumeSlider.id = 'fxVolumeSlider';
   fxVolumeSlider.classList.add('rainbow-slider');
 
-  const fxVolumeLabel = document.createElement('label');
-  fxVolumeLabel.htmlFor = 'fxVolumeSlider';
-  fxVolumeLabel.innerText = ' FX Volume: ';
-  fxVolumeLabel.classList.add('rainbow-text'); 
+  const fxVolumeTitle = UI.createTitleElement("FX", '', "subtitle");
+  fxVolumeTitle.htmlFor = 'fxVolumeSlider';
+  volumesContainer.appendChild(fxVolumeTitle);
 
-  fxVolumeContainer.appendChild(fxVolumeLabel);
-  fxVolumeContainer.appendChild(fxVolumeSlider);
-  popUpContainer.appendChild(fxVolumeContainer)
+  volumesContainer.appendChild(fxVolumeSlider);
 
-const volumeContainer = UI.createContainer(['volume-container']); 
-const volumeSlider = document.createElement('input');
-volumeSlider.type = 'range';
-volumeSlider.min = '0';
-volumeSlider.max = '100';
-volumeSlider.value = '50'; 
-volumeSlider.id = 'volumeSlider';
-volumeSlider.classList.add('rainbow-slider'); 
+  const vaVolumeSlider = document.createElement('input');
+  vaVolumeSlider.type = 'range'
+  vaVolumeSlider.min = '0';
+  vaVolumeSlider.max = '100';
+  vaVolumeSlider.value = '50'; 
+  vaVolumeSlider.id = 'vaVolumeSlider';
+  vaVolumeSlider.classList.add('rainbow-slider');
 
-const volumeLabel = document.createElement('label');
-volumeLabel.htmlFor = 'volumeSlider';
-volumeLabel.innerText = ' Music Volume: ';
-volumeLabel.classList.add('rainbow-text'); 
-volumeContainer.appendChild(volumeLabel);
-volumeContainer.appendChild(volumeSlider);
-popUpContainer.appendChild(volumeContainer); 
+  const vaVolumeTitle = UI.createTitleElement("Voices", '', "subtitle");
+  vaVolumeTitle.htmlFor= 'vaVolumeSlider';
+  volumesContainer.appendChild(vaVolumeTitle);
 
+  volumesContainer.appendChild(vaVolumeSlider);
 
-const themeContainer = UI.createContainer(['volume-container']);
-const themeLabel = document.createElement('label');
-themeLabel.innerText = ' Theme: ';
-themeLabel.classList.add('rainbow-text');
-themeContainer.appendChild(themeLabel);
+  const volumeSlider = document.createElement('input');
+  volumeSlider.type = 'range';
+  volumeSlider.min = '0';
+  volumeSlider.max = '100';
+  volumeSlider.value = '50'; 
+  volumeSlider.id = 'volumeSlider';
+  volumeSlider.classList.add('rainbow-slider'); 
+  
+  const VolumeTitle = UI.createTitleElement("Music", '', "subtitle");
+  VolumeTitle.htmlFor = 'volumeSlider';
+  volumesContainer.appendChild(VolumeTitle);
 
-const themeOptions = [
-    { id: 'rainbowCheckbox', label: 'Rainbow', filter: 'sepia(0%)' }, 
-    { id: 'sepiaCheckbox', label: 'Gold', filter: 'sepia(100%)' },
-    { id: 'grayscaleCheckbox', label: 'Metallic', filter: 'grayscale(100%)' }
-];
-
-themeOptions.forEach(option => {
-    const checkboxContainer = document.createElement('div');
-    checkboxContainer.style.display = 'flex';
-    checkboxContainer.style.alignItems = 'center'; 
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = option.id;
-    checkbox.classList.add('rainbow-checkbox'); 
-
-    const label = document.createElement('label');
-    label.htmlFor = option.id;
-    label.innerText = option.label;
-    label.classList.add('rainbow-text'); 
-    label.style.marginLeft = '5px';
-
-    checkboxContainer.appendChild(checkbox);
-    checkboxContainer.appendChild(label);
-    themeContainer.appendChild(checkboxContainer);
-
-    checkbox.addEventListener('change', (event) => {
-        themeOptions.forEach(otherOption => {
-            if (otherOption.id !== option.id) {
-                document.getElementById(otherOption.id).checked = false;
-            }
-        });
-
-        if (event.target.checked) { 
+  volumesContainer.appendChild(volumeSlider);
+  popUpContainer.appendChild(volumesContainer); 
+  
+  const themeContainer = document.createElement('div');
+  const themesTitle = UI.createTitleElement('\n - Themes -\n\n', 'Return to the game', "subtitle");
+  themeContainer.appendChild(themesTitle);
+  
+  const themeOptions = [
+      { id: 'rainbowCheckbox', label: 'Rainbow', filter: 'brightness(130%)', default: true }, 
+      { id: 'goldCheckbox', label: 'Gold', filter: 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)' },
+      { id: 'silverCheckbox', label: 'Silver', filter: 'brightness(130%) grayscale(100%)' },
+      { id: 'bronzeCheckbox', label: 'Bronze', filter: 'brightness(130%) sepia(100%) hue-rotate(5deg) ' }
+  ];
+  const themesContainerGrid = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
+  
+  themeOptions.forEach(option => {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = option.id;
+      checkbox.classList.add('rainbow-checkbox'); 
+      const themeTitle = UI.createTitleElement(option.label, '', "subtitle");
+      themeTitle.htmlFor= option.id;
+      themeContainer.appendChild(themesTitle);
+  
+      themesContainerGrid.appendChild(checkbox);
+      themesContainerGrid.appendChild(themeTitle);
+      themeContainer.appendChild(themesContainerGrid);
+  
+      if (option.default) {
+          checkbox.checked = true;
           document.documentElement.style.setProperty('--image-filter', option.filter);
-        } else {
-          document.documentElement.style.setProperty('--image-filter', '');
-        }
-    });
-});
+      }
+  
+      checkbox.addEventListener('change', (event) => {
+  
+          if (option.default && !event.target.checked) { 
+              event.target.checked = true;  
+              return; 
+          }
+  
+          themeOptions.forEach(otherOption => {
+              if (otherOption.id !== option.id) {
+                  document.getElementById(otherOption.id).checked = false;
+              }
+          });
+  
+          if (event.target.checked) { 
+            document.documentElement.style.setProperty('--image-filter', option.filter);
+          } else {
+            document.documentElement.style.setProperty('--image-filter', '');
+          }
+      });
+  });
+  
+  popUpContainer.appendChild(themeContainer);
 
-popUpContainer.appendChild(themeContainer);
+  const langContainer = document.createElement('div');
+  const langTitle = UI.createTitleElement('\n - Language -\n\n', 'Return to the game', "subtitle");
+  langContainer.appendChild(langTitle);
+
+  const languageSelect = document.createElement('select');
+  languageSelect.classList.add('rainbow-select'); 
+
+  themeOptions.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option.label; 
+      optionElement.text = option.label;
+      languageSelect.appendChild(optionElement);
+  });
+
+  langContainer.appendChild(languageSelect);
+  popUpContainer.appendChild(langContainer); 
 
 
+
+  const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+  goBackButton.style.cursor = 'pointer';
+  
+addContainerUI('center-container', [popUpContainer]);
+  goBackButton.onclick = () => {
+      canMove = true;
+      hideUI();
+      createGameTitle();
+  };
+  popUpContainer.appendChild(goBackButton);
+
+}
+async function createInfoMenu() {
+    const popUpContainer = UI.createContainer(['choose-menu-container']);
+
+    const newChallengesButton = UI.createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
+    newChallengesButton.style.cursor = 'pointer';
+    newChallengesButton.onclick = () => {
+    canMove = true;
+    hideUI();
+    refreshDisplay();
+    };
+    popUpContainer.appendChild(newChallengesButton);
 
     const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
