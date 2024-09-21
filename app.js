@@ -4351,23 +4351,36 @@ function createSettingsMenu() {
   const langContainer = document.createElement('div');
   const langTitle = UI.createTitleElement('\n - Language -\n\n', 'Return to the game', "subtitle");
   langContainer.appendChild(langTitle);
-
+  
   const languageSelect = document.createElement('select');
   languageSelect.classList.add('rainbow-select'); 
+  
+  // Curated list of languages
+  const languageOptions = [
+      { value: "en", label: "English" },
+      { value: "es", label: "Español" }, 
+      { value: "fr", label: "Français" }, 
+      { value: "de", label: "Deutsch" }, 
+      { value: "pt", label: "Português" },
+      { value: "zh", label: "中文" },
+      { value: "ja", label: "日本語" },
+      { value: "ru", label: "Русский" },
+      { value: "ko", label: "한국어" },
 
-  themeOptions.forEach(option => {
+  ];
+  
+  languageOptions.forEach(option => {
       const optionElement = document.createElement('option');
-      optionElement.value = option.label; 
-      optionElement.text = option.label;
+      optionElement.value = option.value; 
+      optionElement.text = option.label; 
       languageSelect.appendChild(optionElement);
   });
-
+  
   langContainer.appendChild(languageSelect);
   popUpContainer.appendChild(langContainer); 
 
 
-
-  const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+  const goBackButton = UI.createTitleContainer('- Go back -', 'Return to the game', "subtitle");
   goBackButton.style.cursor = 'pointer';
   
 addContainerUI('center-container', [popUpContainer]);
@@ -4757,8 +4770,23 @@ function triggerGameOver() {
     gameOverScreen.appendChild(tryAgainButton);
     document.body.appendChild(gameOverScreen);
 }
+
 /*---------------------------------------------------------------------------
-                                    GAMESTATE CONTROLLER  
+                          Service Worker for Offline Play  
+---------------------------------------------------------------------------*/
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }, function(error) {
+        console.log('Service Worker registration failed:', error);
+      });
+    });
+  }  
+
+/*---------------------------------------------------------------------------
+                             GAMESTATE CONTROLLER  
 ---------------------------------------------------------------------------*/
 function resumeGame() {
     if (isPaused) {

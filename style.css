@@ -113,7 +113,6 @@ button, div {
     text-align: center;
     animation: rainbowText 5s linear infinite;
     filter: var(--image-filter); 
-
 }
 
 .fade-in {
@@ -227,6 +226,7 @@ html, body {
     border: 0.1px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    filter: var(--image-filter);
 }
 
 #xpLoadingBar {
@@ -235,6 +235,7 @@ html, body {
     background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     background-size: 400% 400%;
     animation: rainbow 5s linear infinite;
+    filter: var(--image-filter);
 }
 
 .choose-menu-title {
@@ -299,6 +300,7 @@ html, body {
     border: 0.5px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+    filter: var(--image-filter);
 }
 
 @media (max-width: 830px) {
@@ -330,6 +332,7 @@ html, body {
         border: 0.5px solid;
         border-image-slice: 1;
         border-image-source: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+        filter: var(--image-filter);
     }
 }
 
@@ -339,6 +342,7 @@ html, body {
     background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
     background-size: 400% 400%;
     animation: rainbow 5s linear infinite;
+    filter: var(--image-filter);
 }
 
 .rainbow-input {
@@ -390,22 +394,26 @@ html, body {
   }
   
   .rainbow-checkbox:checked {
-    background-color: white; /* Or any other color you want for the checked state */
+    background-color: white; 
    background-repeat: no-repeat;
     background-position: center;
   }
   
-  
-  /* Select Box Styles */
+
   .rainbow-select {
-    background-color: black;
-    color: white;
-    border: 1px solid;
+    color: transparent;
+    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-size: 300% 100%;
+    text-align: center;
+    animation: rainbowText 5s linear infinite;
+
+    border: 5px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
     padding: 10px; 
     cursor: pointer;
-   
     filter: var(--image-filter);
   }
   
