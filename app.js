@@ -3484,13 +3484,27 @@ function LevelUp() {
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
 const enemydirection = new THREE.Vector3();           
-
 function updateEnemies() {
     playerPositionDifference.copy(player.position);
+
     for (let i = 0; i < enemies.length; i++) {
         const enemy = enemies[i];
         enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
-        enemy.position.addScaledVector(enemydirection, enemy.movementspeed/2);
+
+        for (let j = 0; j < enemies.length; j++) {
+            if (i !== j) { 
+                const otherEnemy = enemies[j];
+                const distance = enemy.position.distanceTo(otherEnemy.position);
+                const separationDistance = 3; 
+
+                if (distance < separationDistance) {
+                    const separationForce = enemy.position.clone().sub(otherEnemy.position).normalize();
+                    enemydirection.addScaledVector(separationForce, (separationDistance - distance) * 0.5); 
+                }
+            }
+        }
+
+        enemy.position.addScaledVector(enemydirection, enemy.movementspeed / 2);
         enemy.rotation.y = Math.atan2(enemydirection.x, enemydirection.z);
         enemy.updateMesh();
     }
@@ -4304,7 +4318,7 @@ function createSettingsMenu() {
   themeContainer.appendChild(themesTitle);
   
   const themeOptions = [
-      { id: 'rainbowCheckbox', label: 'Rainbow', filter: 'brightness(130%)', default: true }, 
+      { id: 'rainbowCheckbox', label: 'Chroma', filter: 'brightness(130%)', default: true }, 
       { id: 'goldCheckbox', label: 'Gold', filter: 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)' },
       { id: 'silverCheckbox', label: 'Silver', filter: 'brightness(130%) grayscale(100%)' },
       { id: 'bronzeCheckbox', label: 'Bronze', filter: 'brightness(130%) sepia(100%) hue-rotate(5deg) ' }
