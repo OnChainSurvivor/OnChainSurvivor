@@ -215,12 +215,8 @@ html, body {
 }
 
 #xpLoadingContainer {
-    position: absolute;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
     width: 99%;
-    height: 5px;
+    height: 15px;
     background-color: black;
     box-sizing: border-box;
     border: 0.1px solid;
