@@ -4237,7 +4237,7 @@ function refreshDisplay() {
     hpBar.id = 'xpLoadingBar';
     hpBarContainer.appendChild(hpBar);
 
-    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
+    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(6, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
     const worldButton = createButton(world, .25 );
@@ -4256,7 +4256,7 @@ function refreshDisplay() {
         hideUI();
         createPlayerInfoMenu();
     };
-    addContainerUI('TL-container', [abilitiesContainer]).onclick = () => {
+    addContainerUI('TL-container', [challengeDisplay]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
@@ -4268,7 +4268,7 @@ function refreshDisplay() {
         isPaused = true;
     };
 
-    addContainerUI('top-container',[challengeDisplay]).onclick = () => {
+    addContainerUI('top-container',[abilitiesContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
