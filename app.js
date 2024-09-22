@@ -8,7 +8,6 @@ class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config });
     }
-
     activate() {
         this.effect(this.user);
     }
@@ -162,8 +161,8 @@ let xpLoadingBar;
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 let colorIndex = 0;
 
-const xpSpheres = []; 
-const xpsphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const droppedItems = []; 
+const itemGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
@@ -171,20 +170,26 @@ const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-const dropXpSphere = (position) => {
-    const xpsphereMaterial = world.material.clone();
-    xpsphereMaterial.color.setHex(0xFFD700); 
-    const xpSphere = new THREE.Mesh(xpsphereGeometry, xpsphereMaterial);
-    xpSphere.position.copy(position);
-    xpSphere.boundingBox = new THREE.Box3().setFromObject(xpSphere);
-    scene.add(xpSphere);
-    xpSpheres.push(xpSphere);
+const dropItem = (position) => {
+    const itemMaterial = world.material.clone();
+    const item = new THREE.Mesh(itemGeometry, itemMaterial);
+    item.position.copy(position);
+    item.boundingBox = new THREE.Box3().setFromObject(item);
+    scene.add(item);
+    droppedItems.push(item);
 };
 
 const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0) triggerGameOver();
    // TODO: Make drops super rare, no longer guarantee  
-    dropXpSphere(entity.position);
+   // dropItem(entity.position);
+
+   player.xp += 1;
+   xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+   if (player.xp >= player.xpToNextLevel) {
+       LevelUp();  
+       createParticleEffect(player.position, 'gold', 10);  
+   }
 
     entity.deactivateAbilities();
     scene.remove(entity);
@@ -2936,7 +2941,7 @@ this.frameCount = 0;
                     this.lightSourceIndex++;
                 }
             };
-            xpSpheres.forEach(addLightSource);
+            droppedItems.forEach(addLightSource);
             enemies.forEach(addLightSource);
         }
     
@@ -3434,24 +3439,14 @@ function updatePlayerMovement() {
 }
 
 function updateDrops() {
-    for (let i = xpSpheres.length - 1; i >= 0; i--) {
-        const xpSphere = xpSpheres[i];
-        if (!xpSphere.visible) continue; 
-
-        xpSphere.boundingBox.setFromObject(xpSphere);
-
-        if (player.boundingBox.intersectsBox(xpSphere.boundingBox)) {
-            player.xp += 10;
-            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-            
-            if (player.xp >= player.xpToNextLevel) {
-                LevelUp();  
-                createParticleEffect(player.position, 'gold', 10);  
-            }
-
+    for (let i = droppedItems.length - 1; i >= 0; i--) {
+        const item = droppedItems[i];
+        if (!item.visible) continue; 
+        item.boundingBox.setFromObject(item);
+        if (player.boundingBox.intersectsBox(item.boundingBox)) {
             createParticleEffect(player.position, 'gold', 1);
-            scene.remove(xpSphere);  
-            xpSpheres.splice(i, 1); 
+            scene.remove(item);  
+            droppedItems.splice(i, 1); 
         }
     }
 }
@@ -3501,9 +3496,10 @@ function updateEnemies() {
     }
 }
 
-function startSpawningEnemies(player, spawnInterval = 1000, spawnRadius = 150, numberOfEnemies = 25) {
+function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 150, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
+        if(enemies.length >250) return;
         for (let i = 0; i < numberOfEnemies; i++) {
             const angle = Math.random() * Math.PI * 2;
             const offsetX = Math.cos(angle) * spawnRadius;
@@ -3934,37 +3930,31 @@ function handleEntitySelection(entity, type) {
 
         const checkRanks = UI.createTitleElement('\nChallenge\nQueue', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
-        const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
+        const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
         topChallengerContainer.appendChild(UI.createTitleElement('\n#\nSpot', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\nΞ\nEther', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[0], .6));
         topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('1Ξ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
         topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
         topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('0.1Ξ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('3°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
         topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
         topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-        topChallengerContainer.appendChild(UI.createTitleElement('0.01Ξ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
         topChallengerContainer.appendChild(createButton(abilityTypes[10], .3));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-        topChallengerContainer.appendChild(UI.createTitleElement('0.001Ξ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
         topChallengerContainer.appendChild(createButton(abilityTypes[20], .2));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
-        topChallengerContainer.appendChild(UI.createTitleElement('0.0001Ξ', 'lazy subtitle too btw', "subtitle"));
    
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
@@ -4183,7 +4173,7 @@ function updateTimerDisplay() {
     countdown--;
     const minutes = Math.floor(countdown / 60);
     const seconds = countdown % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.`;
+    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.  ${enemies.length}`;
 }
 
 function refreshDisplay() {
@@ -4218,7 +4208,6 @@ function refreshDisplay() {
         hideUI();
         createPlayerInfoMenu();
     };
-
 
     const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
     addContainerUI('bottom-container', [pauseDisplay]).onclick = () => {
