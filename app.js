@@ -4213,58 +4213,56 @@ let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these'
 
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
-    xpLoadingContainer.id = 'xpLoadingContainer';
+    xpLoadingContainer.id = 'horizontalBarContainer';
     xpLoadingBar = document.createElement('div');
-    xpLoadingBar.id = 'xpLoadingBar';
+    xpLoadingBar.id = 'horizontalBar';
     xpLoadingContainer.appendChild(xpLoadingBar);
 
-    const loadingContainer = document.createElement('div');
-    loadingContainer.classList.add('loading-container'); 
-    const loadingBar = document.createElement('div');
-    loadingBar.classList.add('loading-bar');
-    const loadingText =  UI.createTitleElement('', 'who even keeps track of these', "subtitle");
-    loadingContainer.appendChild(loadingBar);
-    const goal = 1000000; 
-    const percentage = (10000000 / goal) * 100;
-    loadingBar.style.width = percentage + '%';
-
-         loadingText.innerText ='\nNext Challenge (#1°) starts in 9 blocks!';
-         loadingText.classList.add('rainbow-text'); 
-
     let hpBarContainer = document.createElement('div');
-    hpBarContainer.id = 'hpBarContainer';
+    hpBarContainer.id = 'verticalBarContainer';
     let hpBar = document.createElement('div');
-    hpBar.id = 'xpLoadingBar';
+    hpBar.id = 'verticalBar';
     hpBarContainer.appendChild(hpBar);
 
-    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(6, auto)' }); 
-    const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
+
+    let mpBarContainer = document.createElement('div');
+    mpBarContainer.id = 'verticalBarContainer';
+    let mpBar = document.createElement('div');
+    mpBar.id = 'verticalBar';
+    mpBarContainer.appendChild(mpBar);
+
+
+    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
+    const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
+    const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
     const worldButton = createButton(world, .25 );
+    barGridContainer.appendChild(challengeDisplay);
+    barGridContainer.appendChild(xpLoadingContainer);
+    barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
-    //playerContainer.appendChild(loadingContainer)
+    playerContainer.appendChild(hpBarContainer)
+    playerContainer.appendChild(mpBarContainer) 
+   // playerContainer.appendChild(barGridContainer) 
     
-    abilitiesContainer.appendChild(worldButton);
+  //  abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
-    addContainerUI('bottom-container', [playerContainer,xpLoadingContainer]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createPlayerInfoMenu();
-    };
-    addContainerUI('TL-container', [challengeDisplay]).onclick = () => {
+  
+
+    addContainerUI('BL-container', [barGridContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
         createPlayerInfoMenu();
     };
 
+
     const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
-    addContainerUI('TR-container', [pauseDisplay]).onclick = () => {
+    addContainerUI('BR-container', [pauseDisplay]).onclick = () => {
         isPaused = true;
     };
 

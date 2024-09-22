@@ -214,7 +214,7 @@ html, body {
     100% { background-position: 0% 50%; }
 }
 
-#xpLoadingContainer {
+#horizontalBarContainer {
     width: 99%;
     height: 15px;
     background-color: black;
@@ -225,7 +225,7 @@ html, body {
     filter: var(--image-filter);
 }
 
-#xpLoadingBar {
+#horizontalBar {
     width: 0;
     height: 100%;
     background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
@@ -233,6 +233,29 @@ html, body {
     animation: rainbow 5s linear infinite;
     filter: var(--image-filter);
 }
+
+#verticalBarContainer {
+    height: 99%;
+    width: 15px;
+    background-color: black;
+    box-sizing: border-box;
+    border: 0.1px solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); 
+    filter: var(--image-filter);
+}
+
+#verticalBar {
+    height: 0;
+    width: 100%;
+    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    background-size: 400% 400%;
+    animation: rainbow 5s linear infinite;
+    filter: var(--image-filter);
+}
+
+
+
 
 .choose-menu-title {
     display: flex;
