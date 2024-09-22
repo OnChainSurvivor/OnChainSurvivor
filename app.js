@@ -148,15 +148,13 @@ const clock = new THREE.Clock();
 const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
 
-const isMobile = window.innerWidth <= 830;
-
 let cameraAngle = 0;
 let cameraRadius = 15;
 let cameraHeight = 0;
 
 let canMove = true;
 
-let xpLoadingBar;
+let xpLoadingBar
 
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 let colorIndex = 0;
@@ -181,8 +179,7 @@ const dropItem = (position) => {
 
 const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0) triggerGameOver();
-   // TODO: Make drops super rare, no longer guarantee  
-   // dropItem(entity.position);
+   // TODO: Make drops rarer, no longer guarantee  dropItem(entity.position);
 
    player.xp += 1;
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
@@ -2650,14 +2647,56 @@ const enemyTypes = [{
 }
 ];
 /*---------------------------------------------------------------------------
+                              Challenges Blueprints
+---------------------------------------------------------------------------*/
+const challengeTypes = [{
+    title:"Timer",
+    target: 300,
+    status: null,
+    initialize(){
+    this.countdown = this.target * 60;
+    },
+    update(){
+        this.countdown--;
+        if(this.countdown<=0)
+        gameOverScreen();
+        const minutes = Math.floor(this.countdown / 60);
+        const seconds = this.countdown % 60;
+        challengeDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.`;
+    },
+},
+{
+    title:"Eliminate",
+    target: null,
+},
+{
+    title:"Collect",
+    target:null,
+},
+{
+    title:"Find",
+    target:null,
+},
+{
+    title:"Collect",
+    target:null,
+},
+{
+    title:"Level",
+    target:null,
+},
+];
+/*---------------------------------------------------------------------------
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
+
 const worldTypes = [{
     class: 'World',
     title: 'Ethereumverse',
     description:'Survive 5 Minutes in Ethereum, an open neutral and futuristic landscape where data flows freely, Forever.',
     tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    challenge:challengeTypes[0],
     material:new THREE.MeshPhysicalMaterial({
         envMap: null, 
         reflectivity: 1,
@@ -2673,6 +2712,8 @@ const worldTypes = [{
         wireframe : true
     }),
     setup: function(scene, camera, renderer) {
+        this.challenge.initialize();
+
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, .5, 0.01); 
         composer.addPass(this.renderScene);
@@ -2687,16 +2728,8 @@ const worldTypes = [{
             scene.environment = this.envMap; 
         });
  
-            this.gridSize = 5; 
-            if(isMobile) 
             this.gridSize = 20; 
-
-            this.divisions = 1;
-            if(isMobile) 
             this.divisions = 2; 
-
-            this.numTiles = 30;
-            if(isMobile) 
             this.numTiles = 6; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
@@ -2806,7 +2839,6 @@ const worldTypes = [{
     this.octahedronMesh2.scale.set(1, 0.75, 0.75);
     this.octahedronMesh.scale.set(1, 0.75, 0.75);
 
-
     const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
     const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
     camera.position.set(cameraX, cameraHeight, cameraZ);
@@ -2817,10 +2849,8 @@ const worldTypes = [{
     const miniOctahedronMaterial = this.material.clone();
 
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
-    let numCrystals = 1024;
-    if (isMobile)
-    numCrystals = 512 ; 
-  
+    let numCrystals = 750;
+    
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
     const possibleRadii = [1, 25, 50];
@@ -2875,10 +2905,11 @@ this.radiusSpeed = 0.50;
 this.gridRotationSpeed = 0.002;
 this.scaleThreshold = 0.3;
 this.meshScaleThreshold = 0.1;
-this.frameCount = 0;
 },
     update: function(scene, camera, renderer) {
-       //if (this.frameCount++ % 2 !== 0) return;  
+        if(!isPaused)
+        this.challenge.update();
+
         const timeNow = Date.now() * 0.001;
         if (isMainMenu) {
             if (player.mesh) player.mesh.scale.set(0, 0, 0);
@@ -2917,7 +2948,7 @@ this.frameCount = 0;
             this.miniOctahedrons.forEach((miniOctahedron, index) => {
                 miniOctahedron.position.addScaledVector(
                     miniOctahedron.position.clone().sub(this.octahedronMesh.position).normalize(),
-                    0.1
+                    0.2
                 );
                 miniOctahedron.rotation.x += this.miniRotationIncrement;
                 miniOctahedron.rotation.y += this.miniRotationIncrement;
@@ -2933,7 +2964,6 @@ this.frameCount = 0;
         this.gridMaterial.uniforms.time.value += 0.01;
         this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
     
-        if (!isMobile) {
             this.lightSourceIndex = 0;
             const addLightSource = (obj) => {
                 if (obj.visible && this.lightSourceIndex < this.lightSourceTextureSize * this.lightSourceTextureSize) {
@@ -2942,8 +2972,6 @@ this.frameCount = 0;
                 }
             };
             droppedItems.forEach(addLightSource);
-            enemies.forEach(addLightSource);
-        }
     
         this.lightSourceTexture.needsUpdate = true;
         this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
@@ -3207,8 +3235,6 @@ this.frameCount = 0;
     miniOctahedronGeometry.scale(0.15,0.15,0.15)
     miniOctahedronMaterial.wireframe=false;
     let numCrystals = 1024;
-    if (isMobile)
-    numCrystals = 512 ; 
   
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
@@ -3428,7 +3454,7 @@ function updatePlayerMovement() {
     );
     camera.lookAt(player.position);
 
-    if(cameraHeight <= (isMobile ? 35:30))
+    if(cameraHeight <= 30)
     cameraHeight+=0.25;
 
     player.updateAbilities();
@@ -3716,6 +3742,8 @@ UI.createTitleContainer= function (text,tooltip) {
             spinningStates[category] = false;
         });
     }
+
+
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
@@ -3727,9 +3755,9 @@ UI.createTitleContainer= function (text,tooltip) {
 
     const challengeTitle = UI.createTitleElement(`Today's\n Challenge:`, 'lazy subtitle too btw', "minititle");
     
-        const miniplayerButton = createButton(player, isMobile ? 0.3 : 0.5);
-        const miniworldButton = createButton(world, isMobile ? 0.3 : 0.5);
-        const miniabilityButton = createButton(ability,isMobile ? 0.3 : 0.5);
+        const miniplayerButton = createButton(player, 0.4);
+        const miniworldButton = createButton(world, 0.4);
+        const miniabilityButton = createButton(ability,0.4);
         todaysContainer.appendChild(challengeTitle);
         todaysContainer.appendChild(miniplayerButton);
         todaysContainer.appendChild(miniabilityButton);
@@ -3817,18 +3845,18 @@ function createGameMenu() {
 
     const classContainer = document.createElement('div');
     const classSubTitle = UI.createTitleElement('🏆', 'lazy subtitle too btw', "subtitle")
-    const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+    const classButton = createButton(player,  0.65);
     classContainer.appendChild(classButton);
     classContainer.appendChild(classSubTitle);
 
     const abilitiesSubTitle = UI.createTitleElement('⚔️', 'lazy subtitle too btw', "subtitle");
-    const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+    const abilitiesButton = createButton(ability,  0.65);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesButton);
     classAbilityContainer.appendChild(abilitiesSubTitle);
 
     const worldSubTitle = UI.createTitleElement('🔗', 'lazy subtitle too btw', "subtitle");
-    const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+    const worldButton = createButton(world, 0.65);
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldButton);
     worldContainer.appendChild(worldSubTitle);
@@ -3850,9 +3878,9 @@ function createGameMenu() {
             });
         });
         addContainerUI('center-container', [subTitle,menuButtonsContainer]);
-        createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
-        createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
-        createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
+        createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
+        createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
+        createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
     };
  //createGameMenu()
 /*---------------------------------------------------------------------------
@@ -3976,21 +4004,21 @@ function handleEntitySelection(entity, type) {
      
         const classContainer = document.createElement('div');
         const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
-        const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+        const classButton = createButton(player,  0.6);
         classContainer.appendChild(classSubTitle);
         classContainer.appendChild(classButton);
 
      
         const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
         ability.isLocked=false;
-        const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+        const abilitiesButton = createButton(ability,  0.6 );
         const classAbilityContainer = document.createElement('div');
         classAbilityContainer.appendChild(abilitiesSubTitle);
         classAbilityContainer.appendChild(abilitiesButton);
 
      
         const worldSubTitle = UI.createTitleElement('\n🔗', 'lazy subtitle too btw', "subtitle");
-        const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+        const worldButton = createButton(world, 0.6);
         const worldContainer = document.createElement('div');
         worldContainer.appendChild(worldSubTitle);
         worldContainer.appendChild(worldButton);
@@ -4177,18 +4205,11 @@ function handleEntitySelection(entity, type) {
             createRunMenu();
         }
     });
-/*---------------------------------------------------------------------------
-                                   IN-GAME UI 
----------------------------------------------------------------------------*/
-let countdown = 300 * 60;
 
-const timerDisplay = UI.createTitleElement('', 'who even keeps track of these', "subtitle");
-function updateTimerDisplay() {
-    countdown--;
-    const minutes = Math.floor(countdown / 60);
-    const seconds = countdown % 60;
-    timerDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.  ${enemies.length}`;
-}
+/*---------------------------------------------------------------------------
+                            In Game UI
+---------------------------------------------------------------------------*/
+let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these', "subtitle");
 
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
@@ -4199,22 +4220,15 @@ function refreshDisplay() {
 
     const abilitiesContainer = UI.createContainer(['abilities-grid']); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, isMobile? .25:.5 );
-    const worldButton = createButton(world,  isMobile? .11:.22 );
+    const playerButton = createButton(player, .4 );
+    const worldButton = createButton(world, .2 );
     playerContainer.appendChild(playerButton);
     playerContainer.appendChild(abilitiesContainer);
     abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility,  isMobile? .11:.22));
+        abilitiesContainer.appendChild(createButton(clonedAbility, .2 ));
     });
-
-    addContainerUI('top-container',[timerDisplay]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createPlayerInfoMenu();
-    };
 
     addContainerUI('TL-container', [xpLoadingContainer,playerContainer]).onclick = () => {
         canMove = false;
@@ -4226,6 +4240,13 @@ function refreshDisplay() {
     const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
     addContainerUI('bottom-container', [pauseDisplay]).onclick = () => {
         isPaused = true;
+    };
+
+    addContainerUI('top-container',[challengeDisplay]).onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createPlayerInfoMenu();
     };
 
 }
@@ -4643,21 +4664,21 @@ function createRunMenu() {
  
     const classContainer = document.createElement('div');
     const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
-    const classButton = createButton(player, isMobile ? 0.6 : 0.75);
+    const classButton = createButton(player,  0.6 );
     classContainer.appendChild(classSubTitle);
     classContainer.appendChild(classButton);
 
  
     const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
     ability.isLocked=false;
-    const abilitiesButton = createButton(ability, isMobile ? 0.6 : 0.75);
+    const abilitiesButton = createButton(ability,  0.6 );
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesSubTitle);
     classAbilityContainer.appendChild(abilitiesButton);
 
  
     const worldSubTitle = UI.createTitleElement('\n🔗', 'lazy subtitle too btw', "subtitle");
-    const worldButton = createButton(world, isMobile ? 0.6 : 0.75);
+    const worldButton = createButton(world,  0.6 );
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldSubTitle);
     worldContainer.appendChild(worldButton);
@@ -4723,9 +4744,9 @@ addContainerUI('center-container', [popUpContainer]);
         });
      });
 
-    createRandomRunEffect(classButton, classImages, 110, isMobile ? 0.6 : 0.75, "class"); 
-    createRandomRunEffect(abilitiesButton, abilityImages, 0, isMobile ? 0.6 : 0.75, "ability");
-    createRandomRunEffect(worldButton, worldImages, 0, isMobile ? 0.6 : 0.75, "world");
+    createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
+    createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
+    createRandomRunEffect(worldButton, worldImages, 0,  0.6 , "world");
 
 }
 //createRunMenu();
@@ -4833,7 +4854,6 @@ function animate() {
         if (!isPaused) {
             updatePlayerMovement();
             updateEnemies();
-            updateTimerDisplay();
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
