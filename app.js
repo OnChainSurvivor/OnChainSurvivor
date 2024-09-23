@@ -4192,18 +4192,6 @@ function handleEntitySelection(entity, type) {
              });
     }
 
-    window.addEventListener('load', async () => {
-        document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
-        const storedAddress = localStorage.getItem('metaMaskAddress');
-        if (storedAddress) {
-            const web3 = new Web3(window.ethereum);
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            createRunMenu();
-        }
-    });
-
 /*---------------------------------------------------------------------------
                             In Game UI
 ---------------------------------------------------------------------------*/
@@ -4368,13 +4356,13 @@ function createSettingsMenu() {
   themeContainer.appendChild(themesTitle);
   
   const themeOptions = [
-      { id: 'rainbowCheckbox', label: 'Chroma', filter: 'brightness(130%)', default: true }, 
+      { id: 'rainbowCheckbox', label: 'Chroma', filter: 'brightness(130%)' }, 
       { id: 'goldCheckbox', label: 'Gold', filter: 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)' },
       { id: 'silverCheckbox', label: 'Silver', filter: 'brightness(130%) grayscale(100%)' },
-      { id: 'bronzeCheckbox', label: 'Bronze', filter: 'brightness(130%) sepia(100%) hue-rotate(5deg) ' }
+      { id: 'bronzeCheckbox', label: 'Bronze', filter: 'brightness(130%) sepia(100%) hue-rotate(5deg)' }
   ];
   const themesContainerGrid = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-  
+  const checkboxes=[];
   themeOptions.forEach(option => {
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -4383,23 +4371,11 @@ function createSettingsMenu() {
       const themeTitle = UI.createTitleElement(option.label, '', "subtitle");
       themeTitle.htmlFor= option.id;
       themeContainer.appendChild(themesTitle);
-  
       themesContainerGrid.appendChild(checkbox);
       themesContainerGrid.appendChild(themeTitle);
       themeContainer.appendChild(themesContainerGrid);
   
-      if (option.default) {
-          checkbox.checked = true;
-          document.documentElement.style.setProperty('--image-filter', option.filter);
-      }
-  
       checkbox.addEventListener('change', (event) => {
-  
-          if (option.default && !event.target.checked) { 
-              event.target.checked = true;  
-              return; 
-          }
-  
           themeOptions.forEach(otherOption => {
               if (otherOption.id !== option.id) {
                   document.getElementById(otherOption.id).checked = false;
@@ -4408,10 +4384,14 @@ function createSettingsMenu() {
   
           if (event.target.checked) { 
             document.documentElement.style.setProperty('--image-filter', option.filter);
-          } else {
-            document.documentElement.style.setProperty('--image-filter', '');
-          }
+          }  
+          if (!event.target.checked) { 
+            event.target.checked = true;  
+            return; 
+        }
+
       });
+      checkboxes.push(checkbox);
   });
   
   popUpContainer.appendChild(themeContainer);
@@ -4456,7 +4436,43 @@ addContainerUI('center-container', [popUpContainer]);
   };
   popUpContainer.appendChild(goBackButton);
 
+  const savedSettings = localStorage.getItem('onchainSurvivorSettings');
+  if (savedSettings) {
+    const settings = JSON.parse(savedSettings);
+    languageSelect.value = settings.language;
+    fxVolumeSlider.value = settings.fxVolume;
+    vaVolumeSlider.value = settings.vaVolume;
+    volumeSlider.value = settings.musicVolume;
+    for (let i = 0; i < themeOptions.length; i++) {
+        if (settings.theme === themeOptions[i].filter) {
+          checkboxes[i].checked = true; 
+          document.documentElement.style.setProperty('--image-filter', settings.theme); 
+          break;
+        }
+    }
+  }
+
+  function saveSettings() {
+    const settings = {
+      theme: document.documentElement.style.getPropertyValue('--image-filter'),
+      language: languageSelect.value, 
+      fxVolume: fxVolumeSlider.value, 
+      vaVolume: vaVolumeSlider.value,
+      musicVolume: volumeSlider.value,
+    };
+    localStorage.setItem('onchainSurvivorSettings', JSON.stringify(settings));
+   }
+
+languageSelect.addEventListener('change', saveSettings);
+fxVolumeSlider.addEventListener('change', saveSettings);
+vaVolumeSlider.addEventListener('change', saveSettings);
+volumeSlider.addEventListener('change', saveSettings);
+checkboxes.forEach(checkbox => {
+checkbox.addEventListener('change', saveSettings);
+});
+
 }
+
 async function createInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
@@ -4840,18 +4856,36 @@ function triggerGameOver() {
 }
 
 /*---------------------------------------------------------------------------
-                          Service Worker for Offline Play  
+                        Load Settings for Offline Play  
 ---------------------------------------------------------------------------*/
+window.addEventListener('load', async () => {
+    document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
+    const savedSettings = localStorage.getItem('onchainSurvivorSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      document.documentElement.style.setProperty('--image-filter', settings.theme);
+     //Set volume and other parameters once set  
+    }
 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }, function(error) {
-        console.log('Service Worker registration failed:', error);
-      });
-    });
+    const storedAddress = localStorage.getItem('metaMaskAddress');
+    if (storedAddress) {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createRunMenu();
+    }
+    
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        }, function(error) {
+          console.log('Service Worker registration failed:', error);
+        });
   }  
+
+});
+
+
 
 /*---------------------------------------------------------------------------
                              GAMESTATE CONTROLLER  
