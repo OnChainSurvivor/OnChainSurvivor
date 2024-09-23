@@ -60,7 +60,7 @@ class Entity extends THREE.Object3D {
         this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
         this.playerRun.play();
         this.playerRun.setLoop(THREE.LoopRepeat);
-        this.mesh.scale.set(2,2,2);
+        this.mesh.scale.set(3,3,3);
         this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         scene.add(this);
     }
@@ -75,9 +75,7 @@ class Entity extends THREE.Object3D {
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
                 const ability = abilityTypes.find(type => type.title === entityAbility.type);
-                    const newAbility = new Ability(this, {...ability});
-                    this.addAbility(newAbility);
-                    newAbility.activate();
+                    this.addAbility(new Ability(this, {...ability}));
             }
         )
     }
@@ -95,6 +93,7 @@ class Entity extends THREE.Object3D {
 
     addAbility(ability) {
         this.abilities.push(ability);
+        ability.activate();
     }
 
     activateAbility(index) {
@@ -3000,7 +2999,7 @@ this.meshScaleThreshold = 0.1;
         
     },
     resumeGame: function(){
-        player.mesh.scale.set(2,2,2);
+        player.mesh.scale.set(2.5,2.5,2.5);
     },
     cleanUp: function(scene) {
         this.sceneObjects.forEach(object => scene.remove(object));
@@ -3519,7 +3518,7 @@ function updateEnemies() {
             if (i !== j) { 
                 const otherEnemy = enemies[j];
                 const distance = enemy.position.distanceTo(otherEnemy.position);
-                const separationDistance = 3; 
+                const separationDistance = 5; 
 
                 if (distance < separationDistance) {
                     const separationForce = enemy.position.clone().sub(otherEnemy.position).normalize();
@@ -3905,20 +3904,6 @@ function createChooseMenu(entityList, text, type) {
         const itemButton = createButton(entity, 1);
         gridContainer.appendChild(itemButton);
         itemButton.onclick = () => handleEntitySelection(entity, type);
-        if (type === "Survivor") {
-           const abilitiesOfClassContainer = UI.createContainer(['abilities-grid']); 
-       
-           entity.abilities.forEach(survivorAbility => {
-               const existingAbility = abilityTypes.find(abilityType => abilityType.title === survivorAbility.type);
-               if (existingAbility) {
-                   const abilityButton = createButton(existingAbility, 0.33);
-                   abilitiesOfClassContainer.appendChild(abilityButton);
-               }
-           });
-
-           abilitiesOfClassContainer.onclick = () => handleEntitySelection(entity, type);
-           gridContainer.appendChild(abilitiesOfClassContainer);
-        }   
     });
     popUpContainer.appendChild(titleContainer);
     popUpContainer.appendChild(gridContainer);
@@ -3927,9 +3912,7 @@ function createChooseMenu(entityList, text, type) {
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
         entity.isLocked = false;
-        const newAbility = new Ability(player, { ...entity});
-        player.addAbility(newAbility);
-        newAbility.activate();
+        player.addAbility(new Ability(player, { ...entity}));
         hideUI();
         refreshDisplay();
     } else if (entity.isLocked) {
@@ -4525,7 +4508,7 @@ async function createInfoMenu() {
     todaysPlayerContainer.appendChild(classButton);
     popUpContainer.appendChild(todaysPlayerContainer);
 
-    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move, choose and Survive! \n each class has different innate abilities.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move, choose and Survive! \n each class has a different innate ability.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(instructionsText);
 
     const todaysAbilityContainer = UI.createContainer(['abilities-grid']); 
@@ -4900,9 +4883,7 @@ function resumeGame() {
     isMainMenu = false;
     hideUI();
     setTimeout(() => { refreshDisplay() }, 1050);
-    const newAbility = new Ability(player, { ...ability});
-    player.addAbility(newAbility);
-    newAbility.activate();
+    player.addAbility(new Ability(player, { ...ability}));
     }
 }
 

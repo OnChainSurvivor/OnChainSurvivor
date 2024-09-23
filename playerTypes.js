@@ -18,9 +18,7 @@ export const playerTypes = [{
     Ag:0,
     Lu:0,
     In:0,
-    abilities: [
-      //  { type: 'Veil of Decentralization' }, 
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Onchain Survivor',
