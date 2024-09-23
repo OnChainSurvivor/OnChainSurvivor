@@ -248,14 +248,9 @@ html, body {
 #verticalBar {
     height: 0;
     width: 100%;
-    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
-    background-size: 400% 400%;
-    animation: rainbow 5s linear infinite;
+    background-color: forestgreen;
     filter: var(--image-filter);
 }
-
-
-
 
 .choose-menu-title {
     display: flex;

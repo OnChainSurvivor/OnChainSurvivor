@@ -2660,9 +2660,9 @@ const challengeTypes = [{
         this.countdown--;
         if(this.countdown<=0)
         gameOverScreen();
-        const minutes = Math.floor(this.countdown / 60);
-        const seconds = this.countdown % 60;
-        challengeDisplay.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} \nSurvive.`;
+        const seconds = Math.floor(this.countdown / 60);
+        const mseconds = this.countdown % 60;
+        challengeDisplay.innerText = `${seconds}:${mseconds < 10 ? '0' : ''}${mseconds}`;
     },
 },
 {
@@ -2907,9 +2907,6 @@ this.scaleThreshold = 0.3;
 this.meshScaleThreshold = 0.1;
 },
     update: function(scene, camera, renderer) {
-        if(!isPaused)
-        this.challenge.update();
-
         const timeNow = Date.now() * 0.001;
         if (isMainMenu) {
             if (player.mesh) player.mesh.scale.set(0, 0, 0);
@@ -4222,8 +4219,9 @@ function refreshDisplay() {
     hpBarContainer.id = 'verticalBarContainer';
     let hpBar = document.createElement('div');
     hpBar.id = 'verticalBar';
+    hpBar.style.color='red';
+    hpBar.style.height = (1 * 100) + '%';
     hpBarContainer.appendChild(hpBar);
-
 
     let mpBarContainer = document.createElement('div');
     mpBarContainer.id = 'verticalBarContainer';
@@ -4242,8 +4240,8 @@ function refreshDisplay() {
     barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
     playerContainer.appendChild(hpBarContainer)
-    playerContainer.appendChild(mpBarContainer) 
-   // playerContainer.appendChild(barGridContainer) 
+   // playerContainer.appendChild(mpBarContainer) 
+
     
   //  abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
@@ -4878,6 +4876,7 @@ function animate() {
         if (!isPaused) {
             updatePlayerMovement();
             updateEnemies();
+            world.challenge.update();
         } else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
         accumulatedTime -= fixedTimeStep;
     }
