@@ -222,16 +222,16 @@ html, body {
     border: 0.1px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); 
-    filter: var(--image-filter);
+
 }
 
 #horizontalBar {
     width: 0;
     height: 100%;
-    background: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
+    background: linear-gradient(45deg,  yellow, green, deepskyblue);
     background-size: 400% 400%;
     animation: rainbow 5s linear infinite;
-    filter: var(--image-filter);
+
 }
 
 #verticalBarContainer {
@@ -242,14 +242,14 @@ html, body {
     border: 0.1px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); 
-    filter: var(--image-filter);
+
 }
 
 #verticalBar {
     height: 0;
     width: 100%;
-    background-color: forestgreen;
-    filter: var(--image-filter);
+    background-color: crimson;
+  
 }
 
 .choose-menu-title {

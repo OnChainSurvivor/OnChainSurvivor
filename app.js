@@ -198,7 +198,7 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
-function createParticleEffect(position, color = 'red', particleCount = 5) {
+function createParticleEffect(position, color = 'green', particleCount = 5) {
     const particleGeometry = new THREE.BufferGeometry();
     const particles = new Float32Array(particleCount * 3); 
 
@@ -3416,6 +3416,7 @@ const rotationAxis = new THREE.Vector3(0, 1, 0);
 const rotationSpeed = 0.1;
 let dropUpdateFrame = 0; 
 
+
 function updatePlayerMovement() {
     if (!canMove) return;
 
@@ -4235,11 +4236,15 @@ function refreshDisplay() {
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
     const worldButton = createButton(world, .25 );
-    barGridContainer.appendChild(challengeDisplay);
+    let xpText = UI.createTitleElement('xp', 'who even keeps track of these', "subtitle");
+    barGridContainer.appendChild(xpText);
     barGridContainer.appendChild(xpLoadingContainer);
     barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
     playerContainer.appendChild(hpBarContainer)
+    barGridContainer.appendChild(challengeDisplay);
+    let gasText = UI.createTitleElement('G\nA\nS', 'who even keeps track of these', "subtitle");
+   // playerContainer.appendChild(gasText);
    // playerContainer.appendChild(mpBarContainer) 
 
     
@@ -4258,9 +4263,11 @@ function refreshDisplay() {
         createPlayerInfoMenu();
     };
 
-
+    const cornerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
-    addContainerUI('BR-container', [pauseDisplay]).onclick = () => {
+    cornerContainer.appendChild(pauseDisplay);
+    cornerContainer.appendChild(challengeDisplay);
+    addContainerUI('bottom-container', [cornerContainer]).onclick = () => {
         isPaused = true;
     };
 
@@ -4494,7 +4501,7 @@ async function createInfoMenu() {
      setInterval(updateBlockNumber, 5000);
      popUpContainer.appendChild(blockCounter);
 
-    const objectiveText = UI.createTitleElement('\nEach playrun has an objective, and \nafter you survive, inscribe  your records \nto the hall of survivors for all of ethernity. \n\n Today`s Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const objectiveText = UI.createTitleElement('\nEach day brings a new Chalenge, and \nafter you survive, inscribe your records \nto the hall of survivors for all of ethernity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
     const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
