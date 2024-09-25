@@ -3959,14 +3959,17 @@ function handleEntitySelection(entity, type) {
         return;
     } else if (type === "Survivor") {
         selectedPlayer = entity;
+        hideUI();
+        createChallengeMenu();
     } else if (type === "Ability") {
         selectedAbility = entity;
+        hideUI();
+        createChallengeMenu();
     } else if (type === "World") {
         selectedWorld = entity;
-
+        hideUI();
+        createChallengeMenu();
     }
-    hideUI();
-    createChallengeMenu();
     canMove = true;
 }
 /*---------------------------------------------------------------------------
