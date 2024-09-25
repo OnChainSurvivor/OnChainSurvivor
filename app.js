@@ -3833,53 +3833,92 @@ UI.createTitleContainer= function (text,tooltip) {
     };
     createGameTitle();
 /*---------------------------------------------------------------------------
-                                MAIN MENU
+                                Challenge Editor
 ---------------------------------------------------------------------------*/
-function createGameMenu() {
+let selectedPlayer = playerTypes[0]; // previously Selected Class, LOAD FROM ETHEREUM
+let selectedAbility = abilityTypes[0]; // previously Selected ability, LOAD FROM ETHEREUM
+let selectedWorld = worldTypes[0]; // previously Selected world, LOAD FROM ETHEREUM 
+let selectedValue = 0; // Default Value, Going for Next rank 
+
+function createChallengeMenu() {
     const classImages = playerTypes.map(player => player.thumbnail);
     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
     const classSubTitle = UI.createTitleElement('🏆', 'lazy subtitle too btw', "subtitle")
-    const classButton = createButton(player,  0.65);
+    const classButton = createButton(selectedPlayer,  0.65);
     classContainer.appendChild(classButton);
     classContainer.appendChild(classSubTitle);
 
     const abilitiesSubTitle = UI.createTitleElement('⚔️', 'lazy subtitle too btw', "subtitle");
-    const abilitiesButton = createButton(ability,  0.65);
+    const abilitiesButton = createButton(selectedAbility,  0.65);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesButton);
     classAbilityContainer.appendChild(abilitiesSubTitle);
 
     const worldSubTitle = UI.createTitleElement('🔗', 'lazy subtitle too btw', "subtitle");
-    const worldButton = createButton(world, 0.65);
+    const worldButton = createButton(selectedWorld, 0.65);
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldButton);
     worldContainer.appendChild(worldSubTitle);
 
-    const menuButtonsContainer = UI.createContainer([], { display: 'flex' });
+    const menuButtonsContainer =  UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = UI.createTitleElement('Move to quick start !', 'lazy subtitle too btw', "subtitle");
+    const subTitle = UI.createTitleElement('\nSend Your\n First Challenge!', 'lazy subtitle too btw', "title");
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
                 hideUI();
                 canMove=false;
-                if (button === classContainer)  createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
+                if(button === classContainer)  createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
                 if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nChoose an Ability ⚔️","Ability");
                 if(button === worldContainer) createChooseMenu(worldTypes, "\nChoose a Chain 🔗","World");
-
             });
         });
-        addContainerUI('center-container', [subTitle,menuButtonsContainer]);
+
+        const inputContainer = document.createElement('div');
+        const sponsorAmount = createInput('number', { placeholder: '0.00Ξ, Rank: ----', id: 'sponsorAmount' });
+        const submitButton = document.createElement('button'); 
+        submitButton.classList.add('rainbow-button'); 
+        submitButton.classList.add('subtitle'); 
+        submitButton.innerText = 'Agree & Send';
+        inputContainer.appendChild(sponsorAmount);
+        inputContainer.appendChild(submitButton); 
+   
+        sponsorAmount.addEventListener('input', async () => {
+           const amount = sponsorAmount.value; 
+           if (amount) {
+             const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); 
+             if (rank !== null) {
+               rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
+             } else {
+               rankInfo.innerText = "Error fetching rank"; 
+             }
+           } else {
+             rankInfo.innerText = "Enter an amount"; 
+           }
+         });
+
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger\nor survivor, and interacting with the smart contracts,\n is NOT an investment opportunity,\n neither should be played with the expectation of profit.\n  The game is solely for entertainment and experimental purposes, \nand participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm\n that you are not subject to any country-specific restrictions,\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily \nfreeze or stop the Challenge Queue,\n during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease \nthe duration of daily challenges to accommodate potential \ndowntimes or inconveniences of the player base.\n \n The standard time rules are subject to modification based on \ngameplay events, updates and unforeseen circumstances,\n always in favour of the playerbase and the experience.\nAny changes in timing will be publicly communicated in official channels. \n\n', "minititle")
+         const popUpContainer = UI.createContainer(['choose-menu-container']);;
+         popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+         popUpContainer.appendChild(subTitle); 
+         const fineprint = UI.createTitleElement('\nBut First, Read the terms and conditions:\n\n', "subtitle")
+         popUpContainer.appendChild(fineprint); 
+         popUpContainer.appendChild(disclaimer); 
+         popUpContainer.appendChild(menuButtonsContainer); 
+         popUpContainer.appendChild(inputContainer); 
+         const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\nChallenges can be edited, but transactions are irreversible!.\n\n', "subtitle")
+         popUpContainer.appendChild(yourSpot); 
+        addContainerUI('center-container', [popUpContainer]);
         createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
         createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
         createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
     };
- //createGameMenu()
+ //createChallengeMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -3909,6 +3948,7 @@ function createChooseMenu(entityList, text, type) {
     popUpContainer.appendChild(gridContainer);
 }
 
+
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
         entity.isLocked = false;
@@ -3918,22 +3958,15 @@ function handleEntitySelection(entity, type) {
     } else if (entity.isLocked) {
         return;
     } else if (type === "Survivor") {
-        player.deactivateAbilities();
-        scene.remove(player);
-        player = new Entity(playerTypes.find(t => t === entity),new THREE.Vector3(0, 0, 0));
-        hideUI();
-        createGameMenu();
+        selectedPlayer = entity;
     } else if (type === "Ability") {
-        ability = entity;
-        hideUI();
-        createGameMenu();
+        selectedAbility = entity;
     } else if (type === "World") {
-        world.cleanUp(scene);
-        world = entity;
-        world.setup(scene,camera,renderer);
-        hideUI();
-        createGameMenu();
+        selectedWorld = entity;
+
     }
+    hideUI();
+    createChallengeMenu();
     canMove = true;
 }
 /*---------------------------------------------------------------------------
@@ -4477,30 +4510,30 @@ async function createInfoMenu() {
     popUpContainer.appendChild(worldContainer);
 
     //Debt:  DOES NOT WORK WITHOUT METAMASK. calculate time left  using the Smart contract blocks left 
-    let currentBlockNumber = "Next Challlenge: Loading...";
-    const blockCounter = UI.createTitleElement(`Next Challlenge: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
+    let currentBlockNumber = "Next Challenge: Loading...";
+    const blockCounter = UI.createTitleElement(`Next Challenge: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
     async function updateBlockNumber() {
          try {
              if (window.ethereum) {
                  const web3 = new Web3(window.ethereum);
                  currentBlockNumber = await web3.eth.getBlockNumber();
                  // **Update the UI element**
-                 blockCounter.innerText = `Next Challlenge: ${currentBlockNumber}`;
+                 blockCounter.innerText = `Next Challenge: ${currentBlockNumber}`;
              } else {
                  currentBlockNumber = "MetaMask Not Found";
-                 challengeTitle.innerText = `Next Challlenge: ${currentBlockNumber}`;
+                 challengeTitle.innerText = `Connext to web3 first!: ${currentBlockNumber}`;
              }
          } catch (error) {
              console.error('Error fetching block number:', error);
              currentBlockNumber = "Error";
-             challengeTitle.innerText = `Next Challlenge: ${currentBlockNumber}`;
+             challengeTitle.innerText = `Error Loading Block! : ${currentBlockNumber}`;
          }
      }
      updateBlockNumber(); 
      setInterval(updateBlockNumber, 5000);
      popUpContainer.appendChild(blockCounter);
 
-    const objectiveText = UI.createTitleElement('\nEach day brings a new Chalenge, and \nafter you survive, inscribe your records \nto the hall of survivors for all of ethernity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you survive, inscribe your records \nto the hall of survivors for all of ethernity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
     const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
