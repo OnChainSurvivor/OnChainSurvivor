@@ -3906,7 +3906,7 @@ function createChallengeMenu() {
          const popUpContainer = UI.createContainer(['choose-menu-container']);;
          popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
          popUpContainer.appendChild(subTitle); 
-         const fineprint = UI.createTitleElement('\nBut First, Read the terms and conditions:\n\n', "subtitle")
+         const fineprint = UI.createTitleElement('\nTerms and conditions:\n\n', "subtitle")
          popUpContainer.appendChild(fineprint); 
          popUpContainer.appendChild(disclaimer); 
          popUpContainer.appendChild(menuButtonsContainer); 
