@@ -4950,19 +4950,3 @@ function animate() {
 }
 
 animate();
-
-
-window.addEventListener('load', () => {
-    const safeAreaInsets = {
-        top: window.constant('safe-area-inset-top') || 0,
-        right: window.constant('safe-area-inset-right') || 0,
-        bottom: window.constant('safe-area-inset-bottom') || 0,
-        left: window.constant('safe-area-inset-left') || 0,
-    };
-
-    const body = document.body;
-    body.style.paddingTop = safeAreaInsets.top + 'px';
-    body.style.paddingRight = safeAreaInsets.right + 'px';
-    body.style.paddingBottom = safeAreaInsets.bottom + 'px';
-    body.style.paddingLeft = safeAreaInsets.left + 'px';
-});
