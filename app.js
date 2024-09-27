@@ -4244,18 +4244,14 @@ function refreshDisplay() {
     mpBar.id = 'verticalBar';
     mpBarContainer.appendChild(mpBar);
 
-    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(2, auto)' }); 
-    player.abilities.forEach(ability => {
-        const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, .28 ));
-    });
 
+    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
     const worldButton = createButton(world, .25 );
     let xpText = UI.createTitleElement('xp', 'who even keeps track of these', "subtitle");
-    barGridContainer.appendChild(abilitiesContainer);
+    barGridContainer.appendChild(xpText);
     barGridContainer.appendChild(xpLoadingContainer);
     barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
@@ -4267,6 +4263,11 @@ function refreshDisplay() {
 
     
   //  abilitiesContainer.appendChild(worldButton);
+    player.abilities.forEach(ability => {
+        const clonedAbility = { ...ability, isLocked: false };
+        abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
+    });
+
   
 
     addContainerUI('BL-container', [barGridContainer]).onclick = () => {
@@ -4284,6 +4285,12 @@ function refreshDisplay() {
         isPaused = true;
     };
 
+    addContainerUI('top-container',[abilitiesContainer]).onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createPlayerInfoMenu();
+    };
 
 }
 
