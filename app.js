@@ -3394,6 +3394,7 @@ function updateRendererSize() {
 
 updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
+window.addEventListener('load', updateRendererSize);
 /*---------------------------------------------------------------------------
                               World Controller
 ---------------------------------------------------------------------------*/

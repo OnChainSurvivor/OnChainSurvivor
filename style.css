@@ -19,12 +19,6 @@ body, canvas {
     position: fixed; 
 }
 
-body {
-
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-
 canvas {
     display: block;
     margin: 0 auto;
