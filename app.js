@@ -3902,7 +3902,7 @@ function createChallengeMenu() {
            }
          });
 
-         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger\nor survivor, and interacting with the smart contracts,\n is NOT an investment opportunity,\n neither should be played with the expectation of profit.\n  The game is solely for entertainment and experimental purposes, \nand participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm\n that you are not subject to any country-specific restrictions,\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily \nfreeze or stop the Challenge Queue,\n during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease \nthe duration of daily challenges to accommodate potential \ndowntimes or inconveniences of the player base.\n \n The standard time rules are subject to modification based on \ngameplay events, updates and unforeseen circumstances,\n always in favour of the playerbase and the experience.\nAny changes in timing will be publicly communicated in official channels. \n\n', "minititle")
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity, neither should be played with the expectation of profit.  The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The standard time rules are subject to modification based on gameplay events, updates and unforeseen circumstances, always in favour of the playerbase and the experience. Any changes in timing will be publicly communicated in official channels. \n\n', "minititle")
          const popUpContainer = UI.createContainer(['choose-menu-container']);;
          popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
          popUpContainer.appendChild(subTitle); 
@@ -3957,7 +3957,7 @@ function handleEntitySelection(entity, type) {
         refreshDisplay();
     } else if (entity.isLocked) {
         return;
-    } else if (type === "Survivor") {
+    } else if (type === "Survivor")  {
         selectedPlayer = entity;
         hideUI();
         createChallengeMenu();
