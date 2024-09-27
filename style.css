@@ -25,6 +25,14 @@ body {
     padding-right: env(safe-area-inset-right);
     padding-top: env(safe-area-inset-top);;
   }
+  html, body {
+    overflow: hidden;  /* Or overflow: hidden; if you don't want any scrolling */
+}
+
+#survivorCanvas, #survivorZone, html, body {
+
+    overflow: hidden; /* Essential to prevent scrollbars from padding */
+}
 
 canvas {
     display: block;
