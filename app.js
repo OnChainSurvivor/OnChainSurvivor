@@ -3867,7 +3867,7 @@ function createChallengeMenu() {
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = UI.createTitleElement('\nSend Your\n First Challenge!', 'lazy subtitle too btw', "title");
+    const subTitle = UI.createTitleElement('\nSend a Challenge!', 'lazy subtitle too btw', "title");
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
@@ -3886,7 +3886,7 @@ function createChallengeMenu() {
         submitButton.classList.add('subtitle'); 
         submitButton.innerText = 'Agree & Send';
         inputContainer.appendChild(sponsorAmount);
-        inputContainer.appendChild(submitButton); 
+        //inputContainer.appendChild(submitButton); 
    
         sponsorAmount.addEventListener('input', async () => {
            const amount = sponsorAmount.value; 
@@ -3902,17 +3902,23 @@ function createChallengeMenu() {
            }
          });
 
-         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity, neither should be played with the expectation of profit.  The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The standard time rules are subject to modification based on gameplay events, updates and unforeseen circumstances, always in favour of the playerbase and the experience. Any changes in timing will be publicly communicated in official channels. \n\n', "minititle")
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity, neither should be played with the expectation of profit.  The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The standard time rules are subject to modification based on gameplay events, updates and unforeseen circumstances, always in favour of the playerbase and the experience. Any changes in timing will be publicly communicated in official channels. \n\n Challenges can be edited as many times as desired (cost 1 tx), as long as the challenge is still in the Challenge queue\n\n Transactions sent into the challenge queue are irreversible, please doublecheck before sending your challenge.  \n\n', "minititle")
          const popUpContainer = UI.createContainer(['choose-menu-container']);;
          popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
          popUpContainer.appendChild(subTitle); 
+
+         popUpContainer.appendChild(menuButtonsContainer); 
+         popUpContainer.appendChild(inputContainer); 
+         const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n', "subtitle")
+         popUpContainer.appendChild(yourSpot); 
+
          const fineprint = UI.createTitleElement('\nTerms and conditions:\n\n', "subtitle")
          popUpContainer.appendChild(fineprint); 
          popUpContainer.appendChild(disclaimer); 
-         popUpContainer.appendChild(menuButtonsContainer); 
-         popUpContainer.appendChild(inputContainer); 
-         const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\nChallenges can be edited, but transactions are irreversible!.\n\n', "subtitle")
-         popUpContainer.appendChild(yourSpot); 
+         popUpContainer.appendChild(submitButton); 
+         const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks, -the dev\n\n', "subtitle")
+         popUpContainer.appendChild(support); 
+
         addContainerUI('center-container', [popUpContainer]);
         createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
         createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
@@ -3951,6 +3957,7 @@ function createChooseMenu(entityList, text, type) {
 
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
+        canMove = true;
         entity.isLocked = false;
         player.addAbility(new Ability(player, { ...entity}));
         hideUI();
@@ -3970,7 +3977,6 @@ function handleEntitySelection(entity, type) {
         hideUI();
         createChallengeMenu();
     }
-    canMove = true;
 }
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
