@@ -3903,7 +3903,7 @@ function createChallengeMenu() {
            }
          });
 
-         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity, neither should be played with the expectation of profit.  The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The standard time rules are subject to modification based on gameplay events, updates and unforeseen circumstances, always in favour of the playerbase and the experience. Any changes in timing will be publicly communicated in official channels. \n\n Challenges can be edited as many times as desired (cost 1 tx), as long as the challenge is still in the Challenge queue\n\n Transactions sent into the challenge queue are irreversible, please doublecheck before sending your challenge.  \n\n', "minititle")
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events, updates and unforeseen circumstances, always in favour of the players. Any changes in timing will be publicly communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply), as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible, please doublecheck before sending your challenge.  \n\n', "minititle")
          const popUpContainer = UI.createContainer(['choose-menu-container']);;
          popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
          popUpContainer.appendChild(subTitle); 
@@ -3913,7 +3913,7 @@ function createChallengeMenu() {
          const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n', "subtitle")
          popUpContainer.appendChild(yourSpot); 
 
-         const fineprint = UI.createTitleElement('\nTerms and conditions:\n\n', "subtitle")
+         const fineprint = UI.createTitleElement('Terms and conditions:\n\n', "subtitle")
          popUpContainer.appendChild(fineprint); 
          popUpContainer.appendChild(disclaimer); 
          popUpContainer.appendChild(submitButton); 
@@ -4088,7 +4088,7 @@ function handleEntitySelection(entity, type) {
          const goal = 1000000; 
          const percentage = (currentAmount / goal) * 100;
          loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='\nNext Challenge (#1°) starts in 9 blocks!';
+         loadingText.innerText ='\nNext Challenge (#1°) starts in 500 blocks!';
          loadingText.classList.add('rainbow-text'); 
      }
      function simulateLoading() {
@@ -4098,13 +4098,14 @@ function handleEntitySelection(entity, type) {
              if (currentAmount >= 1000000) {
              //TODO
              } else {
+                if(currentAmount <=750000)
                  currentAmount += increment;
                  updateLoadingBar(currentAmount);
              }
          }, 50); 
      }
 
-     const checkRecords = UI.createTitleElement('\nEdit your challenge\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
+     const checkRecords = UI.createTitleElement('\nYour challenge\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
    
      const hallreportContainer = UI.createContainer(['abilities-grid']); 
 
@@ -4186,15 +4187,10 @@ function handleEntitySelection(entity, type) {
      popUpContainer.appendChild(loadingText);
      popUpContainer.appendChild(loadingContainer);
      popUpContainer.appendChild(topChallengerContainer);
-
      popUpContainer.appendChild(checkRecords);
      popUpContainer.appendChild(galleryButtonsContainer);
- popUpContainer.appendChild(inputContainer);
+     popUpContainer.appendChild(inputContainer);
      popUpContainer.appendChild(yourSpot);
-
-
-   /// popUpContainer.appendChild(topSponsorText);
-
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
 
@@ -4202,7 +4198,6 @@ function handleEntitySelection(entity, type) {
             addContainerUI('TR-container', [subTitleLogout]);
             simulateLoading(); 
 
-     
             galleryButtonsContainer.childNodes.forEach(button => {
                 button.addEventListener('click', () => {
                     canMove=false;
@@ -4216,6 +4211,12 @@ function handleEntitySelection(entity, type) {
                     }
                 });
              });
+
+  
+            createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
+            createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
+            createRandomRunEffect(worldButton, worldImages, 0,  0.6 , "world");
+
     }
 
 /*---------------------------------------------------------------------------
@@ -4726,12 +4727,10 @@ function createRunMenu() {
     popUpContainer.appendChild(topbidContainer);
 
 
-    const sponsorText = UI.createTitleElement('\nChallengers can add any amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Set a Challenge', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Set a Challenge', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(sponsorText);
 
-    const classImages = playerTypes.map(player => player.thumbnail);
-    const abilityImages = abilityTypes.map(ability => ability.thumbnail);
-    const worldImages = worldTypes.map(world => world.thumbnail);
+
  
     const classContainer = document.createElement('div');
     const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
@@ -4786,20 +4785,12 @@ function createRunMenu() {
     }
   });
 
-    const disclaimerText = UI.createTitleElement('\n Your Challenges let me develop fulltime \n and dedicate all day into Onchain Survivor.\n thanks for making this a reality!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n Your Challenges let me develop\n Onchain Survivor full time, thanks !\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
-    
-addContainerUI('center-container', [popUpContainer]);
-    goBackButton.onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createWeb3Menu();
-    };
-    popUpContainer.appendChild(goBackButton);
+
 
     galleryButtonsContainer.childNodes.forEach(button => {
         button.addEventListener('click', () => {
@@ -4815,9 +4806,24 @@ addContainerUI('center-container', [popUpContainer]);
         });
      });
 
+     const classImages = playerTypes.map(player => player.thumbnail);
+     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+     const worldImages = worldTypes.map(world => world.thumbnail);
     createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
     createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
     createRandomRunEffect(worldButton, worldImages, 0,  0.6 , "world");
+
+    
+
+    addContainerUI('center-container', [popUpContainer]);
+    goBackButton.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createWeb3Menu();
+    };
+    popUpContainer.appendChild(goBackButton);
+
 
 }
 //createRunMenu();
