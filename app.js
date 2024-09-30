@@ -3650,6 +3650,7 @@ UI.createTitleContainer= function (text,tooltip) {
         button.appendChild(description);
         
         if (onClick) button.onclick = onClick;
+ 
 
         if(dataType.isLocked){
       //  button.style.color = 'gray';
@@ -4691,8 +4692,6 @@ function createRunMenu() {
 
     const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Setting a Challenge (Example)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(sponsorText);
-
-
  
     const classContainer = document.createElement('div');
     const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
@@ -4733,26 +4732,11 @@ function createRunMenu() {
 
  popUpContainer.appendChild(inputContainer);
 
-    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ!\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
-
-
-    galleryButtonsContainer.childNodes.forEach(button => {
-        button.addEventListener('click', () => {
-            canMove=false;
-            hideUI();
-            if (button === classContainer) {
-                createChooseMenu(playerTypes, "🏆 Survivors 🏆","Survivor");
-           } else if (button === classAbilityContainer) {
-                createChooseMenu(abilityTypes, "⚔️ Abilities ⚔️","Ability");
-            } else if (button === worldContainer) {
-                createChooseMenu(worldTypes, " 🔗 Chains 🔗","World");
-            }
-        });
-     });
 
      const classImages = playerTypes.map(player => player.thumbnail);
      const abilityImages = abilityTypes.map(ability => ability.thumbnail);
