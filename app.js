@@ -3747,11 +3747,12 @@ UI.createTitleContainer= function (text,tooltip) {
 ---------------------------------------------------------------------------*/
     async function createGameTitle(){
         const mainTitle = UI.createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
+        const miniTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "subtitle");
         const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
-    const challengeTitle = UI.createTitleElement(`Today's\n Challenge:`, 'lazy subtitle too btw', "minititle");
+    const challengeTitle = UI.createTitleElement(`Current\n Challenge:`, 'lazy subtitle too btw', "minititle");
     
         const miniplayerButton = createButton(player, 0.4);
         const miniworldButton = createButton(world, 0.4);
@@ -3765,7 +3766,7 @@ UI.createTitleContainer= function (text,tooltip) {
 
      
 
-       addContainerUI('top-container', [mainTitle]);
+       addContainerUI('top-container', [mainTitle,miniTitle]);
         uiContainers.forEach(container => {
             container.style.cursor = 'pointer';
             container.onclick = () => {
@@ -3784,7 +3785,13 @@ UI.createTitleContainer= function (text,tooltip) {
             createSettingsMenu();
         }
 
-        addContainerUI('bottom-container', [subTitle,todaysContainer]);
+   
+
+
+        const loadingText =  UI.createTitleElement('', 'who even keeps track of these', "minititle");
+        loadingText.innerText ='ⓘ New challenge in 500 blocks!';
+
+        addContainerUI('bottom-container', [todaysContainer,loadingText]);
         todaysContainer.style.cursor = 'pointer';
         todaysContainer.onclick = () => {
             canMove = false;
@@ -3792,9 +3799,6 @@ UI.createTitleContainer= function (text,tooltip) {
             hideUI();
             createInfoMenu();
         }
-
-
-
 
         addContainerUI('TR-container', [web3Title]).onclick = async () => {
             if (window.ethereum) {
@@ -4075,7 +4079,7 @@ function handleEntitySelection(entity, type) {
         }
       });
 
-     const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\nYou can edit, rank up your challenge any\ntime before becoming Challenge of the day! \n \n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n ', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
@@ -4520,30 +4524,6 @@ async function createInfoMenu() {
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
-    //Debt:  DOES NOT WORK WITHOUT METAMASK. calculate time left  using the Smart contract blocks left 
-    let currentBlockNumber = "Next Challenge: Loading...";
-    const blockCounter = UI.createTitleElement(`Next Challenge: ${currentBlockNumber}`, 'lazy subtitle too btw', "subtitle");
-    async function updateBlockNumber() {
-         try {
-             if (window.ethereum) {
-                 const web3 = new Web3(window.ethereum);
-                 currentBlockNumber = await web3.eth.getBlockNumber();
-                 // **Update the UI element**
-                 blockCounter.innerText = `Next Challenge: ${currentBlockNumber}`;
-             } else {
-                 currentBlockNumber = "MetaMask Not Found";
-                 challengeTitle.innerText = `Connext to web3 first!: ${currentBlockNumber}`;
-             }
-         } catch (error) {
-             console.error('Error fetching block number:', error);
-             currentBlockNumber = "Error";
-             challengeTitle.innerText = `Error Loading Block! : ${currentBlockNumber}`;
-         }
-     }
-     updateBlockNumber(); 
-     setInterval(updateBlockNumber, 5000);
-     popUpContainer.appendChild(blockCounter);
-
     const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you survive, inscribe your records \nto the hall of survivors for all of ethernity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
@@ -4785,7 +4765,7 @@ function createRunMenu() {
     }
   });
 
-    const disclaimerText = UI.createTitleElement('\n Your Challenges let me develop\n Onchain Survivor full time, thanks !\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n Your Challenges let me develop\n Onchain Survivor full time, thanks !\n(This dissappears after your first challenge)\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
