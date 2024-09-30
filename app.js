@@ -3752,7 +3752,7 @@ UI.createTitleContainer= function (text,tooltip) {
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
-    const challengeTitle = UI.createTitleElement(`Current\n Challenge:`, 'lazy subtitle too btw', "minititle");
+    const challengeTitle = UI.createTitleElement(``, 'lazy subtitle too btw', "minititle");
     
         const miniplayerButton = createButton(player, 0.4);
         const miniworldButton = createButton(world, 0.4);
@@ -3766,15 +3766,7 @@ UI.createTitleContainer= function (text,tooltip) {
 
      
 
-       addContainerUI('top-container', [mainTitle,miniTitle]);
-        uiContainers.forEach(container => {
-            container.style.cursor = 'pointer';
-            container.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            createInfoMenu();
-        };})
+       addContainerUI('top-container', [mainTitle]);
 
         addContainerUI('BR-container', [aboutTitle]);
         aboutTitle.style.cursor = 'pointer';
@@ -3785,13 +3777,9 @@ UI.createTitleContainer= function (text,tooltip) {
             createSettingsMenu();
         }
 
-   
+        const loadingText =  UI.createTitleElement('New challenge begins in 1:47:52', 'who even keeps track of these', "minititle");
 
-
-        const loadingText =  UI.createTitleElement('', 'who even keeps track of these', "minititle");
-        loadingText.innerText ='ⓘ New challenge in 500 blocks!';
-
-        addContainerUI('bottom-container', [loadingText,todaysContainer]);
+        addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
         todaysContainer.style.cursor = 'pointer';
         todaysContainer.onclick = () => {
             canMove = false;
@@ -4508,15 +4496,9 @@ async function createInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
     const newChallengesButton = UI.createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
-    newChallengesButton.style.cursor = 'pointer';
-    newChallengesButton.onclick = () => {
-    canMove = true;
-    hideUI();
-    refreshDisplay();
-    };
     popUpContainer.appendChild(newChallengesButton);
 
-    const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a roguelite top down auto-shooter\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a free to play global  challenge game\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const worldContainer = UI.createContainer(['abilities-grid']); 
@@ -4524,7 +4506,7 @@ async function createInfoMenu() {
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
-    const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you survive, inscribe your records \nto the hall of survivors for all of ethernity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you complete it, inscribe your records \nto the hall of survivors for all of eternity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
     const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
@@ -4532,7 +4514,7 @@ async function createInfoMenu() {
     todaysPlayerContainer.appendChild(classButton);
     popUpContainer.appendChild(todaysPlayerContainer);
 
-    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move, choose and Survive! \n each class has a different innate ability.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move, choose skills and Survive! \n each class has a different innate ability.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(instructionsText);
 
     const todaysAbilityContainer = UI.createContainer(['abilities-grid']); 
@@ -4540,7 +4522,7 @@ async function createInfoMenu() {
     todaysAbilityContainer.appendChild(abilButton);
     popUpContainer.appendChild(todaysAbilityContainer);
 
-    const abilText = UI.createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities are very sinergetic. Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const abilText = UI.createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities combine well.  Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(abilText);
 
     const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
@@ -4707,7 +4689,7 @@ function createRunMenu() {
     popUpContainer.appendChild(topbidContainer);
 
 
-    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Set a Challenge', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Setting a Challenge (Example)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(sponsorText);
 
 
@@ -4741,31 +4723,17 @@ function createRunMenu() {
     popUpContainer.appendChild(galleryButtonsContainer);
 
  const inputContainer = document.createElement('div');
- const sponsorAmount = createInput('number', { placeholder: '0.00Ξ, Rank: ----', id: 'sponsorAmount' });
+ const sponsorAmount = createInput('number', { placeholder: '0.01Ξ, Rank: 8', id: 'sponsorAmount' });
  const submitButton = document.createElement('button'); 
  submitButton.classList.add('rainbow-button'); 
  submitButton.classList.add('subtitle'); 
- submitButton.innerText = 'Add';
+ submitButton.innerText = 'Added';
  inputContainer.appendChild(sponsorAmount);
  inputContainer.appendChild(submitButton); 
 
  popUpContainer.appendChild(inputContainer);
 
- sponsorAmount.addEventListener('input', async () => {
-    const amount = sponsorAmount.value; 
-    if (amount) {
-      const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); 
-      if (rank !== null) {
-        rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
-      } else {
-        rankInfo.innerText = "Error fetching rank"; 
-      }
-    } else {
-      rankInfo.innerText = "Enter an amount"; 
-    }
-  });
-
-    const disclaimerText = UI.createTitleElement('\n Your Challenges let me develop\n Onchain Survivor full time, thanks !\n(This dissappears after your first challenge)\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ!\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
