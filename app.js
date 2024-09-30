@@ -4813,8 +4813,6 @@ function createRunMenu() {
     createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
     createRandomRunEffect(worldButton, worldImages, 0,  0.6 , "world");
 
-    
-
     addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
         canMove = false;
