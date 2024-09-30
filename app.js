@@ -3791,7 +3791,7 @@ UI.createTitleContainer= function (text,tooltip) {
         const loadingText =  UI.createTitleElement('', 'who even keeps track of these', "minititle");
         loadingText.innerText ='ⓘ New challenge in 500 blocks!';
 
-        addContainerUI('bottom-container', [todaysContainer,loadingText]);
+        addContainerUI('bottom-container', [loadingText,todaysContainer]);
         todaysContainer.style.cursor = 'pointer';
         todaysContainer.onclick = () => {
             canMove = false;
