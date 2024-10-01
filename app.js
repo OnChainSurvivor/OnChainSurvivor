@@ -380,7 +380,6 @@ const abilityTypes = [
                 const shieldMaterial = world.material.clone();
                 shieldMaterial.transparent = true;
                 shieldMaterial.opacity = 0.1; 
-
                 const shieldGeometry = new THREE.SphereGeometry(2.5);
                 veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
                 veil.shield.position.copy(user.position);
