@@ -240,7 +240,7 @@ html, body {
     background: linear-gradient(45deg,  yellow, green, deepskyblue);
     background-size: 400% 400%;
     animation: rainbow 5s linear infinite;
-    transition: width 0.5s ease; /* Optional: Smooth transition */
+    transition: width 0.5s ease; 
 }
 
 #verticalBarContainer {
@@ -251,14 +251,14 @@ html, body {
     border: 0.1px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); 
-    display: flex;         /* Flexbox for vertical alignment */
-    align-items: flex-end; /* Aligns items to the top */
+    display: flex;         
+    align-items: flex-end;
 }
 
 #verticalBar {
     width: 100%;
     background-color: crimson;
-    transition: height 0.5s ease; /* Optional: Smooth transition */
+    transition: height 0.5s ease; 
 }
 
 .choose-menu-title {

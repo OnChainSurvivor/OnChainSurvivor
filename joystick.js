@@ -48,11 +48,17 @@ function setupEventListeners() {
         if (keys.hasOwnProperty(event.key)) {
             keys[event.key] = true;
         }
-        
+
         if (event.key === 'ArrowUp' || event.key === 'i') keys['w'] = true;
         if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = true;
         if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = true;
         if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = true;
+
+        if (event.key === 'ArrowUp' || event.key === 'i' || event.key === 'w') keys['s'] = false;
+        if (event.key === 'ArrowLeft' || event.key === 'j' || event.key === 'a') keys['d'] = false;
+        if (event.key === 'ArrowDown' || event.key === 'k' || event.key === 's') keys['w'] = false;
+        if (event.key === 'ArrowRight' || event.key === 'l' || event.key === 'd') keys['a'] = false;
+    
     });
     document.addEventListener('keyup', (event) => {
         if (keys.hasOwnProperty(event.key)) {
@@ -63,6 +69,8 @@ function setupEventListeners() {
         if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = false;
         if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = false;
         if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = false;
+
+       
     });
 }
 
@@ -81,13 +89,13 @@ function deactivateJoystick() {
     joystickContainer.style.pointerEvents = 'none';
     joystickContainer.style.visibility = 'hidden';
     joystick.style.transform = 'translate(-50%, -50%)';
-    keys.w = keys.a = keys.s = keys.d = false;
+   // keys.w = keys.a = keys.s = keys.d = false;
 }
 
 function updateJoystickDirection(normalizedX, normalizedY) {
     keys.w = keys.a = keys.s = keys.d = false;
 
-    const sensitivity = 4; 
+    const sensitivity = 4;
 
     const adjustedX = normalizedX * sensitivity;
     const adjustedY = normalizedY * sensitivity;

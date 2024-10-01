@@ -3418,7 +3418,6 @@ let dropUpdateFrame = 0;
 
 function updatePlayerMovement() {
     if (!canMove) return;
-
      //direction.set(0, 0, 0);
 
     if (keys.s) direction.z -= 1;
