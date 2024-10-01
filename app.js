@@ -3457,8 +3457,18 @@ function updatePlayerMovement() {
     player.updateAbilities();
 
     if (dropUpdateFrame++ % 4 === 0) {
+
         updateDrops();
-    }
+        for (let i = 0; i < enemies.length; i++) {
+            const enemy = enemies[i];
+            if (!enemy.visible) console.log('invisible enemy '); 
+
+            if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
+               enemy.takeDamage(1);
+               player.takeDamage(1);  
+            }
+        }    
+}
 }
 
 function updateDrops() {
@@ -4243,7 +4253,7 @@ function refreshDisplay() {
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
     const worldButton = createButton(world, .25 );
-    let xpText = UI.createTitleElement('xp', 'who even keeps track of these', "subtitle");
+    let xpText = UI.createTitleElement('', 'who even keeps track of these', "subtitle");
     barGridContainer.appendChild(xpText);
     barGridContainer.appendChild(xpLoadingContainer);
     barGridContainer.appendChild(playerContainer);
