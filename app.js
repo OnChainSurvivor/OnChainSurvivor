@@ -153,7 +153,7 @@ let cameraHeight = 0;
 
 let canMove = true;
 
-let xpLoadingBar
+let xpLoadingBar, hpBar;
 
 const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 let colorIndex = 0;
@@ -3419,7 +3419,7 @@ let dropUpdateFrame = 0;
 function updatePlayerMovement() {
     if (!canMove) return;
 
-    direction.set(0, 0, 0);
+     //direction.set(0, 0, 0);
 
     if (keys.s) direction.z -= 1;
     if (keys.w) direction.z += 1;
@@ -3461,11 +3461,11 @@ function updatePlayerMovement() {
         updateDrops();
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
-            if (!enemy.visible) console.log('invisible enemy '); 
-
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
                enemy.takeDamage(1);
                player.takeDamage(1);  
+               createParticleEffect(player.position, 'red', 10);  
+               hpBar.style.height = (player.health / player.maxhealth * 100) + '%';
             }
         }    
 }
@@ -3474,7 +3474,6 @@ function updatePlayerMovement() {
 function updateDrops() {
     for (let i = droppedItems.length - 1; i >= 0; i--) {
         const item = droppedItems[i];
-        if (!item.visible) continue; 
         item.boundingBox.setFromObject(item);
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
             createParticleEffect(player.position, 'gold', 1);
@@ -4235,37 +4234,22 @@ function refreshDisplay() {
 
     let hpBarContainer = document.createElement('div');
     hpBarContainer.id = 'verticalBarContainer';
-    let hpBar = document.createElement('div');
+    hpBar = document.createElement('div');
     hpBar.id = 'verticalBar';
-    hpBar.style.color='red';
-    hpBar.style.height = (1 * 100) + '%';
+    hpBar.style.height =  (player.health / player.maxhealth * 100) + '%';
     hpBarContainer.appendChild(hpBar);
-
-    let mpBarContainer = document.createElement('div');
-    mpBarContainer.id = 'verticalBarContainer';
-    let mpBar = document.createElement('div');
-    mpBar.id = 'verticalBar';
-    mpBarContainer.appendChild(mpBar);
-
 
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .5 );
-    const worldButton = createButton(world, .25 );
-    let xpText = UI.createTitleElement('', 'who even keeps track of these', "subtitle");
-    barGridContainer.appendChild(xpText);
+    let xpText = UI.createTitleElement('xp', 'who even keeps track of these', "subtitle");
     barGridContainer.appendChild(xpLoadingContainer);
     barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
     playerContainer.appendChild(hpBarContainer)
     barGridContainer.appendChild(challengeDisplay);
-    let gasText = UI.createTitleElement('G\nA\nS', 'who even keeps track of these', "subtitle");
-   // playerContainer.appendChild(gasText);
-   // playerContainer.appendChild(mpBarContainer) 
-
     
-  //  abilitiesContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));

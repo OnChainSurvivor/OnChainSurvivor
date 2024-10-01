@@ -4,6 +4,7 @@ export const playerTypes = [{
     description:'The jack of all trades (lol), adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
     tooltip:'despite losing it all in the 2018 market crash, he kept grinding every day.',
     health: 5,
+    maxhealth: 5,
     movementspeed:0.5,
     xp: 0,
     evasion: 0,
