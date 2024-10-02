@@ -4760,7 +4760,7 @@ function generateRandomHash() {
         .join('');
 }
 
- triggerGameOver();
+ //triggerGameOver();
 function triggerGameOver() {
     ///cancelAnimationFrame(animationFrameId);
     const popUpContainer = UI.createContainer(['choose-menu-container']);
@@ -4773,8 +4773,8 @@ function triggerGameOver() {
     const img = document.createElement('img');
     //img.src = 'Media/Abilities/LIQMAIL.png';
     img.src = 'Media/Abilities/DEAR.png';
-    img.style.width = '380px';
-    img.style.height = '190px';
+    img.style.width = '360px';
+    img.style.height = '180px';
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
