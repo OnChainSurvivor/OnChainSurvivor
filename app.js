@@ -4760,26 +4760,26 @@ function generateRandomHash() {
         .join('');
 }
 
- //triggerGameOver();
+ triggerGameOver();
 function triggerGameOver() {
     ///cancelAnimationFrame(animationFrameId);
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
     const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\nLiquidation notice.','You ran out of health! 💀');
     popUpContainer.appendChild(titleContainer);
-
+    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(liquidatedTitle);
     const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const img = document.createElement('img');
     //img.src = 'Media/Abilities/LIQMAIL.png';
     img.src = 'Media/Abilities/DEAR.png';
-    img.style.width = '400px';
-    img.style.height = '200px';
+    img.style.width = '380px';
+    img.style.height = '190px';
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
 
-    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"minititle");
-    popUpContainer.appendChild(liquidatedTitle);
+
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
     const inscribeButton = createButton({
