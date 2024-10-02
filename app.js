@@ -61,7 +61,9 @@ class Entity extends THREE.Object3D {
         this.playerRun.play();
         this.playerRun.setLoop(THREE.LoopRepeat);
         this.mesh.scale.set(3,3,3);
-        this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
+        this.updateMatrixWorld(true);
+        this.mesh.updateMatrixWorld(true);  
+        this.boundingBox = new THREE.Box3().setFromObject(this.mesh); 
         scene.add(this);
     }
 
@@ -3422,7 +3424,7 @@ let dropUpdateFrame = 0;
 
 function updatePlayerMovement() {
     if (!canMove) return;
-     //direction.set(0, 0, 0);
+    direction.set(0, 0, 0);
 
     if (keys.s) direction.z -= 1;
     if (keys.w) direction.z += 1;
@@ -3517,20 +3519,18 @@ function LevelUp() {
 ---------------------------------------------------------------------------*/
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
-const enemydirection = new THREE.Vector3();           
+const enemydirection = new THREE.Vector3();    
+
 function updateEnemies() {
     playerPositionDifference.copy(player.position);
-
     for (let i = 0; i < enemies.length; i++) {
         const enemy = enemies[i];
         enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
-
         for (let j = 0; j < enemies.length; j++) {
             if (i !== j) { 
                 const otherEnemy = enemies[j];
                 const distance = enemy.position.distanceTo(otherEnemy.position);
                 const separationDistance = 5; 
-
                 if (distance < separationDistance) {
                     const separationForce = enemy.position.clone().sub(otherEnemy.position).normalize();
                     enemydirection.addScaledVector(separationForce, (separationDistance - distance) * 0.5); 
@@ -3561,8 +3561,6 @@ function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 100, nu
             
             const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
             const enemy = new Entity(enemyConfig,new THREE.Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
-
-            scene.add(enemy);
             enemies.push(enemy);
         }
     };
@@ -4762,24 +4760,21 @@ function generateRandomHash() {
 
  //triggerGameOver();
 function triggerGameOver() {
-    ///cancelAnimationFrame(animationFrameId);
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
     const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\nLiquidation notice.','You ran out of health! 💀');
     popUpContainer.appendChild(titleContainer);
-    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.','You ran out of health! 💀',"minititle");
-    popUpContainer.appendChild(liquidatedTitle);
+
     const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const img = document.createElement('img');
-    //img.src = 'Media/Abilities/LIQMAIL.png';
     img.src = 'Media/Abilities/DEAR.png';
     img.style.width = '360px';
     img.style.height = '180px';
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
-
-
+    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(liquidatedTitle);
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
     const inscribeButton = createButton({
@@ -4871,7 +4866,7 @@ function triggerGameOver() {
     const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
     popUpContainer.appendChild(secretContainer);
 
-    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n\n','You ran out of health! 💀',"minititle");
+    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n','You ran out of health! 💀',"minititle");
     popUpContainer.appendChild(reminderTitle);
 
     addContainerUI('center-container', [popUpContainer]);
