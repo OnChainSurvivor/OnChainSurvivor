@@ -48,6 +48,12 @@ canvas {
 button {
     filter: var(--image-filter); 
 }
+
+.filter {
+    filter: var(--image-filter); 
+}
+
+
 img {
     user-select: none; 
     -moz-user-select: none; 
@@ -105,8 +111,6 @@ button, div {
     cursor: pointer;
     filter: var(--image-filter); 
   }
-
-  
 
 @keyframes rainbowText {
     0% { background-position: 0% 50%; }

@@ -177,9 +177,13 @@ const dropItem = (position) => {
 };
 
 const handleEntityDeath = (entity, enemies) => {
-    if (player.health <= 0) triggerGameOver();
-   // TODO: Make drops rarer, no longer guarantee  dropItem(entity.position);
+    if (player.health <= 0){
+        canMove= false;
+        hideUI();
+        setTimeout(() => { triggerGameOver(); }, 1500);
+    } 
 
+   // TODO: Make drops rarer, no longer guarantee  dropItem(entity.position);
    player.xp += 1;
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
    if (player.xp >= player.xpToNextLevel) {
@@ -3461,9 +3465,8 @@ function updatePlayerMovement() {
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
-               enemy.takeDamage(1);
+                createParticleEffect(player.position, 'red', 15);  
                player.takeDamage(1);  
-               createParticleEffect(player.position, 'red', 10);  
                hpBar.style.height = (player.health / player.maxhealth * 100) + '%';
             }
         }    
@@ -3541,10 +3544,10 @@ function updateEnemies() {
     }
 }
 
-function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 150, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 100, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
-        if(enemies.length >250) return;
+        if(enemies.length >200) return;
         for (let i = 0; i < numberOfEnemies; i++) {
             const angle = Math.random() * Math.PI * 2;
             const offsetX = Math.cos(angle) * spawnRadius;
@@ -3785,7 +3788,7 @@ UI.createTitleContainer= function (text,tooltip) {
             createSettingsMenu();
         }
 
-        const loadingText =  UI.createTitleElement('New challenge begins in 1:47:52', 'who even keeps track of these', "minititle");
+        const loadingText =  UI.createTitleElement('New challenge 1:47:52', 'who even keeps track of these', "minititle");
 
         addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
         todaysContainer.style.cursor = 'pointer';
@@ -4254,7 +4257,6 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
-  
 
     addContainerUI('BL-container', [barGridContainer]).onclick = () => {
         canMove = false;
@@ -4718,7 +4720,13 @@ function createRunMenu() {
  const submitButton = document.createElement('button'); 
  submitButton.classList.add('rainbow-button'); 
  submitButton.classList.add('subtitle'); 
- submitButton.innerText = 'Added';
+ submitButton.innerText = 'Add';
+ submitButton.style.cursor = 'not-allowed';
+ sponsorAmount.style.cursor = 'default';
+ classButton.style.cursor = 'default';
+ abilitiesButton.style.cursor = 'default';
+ worldButton.style.cursor = 'default';
+ sponsorAmount.disabled = true;
  inputContainer.appendChild(sponsorAmount);
  inputContainer.appendChild(submitButton); 
 
@@ -4730,12 +4738,6 @@ function createRunMenu() {
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
 
-     const classImages = playerTypes.map(player => player.thumbnail);
-     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
-     const worldImages = worldTypes.map(world => world.thumbnail);
-    createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
-    createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
-    createRandomRunEffect(worldButton, worldImages, 0,  0.6 , "world");
 
     addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
@@ -4745,15 +4747,136 @@ function createRunMenu() {
         createWeb3Menu();
     };
     popUpContainer.appendChild(goBackButton);
-
-
 }
 //createRunMenu();
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
+//Dummy hash until I decide on scoring!
+function generateRandomHash() {
+    return [...Array(16)] 
+        .map(() => Math.floor(Math.random() * 256).toString(16).padStart(2, '0'))
+        .join('');
+}
+
+//triggerGameOver();
 function triggerGameOver() {
-    isPaused = true;
+    ///cancelAnimationFrame(animationFrameId);
+    const popUpContainer = UI.createContainer(['choose-menu-container']);
+
+    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\nLiquidation notice.','You ran out of health! 💀');
+    popUpContainer.appendChild(titleContainer);
+
+    const img = document.createElement('img');
+    //img.src = 'Media/Abilities/LIQMAIL.png';
+    img.src = 'Media/Abilities/DEAR.png';
+    img.style.width = '500px';
+    img.style.height = '250px';
+    img.classList.add('filter');
+    popUpContainer.appendChild(img);
+
+    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(liquidatedTitle);
+
+    const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
+    const inscribeButton = createButton({
+        title: "Inscribe Records",
+        description: 'Save your current score in the Hall of Survivors.',
+        tooltip: 'Click to restart the game',
+        thumbnail: 'Media/Abilities/RECORD.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    },1);
+    inscribeButton.onclick = () => {
+      //  location.reload(true);
+    };
+    const tryAgainButton = createButton({
+        title: "Try Again",
+        description: 'Survivors never give up. Run it back turbo.',
+        tooltip: 'Click to restart the game',
+        thumbnail: 'Media/Abilities/TRYAGAIN.png',
+        isLocked: false,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    },1);
+    tryAgainButton.onclick = () => {
+        location.reload(true);
+    };
+
+    optionsContainer.appendChild(inscribeButton)
+    optionsContainer.appendChild(tryAgainButton)
+    popUpContainer.appendChild(optionsContainer);
+
+    const randomHash = generateRandomHash();
+
+    const scoreTitle = UI.createTitleElement('\nRun Details','You ran out of health! 💀',"title");
+    popUpContainer.appendChild(scoreTitle);
+
+    const recordsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
+    const playerButton = createButton(player, .5 );
+    const worldButton = createButton(world, .5 );
+    recordsContainer.appendChild(playerButton);
+    recordsContainer.appendChild(worldButton);
+    player.abilities.forEach(ability => {
+        const clonedAbility = { ...ability, isLocked: false };
+        recordsContainer.appendChild(createButton(clonedAbility, .5 ));
+    });
+
+    popUpContainer.appendChild(recordsContainer);
+
+    const recordsTextContainer = UI.createContainer(['abilities-grid']);
+    const timeScoreTitle = UI.createTitleElement('Time','You ran out of health! 💀',"subtitle");
+    const timeScore = UI.createTitleElement('4:35','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(timeScoreTitle);
+    recordsTextContainer.appendChild(timeScore);
+
+    const liquidationScoreTitle = UI.createTitleElement('Liquidations','You ran out of health! 💀',"subtitle");
+    const liquidationScore = UI.createTitleElement('4141','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(liquidationScoreTitle);
+    recordsTextContainer.appendChild(liquidationScore);
+
+    const expScoreTitle = UI.createTitleElement('Experience','You ran out of health! 💀',"subtitle");
+    const expScore = UI.createTitleElement('34525','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(expScoreTitle);
+    recordsTextContainer.appendChild(expScore);
+
+    const distanceScoreTitle = UI.createTitleElement('Distance','You ran out of health! 💀',"subtitle");
+    const distanceScore = UI.createTitleElement('22324','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(distanceScoreTitle);
+    recordsTextContainer.appendChild(distanceScore);
+
+    const levelScoreTitle = UI.createTitleElement('Lvls','You ran out of health! 💀',"subtitle");
+    const levelScore = UI.createTitleElement('6','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(levelScoreTitle);
+    recordsTextContainer.appendChild(levelScore);
+
+    const secretsScoreTitle = UI.createTitleElement('Secrets','You ran out of health! 💀',"subtitle");
+    const secretsScore = UI.createTitleElement('0','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(secretsScoreTitle);
+    recordsTextContainer.appendChild(secretsScore);
+
+    const bossesScoreTitle = UI.createTitleElement('Bosses\n\n','You ran out of health! 💀',"subtitle");
+    const bossesScore = UI.createTitleElement('0\n\n','You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(bossesScoreTitle);
+    recordsTextContainer.appendChild(bossesScore);
+
+    popUpContainer.appendChild(recordsTextContainer);
+
+    const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(secretContainer);
+
+    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(reminderTitle);
+
+    addContainerUI('center-container', [popUpContainer]);
+}
+
+
+
+function triggerGameOver2() {
     cancelAnimationFrame(animationFrameId);
     const gameOverScreen = document.createElement('div');
     gameOverScreen.style.position = 'absolute';
