@@ -3961,11 +3961,12 @@ function createChooseMenu(entityList, text, type) {
 
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
-        canMove = true;
-        entity.isLocked = false;
+        keys.w = keys.a = keys.s = keys.d = false;
+        direction.set(0, 0, 0);
         player.addAbility(new Ability(player, { ...entity}));
         hideUI();
         refreshDisplay();
+        canMove=true;
     } else if (entity.isLocked) {
         return;
     } else if (type === "Survivor")  {
@@ -4759,7 +4760,7 @@ function generateRandomHash() {
         .join('');
 }
 
-//triggerGameOver();
+ triggerGameOver();
 function triggerGameOver() {
     ///cancelAnimationFrame(animationFrameId);
     const popUpContainer = UI.createContainer(['choose-menu-container']);
@@ -4767,13 +4768,15 @@ function triggerGameOver() {
     const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\nLiquidation notice.','You ran out of health! 💀');
     popUpContainer.appendChild(titleContainer);
 
+    const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const img = document.createElement('img');
     //img.src = 'Media/Abilities/LIQMAIL.png';
     img.src = 'Media/Abilities/DEAR.png';
     img.style.width = '500px';
     img.style.height = '250px';
     img.classList.add('filter');
-    popUpContainer.appendChild(img);
+    imgContainer.appendChild(img);
+    popUpContainer.appendChild(imgContainer);
 
     const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"minititle");
     popUpContainer.appendChild(liquidatedTitle);
@@ -4868,7 +4871,7 @@ function triggerGameOver() {
     const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
     popUpContainer.appendChild(secretContainer);
 
-    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n','You ran out of health! 💀',"minititle");
+    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n\n','You ran out of health! 💀',"minititle");
     popUpContainer.appendChild(reminderTitle);
 
     addContainerUI('center-container', [popUpContainer]);
