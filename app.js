@@ -4758,6 +4758,8 @@ function generateRandomHash() {
         .join('');
 }
 
+
+
  //triggerGameOver();
 function triggerGameOver() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
@@ -4978,6 +4980,40 @@ function resumeGame() {
     player.addAbility(new Ability(player, { ...ability}));
     }
 }
+
+/*---------------------------------------------------------------------------
+              INSTANCED MESHES TO OPTIMIZE IN THE FUTURE
+
+const instanceCount = 1; 
+let instancedMesh;
+loader.load('Media/Models/Survivor.fbx', (object) => {
+    const geometry = object.children[0].geometry; 
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00});
+    instancedMesh = new THREE.InstancedMesh(geometry, material, instanceCount);
+    instancedMesh.scale.set(4,4,4);
+    instancedMesh.mixer = new THREE.AnimationMixer(object);
+    instancedMesh.playerRun = instancedMesh.mixer.clipAction(object.animations[0]);
+    instancedMesh.playerRun.play();
+    instancedMesh.playerRun.setLoop(THREE.LoopRepeat);
+    scene.add(instancedMesh);
+});
+
+                    (Update loop to test)
+            const cloneOffset = new THREE.Vector3(); 
+            const matrix = new THREE.Matrix4();
+            const direction = new THREE.Vector3();
+            const targetPosition= player.getWorldDirection(direction);
+            cloneOffset.copy(direction).negate().multiplyScalar(.2); 
+            const clonePosition = player.position.clone().add(cloneOffset);
+            matrix.setPosition(clonePosition);
+            const position = new THREE.Vector3();
+            position.setFromMatrixPosition(matrix);
+            matrix.lookAt(position, targetPosition, new THREE.Vector3(0, 1, 0)); 
+            instancedMesh.setMatrixAt(0, matrix);
+            instancedMesh.mixer.update(0.1); 
+            instancedMesh.instanceMatrix.needsUpdate = true;
+
+---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------
                             Main loop
