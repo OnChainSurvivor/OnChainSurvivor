@@ -2662,8 +2662,8 @@ const challengeTypes = [{
     },
     update(){
         this.countdown--;
-        if(this.countdown<=0)
-        gameOverScreen();
+      //  if(this.countdown<=0)
+       // gameOverScreen();
         const seconds = Math.floor(this.countdown / 60);
         const mseconds = this.countdown % 60;
         challengeDisplay.innerText = `${seconds}:${mseconds < 10 ? '0' : ''}${mseconds}`;
@@ -3456,7 +3456,7 @@ function updatePlayerMovement() {
     );
     camera.lookAt(player.position);
 
-    if(cameraHeight <= 30)
+    if(cameraHeight <= 50)
     cameraHeight+=0.25;
 
     player.updateAbilities();
@@ -4775,7 +4775,7 @@ function triggerGameOver() {
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
-    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"minititle");
+    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"subtitle");
     popUpContainer.appendChild(liquidatedTitle);
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
