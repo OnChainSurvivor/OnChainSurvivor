@@ -195,7 +195,7 @@ const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0){
         canMove= false;
         hideUI();
-        setTimeout(() => { triggerGameOver(); }, 1500);
+        setTimeout(() => { triggerGameOver(); }, 1000);
     } 
 
    // TODO: Make drops rarer, no longer guarantee  dropItem(entity.position);
@@ -206,7 +206,7 @@ const handleEntityDeath = (entity, enemies) => {
        createParticleEffect(player.position, 'gold', 10);  
    }
 
-    entity.deactivateAbilities();
+   
     scene.remove(entity);
 
     const index = scene.children.indexOf(entity);
@@ -332,11 +332,11 @@ const abilityTypes = [
             const orb = {
                 mesh: null,
                 boundingBox: null,
-                leadFactor:-20,
+                leadFactor:-15,
                 beam:null,
                 beamMaterial : new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),
                 create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+                    const material = new THREE.MeshBasicMaterial({ color: 0x0ff000 });
                     const geometry = new THREE.SphereGeometry(1, 16, 6);
                     orb.mesh = new THREE.Mesh(geometry, material);
                     orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
@@ -349,7 +349,7 @@ const abilityTypes = [
                 const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
                 const newOrbPosition = new THREE.Vector3(
                     user.position.x + playerDirection.x * orb.leadFactor,
-                    user.position.y + 20, 
+                    user.position.y + 15, 
                     user.position.z + playerDirection.z * orb.leadFactor
                 );
                 orb.mesh.position.lerp(newOrbPosition, .05);
@@ -3264,8 +3264,7 @@ this.meshScaleThreshold = 0.1;
                     this.lightSourceIndex++;
                 }
             };
-
-            lightObjects.forEach(lightObject => {
+            droppedItems.forEach(lightObject => {
                 addLightSource(lightObject.mesh); 
             });
 
@@ -3284,13 +3283,13 @@ this.meshScaleThreshold = 0.1;
             if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
-            } else if (this.radiusDirection === -1 && influenceRadius > 3) {
+            } else if (this.radiusDirection === -1 && influenceRadius > 20) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
             } else {
                 if (this.radiusDirection === 1) {
                     this.radiusDirection = -1;
-                    this.radiusTarget = 3;
+                    this.radiusTarget = 20;
                 } else {
                     this.radiusDirection = 0;
                 }
@@ -3866,10 +3865,10 @@ function updateEnemies() {
 }
 
 
-function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 100, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 75, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
-        if(enemies.length >200) return;
+        if(enemies.length >100) return;
         for (let i = 0; i < numberOfEnemies; i++) {
             const angle = Math.random() * Math.PI * 2;
             const offsetX = Math.cos(angle) * spawnRadius;
@@ -5144,7 +5143,8 @@ function triggerGameOver() {
     recordsContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        recordsContainer.appendChild(createButton(clonedAbility, .5 ));
+        const  abilButton = createButton(clonedAbility, .5 );
+        recordsContainer.appendChild(abilButton);
     });
 
     popUpContainer.appendChild(recordsContainer);
