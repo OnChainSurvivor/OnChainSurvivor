@@ -36,7 +36,7 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = world.material.clone();
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
                     }
                 });
                 const serializedObject = object.toJSON();
@@ -206,7 +206,6 @@ const handleEntityDeath = (entity, enemies) => {
        createParticleEffect(player.position, 'gold', 10);  
    }
 
-   
     scene.remove(entity);
 
     const index = scene.children.indexOf(entity);
