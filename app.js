@@ -36,7 +36,7 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x000000 });
                     }
                 });
                 const serializedObject = object.toJSON();
@@ -3012,7 +3012,7 @@ const worldTypes = [{
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, .5, 0.01); 
         composer.addPass(this.renderScene);
-        composer.addPass(this.bloomPass);
+        //composer.addPass(this.bloomPass);
         
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
@@ -3673,6 +3673,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const canvas = document.getElementById('survivorCanvas');
 const renderer = new THREE.WebGLRenderer({ canvas});
 renderer.setPixelRatio(window.devicePixelRatio || 1);
+renderer.setClearColor(0xffffff);
 
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
     minFilter: THREE.LinearFilter,
