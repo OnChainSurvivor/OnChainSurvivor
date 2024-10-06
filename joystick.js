@@ -100,7 +100,7 @@ function deactivateJoystick() {
 function updateJoystickDirection(normalizedX, normalizedY) {
     keys.w = keys.a = keys.s = keys.d = false;
 
-    const sensitivity = 4;
+    const sensitivity = 40 ;
 
     const adjustedX = normalizedX * sensitivity;
     const adjustedY = normalizedY * sensitivity;
