@@ -36,7 +36,7 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
                     }
                 });
                 const serializedObject = object.toJSON();
@@ -3008,7 +3008,8 @@ const worldTypes = [{
     }),
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
-
+        
+        scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, .5, 0.01); 
         composer.addPass(this.renderScene);
