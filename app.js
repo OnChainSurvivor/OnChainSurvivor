@@ -4639,12 +4639,14 @@ function refreshDisplay() {
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, .45 );
-
+    const playerButton = createButton(player, .2 );
+    const worldButton = createButton(world, .2 );
     barGridContainer.appendChild(hpBarContainer);
     barGridContainer.appendChild(xpLoadingContainer);
-    barGridContainer.appendChild(playerButton);
- 
+    //barGridContainer.appendChild(worldButton);
+    abilitiesContainer.appendChild(playerButton);
+    abilitiesContainer.appendChild(worldButton);
+    
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
         abilitiesContainer.appendChild(createButton(clonedAbility, .2 ));
@@ -4652,14 +4654,14 @@ function refreshDisplay() {
 
 
 
-    addContainerUI('bottom-container', [barGridContainer]).onclick = () => {
+    addContainerUI('center-container', [barGridContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
         createPlayerInfoMenu();
     };
 
-    addContainerUI('top-container',[abilitiesContainer,challengeDisplay]).onclick = () => {
+    addContainerUI('bottom-container',[challengeDisplay,abilitiesContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
