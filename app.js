@@ -218,49 +218,73 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
-function createParticleEffect(position, color = 'red', particleCount = 5) {
+function createParticleEffect(position, color = 'gray', particleCount = 50) {
     const particleGeometry = new THREE.BufferGeometry();
-    const particles = new Float32Array(particleCount * 3); 
+    const vertices = new Float32Array(particleCount * 9); // Each particle is a triangle (3 vertices)
+    const directions = new Float32Array(particleCount * 3); // One direction per particle
+
+    const spread = 3; // Initial spread factor for random positioning
 
     for (let i = 0; i < particleCount; i++) {
-        particles[i * 3] = position.x + (Math.random() - 0.5) * 3;
-        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 3;
-        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 3;
+        const baseIndex = i * 9;
+
+        // Generate random triangle vertices around the initial position
+        for (let j = 0; j < 9; j += 3) {
+            vertices[baseIndex + j] = position.x + (Math.random() - 0.5) * spread;
+            vertices[baseIndex + j + 1] = position.y + (Math.random() - 0.5) * spread;
+            vertices[baseIndex + j + 2] = position.z + (Math.random() - 0.5) * spread;
+        }
+
+        // Calculate a direction vector for each particle
+        const dirX = vertices[baseIndex] - position.x;
+        const dirY = vertices[baseIndex + 1] - position.y;
+        const dirZ = vertices[baseIndex + 2] - position.z;
+
+        // Normalize the direction vector (unit length)
+        const length = Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+        directions[i * 3] = dirX / length;
+        directions[i * 3 + 1] = dirY / length;
+        directions[i * 3 + 2] = dirZ / length;
     }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-    const particleMaterial = new THREE.PointsMaterial({
+    const particleMaterial = new THREE.MeshBasicMaterial({
         color: color,
-        size: 2, 
+        side: THREE.DoubleSide,
         transparent: true,
-        opacity: .8,
+        opacity: 0,
         blending: THREE.AdditiveBlending,
     });
 
-    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+    const particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
+    scene.add(particleMesh);
 
-    scene.add(particleSystem);
-
-    const duration = .5 ; 
+    const duration = 0.15; // Particle lifetime in seconds
+    const expansionSpeed = 5; // Speed at which particles expand outward
     const startTime = performance.now();
 
     function animateParticles() {
         const elapsedTime = (performance.now() - startTime) / 1000;
 
         for (let i = 0; i < particleCount; i++) {
-            particleGeometry.attributes.position.array[i * 3] += (Math.random() - 0.5) * 0.05;
-            particleGeometry.attributes.position.array[i * 3 + 1] += (Math.random() - 0.5) * 0.05;
-            particleGeometry.attributes.position.array[i * 3 + 2] += (Math.random() - 0.5) * 0.05;
+            const baseIndex = i * 9;
+
+            // Move each particle's triangle vertices outward along the direction vector
+            for (let j = 0; j < 9; j += 3) {
+                vertices[baseIndex + j] += directions[i * 3] * expansionSpeed * elapsedTime;
+                vertices[baseIndex + j + 1] += directions[i * 3 + 1] * expansionSpeed * elapsedTime;
+                vertices[baseIndex + j + 2] += directions[i * 3 + 2] * expansionSpeed * elapsedTime;
+            }
         }
 
         particleGeometry.attributes.position.needsUpdate = true;
-        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration));
+        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration)); // Fade out
 
         if (elapsedTime < duration) {
             requestAnimationFrame(animateParticles);
         } else {
-            scene.remove(particleSystem);
+            scene.remove(particleMesh);
             particleGeometry.dispose();
             particleMaterial.dispose();
         }
@@ -268,6 +292,8 @@ function createParticleEffect(position, color = 'red', particleCount = 5) {
 
     animateParticles();
 }
+
+
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
@@ -3805,7 +3831,7 @@ function updatePlayerMovement() {
 
     player.updateAbilities();
 
-    if (dropUpdateFrame++ % 10 === 0) { 
+    if (dropUpdateFrame++ % 60 === 0) { 
         if (closeEnemy) {
             createOrb(player);
         }
@@ -3822,7 +3848,8 @@ function updatePlayerMovement() {
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
-               createParticleEffect(player.position, 'red', 5);  
+               createParticleEffect(player.position, 'red', 5); 
+               shakeCamera();
                player.takeDamage(1);  
                hpBar.style.height = (player.health / player.maxhealth * 100) + '%';
             }
@@ -3837,6 +3864,34 @@ function updatePlayerMovement() {
         }    
 
 }
+
+function shakeCamera(intensity = 0.05, duration = 300) {
+    const originalPosition = camera.position.clone();
+    const startTime = performance.now();
+
+    function animateShake() {
+        const elapsedTime = performance.now() - startTime;
+
+        if (elapsedTime < duration) {
+            const shakeX = (Math.random() - 0.5) * intensity;
+            const shakeY = (Math.random() - 0.5) * intensity;
+            const shakeZ = (Math.random() - 0.5) * intensity;
+
+            camera.position.set(
+                originalPosition.x + shakeX,
+                originalPosition.y + shakeY,
+                originalPosition.z + shakeZ
+            );
+
+            requestAnimationFrame(animateShake);
+        } else {
+            camera.position.copy(originalPosition);
+        }
+    }
+
+    animateShake();
+}
+
 
 function chooseOne() {
     canMove = false;
