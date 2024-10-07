@@ -218,21 +218,21 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
-function createParticleEffect(position, color = 'green', particleCount = 5) {
+function createParticleEffect(position, color = 'red', particleCount = 5) {
     const particleGeometry = new THREE.BufferGeometry();
     const particles = new Float32Array(particleCount * 3); 
 
     for (let i = 0; i < particleCount; i++) {
-        particles[i * 3] = position.x + (Math.random() - 0.5) * 2;
-        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 2;
-        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 2;
+        particles[i * 3] = position.x + (Math.random() - 0.5) * 3;
+        particles[i * 3 + 1] = position.y + (Math.random() - 0.5) * 3;
+        particles[i * 3 + 2] = position.z + (Math.random() - 0.5) * 3;
     }
 
     particleGeometry.setAttribute('position', new THREE.BufferAttribute(particles, 3));
 
     const particleMaterial = new THREE.PointsMaterial({
         color: color,
-        size: 1, 
+        size: 2, 
         transparent: true,
         opacity: .8,
         blending: THREE.AdditiveBlending,
@@ -242,7 +242,7 @@ function createParticleEffect(position, color = 'green', particleCount = 5) {
 
     scene.add(particleSystem);
 
-    const duration = .25 ; 
+    const duration = .5 ; 
     const startTime = performance.now();
 
     function animateParticles() {
@@ -2934,7 +2934,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.5,
+    movementspeed:0.25,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
