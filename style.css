@@ -250,8 +250,8 @@ html, body {
 #verticalBarContainer {
     height: 5vh;
     width: 1vw;
-    margin-left: -5vw; 
-    margin-bottom: 2vh;
+    margin-left: -5.5vw; 
+    margin-bottom: 1.5vh;
     background-color: black;
     box-sizing: border-box;
     border: 0.05px solid;
