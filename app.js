@@ -218,7 +218,7 @@ const handleEntityDeath = (entity, enemies) => {
     if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
 };
 
-function createParticleEffect(position, color = 'gray', particleCount = 50) {
+function createParticleEffect(position, color = 'green', particleCount = 50) {
     const particleGeometry = new THREE.BufferGeometry();
     const vertices = new Float32Array(particleCount * 9); // Each particle is a triangle (3 vertices)
     const directions = new Float32Array(particleCount * 3); // One direction per particle
@@ -3850,7 +3850,7 @@ function updatePlayerMovement() {
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
                createParticleEffect(player.position, 'red', 5);  
                player.takeDamage(1);  
-               hpBar.style.height = (player.health / player.maxhealth * 100) + '%';
+               hpBar.style.width = (player.health / player.maxhealth * 100) + '%';
             }
 
             lightObjects.forEach((lightObject) => {
@@ -4630,41 +4630,35 @@ function refreshDisplay() {
     xpLoadingContainer.appendChild(xpLoadingBar);
 
     let hpBarContainer = document.createElement('div');
-    hpBarContainer.id = 'verticalBarContainer';
+    hpBarContainer.id = 'hpBarContainer';
     hpBar = document.createElement('div');
-    hpBar.id = 'verticalBar';
-    hpBar.style.height =  (player.health / player.maxhealth * 100) + '%';
+    hpBar.id = 'hpBar';
+    hpBar.style.width =  (player.health / player.maxhealth * 100) + '%';
     hpBarContainer.appendChild(hpBar);
 
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, .5 );
-    let xpText = UI.createTitleElement('xp', 'who even keeps track of these', "subtitle");
+    const playerButton = createButton(player, .45 );
+
+    barGridContainer.appendChild(hpBarContainer);
     barGridContainer.appendChild(xpLoadingContainer);
-    barGridContainer.appendChild(playerContainer);
-    playerContainer.appendChild(playerButton);
-    //playerContainer.appendChild(hpBarContainer)
-    barGridContainer.appendChild(challengeDisplay);
-    
+    barGridContainer.appendChild(playerButton);
+ 
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
+        abilitiesContainer.appendChild(createButton(clonedAbility, .2 ));
     });
 
-    const cornerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const pauseDisplay = UI.createTitleElement('', 'who even keeps track of these', "title");
-    //Ⅱ
-    cornerContainer.appendChild(pauseDisplay);
-    cornerContainer.appendChild(challengeDisplay);
-    addContainerUI('bottom-container', [cornerContainer,barGridContainer]).onclick = () => {
-        canMove = false;
-       isPaused = true;
-       hideUI();
-       createPlayerInfoMenu();
-    };
 
-    addContainerUI('center-container', [hpBarContainer]);
+    addContainerUI('BL-container', [challengeDisplay]);
+  
+    addContainerUI('bottom-container', [barGridContainer]).onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createPlayerInfoMenu();
+    };
 
     addContainerUI('top-container',[abilitiesContainer]).onclick = () => {
         canMove = false;
