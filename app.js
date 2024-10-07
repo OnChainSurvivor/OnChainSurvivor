@@ -167,7 +167,7 @@ const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b008
 let colorIndex = 0;
 
 const droppedItems = []; 
-const itemGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+const itemGeometry = new THREE.SphereGeometry(1.5, 32, 32);
 
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
@@ -188,6 +188,7 @@ const dropItem = (position) => {
     const item = new THREE.Mesh(itemGeometry, itemMaterial);
     item.position.copy(position);
     item.boundingBox = new THREE.Box3().setFromObject(item);
+    createParticleEffect(position, 'gold', 10);  
     scene.add(item);
     droppedItems.push(item);
 };
@@ -203,7 +204,7 @@ const handleEntityDeath = (entity, enemies) => {
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
    if (player.xp >= player.xpToNextLevel) {
     dropItem(entity.position);
-       createParticleEffect(player.position, 'gold', 10);  
+      
        player.xp = 0;  
        player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;   
    }
@@ -3013,10 +3014,24 @@ const worldTypes = [{
         
         scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
+       this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
         composer.addPass(this.renderScene);
-        composer.addPass(this.bloomPass);
+       composer.addPass(this.bloomPass);
         
+
+     const pointLight = new THREE.PointLight(0xffffff, 5);
+     pointLight.position.set(10, 10, 10); 
+     scene.add(pointLight);
+
+     const directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
+     directionalLight.position.set(-5, 5, 5); 
+     scene.add(directionalLight);
+
+     const ambientLight = new THREE.AmbientLight(0x404040, 3); 
+     scene.add(ambientLight);
+
+
+
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
@@ -3026,9 +3041,9 @@ const worldTypes = [{
             scene.environment = this.envMap; 
         });
  
-            this.gridSize = 5; 
+            this.gridSize = 10; 
             this.divisions = 1; 
-            this.numTiles = 30; 
+            this.numTiles = 15; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
         
@@ -3039,7 +3054,7 @@ const worldTypes = [{
         
             this.gridMaterial = new THREE.ShaderMaterial({
                 uniforms: {
-                    playerInfluenceRadius: { value: 5 } ,
+                    playerInfluenceRadius: { value: 50 } ,
                     time: { value: 0 },
                     playerPosition: { value: new THREE.Vector3() },
                     lightSourceTexture: { value:  this.lightSourceTexture },
@@ -3124,8 +3139,6 @@ const worldTypes = [{
         
             this.radiusTarget = 100;
             this.radiusDirection = 1;
-            const possibleY = [-4,4];
-            this.axisY =possibleY[Math.floor(Math.random() * possibleY.length)];
 
     this.octahedronGeometry = new THREE.OctahedronGeometry(1);
     this.octahedronGeometry.scale(4.5,5.25,3.75); 
@@ -3139,7 +3152,7 @@ const worldTypes = [{
 
     const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
     const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
-    camera.position.set(cameraX, cameraHeight, cameraZ);
+    camera.position.set(cameraX, 0, cameraZ);
     camera.lookAt(this.octahedronMesh.position);
 
     this.miniOctahedrons = [];
@@ -3275,7 +3288,7 @@ this.meshScaleThreshold = 0.1;
     
         const playerGridX = Math.floor(player.position.x / this.gridSize) * this.gridSize;
         const playerGridZ = Math.floor(player.position.z / this.gridSize) * this.gridSize;
-        this.gridMesh.position.set(playerGridX, isMainMenu ? this.axisY : 0, playerGridZ);
+        this.gridMesh.position.set(playerGridX, 0, playerGridZ);
     
         if (isMainMenu) {
             this.gridMesh.position.set(playerGridX, this.axisY, playerGridZ);
@@ -3581,8 +3594,8 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
 this.frameCount = 0;
 },
     update: function(scene, camera, renderer) {
-        this.frameCount++;
-        if (this.frameCount % 3 !== 0) return;  
+       // this.frameCount++;
+      //  if (this.frameCount % 3 !== 0) return;  
     
         this.gridMaterial.uniforms.time.value = performance.now() / 1000; 
  
@@ -3645,7 +3658,7 @@ this.frameCount = 0;
 
     
             if (isMainMenu) {
-                this.gridMesh.position.set(playerGridX,  this.axisY, playerGridZ);
+                this.gridMesh.position.set(playerGridX,  0, playerGridZ);
             } else {
                 if ( this.radiusDirection === 1 &&  this.gridMaterial.uniforms.playerInfluenceRadius.value <  this.radiusTarget) {
                     this.gridMaterial.uniforms.playerInfluenceRadius.value += 0.50; 
@@ -3787,12 +3800,12 @@ function updatePlayerMovement() {
     );
     camera.lookAt(player.position);
 
-    if(cameraHeight <= 20)
+    if(cameraHeight <= 30)
     cameraHeight+=0.25;
 
     player.updateAbilities();
 
-    if (dropUpdateFrame++ % 30 === 0) { 
+    if (dropUpdateFrame++ % 10 === 0) { 
         if (closeEnemy) {
             createOrb(player);
         }
