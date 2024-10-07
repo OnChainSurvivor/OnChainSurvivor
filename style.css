@@ -248,11 +248,13 @@ html, body {
 }
 
 #verticalBarContainer {
-    height: 100%;
-    width: 15px;
+    height: 5vh;
+    width: 1vw;
+    margin-left: -5vw; 
+    margin-bottom: 2vh;
     background-color: black;
     box-sizing: border-box;
-    border: 0.1px solid;
+    border: 0.05px solid;
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet); 
     display: flex;         

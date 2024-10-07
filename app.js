@@ -3848,8 +3848,7 @@ function updatePlayerMovement() {
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
-               createParticleEffect(player.position, 'red', 5); 
-               shakeCamera();
+               createParticleEffect(player.position, 'red', 5);  
                player.takeDamage(1);  
                hpBar.style.height = (player.health / player.maxhealth * 100) + '%';
             }
@@ -3864,34 +3863,6 @@ function updatePlayerMovement() {
         }    
 
 }
-
-function shakeCamera(intensity = 0.05, duration = 300) {
-    const originalPosition = camera.position.clone();
-    const startTime = performance.now();
-
-    function animateShake() {
-        const elapsedTime = performance.now() - startTime;
-
-        if (elapsedTime < duration) {
-            const shakeX = (Math.random() - 0.5) * intensity;
-            const shakeY = (Math.random() - 0.5) * intensity;
-            const shakeZ = (Math.random() - 0.5) * intensity;
-
-            camera.position.set(
-                originalPosition.x + shakeX,
-                originalPosition.y + shakeY,
-                originalPosition.z + shakeZ
-            );
-
-            requestAnimationFrame(animateShake);
-        } else {
-            camera.position.copy(originalPosition);
-        }
-    }
-
-    animateShake();
-}
-
 
 function chooseOne() {
     canMove = false;
@@ -4673,7 +4644,7 @@ function refreshDisplay() {
     barGridContainer.appendChild(xpLoadingContainer);
     barGridContainer.appendChild(playerContainer);
     playerContainer.appendChild(playerButton);
-    playerContainer.appendChild(hpBarContainer)
+    //playerContainer.appendChild(hpBarContainer)
     barGridContainer.appendChild(challengeDisplay);
     
     player.abilities.forEach(ability => {
@@ -4694,6 +4665,10 @@ function refreshDisplay() {
     cornerContainer.appendChild(pauseDisplay);
     cornerContainer.appendChild(challengeDisplay);
     addContainerUI('bottom-container', [cornerContainer]).onclick = () => {
+        isPaused = true;
+    };
+
+    addContainerUI('center-container', [hpBarContainer]).onclick = () => {
         isPaused = true;
     };
 
