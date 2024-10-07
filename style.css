@@ -230,7 +230,7 @@ html, body {
 #horizontalBarContainer {
     width: 5vw;
     height: 1.2vh;
-    margin-bottom: -5vh;
+    margin-bottom: -7vh;
     background-color: black;
     box-sizing: border-box;
     border: 0.1px solid;
@@ -251,7 +251,7 @@ html, body {
 #hpBarContainer {
     width: 5vw;
     height: 1.2vh;
-    margin-bottom: -3.5vh;
+    margin-bottom: -5.5vh;
     background-color: black;
     box-sizing: border-box;
     border: 0.1px solid;

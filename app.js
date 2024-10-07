@@ -183,10 +183,47 @@ const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
+function createQuestionMark() {
+    const group = new THREE.Group();  // A group to hold all parts of the question mark
+
+    // The dot of the question mark (using a sphere)
+    const dotGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+    const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+    dot.position.set(0, -1.8, 0);
+    group.add(dot);
+
+    // The curved part of the question mark (using a TubeGeometry for smoothness)
+    const curve = new THREE.CubicBezierCurve3(
+        new THREE.Vector3(0, 1, 0),         // Start point
+        new THREE.Vector3(0.6, 2, 0),       // Control point 1
+        new THREE.Vector3(0.6, 0.6, 0),     // Control point 2
+        new THREE.Vector3(0, 0, 0)          // End point
+    );
+    const curveGeometry = new THREE.TubeGeometry(curve, 20, 0.1, 8, false);
+    const curveMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const curveMesh = new THREE.Mesh(curveGeometry, curveMaterial);
+    group.add(curveMesh);
+
+    // The straight part of the question mark (using a simple box)
+    const stemGeometry = new THREE.BoxGeometry(0.2, 1.2, 0.2);
+    const stemMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+    stem.position.set(0, 1.3, 0);
+    group.add(stem);
+
+    // Set the initial position and add to the scene
+    group.position.set(0, 0, 0);
+    scene.add(group);
+
+    return group;
+}
+
 const dropItem = (position) => {
     const itemMaterial = world.material.clone();
-    const item = new THREE.Mesh(itemGeometry, itemMaterial);
+    const item = createQuestionMark(); //new THREE.Mesh(itemGeometry, itemMaterial);
     item.position.copy(position);
+    item.position.y=+2;
     item.boundingBox = new THREE.Box3().setFromObject(item);
     createParticleEffect(position, 'gold', 10);  
     scene.add(item);
@@ -2960,7 +2997,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.25,
+    movementspeed:0.35,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -3040,7 +3077,7 @@ const worldTypes = [{
         
         scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
-       this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
+       this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3.5, .5, 0.01); 
         composer.addPass(this.renderScene);
        composer.addPass(this.bloomPass);
         
@@ -3843,6 +3880,7 @@ function updatePlayerMovement() {
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
             scene.remove(item);  
             droppedItems.splice(i, 1); 
+            randomAbility();
         }
     }
         for (let i = 0; i < enemies.length; i++) {
@@ -3863,8 +3901,22 @@ function updatePlayerMovement() {
         }    
 
 }
+function randomAbility() {
+    const upgradableAbilities = player.getUpgradableAbilities();
+    if (upgradableAbilities.length === 0) {
+        canMove = true;
+        isPaused = false;
+        return;
+    }
 
-function chooseOne() {
+    const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
+    const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
+    abilityToUpgrade.isLocked = false; 
+    player.addAbility(new Ability(player, { ...abilityToUpgrade}));
+    hideUI();
+    refreshDisplay();
+}
+function chooseAbility() {
     canMove = false;
     isPaused = true;
     hideUI();
