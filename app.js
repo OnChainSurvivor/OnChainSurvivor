@@ -4651,8 +4651,7 @@ function refreshDisplay() {
     });
 
 
-    addContainerUI('BL-container', [challengeDisplay]);
-  
+
     addContainerUI('bottom-container', [barGridContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
@@ -4660,7 +4659,7 @@ function refreshDisplay() {
         createPlayerInfoMenu();
     };
 
-    addContainerUI('top-container',[abilitiesContainer]).onclick = () => {
+    addContainerUI('top-container',[abilitiesContainer,challengeDisplay]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
