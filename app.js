@@ -167,7 +167,7 @@ const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b008
 let colorIndex = 0;
 
 const droppedItems = []; 
-const itemGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const itemGeometry = new THREE.SphereGeometry(2.5, 32, 32);
 
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
@@ -199,12 +199,13 @@ const handleEntityDeath = (entity, enemies) => {
         setTimeout(() => { triggerGameOver(); }, 1000);
     } 
 
-   // TODO: Make drops rarer, no longer guarantee  dropItem(entity.position);
    player.xp += 1;
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
    if (player.xp >= player.xpToNextLevel) {
-       LevelUp();  
+    dropItem(entity.position);
        createParticleEffect(player.position, 'gold', 10);  
+       player.xp = 0;  
+       player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;   
    }
 
     scene.remove(entity);
@@ -3012,7 +3013,7 @@ const worldTypes = [{
         
         scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
         
@@ -3092,7 +3093,7 @@ const worldTypes = [{
                             vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
                             vec3 lightPos = texture(lightSourceTexture, uv).xyz;
                             float dist = distance(vWorldPos.xz, lightPos.xz);
-                            lightSourceInfluence += smoothstep(2.5, 0.0, dist);
+                            lightSourceInfluence += smoothstep(10.0, 5.0, dist);
                         }
         
                         vec2 cellCoord = floor(vUv);
@@ -3265,8 +3266,8 @@ this.meshScaleThreshold = 0.1;
                     this.lightSourceIndex++;
                 }
             };
-            droppedItems.forEach(lightObject => {
-                addLightSource(lightObject.mesh); 
+            droppedItems.forEach(item => {
+                addLightSource(item); 
             });
 
         this.lightSourceTexture.needsUpdate = true;
@@ -3791,12 +3792,20 @@ function updatePlayerMovement() {
 
     player.updateAbilities();
 
-    if (dropUpdateFrame++ % 6 === 0) { 
+    if (dropUpdateFrame++ % 30 === 0) { 
         if (closeEnemy) {
             createOrb(player);
         }
     }
-        updateDrops();
+
+    for (let i = droppedItems.length - 1; i >= 0; i--) {
+        const item = droppedItems[i];
+        item.boundingBox.setFromObject(item);
+        if (player.boundingBox.intersectsBox(item.boundingBox)) {
+            scene.remove(item);  
+            droppedItems.splice(i, 1); 
+        }
+    }
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
             if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
@@ -3816,23 +3825,10 @@ function updatePlayerMovement() {
 
 }
 
-function updateDrops() {
-    for (let i = droppedItems.length - 1; i >= 0; i--) {
-        const item = droppedItems[i];
-        item.boundingBox.setFromObject(item);
-        if (player.boundingBox.intersectsBox(item.boundingBox)) {
-            createParticleEffect(player.position, 'gold', 1);
-            scene.remove(item);  
-            droppedItems.splice(i, 1); 
-        }
-    }
-}
-
-function LevelUp() {
+function chooseOne() {
     canMove = false;
     isPaused = true;
-   hideUI();
-    player.xp = 0;  
+    hideUI();
 
     const upgradableAbilities = player.getUpgradableAbilities();
 
@@ -3841,8 +3837,6 @@ function LevelUp() {
         isPaused = false;
         return;
     }
-
-    player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;
 
     const upgradeOptions = [];
     for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
@@ -3855,6 +3849,8 @@ function LevelUp() {
     }
     createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n Choose one ability.", "Upgrade");
 }
+
+
 /*---------------------------------------------------------------------------
                               Enemies Controller
 ---------------------------------------------------------------------------*/
