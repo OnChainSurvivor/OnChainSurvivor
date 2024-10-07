@@ -4620,7 +4620,7 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                             In Game UI
 ---------------------------------------------------------------------------*/
-let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these', "subtitle");
+let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these', "minititle");
 
 function refreshDisplay() {
     let xpLoadingContainer = document.createElement('div');
@@ -4652,25 +4652,19 @@ function refreshDisplay() {
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
-
-    addContainerUI('BL-container', [barGridContainer]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createPlayerInfoMenu();
-    };
-
     const cornerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const pauseDisplay = UI.createTitleElement('Ⅱ', 'who even keeps track of these', "title");
+    const pauseDisplay = UI.createTitleElement('', 'who even keeps track of these', "title");
+    //Ⅱ
     cornerContainer.appendChild(pauseDisplay);
     cornerContainer.appendChild(challengeDisplay);
-    addContainerUI('bottom-container', [cornerContainer]).onclick = () => {
-        isPaused = true;
+    addContainerUI('bottom-container', [cornerContainer,barGridContainer]).onclick = () => {
+        canMove = false;
+       isPaused = true;
+       hideUI();
+       createPlayerInfoMenu();
     };
 
-    addContainerUI('center-container', [hpBarContainer]).onclick = () => {
-        isPaused = true;
-    };
+    addContainerUI('center-container', [hpBarContainer]);
 
     addContainerUI('top-container',[abilitiesContainer]).onclick = () => {
         canMove = false;
