@@ -36,7 +36,8 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        child.material = world.material.clone();
+                        //new THREE.MeshBasicMaterial({ color: 0x00ff00 });
                     }
                 });
                 const serializedObject = object.toJSON();
@@ -3011,7 +3012,7 @@ const worldTypes = [{
         
         scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.5, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
         
@@ -3024,9 +3025,9 @@ const worldTypes = [{
             scene.environment = this.envMap; 
         });
  
-            this.gridSize = 20; 
-            this.divisions = 2; 
-            this.numTiles = 6; 
+            this.gridSize = 5; 
+            this.divisions = 1; 
+            this.numTiles = 30; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
         
@@ -3283,19 +3284,21 @@ this.meshScaleThreshold = 0.1;
             if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
-            } else if (this.radiusDirection === -1 && influenceRadius > 0) {
+            } else if (this.radiusDirection === -1 && influenceRadius > 15) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
             } else {
                 if (this.radiusDirection === 1) {
                     this.radiusDirection = -1;
-                    this.radiusTarget = 0;
+                    this.radiusTarget = 15;
                 } else {
                     this.radiusDirection = 0;
                 }
             }
         }
-        
+        this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
+
+
     },
     resumeGame: function(){
         player.mesh.scale.set(2.5,2.5,2.5);
@@ -3715,6 +3718,39 @@ const rotationAxis = new THREE.Vector3(0, 1, 0);
 const rotationSpeed = 0.1;
 let dropUpdateFrame = 0; 
 
+function createOrb(user) {
+
+    const orb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.6, 16, 6),
+        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    );
+
+    orb.position.copy(user.position); 
+    orb.updateMatrixWorld(true);
+    orb.boundingBox = new THREE.Box3().setFromObject(orb);
+    scene.add(orb);
+    lightObjects.push(orb);
+
+    const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
+    const shootSpeed = 0.5;
+
+    const orbLifetime = 3000; 
+    const startTime = Date.now();
+    
+    function updateOrb() {
+        if (Date.now() - startTime > orbLifetime) {
+            scene.remove(orb);
+            return;
+        }
+        orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
+        requestAnimationFrame(updateOrb);
+        orb.boundingBox.setFromObject(orb);
+    }
+    
+    updateOrb();
+
+}
+
 
 function updatePlayerMovement() {
     if (!canMove) return;
@@ -3750,12 +3786,16 @@ function updatePlayerMovement() {
     );
     camera.lookAt(player.position);
 
-    if(cameraHeight <= 50)
+    if(cameraHeight <= 20)
     cameraHeight+=0.25;
 
     player.updateAbilities();
 
-   // if (dropUpdateFrame++ % 4 === 0) { 
+    if (dropUpdateFrame++ % 6 === 0) { 
+        if (closeEnemy) {
+            createOrb(player);
+        }
+    }
         updateDrops();
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
@@ -3773,7 +3813,7 @@ function updatePlayerMovement() {
               }); 
                 
         }    
-    //}
+
 }
 
 function updateDrops() {
