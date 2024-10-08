@@ -21,6 +21,19 @@ body, canvas {
     background-color: #000;
   }
   
+  * {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-touch-callout: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+  
+  @supports (-webkit-touch-callout: none) {
+    body {
+      min-height: 100vh;
+    }
+  }
+
 canvas {
     display: block;
     margin: 0 auto;
