@@ -36,7 +36,23 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = world.material.clone();
+                        child.material = new THREE.MeshPhysicalMaterial({
+                            envMap: null, 
+                            reflectivity: 1,
+                            roughness: 0,
+                            metalness: 1,
+                            clearcoat: 0.13,
+                            clearcoatRoughness: 0.1,
+                            transmission: 0.82,
+                            ior: 2.75, 
+                            thickness: 10,
+                            sheen: 1,
+                            color: new THREE.Color('white'),
+                            wireframe : true,
+                            ///emissive: 0xfff00f, // Bright pink neon
+                            emissiveIntensity: 2 // Adjust for glow strength
+                        });
+                        //world.material.clone();
                         //new THREE.MeshBasicMaterial({ color: 0x00ff00 });
                     }
                 });
@@ -3051,49 +3067,95 @@ const challengeTypes = [{
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
 
-const worldTypes = [{
+const worldTypes = [
+    {title: 'The Dark Forest',
     class: 'World',
-    title: 'Ethereumverse',
     description:'Survive 5 Minutes in Ethereum, an open neutral and futuristic landscape where data flows freely, Forever.',
     tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     challenge:challengeTypes[0],
-    material:new THREE.MeshPhysicalMaterial({
-        envMap: null, 
-        reflectivity: 1,
-        roughness: 0,
-        metalness: 1,
-        clearcoat: 0.13,
-        clearcoatRoughness: 0.1,
-        transmission: 0.82,
-        ior: 2.75, 
-        thickness: 10,
-        sheen: 1,
-        color: new THREE.Color('white'),
-        wireframe : true
+    material:new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0.0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+        uniform float time;
+        varying vec2 vUv;
+    
+        vec3 rainbowColor(float t) {
+            return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+            );
+        }
+    
+        void main() {
+            float t = vUv.y + time * 0.2;
+            gl_FragColor = vec4(rainbowColor(t), 1.0);
+        }
+    `,
+        side: THREE.DoubleSide,
+        wireframe:true,
     }),
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
-        
         scene.background = new THREE.Color(0x000000);
         this.renderScene = new THREE.RenderPass(scene, camera);
-       this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3.5, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
         composer.addPass(this.renderScene);
-       composer.addPass(this.bloomPass);
+        composer.addPass(this.bloomPass);
         
 
-     const pointLight = new THREE.PointLight(0xffffff, 5);
-     pointLight.position.set(10, 10, 10); 
-     scene.add(pointLight);
+const contrastShader = {
+    uniforms: {
+        tDiffuse: { value: null },  // Scene texture
+        contrast: { value: 1.5 }    // Contrast level (default 1.5)
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float contrast;
+        varying vec2 vUv;
+        void main() {
+            vec4 color = texture2D(tDiffuse, vUv);
+            color.rgb /= color.a;  // Normalize by alpha
+            color.rgb = (color.rgb - 0.5) * contrast + 0.5;  // Apply contrast
+            color.rgb *= color.a;  // Restore alpha
+            gl_FragColor = color;
+        }
+    `
+};
 
-     const directionalLight = new THREE.DirectionalLight(0xffffff, 1); 
-     directionalLight.position.set(-5, 5, 5); 
-     scene.add(directionalLight);
+// Create ShaderPass
+const contrastPass = new THREE.ShaderPass(contrastShader);
+contrastPass.uniforms['contrast'].value = 1.5;  // Adjust contrast here (1.5 is a good starting point)
+///composer.addPass(contrastPass);
 
-     const ambientLight = new THREE.AmbientLight(0x404040, 3); 
-     scene.add(ambientLight);
+// Example: Modify contrast over time (optional)
+function animateContrast() {
+    const time = performance.now() * 0.001;
+    contrastPass.uniforms['contrast'].value = 1.5 + Math.sin(time) * 0.5;  // Animate contrast for a dynamic effect
+    requestAnimationFrame(animateContrast);
+}
+//animateContrast();
 
-
+//const saoPass = new THREE.SSAOPass(scene, camera);
+///saoPass.kernelRadius = 16; // Adjust for AO intensity 
+//composer.addPass(saoPass);
 
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
@@ -3104,9 +3166,9 @@ const worldTypes = [{
             scene.environment = this.envMap; 
         });
  
-            this.gridSize = 10; 
+            this.gridSize = 5; 
             this.divisions = 1; 
-            this.numTiles = 15; 
+            this.numTiles = 20; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
         
@@ -3114,7 +3176,6 @@ const worldTypes = [{
             this.lightSourceTextureData = new Float32Array( this.lightSourceTextureSize *  this.lightSourceTextureSize * 4);
             this.lightSourceTexture = new THREE.DataTexture( this.lightSourceTextureData,  this.lightSourceTextureSize,  this.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
             this.lightSourceTexture.needsUpdate = true;
-        
             this.gridMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     playerInfluenceRadius: { value: 50 } ,
@@ -3129,12 +3190,12 @@ const worldTypes = [{
                     uniform sampler2D lightSourceTexture;
                     uniform int lightSourceCount;
                     uniform float time;
-        
+            
                     attribute vec2 offset;
-        
+            
                     varying vec3 vWorldPos;
                     varying vec2 vUv; 
-        
+            
                     void main() {
                         vec3 pos = position;
                         pos.x += offset.x;
@@ -3151,20 +3212,28 @@ const worldTypes = [{
                     uniform int lightSourceTextureSize;
                     uniform float time;
                     uniform float playerInfluenceRadius;
-        
+            
                     varying vec3 vWorldPos;
                     varying vec2 vUv;
-        
+            
                     vec3 hsv2rgb(vec3 c) {
                         vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
                         vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
                         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
                     }
-        
+            
+                    vec3 rainbowColor(float t) {
+                        return vec3(
+                            0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                            0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                            0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+                        );
+                    }
+            
                     void main() {
                         float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
                         float lightSourceInfluence = 0.0;
-        
+            
                         for (int i = 0; i < lightSourceCount; i++) {
                             int x = i % lightSourceTextureSize;
                             int y = i / lightSourceTextureSize;
@@ -3173,18 +3242,20 @@ const worldTypes = [{
                             float dist = distance(vWorldPos.xz, lightPos.xz);
                             lightSourceInfluence += smoothstep(10.0, 5.0, dist);
                         }
-        
+            
                         vec2 cellCoord = floor(vUv);
                         float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
                         float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
-                        vec3 color = hsv2rgb(vec3(hue, 1.0, brightness));
-        
+                        
+                        // Apply the rainbow effect using the time uniform
+                        vec3 color = rainbowColor(hue + time * 0.1) * brightness;
+            
                         gl_FragColor = vec4(color, 1.0); 
                     }
                 `,
                 wireframe: true
             });
-        
+            
             const offsets = [];
             const halfTiles = Math.floor( this.numTiles / 2);
         
@@ -3221,7 +3292,6 @@ const worldTypes = [{
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.25);
     const miniOctahedronMaterial = this.material.clone();
-    miniOctahedronMaterial.wireframe=false;
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
     let numCrystals = 750;
     
@@ -3282,6 +3352,7 @@ this.meshScaleThreshold = 0.1;
 },
     update: function(scene, camera, renderer) {
         const timeNow = Date.now() * 0.001;
+        this.material.uniforms.time.value += 0.01;
         if (isMainMenu) {
             if (player.mesh) player.mesh.scale.set(0, 0, 0);
     
@@ -3345,6 +3416,9 @@ this.meshScaleThreshold = 0.1;
             droppedItems.forEach(item => {
                 addLightSource(item); 
             });
+            lightObjects .forEach(item => {
+                addLightSource(item); 
+            });
 
         this.lightSourceTexture.needsUpdate = true;
         this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
@@ -3373,7 +3447,7 @@ this.meshScaleThreshold = 0.1;
                 }
             }
         }
-        this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
+       this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
 
 
     },
@@ -3385,9 +3459,8 @@ this.meshScaleThreshold = 0.1;
         this.sceneObjects = []; 
     }       
 },
- {
+{title: 'Digital Goldland',
     class: 'World',
-    title: 'Digital Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
     tooltip:'15.000 U S D O L L A R S 💀 \n THERE IS NO SECOND BEST',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
@@ -4106,7 +4179,6 @@ UI.createTitleContainer= function (text,tooltip) {
         button.appendChild(description);
         
         if (onClick) button.onclick = onClick;
- 
 
         if(dataType.isLocked){
       //  button.style.color = 'gray';
@@ -4118,7 +4190,7 @@ UI.createTitleContainer= function (text,tooltip) {
        // description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
-        img.style.filter = 'blur(5px)';
+        img.style.filter = 'inverse(5px)';
         button.title = 'Insert unlock hint here'
     }
     
@@ -4465,11 +4537,11 @@ function handleEntitySelection(entity, type) {
         topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
         topChallengerContainer.appendChild(UI.createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
-        topChallengerContainer.appendChild(createButton(abilityTypes[10], .3));
+        topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
         topChallengerContainer.appendChild(UI.createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
-        topChallengerContainer.appendChild(createButton(abilityTypes[20], .2));
+        topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
    
         const classImages = playerTypes.map(player => player.thumbnail);
@@ -5065,7 +5137,7 @@ function createRunMenu() {
     topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[0], .6));
+    topChallengerContainer.appendChild(createButton(playerTypes[1], .6));
     topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
     topChallengerContainer.appendChild(UI.createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
@@ -5078,11 +5150,11 @@ function createRunMenu() {
     topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
     topChallengerContainer.appendChild(UI.createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
-    topChallengerContainer.appendChild(createButton(abilityTypes[10], .3));
+    topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
     topChallengerContainer.appendChild(UI.createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
-    topChallengerContainer.appendChild(createButton(abilityTypes[20], .2));
+    topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
    
     popUpContainer.appendChild(topChallengerContainer);
