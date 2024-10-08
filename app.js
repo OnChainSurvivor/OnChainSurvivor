@@ -468,9 +468,7 @@ const abilityTypes = [
         effect(user) { 
             this.update = () => {};
             this.lastHitTime = 0;
-    
             const maxDistance = 20;
-    
             const orb = {
                 mesh: null,
                 boundingBox: null,
@@ -779,8 +777,8 @@ const abilityTypes = [
                     }
                     colorIndex = (colorIndex + 1) % rainbowColors.length;
                     const trailStepMaterial = world.material.clone(); 
-                    trailStepMaterial.color.setHex(rainbowColors[colorIndex]); 
-                    trailStepMaterial.emissive.setHex(rainbowColors[colorIndex]);
+                   // trailStepMaterial.color.setHex(rainbowColors[colorIndex]); 
+                   // trailStepMaterial.emissive.setHex(rainbowColors[colorIndex]);
                     const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1,.5,1 ),trailStepMaterial);
                     trailStep.position.copy(user.position);
                     trailStep.position.y-=1;
@@ -3070,7 +3068,7 @@ const challengeTypes = [{
 const worldTypes = [
     {title: 'The Dark Forest',
     class: 'World',
-    description:'Survive 5 Minutes in Ethereum, an open neutral and futuristic landscape where data flows freely, Forever.',
+    description:'Survive in Ethereum, an open neutral futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
     tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     challenge:challengeTypes[0],
@@ -3416,9 +3414,33 @@ this.meshScaleThreshold = 0.1;
             droppedItems.forEach(item => {
                 addLightSource(item); 
             });
-            lightObjects .forEach(item => {
-                addLightSource(item); 
-            });
+            //lightObjects .forEach(item => {
+            //    addLightSource(item); 
+           // });
+
+            for (let i = 0; i < enemies.length; i++) {
+                const enemy = enemies[i];
+                const distanceToPlayer = enemy.position.distanceTo(player.position); 
+    
+                // Check if enemy is outside the illuminated radius
+                if (distanceToPlayer > this.gridMaterial.uniforms.playerInfluenceRadius.value) {
+                    enemy.visible = false; // Hide the enemy
+                } else {
+                    enemy.visible = true; // Show the enemy
+                }
+
+                if(!enemy.visible)
+                for (let k = 0; k < droppedItems.length; k++) {
+                    const droppedItem = droppedItems[k];
+                    const distanceToItem = enemy.position.distanceTo(droppedItem.position);
+                    if (distanceToItem <= 10) { // Adjust 10 to your desired item radius
+                        enemy.visible = true; // Hide the enemy
+                    } else {
+                        enemy.visible = false; // Show the enemy
+                    }
+                }
+
+            }
 
         this.lightSourceTexture.needsUpdate = true;
         this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
@@ -5021,7 +5043,7 @@ async function createInfoMenu() {
     todaysPlayerContainer.appendChild(classButton);
     popUpContainer.appendChild(todaysPlayerContainer);
 
-    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move, choose skills and Survive! \n each class has a different innate ability.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move and Survive! each class  \n  has a different base ability, and stats.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(instructionsText);
 
     const todaysAbilityContainer = UI.createContainer(['abilities-grid']); 
