@@ -3137,24 +3137,6 @@ const contrastShader = {
         }
     `
 };
-
-// Create ShaderPass
-const contrastPass = new THREE.ShaderPass(contrastShader);
-contrastPass.uniforms['contrast'].value = 1.5;  // Adjust contrast here (1.5 is a good starting point)
-///composer.addPass(contrastPass);
-
-// Example: Modify contrast over time (optional)
-function animateContrast() {
-    const time = performance.now() * 0.001;
-    contrastPass.uniforms['contrast'].value = 1.5 + Math.sin(time) * 0.5;  // Animate contrast for a dynamic effect
-    requestAnimationFrame(animateContrast);
-}
-//animateContrast();
-
-//const saoPass = new THREE.SSAOPass(scene, camera);
-///saoPass.kernelRadius = 16; // Adjust for AO intensity 
-//composer.addPass(saoPass);
-
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
         
@@ -3289,7 +3271,7 @@ function animateContrast() {
 
     this.miniOctahedrons = [];
     const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.25);
-    const miniOctahedronMaterial = this.material.clone();
+    const miniOctahedronMaterial = this.material;
     miniOctahedronGeometry.scale(0.5,0.75,0.5)
     let numCrystals = 750;
     
@@ -3414,9 +3396,9 @@ this.meshScaleThreshold = 0.1;
             droppedItems.forEach(item => {
                 addLightSource(item); 
             });
-            //lightObjects .forEach(item => {
-            //    addLightSource(item); 
-           // });
+            lightObjects .forEach(item => {
+                addLightSource(item); 
+            });
 
             for (let i = 0; i < enemies.length; i++) {
                 const enemy = enemies[i];
@@ -3439,6 +3421,16 @@ this.meshScaleThreshold = 0.1;
                         enemy.visible = false; // Show the enemy
                     }
                 }
+
+                if(!enemy.visible)
+                lightObjects.forEach(item => {
+                    const distanceToItem = enemy.position.distanceTo(item);
+                    if (distanceToItem <= 10) { // Adjust 10 to your desired item radius
+                        enemy.visible = true; // Hide the enemy
+                    } else {
+                        enemy.visible = false; // Show the enemy
+                    }
+                });
 
             }
 
@@ -4297,8 +4289,9 @@ UI.createTitleContainer= function (text,tooltip) {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     async function createGameTitle(){
-        const mainTitle = UI.createTitleContainer('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀');
-        const miniTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "subtitle");
+        const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀','title');
+        const worldTitle = UI.createTitleElement(world.title, 'lazy subtitle too btw', "minititle");
+        const miniTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "minititle");
         const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
@@ -4317,7 +4310,7 @@ UI.createTitleContainer= function (text,tooltip) {
 
      
 
-       addContainerUI('top-container', [mainTitle]);
+       addContainerUI('top-container', [mainTitle,worldTitle]);
 
         addContainerUI('BR-container', [aboutTitle]);
         aboutTitle.style.cursor = 'pointer';
@@ -4767,9 +4760,8 @@ function handleEntitySelection(entity, type) {
                             In Game UI
 ---------------------------------------------------------------------------*/
 let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these', "minititle");
-
 function refreshDisplay() {
-    let xpLoadingContainer = document.createElement('div');
+  let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.id = 'horizontalBarContainer';
     xpLoadingBar = document.createElement('div');
     xpLoadingBar.id = 'horizontalBar';
@@ -4785,17 +4777,17 @@ function refreshDisplay() {
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, .2 );
-    const worldButton = createButton(world, .2 );
+    const playerButton = createButton(player, .25 );
+    const worldButton = createButton(world, .25 );
     barGridContainer.appendChild(hpBarContainer);
     barGridContainer.appendChild(xpLoadingContainer);
-    //barGridContainer.appendChild(worldButton);
+    
     abilitiesContainer.appendChild(playerButton);
     abilitiesContainer.appendChild(worldButton);
     
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability, isLocked: false };
-        abilitiesContainer.appendChild(createButton(clonedAbility, .2 ));
+        abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
 
@@ -4807,12 +4799,17 @@ function refreshDisplay() {
         createPlayerInfoMenu();
     };
 
-    addContainerUI('bottom-container',[challengeDisplay,abilitiesContainer]).onclick = () => {
+    addContainerUI('bottom-container',[abilitiesContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
         createPlayerInfoMenu();
     };
+    const worldTitle = UI.createTitleElement(world.title, 'lazy subtitle too btw', "minititle");
+    addContainerUI('top-container',[worldTitle,challengeDisplay]).onclick = () => {
+
+    };
+    
 
 }
 
@@ -5272,7 +5269,6 @@ function createRunMenu() {
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
 
-
     addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
         canMove = false;
@@ -5292,9 +5288,6 @@ function generateRandomHash() {
         .map(() => Math.floor(Math.random() * 256).toString(16).padStart(2, '0'))
         .join('');
 }
-
-
-
  //triggerGameOver();
 function triggerGameOver() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
