@@ -36,24 +36,7 @@ class Entity extends THREE.Object3D {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 object.traverse((child) => {
                     if (child.isMesh) {
-                        child.material = new THREE.MeshPhysicalMaterial({
-                            envMap: null, 
-                            reflectivity: 1,
-                            roughness: 0,
-                            metalness: 1,
-                            clearcoat: 0.13,
-                            clearcoatRoughness: 0.1,
-                            transmission: 0.82,
-                            ior: 2.75, 
-                            thickness: 10,
-                            sheen: 1,
-                            color: new THREE.Color('white'),
-                            wireframe : true,
-                            ///emissive: 0xfff00f, // Bright pink neon
-                            emissiveIntensity: 2 // Adjust for glow strength
-                        });
-                        //world.material.clone();
-                        //new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                        child.material = world.playerMaterial;
                     }
                 });
                 const serializedObject = object.toJSON();
@@ -101,10 +84,7 @@ class Entity extends THREE.Object3D {
 
     getUpgradableAbilities() {
         return abilityTypes.filter(ability => {
-          if (ability.isLocked) {
-            return false; 
-          }
-      
+
           const isActive = this.abilities.some(pa => pa.title === ability.title);
           return !isActive; 
         });
@@ -183,6 +163,7 @@ const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b008
 let colorIndex = 0;
 
 const droppedItems = []; 
+const lightObjects = [];
 const itemGeometry = new THREE.SphereGeometry(1.5, 32, 32);
 
 const enemies = [];
@@ -199,45 +180,10 @@ const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-function createQuestionMark() {
-    const group = new THREE.Group();  // A group to hold all parts of the question mark
-
-    // The dot of the question mark (using a sphere)
-    const dotGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-    const dotMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const dot = new THREE.Mesh(dotGeometry, dotMaterial);
-    dot.position.set(0, -1.8, 0);
-    group.add(dot);
-
-    // The curved part of the question mark (using a TubeGeometry for smoothness)
-    const curve = new THREE.CubicBezierCurve3(
-        new THREE.Vector3(0, 1, 0),         // Start point
-        new THREE.Vector3(0.6, 2, 0),       // Control point 1
-        new THREE.Vector3(0.6, 0.6, 0),     // Control point 2
-        new THREE.Vector3(0, 0, 0)          // End point
-    );
-    const curveGeometry = new THREE.TubeGeometry(curve, 20, 0.1, 8, false);
-    const curveMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const curveMesh = new THREE.Mesh(curveGeometry, curveMaterial);
-    group.add(curveMesh);
-
-    // The straight part of the question mark (using a simple box)
-    const stemGeometry = new THREE.BoxGeometry(0.2, 1.2, 0.2);
-    const stemMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const stem = new THREE.Mesh(stemGeometry, stemMaterial);
-    stem.position.set(0, 1.3, 0);
-    group.add(stem);
-
-    // Set the initial position and add to the scene
-    group.position.set(0, 0, 0);
-    scene.add(group);
-
-    return group;
-}
 
 const dropItem = (position) => {
-    const itemMaterial = world.material.clone();
-    const item = createQuestionMark(); //new THREE.Mesh(itemGeometry, itemMaterial);
+    const itemMaterial = world.material;
+    const item = new THREE.Mesh(itemGeometry, itemMaterial);
     item.position.copy(position);
     item.position.y=+2;
     item.boundingBox = new THREE.Box3().setFromObject(item);
@@ -350,13 +296,11 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
-let lightObjects = [];
 const abilityTypes = [  
     {title: "Frontrunning Bot",
-        description: "Increases movement speed and prioritizes attacks.",
-        tooltip: "Faster than your FOMO trades!",
+        description: "A fast bot that outpaces you and your enemy movements.",
+        tooltip: "It would be cool if this could backfire and damage the user no?",
         thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {};
             this.lastHitTime = 0;
@@ -366,14 +310,15 @@ const abilityTypes = [
                 boundingBox: null,
                 leadFactor: 25, 
                 create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-                    const geometry = new THREE.SphereGeometry(1, 16, 6);
+                    const material = world.material;
+                    const geometry = new THREE.SphereGeometry(1, 18, 6);
                     orb.mesh = new THREE.Mesh(geometry, material);
                     orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
                     scene.add(orb.mesh);
-                    lightObjects.push(orb);
+                    lightObjects.push(orb.mesh);
                 }
             };
+            
             this.update = () => {
                 const currentPosition = new THREE.Vector3().copy(user.position);
                 const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
@@ -384,12 +329,6 @@ const abilityTypes = [
                 );
                 orb.mesh.position.lerp(newOrbPosition, 0.1);
                 orb.boundingBox.setFromObject(orb.mesh);
-              //  const screenWidth = window.innerWidth / 2;
-              //  const screenHeight = window.innerHeight / 2;
-              //  if (orb.mesh.position.x > screenWidth) orb.mesh.position.x = screenWidth;
-              //  if (orb.mesh.position.x < -screenWidth) orb.mesh.position.x = -screenWidth;
-              //  if (orb.mesh.position.z > screenHeight) orb.mesh.position.z = screenHeight;
-              //  if (orb.mesh.position.z < -screenHeight) orb.mesh.position.z = -screenHeight;
                 previousPosition.copy(currentPosition);
             };
             this.deactivate = () => {
@@ -405,7 +344,6 @@ const abilityTypes = [
         description: "Fast trading bot that liquidates opposing survivors.",
         tooltip: "Get the perfect shot. Increase critical hit chances and accuracy.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {};
             this.lastHitTime = 0;
@@ -435,12 +373,6 @@ const abilityTypes = [
                 );
                 orb.mesh.position.lerp(newOrbPosition, .05);
                 orb.boundingBox.setFromObject(orb.mesh);
-              // const screenWidth = window.innerWidth / 2;
-              // const screenHeight = window.innerHeight / 2;
-              // if (orb.mesh.position.x > screenWidth) orb.mesh.position.x = screenWidth;
-              // if (orb.mesh.position.x < -screenWidth) orb.mesh.position.x = -screenWidth;
-              //  if (orb.mesh.position.z > screenHeight) orb.mesh.position.z = screenHeight;
-               // if (orb.mesh.position.z < -screenHeight) orb.mesh.position.z = -screenHeight;
                 previousPosition.copy(currentPosition);
  
                 scene.remove(orb.beam);
@@ -464,7 +396,6 @@ const abilityTypes = [
         description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
         tooltip: " More health, more power.",
         thumbnail: 'Media/Abilities/BLOB.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {};
             this.lastHitTime = 0;
@@ -622,7 +553,6 @@ const abilityTypes = [
         description: "Detects and disables rug traps.",
         tooltip: "No more rug-pulls for you. Detect and disable rug traps.",
         thumbnail: 'Media/Abilities/RUGBOT.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {}
                 this.lastHitTime=0;
@@ -667,7 +597,6 @@ const abilityTypes = [
         description: "Scans the blockchain for harmful elements and neutralizes them.",
         tooltip: "Finding bugs like a true degen!",
         thumbnail: "Media/Abilities/EXPLOITFINDER.png",
-        isLocked: false,
         effect(user) { 
             this.update = () => {}
                 this.lastHitTime=0;
@@ -712,7 +641,6 @@ const abilityTypes = [
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
         tooltip: "Like a true degen",
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {}
                 this.lastHitTime=0;
@@ -764,7 +692,6 @@ const abilityTypes = [
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
         tooltip: 'Powerful...interesting choice of words, to say the least.',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {}
             const trailBullets = [];
@@ -812,7 +739,6 @@ const abilityTypes = [
         description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
         tooltip: "Can't touch this!",
         thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {}
             const veil = {
@@ -850,7 +776,6 @@ const abilityTypes = [
     description: "Rewrites and optimizes the Survivor's abilities, reducing their cooldowns.",
     tooltip: "FAST",
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
-    isLocked: false, 
     effect(user) { 
         this.update = () => {}
         const veil = {
@@ -887,7 +812,6 @@ const abilityTypes = [
     description: "Creates multiples identities, disorienting and damaging enemies.",
     tooltip: "More alts than a telegram schizo",
     thumbnail:'Media/Abilities/SYBILATTACK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -896,7 +820,6 @@ const abilityTypes = [
     description: "Illegally uses the voting power of other survivors in range agaisnt their will, turning bonuses into penalties.",
     tooltip: "no, CEXes totally have never ever done this.",
     thumbnail: 'Media/Abilities/VOTEMANIPULATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -904,27 +827,21 @@ const abilityTypes = [
     title: "Airdrop Fraud",
     description: "Free, fake tokens fall from the sky, draining the survivors who interact with them.",
     tooltip: "Free tokens! Just kidding, they're mine.",
-    thumbnail: 'Media/Abilities/AIRDROPFRAUD.png',
-    isLocked: false,
-    effect(user) { 
+    thumbnail: 'Media/Abilities/AIRDROPFRAUD.png', effect(user) { 
         this.update = () => {} 
     },
 },{
     title: "Identity Forge",
     description: "Specializes in creating a whole new persona, gaining the bonuses of a random class.",
     tooltip: "Fake it till you make it, anon!",
-    thumbnail: 'Media/Abilities/IDENTITYFORGE.png',
-    isLocked: false,
-    effect(user) { 
+    thumbnail: 'Media/Abilities/IDENTITYFORGE.png', effect(user) { 
         this.update = () => {} 
     },
 },{
     title: "Decentralized Vote Rigging",
     description: "By controlling the majority of the chain validators, the survivor gains a random bonus.",
     tooltip: " ",
-    thumbnail: 'Media/Abilities/VOTERIGGING.png',
-    isLocked: false,
-    effect(user) { 
+    thumbnail: 'Media/Abilities/VOTERIGGING.png',effect(user) { 
         this.update = () => {} 
     },
 },{
@@ -932,8 +849,7 @@ const abilityTypes = [
     description: "As transactions become confirmed and secured overtime, the survivor gains defensive bonuses",
     tooltip: "Block confirmed!.",
     thumbnail: 'Media/Abilities/CONFIRMBLOCK.png',
-    isLocked: false,
-    effect(user) { 
+effect(user) { 
         this.update = () => {} 
     },
 },
@@ -942,8 +858,7 @@ const abilityTypes = [
     description: "The blockchain inmutality makes it so  buried Survivors can not ever revive, If they take more than 6 blocks.",
     tooltip: ">Your transaction was succesfull \n>the coin moons, you check your wallet\n>turns out your tx never got in",
     thumbnail: 'Media/Abilities/FINALITY.png',
-    isLocked: false,
-    effect(user) { 
+effect(user) { 
         this.update = () => {} 
     },
 },{
@@ -951,7 +866,6 @@ const abilityTypes = [
     description: "Creates a shield that absorbs multiple hits.",
     tooltip: "No double-spending here, buddy!",
     thumbnail: 'Media/Abilities/COPYTRADING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -961,7 +875,6 @@ const abilityTypes = [
     description: "Creates a shield that absorbs multiple hits.",
     tooltip: "No double-spending here, buddy!",
     thumbnail: 'Media/Abilities/DOUBLESPENDPREVENTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -971,7 +884,6 @@ const abilityTypes = [
     description: "Greatly increases attack power for a brief period.",
     tooltip: "Overclocked like a mining rig in a bull run!",
     thumbnail: 'Media/Abilities/OVERCLOCK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -981,7 +893,6 @@ const abilityTypes = [
     description: "Deploys a stationary turret that automatically attacks enemies.",
     tooltip: "Mining while you sleep!",
     thumbnail: 'Media/Abilities/MININGRIG.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -991,7 +902,6 @@ const abilityTypes = [
     description: "Temporarily increases attack speed and movement speed.",
     tooltip: "Surging like the latest meme coin!",
     thumbnail: 'Media/Abilities/ENERGYSURGE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1001,7 +911,6 @@ const abilityTypes = [
     description: "Increases the player's defense.",
     tooltip: "Migrated to PoS and feeling safe!",
     thumbnail: 'Media/Abilities/POSMIGRATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1011,7 +920,6 @@ const abilityTypes = [
     description: "Increases the player's attack power.",
     tooltip: "Proof of Whacking! Stronger attacks.",
     thumbnail: 'Media/Abilities/POWMIGRATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1021,7 +929,6 @@ const abilityTypes = [
     description: "Grants a random beneficial effect based on player needs.",
     tooltip: "DAO voted, gains distributed!",
     thumbnail: 'Media/Abilities/GOVERNANCEVOTE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1031,7 +938,6 @@ const abilityTypes = [
     description: "Improves all abilities for a limited time.",
     tooltip: "Upgraded like ETH 2.0!",
     thumbnail: "Media/Abilities/PROTOCOLUPGRADE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1041,7 +947,6 @@ const abilityTypes = [
     description: "Grants a significant buff to a random ability.",
     tooltip: "Upgrade the network. Buff a random ability.",
     thumbnail: "Media/Abilities/NETWORKUPGRADE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1051,7 +956,6 @@ const abilityTypes = [
     description: "Creates a shield that reduces incoming damage.",
     tooltip: "Encrypt your defenses. Reduce damage taken.",
     thumbnail: "Media/Abilities/QUANTUMENCRYPTION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1060,7 +964,6 @@ const abilityTypes = [
     description: "Reduces the cooldown of all abilities.",
     tooltip: "Pay the fee, cut the wait. Reduce your cooldowns.",
     thumbnail: 'Media/Abilities/TRANSACTIONFEE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1070,7 +973,6 @@ const abilityTypes = [
     description: "Reduces enemy resources by burning their assets.",
     tooltip: "Burned like gas fees in a bull run!",
     thumbnail: 'Media/Abilities/FEEBURN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1080,7 +982,6 @@ const abilityTypes = [
     description: "Increases all stats for a short duration.",
     tooltip: "Unleash the whale power. Dominate the field.",
     thumbnail: "Media/Abilities/WHALEPOWER.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1090,7 +991,6 @@ const abilityTypes = [
     description: "Heals the player for a portion of damage dealt.",
     tooltip: "Reward yourself with health for your efforts.",
     thumbnail: 'Media/Abilities/BLOCKREWARD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1100,7 +1000,6 @@ const abilityTypes = [
     description: "Secures resources with multiple signatures.",
     tooltip: "Securing like a multi-signature wallet!",
     thumbnail: 'Media/Abilities/CRYPTOMULTISIG.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1109,7 +1008,6 @@ const abilityTypes = [
     description: "Secures resources with a single signature.",
     tooltip: "Securing like a multi-signature wallet!",
     thumbnail: 'Media/Abilities/CRYPTOSIGN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1119,7 +1017,6 @@ const abilityTypes = [
     description: "Provides periodic healing to all allies.",
     tooltip: "Stake and earn. Heal over time.",
     thumbnail: 'Media/Abilities/STAKINGREWARD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1129,7 +1026,6 @@ const abilityTypes = [
     description: "Empowers allies with decision-making buffs.",
     tooltip: "Collective power like a DAO!",
     thumbnail: 'Media/Abilities/DAOGOVERNANCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1139,7 +1035,6 @@ const abilityTypes = [
     description: "Implements a major change, significantly debuffing enemies.",
     tooltip: "Implement protocol governance. Buff allies and debuff enemies.",
     thumbnail: 'Media/Abilities/FINGER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1149,7 +1044,6 @@ const abilityTypes = [
     description: "Causes a massive area-of-effect damage.",
     tooltip: "Liquidated harder than a leveraged trade gone wrong!",
     thumbnail: "Media/Abilities/LIQUIDATIONEVENT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1159,7 +1053,6 @@ const abilityTypes = [
     description: "Confuses enemies, causing them to attack each other.",
     tooltip: "Create price divergence. Confuse enemies to attack each other.",
     thumbnail: "Media/Abilities/DIVERGENCE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1169,7 +1062,6 @@ const abilityTypes = [
     description: "Forces enemies to move towards the player, taking damage over time.",
     tooltip: "Issue a compliance order. Force enemies to move towards you and take damage.",
     thumbnail: "Media/Abilities/COMPLIANCEORDER.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1178,7 +1070,6 @@ const abilityTypes = [
     description: "Links enemies, causing damage to spread among them.",
     tooltip: "Entangle your enemies. Damage spreads.",
     thumbnail: "Media/Abilities/ENTANGLEMENT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1188,7 +1079,6 @@ const abilityTypes = [
     description: "Summons allies to assist in battle.",
     tooltip: "Rally the network. Summon allies to join the fight.",
     thumbnail: 'Media/Abilities/DECENTRALIZEDNETWORK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1197,7 +1087,6 @@ const abilityTypes = [
     description: "Creates a pool that heals allies and damages enemies.",
     tooltip: "Providing liquidity like a degen in a farm!",
     thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1206,7 +1095,6 @@ const abilityTypes = [
     description: "Increases allies' attack power.",
     tooltip: "Launch on the DEX. Pump up those attacks.",
     thumbnail: 'Media/Abilities/INITIALDEXOFFERING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1215,7 +1103,6 @@ const abilityTypes = [
     description: "Decreases enemy attack power and movement speed.",
     tooltip: "Spread FUD. Decrease enemy attack power and speed.",
     thumbnail: "Media/Abilities/NOCOINFUD.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1224,7 +1111,6 @@ const abilityTypes = [
     description: "Increases the effectiveness of all abilities.",
     tooltip: "Network effect in action. Boost all your powers.",
     thumbnail: 'Media/Abilities/NETWORKEFFECT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1234,7 +1120,6 @@ const abilityTypes = [
     description: "Causes a chain reaction, revealing all enemies and drastically debuffing them while significantly buffing allies.",
     tooltip: "Trigger a chain reaction. Reveal, debuff enemies, and buff allies.",
     thumbnail: 'Media/Abilities/CHAINREACTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1244,7 +1129,6 @@ const abilityTypes = [
     description: "Induces fear of missing out, causing enemies to rush towards the player.",
     tooltip: "Create a wave of FOMO. Draw enemies towards you.",
     thumbnail: "Media/Abilities/FOMO.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1254,7 +1138,6 @@ const abilityTypes = [
     description: "Reveals hidden enemies and tracks their movements.",
     tooltip: "Analyze the chain. Reveal and track enemies.",
     thumbnail: "Media/Abilities/ANALYSIS.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1264,7 +1147,6 @@ const abilityTypes = [
     description: "Deals area-of-effect damage and reduces enemy defenses.",
     tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
     thumbnail: "Media/Abilities/MASSLIQUIDATION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1273,7 +1155,6 @@ const abilityTypes = [
     description: "Deals instant damage to nearby enemies.",
     tooltip: "Quick flip. Deal instant damage.",
     thumbnail: "Media/Abilities/QUICKFLIP.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1283,7 +1164,6 @@ const abilityTypes = [
     description: "Deals Slow damage to nearby enemies.",
     tooltip: "Deal Slow damage.",
     thumbnail: "Media/Abilities/DCA.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1293,7 +1173,6 @@ const abilityTypes = [
     description: "Hits the jackpot, dealing massive damage to all enemies and providing significant buffs to allies.",
     tooltip: "Hit the jackpot. Massive damage and significant buffs.",
     thumbnail: "Media/Abilities/JACKPOT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1302,7 +1181,6 @@ const abilityTypes = [
     description: "Drops valuable items or buffs to allies.",
     tooltip: "Free goodies like an airdrop!",
     thumbnail: 'Media/Abilities/AIRDROP.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1312,7 +1190,6 @@ const abilityTypes = [
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
     tooltip: "Conduct a stress test. Increase enemy damage and reduce speed.",
     thumbnail: 'Media/Abilities/STRESSTEST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1322,7 +1199,6 @@ const abilityTypes = [
     description: "Temporarily boosts allies' abilities.",
     tooltip: "Test features. Temporarily boost ally abilities.",
     thumbnail: 'Media/Abilities/FEATURETEST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1332,7 +1208,6 @@ const abilityTypes = [
     description: "Predicts enemy movements, increasing evasion.",
     tooltip: "Seeing the future like an oracle!",
     thumbnail: 'Media/Abilities/ORACLEINSIGHT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1342,7 +1217,6 @@ const abilityTypes = [
     description: "Unleashes a powerful area-of-effect attack, representing a large buy order.",
     tooltip: "Make a whale buy. Execute a powerful area-of-effect attack.",
     thumbnail: "Media/Abilities/WHALEBUY.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1352,7 +1226,6 @@ const abilityTypes = [
     description: "Master the trilemma by providing significant buffs to attack, defense, and movement speed while weakening enemies.",
     tooltip: "Achieve trilemma mastery. Boost attack, defense, and movement speed while weakening enemies.",
     thumbnail: "Media/Abilities/LAW.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1362,7 +1235,6 @@ const abilityTypes = [
     description: "Disrupts enemy abilities based on false data.",
     tooltip: "Manipulated just like those price feeds!",
     thumbnail: "Media/Abilities/ORACLEMANIPULATION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1372,7 +1244,6 @@ const abilityTypes = [
     description: "Temporarily controls enemy movements.",
     tooltip: "Manipulate the market. Control enemy movements.",
     thumbnail: "Media/Abilities/MARKETMANIPULATION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1382,7 +1253,6 @@ const abilityTypes = [
     description: "Reduces damage taken from all sources.",
     tooltip: "Shield against impermanent loss. Take less damage.",
     thumbnail: 'Media/Abilities/IMPERMANENTLOSS.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1392,7 +1262,6 @@ const abilityTypes = [
     description: "Creates three separate pools that buff allies' attack power.",
     tooltip: "Triple the pools, triple the power. Buff your allies.",
     thumbnail: 'Media/Abilities/TRIPOOL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1402,7 +1271,6 @@ const abilityTypes = [
     description: "Instantly removes buffs from enemies.",
     tooltip: "Rugged like a failed project!",
     thumbnail: 'Media/Abilities/RUG.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1412,7 +1280,6 @@ const abilityTypes = [
     description: "Focuses on sustained damage and debuffs.",
     tooltip: "Be the debt collector. Sustain damage and apply debuffs.",
     thumbnail: "Media/Abilities/DEBTCOLLECTOR.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1422,7 +1289,6 @@ const abilityTypes = [
     description: "Temporarily increases critical hit chance and attack speed.",
     tooltip: "Ride the market swing. Increase critical hit chance and attack speed.",
     thumbnail: "Media/Abilities/MARKETSWING.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1432,7 +1298,6 @@ const abilityTypes = [
     description: "Balances the battlefield by adjusting enemy and ally stats.",
     tooltip: "Balancing like a true market maker!",
     thumbnail: 'Media/Abilities/MARKETMAKER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1442,7 +1307,6 @@ const abilityTypes = [
     description: "Creates two separate pools that buff allies' attack speed.",
     tooltip: "Double the pools, double the speed. Boost your allies' attack rate.",
     thumbnail: 'Media/Abilities/TWOPOOL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1452,7 +1316,6 @@ const abilityTypes = [
     description: "Transfers resources between allies.",
     tooltip: "Bridging like cross-chain assets!",
     thumbnail: 'Media/Abilities/BRIDGE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1462,7 +1325,6 @@ const abilityTypes = [
     description: "Temporarily takes control of an enemy, turning them into an ally.",
     tooltip: "Leverage your buyout power. Control an enemy.",
     thumbnail: 'Media/Abilities/BUYPOWER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1472,7 +1334,6 @@ const abilityTypes = [
     description: "Verifies resources securely.  preventing theft",
     tooltip: "Proof like a Merkle tree!",
     thumbnail: 'Media/Abilities/MERKLE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1482,7 +1343,6 @@ const abilityTypes = [
     description: "Forces enemies to slow down and take damage over time.",
     tooltip: "Ensure compliance. Slow down enemies and deal damage.",
     thumbnail: 'Media/Abilities/COMPLIANCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1492,7 +1352,6 @@ const abilityTypes = [
     description: "Increases the efficiency of resource gathering.",
     tooltip: "Boosting like a diversified portfolio!",
     thumbnail: 'Media/Abilities/FOLIO.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1501,7 +1360,6 @@ const abilityTypes = [
     description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
     tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     thumbnail: 'Media/Abilities/ZODIAC.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     }
@@ -1511,7 +1369,6 @@ const abilityTypes = [
     description: "Periodically grants a boost in resources.",
     tooltip: "APY like a degen farm!",
     thumbnail: 'Media/Abilities/DEFIYIELD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1521,7 +1378,6 @@ const abilityTypes = [
     description: "Holds resources in escrow, releasing them after a delay.",
     tooltip: "Escrow like a smart contract!",
     thumbnail: 'Media/Abilities/ESCROW.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1531,7 +1387,6 @@ const abilityTypes = [
     description: "Temporarily controls all enemies, making them fight each other.",
     tooltip: "Take total control. Enemies turn on each other.",
     thumbnail: 'Media/Abilities/DOMINANCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1541,7 +1396,6 @@ const abilityTypes = [
     description: "Temporarily disables the effects of enemy NFTs.",
     tooltip: "Disrupt like a true NFT master!",
     thumbnail: 'Media/Abilities/NFTDISRUPTOR.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1551,7 +1405,6 @@ const abilityTypes = [
     description: "Provides insights to increase strategy effectiveness.",
     tooltip: "Analyzing like a blockchain expert!",
     thumbnail: 'Media/Abilities/BLOCKANALYSIS.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1561,7 +1414,6 @@ const abilityTypes = [
     description: "Increases the effectiveness of all resource-gathering abilities.",
     tooltip: "Go DeFi. Boost your resource gains.",
     thumbnail: 'Media/Abilities/EXPERTISE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1571,7 +1423,6 @@ const abilityTypes = [
     description: "Enhances movement speed and reduces skill cooldowns in critical moments.",
     tooltip: "Instincts kick in. Move faster and reduce cooldowns when it matters most.",
     thumbnail: 'Media/Abilities/INTUITION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1581,7 +1432,6 @@ const abilityTypes = [
     description: "Forces enemies to take damage over time.",
     tooltip: "Issue a margin call. Inflict damage over time.",
     thumbnail: 'Media/Abilities/MARGINCALL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1591,7 +1441,6 @@ const abilityTypes = [
     description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
     tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
     thumbnail: 'Media/Abilities/ARBITRAGE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1601,7 +1450,6 @@ const abilityTypes = [
     description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
     tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
     thumbnail: 'Media/Abilities/TEMPCHECK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1611,7 +1459,6 @@ const abilityTypes = [
     description: "Provides a large amount of resources to all allies.",
     tooltip: "Allocate the treasury. Distribute the wealth.",
     thumbnail: 'Media/Abilities/TREASURYALLOC.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1621,7 +1468,6 @@ const abilityTypes = [
     description: "Temporarily increases critical hit chance and dodge rate.",
     tooltip: "Ride a lucky streak. Increase critical hit chance and dodge rate.",
     thumbnail: 'Media/Abilities/STREAK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1631,7 +1477,6 @@ const abilityTypes = [
     description: "Protects resources from being stolen.",
     tooltip: "Secure like a custody service!",
     thumbnail: 'Media/Abilities/CUSTODY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1641,7 +1486,6 @@ const abilityTypes = [
     description: "Briefly stuns all enemies in the area.",
     tooltip: "Stunning like a sudden market crash!",
     thumbnail: 'Media/Abilities/MARKETCRASH.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1651,7 +1495,6 @@ const abilityTypes = [
     description: "Increases defense for a short period.",
     tooltip: "Strengthen your defenses with stakes.",
     thumbnail: 'Media/Abilities/STAKEDEFENSE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -1662,7 +1505,6 @@ const abilityTypes = [
     description: "Launches the final release, significantly buffing all allies and debuffing all enemies.",
     tooltip: "Release the final version. Buff allies and debuff enemies.",
     thumbnail: 'Media/Abilities/FINALRELEASE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1672,7 +1514,6 @@ const abilityTypes = [
     description: "Creates a duplicate of an ability for a short time.",
     tooltip: "Forking like a blockchain split!",
     thumbnail: 'Media/Abilities/CRYPTOFORK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1682,7 +1523,6 @@ const abilityTypes = [
     description: "Stores resources securely.",
     tooltip: "Storing like a hardware wallet!",
     thumbnail: 'Media/Abilities/WALLET.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1692,7 +1532,6 @@ const abilityTypes = [
     description: "Reduces damage taken from critical hits.",
     tooltip: "Protect against slashing. Reduce crit damage.",
     thumbnail: 'Media/Abilities/SLASHINGPROTECTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1702,7 +1541,6 @@ const abilityTypes = [
     description: "Reduces damage taken for a short period.",
     tooltip: "Lock it down, secure the bag. Take less damage.",
     thumbnail: 'Media/Abilities/LOCKDOWN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1712,7 +1550,6 @@ const abilityTypes = [
     description: "Increases attack speed and movement speed.",
     tooltip: "Scaling up like a true degen, moving fast and striking hard.",
     thumbnail: 'Media/Abilities/SCALABILITYBOOST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1723,7 +1560,6 @@ const abilityTypes = [
     description: "Temporarily boosts all stats.",
     tooltip: "Hyped like an ICO!",
     thumbnail: 'Media/Abilities/ICOHYPE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1733,7 +1569,6 @@ const abilityTypes = [
     description: "Spreads damage taken to nearby enemies.",
     tooltip: "Balance the load. Spread damage to nearby enemies.",
     thumbnail: 'Media/Abilities/REBALANCING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1743,7 +1578,6 @@ const abilityTypes = [
     description: "Temporarily boosts all allies' speed.",
     tooltip: "Rallying like a bull market!",
     thumbnail: 'Media/Abilities/RALLY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1753,7 +1587,6 @@ const abilityTypes = [
     description: "Grants immunity to debuffs.",
     tooltip: "Protected like a whitelist spot!",
     thumbnail: 'Media/Abilities/WHITELIST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1763,7 +1596,6 @@ const abilityTypes = [
     description: "Grants immunity to buffs.",
     tooltip: "Blocked",
     thumbnail: 'Media/Abilities/BLACKLIST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1773,7 +1605,6 @@ const abilityTypes = [
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
     tooltip: "Pump it up, then brace for the dump.",
     thumbnail: 'Media/Abilities/PND.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1783,7 +1614,6 @@ const abilityTypes = [
     description: "Increases attack power significantly for a short duration",
     tooltip: "Pump it up.",
     thumbnail: 'Media/Abilities/PUMP.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1793,7 +1623,6 @@ const abilityTypes = [
     description: "Lends resources to allies temporarily.",
     tooltip: "Lending like a DeFi protocol!",
     thumbnail: 'Media/Abilities/LENDING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1803,7 +1632,6 @@ const abilityTypes = [
     description: "Locks an enemy's abilities temporarily.",
     tooltip: "Locked like funds in a smart contract!",
     thumbnail: 'Media/Abilities/TOKENLOCK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1813,7 +1641,6 @@ const abilityTypes = [
     description: "Maximize your profits and outpace the competition with unparalleled focus and strategic insight.",
     tooltip: "Locked in and loaded! Maximize your profits and outpace the competition with unparalleled focus.",
     thumbnail: 'Media/Abilities/LOCKEDIN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1823,7 +1650,6 @@ const abilityTypes = [
     description: "Adapts to the situation, dealing damage based on the player's needs.",
     tooltip: "Adapt and overcome. Your strikes change to fit the need.",
     thumbnail: 'Media/Abilities/ADAPTIVETRADING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1833,7 +1659,6 @@ const abilityTypes = [
     description: "Permanently removes a portion of enemy resources.",
     tooltip: "Burned like tokens in a supply reduction!",
     thumbnail: 'Media/Abilities/TOKENBURN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1843,7 +1668,6 @@ const abilityTypes = [
     description: "Allows the player to share buffs with allies.",
     tooltip: "Delegate and elevate. Share the wealth.",
     thumbnail: 'Media/Abilities/DELEGATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1853,7 +1677,6 @@ const abilityTypes = [
     description: "Master protocols to provide comprehensive buffs to all allies and debuff enemies significantly.",
     tooltip: "Achieve protocol mastery. Provide extensive buffs and debuffs.",
     thumbnail: 'Media/Abilities/MASTERY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1863,7 +1686,6 @@ const abilityTypes = [
     description: "Deals significant damage to a single target and restores health.",
     tooltip: "Exploit vulnerabilities. Deal damage and restore health.",
     thumbnail: 'Media/Abilities/EXPLOIT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1873,7 +1695,6 @@ const abilityTypes = [
     description: "Creates a temporary area that boosts allies' defenses.",
     tooltip: "Deploy a patch. Boost allies' defenses.",
     thumbnail: 'Media/Abilities/PATCHDEPLOY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1883,7 +1704,6 @@ const abilityTypes = [
     description: "Reveals hidden enemies and weak points.",
     tooltip: "Gain inside information. Reveal hidden enemies and weak points.",
     thumbnail: 'Media/Abilities/INSIDEINFO.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1893,7 +1713,6 @@ const abilityTypes = [
     description: "Temporarily silences and weakens enemies.",
     tooltip: "Engage in debate. Silence and weaken enemies.",
     thumbnail: 'Media/Abilities/DEBATE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1903,7 +1722,6 @@ const abilityTypes = [
     description: "Buffs self and allies after defeating enemies.",
     tooltip: "Take profits. Buff self and allies after defeating enemies.",
     thumbnail: 'Media/Abilities/PROFITTAKING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1913,7 +1731,6 @@ const abilityTypes = [
     description: "Creates a barrier that blocks enemy movement.",
     tooltip: "Establish a regulatory framework. Block enemy movement.",
     thumbnail: 'Media/Abilities/REGULATORYFRAMEWORK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1923,7 +1740,6 @@ const abilityTypes = [
     description: "Teleports the player to a previous location, avoiding damage.",
     tooltip: "Revert to a previous location. Avoid damage.",
     thumbnail: 'Media/Abilities/TXREVERT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1933,7 +1749,6 @@ const abilityTypes = [
     description: "Temporarily reveals enemy weaknesses and increases damage dealt.",
     tooltip: "Review code. Reveal weaknesses and increase damage.",
     thumbnail: 'Media/Abilities/REVIEW.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1943,7 +1758,6 @@ const abilityTypes = [
     description: "Enhances ally buffs and reduces enemy effectiveness.",
     tooltip: "Quality assurance. Enhance buffs and reduce enemy effectiveness.",
     thumbnail: 'Media/Abilities/QUALITYASSURANCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1953,7 +1767,6 @@ const abilityTypes = [
     description: "Over time, gains stats exponentially.",
     tooltip: "Burned like tokens in a supply reduction!",
     thumbnail: 'Media/Abilities/COOK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1964,7 +1777,6 @@ const abilityTypes = [
     description: "Locks an enemy's abilities temporarily.",
     tooltip: "Locked like funds in a smart contract!",
     thumbnail: 'Media/Abilities/TOKENUNLOCK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1974,7 +1786,6 @@ const abilityTypes = [
     description: "Switches between different buffs to suit the player's needs.",
     tooltip: "Rotate crops. Switch between buffs.",
     thumbnail: 'Media/Abilities/ROTATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1984,7 +1795,6 @@ const abilityTypes = [
     description: "Creates a decentralized application for resource generation.",
     tooltip: "Building like a dApp developer!",
     thumbnail: 'Media/Abilities/DAPP.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -1994,7 +1804,6 @@ const abilityTypes = [
     description: "Rewards for defeating enemies.",
     tooltip: "Bounties like finding bugs in protocols!",
     thumbnail: 'Media/Abilities/CRYPTOBOUNTY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2004,7 +1813,6 @@ const abilityTypes = [
     description: "Steals resources and buffs self and allies.",
     tooltip: "Be a liquidity vampire. Steal resources and buff allies.",
     thumbnail: "Media/Abilities/LIQUIDITYVAMPIRE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2014,7 +1822,6 @@ const abilityTypes = [
     description: "Inflicts damage over time and reduces enemy attack speed.",
     tooltip: "Inject malware. Damage and slow your enemies.",
     thumbnail: "Media/Abilities/BUG.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2024,7 +1831,6 @@ const abilityTypes = [
     description: "Achieves network consensus, significantly boosting allies' defense and providing damage immunity for a short period.",
     tooltip: "Achieve network consensus. Boost defense and provide damage immunity.",
     thumbnail: "Media/Abilities/CONSENSUS.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2034,7 +1840,6 @@ const abilityTypes = [
     description: "Creates a duplicate of yourself to confuse enemies.",
     tooltip: "Splitting like a forked chain!",
     thumbnail: 'Media/Abilities/CHAINSPLIT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2044,7 +1849,6 @@ const abilityTypes = [
     description: "Increases the duration of all buffs.",
     tooltip: "Stay online. Extend those buffs.",
     thumbnail: 'Media/Abilities/VALIDATORUPTIME.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2054,7 +1858,6 @@ const abilityTypes = [
     description: "Teleports to a safe location and leaves a damaging decoy behind.",
     tooltip: "Execute an exit scam. Teleport and leave a damaging decoy.",
     thumbnail: 'Media/Abilities/EXITSCAM.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2064,7 +1867,6 @@ const abilityTypes = [
     description: "Trades a portion of your resources for a temporary power boost.",
     tooltip: "Sellout for power. Trade resources for a boost.",
     thumbnail: 'Media/Abilities/SELLOUT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2074,7 +1876,6 @@ const abilityTypes = [
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
     tooltip: "Crash the protocol. Increase damage and slow enemies.",
     thumbnail: 'Media/Abilities/PROTOCOLCRASH.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2084,7 +1885,6 @@ const abilityTypes = [
     description: "Increases speed and critical hit chance drastically for a short time.",
     tooltip: "Enter a trading frenzy. Maximum speed and precision.",
     thumbnail: 'Media/Abilities/TRADINGFRENZY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2094,7 +1894,6 @@ const abilityTypes = [
     description: "Temporarily increases attack power.",
     tooltip: "Harness the power of the hash. Strike with more force.",
     thumbnail: 'Media/Abilities/HASHPOWER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2104,7 +1903,6 @@ const abilityTypes = [
     description: "Creates a zone that damages enemies over time.",
     tooltip: "Lay down the mines. Enemies beware.",
     thumbnail: 'Media/Abilities/MINERNETWORK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2114,7 +1912,6 @@ const abilityTypes = [
     description: "Summons a temporary ally to aid in battle.",
     tooltip: "Call in support from a trusted validator.",
     thumbnail: 'Media/Abilities/VALIDATORSUPPORT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2124,7 +1921,6 @@ const abilityTypes = [
     description: "Reduces damage taken significantly for a short period.",
     tooltip: "Hold with diamond hands. Reduce damage taken.",
     thumbnail: 'Media/Abilities/DIAMONDHANDS.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2134,7 +1930,6 @@ const abilityTypes = [
     description: "Increases the player's defense.",
     tooltip: "HODL strong. Boost your defense.",
     thumbnail: 'Media/Abilities/HODL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2144,7 +1939,6 @@ const abilityTypes = [
     description: "Creates a barrier that absorbs damage.",
     tooltip: "HODL the line. Create a damage-absorbing barrier.",
     thumbnail: 'Media/Abilities/SUPPORT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2154,7 +1948,6 @@ const abilityTypes = [
     description: "Constructs a powerful fortress that provides extensive protection to allies and significantly disrupts enemies.",
     tooltip: "Build a network fortress. Offer extensive protection and disrupt enemies.",
     thumbnail: 'Media/Abilities/CITADEL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2164,7 +1957,6 @@ const abilityTypes = [
     description: "Shuts down all enemy abilities and greatly reduces their stats for a short period.",
     tooltip: "Initiate total shutdown. Disable and weaken enemies.",
     thumbnail: 'Media/Abilities/SHUTDOWN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2174,7 +1966,6 @@ const abilityTypes = [
     description: "Stabilizes prices, reducing enemy attack power and increasing ally defense.",
     tooltip: "Stabilize prices. Reduce enemy attack power and boost ally defense.",
     thumbnail: 'Media/Abilities/STABILIZATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2184,7 +1975,6 @@ const abilityTypes = [
     description: "Disables enemy abilities for a short period.",
     tooltip: "Breach their systems. Disable enemy abilities.",
     thumbnail: 'Media/Abilities/BREACH.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2194,7 +1984,6 @@ const abilityTypes = [
     description: "Increases health regeneration based on a single stake.",
     tooltip: "Stake your claim. Boost health regeneration.",
     thumbnail: 'Media/Abilities/SINGLESTAKE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2204,7 +1993,6 @@ const abilityTypes = [
     description: "Provides a significant health boost to the player or an ally.",
     tooltip: "Inject capital. Boost health significantly.",
     thumbnail: 'Media/Abilities/CAPITALINJECTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2214,7 +2002,6 @@ const abilityTypes = [
     description: "Reveals enemies' weaknesses and reduces their defenses.",
     tooltip: "Conduct due diligence. Know and weaken your enemies.",
     thumbnail: 'Media/Abilities/DD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2224,7 +2011,6 @@ const abilityTypes = [
     description: "Increases resource generation for a short period.",
     tooltip: "Boost your funding. Increase resource generation.",
     thumbnail: 'Media/Abilities/FUNDINGBOOST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2234,7 +2020,6 @@ const abilityTypes = [
     description: "Increases the player's defense temporarily.",
     tooltip: "Raise your firewall. Increase defense.",
     thumbnail: 'Media/Abilities/FIREWALL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2244,7 +2029,6 @@ const abilityTypes = [
     description: "Establishes complete DeFi dominance, significantly enhancing all aspects of resource generation and providing massive buffs to allies.",
     tooltip: "Achieve DeFi supremacy. Enhance resource generation and buff allies extensively.",
     thumbnail: 'Media/Abilities/DEFISUPREMACY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2254,7 +2038,6 @@ const abilityTypes = [
     description: "Increases resource generation for a short period.",
     tooltip: "Boost yield. Increase resource generation temporarily.",
     thumbnail: 'Media/Abilities/LEVERAGEDYIELD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2264,7 +2047,6 @@ const abilityTypes = [
     description: "Calls upon devoted collectors to swarm enemies, dealing massive damage.",
     tooltip: "Collectors are on the hunt! Unleash their frenzy on your foes.",
     thumbnail: 'Media/Abilities/COLLECTORSFRENZY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2274,7 +2056,6 @@ const abilityTypes = [
     description: "Spreads widespread fear and panic, causing enemies to lose resources and morale.",
     tooltip: "Instill capitulation. Cause widespread fear and resource loss.",
     thumbnail: 'Media/Abilities/CAPITULATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2284,7 +2065,6 @@ const abilityTypes = [
     description: "Ascends to a state of maximum power, drastically increasing all stats and providing powerful buffs to allies for a short period.",
     tooltip: "Achieve maxi ascendancy. Drastically boost stats and buff allies.",
     thumbnail: 'Media/Abilities/MAXIAS.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2294,7 +2074,6 @@ const abilityTypes = [
     description: "Reveals and debuffs all enemies in a targeted area.",
     tooltip: "Conduct an inspection. Reveal and debuff enemies.",
     thumbnail: 'Media/Abilities/INSPECTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2304,7 +2083,6 @@ const abilityTypes = [
     description: "Grants one extra life.",
     tooltip: "One chance to escape from a L2+.",
     thumbnail: 'Media/Abilities/EXITHATCH.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2314,7 +2092,6 @@ const abilityTypes = [
     description: "Rewinds time slightly to undo recent events.",
     tooltip: "Reorg'd like a 51% attack!",
     thumbnail: 'Media/Abilities/CHAINREORG.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2324,7 +2101,6 @@ const abilityTypes = [
     description: "Grants a significant boost in power at the cost of health.",
     tooltip: "Make a pact. Gain power, but lose health.",
     thumbnail: 'Media/Abilities/PACTWITHTHEDEVIL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2334,7 +2110,6 @@ const abilityTypes = [
     description: "Slows all enemies for a short duration.",
     tooltip: "Freeze the network! Slow down all activity.",
     thumbnail: "Media/Abilities/CONGESTION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2344,7 +2119,6 @@ const abilityTypes = [
     description: "Triggers a mining frenzy, drastically increasing attack power and speed for a short period.",
     tooltip: "Enter a mining frenzy. Drastically increase attack power and speed.",
     thumbnail: "Media/Abilities/MININGFRENZY.PNG",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2355,7 +2129,6 @@ const abilityTypes = [
     tooltip: "Overloaded like a cheap DDoS script!",
     tooltip: "Freeze the network! Slow down all activity.",
     thumbnail: "Media/Abilities/DDOS.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2365,7 +2138,6 @@ const abilityTypes = [
     description: "Gradually regenerates health over time.",
     tooltip: "Reap the benefits of your interest. Regenerate health.",
     thumbnail: 'Media/Abilities/INTERESTYIELD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {} 
     },
@@ -2375,7 +2147,6 @@ const abilityTypes = [
     description: "Provides a significant health boost.",
     tooltip: "Built like a monolith. More health, more power.",
     thumbnail: 'Media/Abilities/MONOLITHICDESIGN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2385,7 +2156,6 @@ const abilityTypes = [
     description: "Adds an additional layer of defense.",
     tooltip: "Layer up! More defense, less worry.",
     thumbnail: 'Media/Abilities/MULTILAYERDESIGN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2395,7 +2165,6 @@ const abilityTypes = [
     description: "Reduces the cost and cooldown of all abilities.",
     tooltip: "Scale up and save! Reduce costs and cooldowns.",
     thumbnail: 'Media/Abilities/LAYERSCALING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2405,7 +2174,6 @@ const abilityTypes = [
     description: "Gradually regenerates health over time.",
     tooltip: "Show market patience. Gradually regenerate health.",
     thumbnail: 'Media/Abilities/PATIENCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2415,7 +2183,6 @@ const abilityTypes = [
     description: "Generates resources over time.",
     tooltip: "Earning passively like liquidity mining!",
     thumbnail: 'Media/Abilities/LIQUIDITYMINING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2425,7 +2192,6 @@ const abilityTypes = [
     description: "Decreases mana cost of all abilities.",
     tooltip: "Optimize your gas, save on costs. Efficiency wins.",
     thumbnail: 'Media/Abilities/GASOPTIMIZATION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2435,7 +2201,6 @@ const abilityTypes = [
     description: "Reduces enemies' attack power.",
     tooltip: "Bearish like a market downturn!",
     thumbnail: 'Media/Abilities/BEARISHSENTIMENT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2445,7 +2210,6 @@ const abilityTypes = [
     description: "Uses overwhelming power to crush enemies.",
     tooltip: "Whale-sized like a market mover!",
     thumbnail: 'Media/Abilities/CRYPTOWHALE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2455,7 +2219,6 @@ const abilityTypes = [
     description: "Increases allies' attack power.",
     tooltip: "Bullish like a market rally!",
     thumbnail: 'Media/Abilities/BULLISHSENTIMENT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2465,7 +2228,6 @@ const abilityTypes = [
     description: "Steals resources.",
     tooltip: "Steal resources and buff allies.",
     thumbnail: "Media/Abilities/VAMPIREATTACK.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2475,7 +2237,6 @@ const abilityTypes = [
     description: "Creates a chaotic event that massively disrupts enemy abilities and resources while providing significant buffs to allies.",
     tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     thumbnail: "Media/Abilities/BLACKSWAM.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2485,7 +2246,6 @@ const abilityTypes = [
     description: "Temporarily makes the player invincible and greatly increases attack power.",
     tooltip: "Unbreakable resolve. Become invincible and unleash your power.",
     thumbnail: 'Media/Abilities/DEADCATBOUNCE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2495,7 +2255,6 @@ const abilityTypes = [
     description: "Creates an event that massively benefits all market participants providing significant buffs.",
     tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     thumbnail: "Media/Abilities/WHITESWAM.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2505,7 +2264,6 @@ const abilityTypes = [
     description: "Reverses buff and debuffs of everyone for the rest of the game .",
     tooltip: "Trigger a Crab market action.",
     thumbnail: "Media/Abilities/CRABACTION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2515,7 +2273,6 @@ const abilityTypes = [
     description: 'a very rare sight.',
     tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     thumbnail: 'Media/Abilities/UNICORN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2525,7 +2282,6 @@ const abilityTypes = [
     description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
     tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     thumbnail: 'Media/Abilities/ASTROLOGY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     }
@@ -2535,7 +2291,6 @@ const abilityTypes = [
     description: "Boosts the effects of your NFTs.",
     tooltip: "Enhancing like an NFT upgrade!",
     thumbnail: 'Media/Abilities/NFTREWORK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2546,7 +2301,6 @@ const abilityTypes = [
     description: "Provides a temporary boost to defense and health regeneration.",
     tooltip: "Unyielding spirit. Boost your defense and health regen.",
     thumbnail: 'Media/Abilities/DEBTDROWN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2556,7 +2310,6 @@ const abilityTypes = [
     description: "Increases the drop rate of rare items.",
     tooltip: "Trade NFTs. Find rare items more often.",
     thumbnail: 'Media/Abilities/NFTMARKET.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2566,7 +2319,6 @@ const abilityTypes = [
     description: "Targets a single enemy, greatly reducing its speed and defense.",
     tooltip: "Impose sanctions. Weaken a single enemy.",
     thumbnail: 'Media/Abilities/SANCTION.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2576,7 +2328,6 @@ const abilityTypes = [
     description: "Temporarily decreases enemies' attack power and movement speed.",
     tooltip: "Sound the scam alert. Weaken your enemies.",
     thumbnail: 'Media/Abilities/SCAM.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2587,7 +2338,6 @@ const abilityTypes = [
     description: "Randomly buffs or debuffs the player.",
     tooltip: "Double or nothing. Randomly buff or debuff yourself.",
     thumbnail: 'Media/Abilities/DOUBLEORNOTHING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2597,7 +2347,6 @@ const abilityTypes = [
     description: "Buffs allies' defense and reduces enemy effectiveness.",
     tooltip: "Skeptical scholar. Buff allies' defense and reduce enemy effectiveness.",
     thumbnail: 'Media/Abilities/SKEPTIC.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2607,7 +2356,6 @@ const abilityTypes = [
     description: "Executes a policy overhaul, providing massive buffs to allies and drastically debuffing enemies across the battlefield.",
     tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     thumbnail: 'Media/Abilities/OVERHAUL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2618,7 +2366,6 @@ const abilityTypes = [
     description: "Provides buffs or debuffs based on the current moon phase.",
     tooltip: "Harness the power of the moon. Buffs and debuffs change with each phase.",
     thumbnail: 'Media/Abilities/LUNARCYCLE.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2628,7 +2375,6 @@ const abilityTypes = [
     description: "Calls for reinforcements to aid in battle.",
     tooltip: "Signaling like a trading bot!",
     thumbnail: 'Media/Abilities/CRYPTOSIGNAL.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2638,7 +2384,6 @@ const abilityTypes = [
     description: "Temporarily boosts resources for a short period.",
     tooltip: "Leveraged like a flash loan exploit!",
     thumbnail: 'Media/Abilities/FLASHLOAN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2648,7 +2393,6 @@ const abilityTypes = [
     description: "Increases critical hit chance and attack power when stars align.",
     tooltip: "The stars have aligned! Your attacks become more powerful.",
     thumbnail: 'Media/Abilities/ALIGNMENT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2658,7 +2402,6 @@ const abilityTypes = [
     description: "High-risk, high-reward abilities.",
     tooltip: "Take a risk. High-risk, high-reward abilities.",
     thumbnail: 'Media/Abilities/RISKTAKER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2668,7 +2411,6 @@ const abilityTypes = [
     description: "Temporarily increases allies' attack power and speed.",
     tooltip: "Shill your way to victory. Boost ally attack power and speed.",
     thumbnail: 'Media/Abilities/SHILLING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2678,7 +2420,6 @@ const abilityTypes = [
     description: "Gradually increases attack power and defense over time.",
     tooltip: "Compound interest. Gradually increase attack power and defense.",
     thumbnail: 'Media/Abilities/COMPOUND.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2688,7 +2429,6 @@ const abilityTypes = [
     description: "Summons a stampede of followers that trample enemies.",
     tooltip: "Summon the hype train. Trample your enemies.",
     thumbnail: 'Media/Abilities/HYPETRAIN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2698,7 +2438,6 @@ const abilityTypes = [
     description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
     tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
     thumbnail: 'Media/Abilities/VIRALITY.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2708,7 +2447,6 @@ const abilityTypes = [
     description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
     tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
     thumbnail: 'Media/Abilities/SPREAD.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2718,7 +2456,6 @@ const abilityTypes = [
     description: "Gradually increases attack power and defense over time.",
     tooltip: "Compound interest. Gradually increase attack power and defense.",
     thumbnail: 'Media/Abilities/SECONDBEST.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2728,7 +2465,6 @@ const abilityTypes = [
     description: "Enhances debuffs and controls enemy behavior.",
     tooltip: "Critique crypto. Enhance debuffs and control enemies.",
     thumbnail: 'Media/Abilities/MARKETIMPACT.png',
-        isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2738,7 +2474,6 @@ const abilityTypes = [
     description: "over.",
     tooltip: "Declare the end. Reduce enemy effectiveness and cause them to falter.",
     thumbnail: 'Media/Abilities/OVER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2748,7 +2483,6 @@ const abilityTypes = [
     description: "Deals massive damage to a single target but leaves the player vulnerable.",
     tooltip: "Go all in. Deal massive damage but become vulnerable.",
     thumbnail: 'Media/Abilities/ALLIN.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2758,7 +2492,6 @@ const abilityTypes = [
     description: "Exchanges debuffs for buffs with enemies.",
     tooltip: "Swapped like a dex trade!",
     thumbnail: 'Media/Abilities/COINSWAP.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2768,7 +2501,6 @@ const abilityTypes = [
     description: "Fixes bugs in the code, restoring a small amount of health.",
     tooltip: "Fix the bugs. Restore your health.",
     thumbnail: 'Media/Abilities/ASSISTEDBUGFIXING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2778,7 +2510,6 @@ const abilityTypes = [
     description: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
     tooltip: "Divide and conquer! Your attacks hit multiple targets.",
     thumbnail: 'Media/Abilities/SHIPPING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2788,7 +2519,6 @@ const abilityTypes = [
     description: "Focuses on high-damage, single-target attacks.",
     tooltip: "Raid protocols. High-damage, single-target attacks.",
     thumbnail: 'Media/Abilities/RAIDING.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2799,7 +2529,6 @@ const abilityTypes = [
     description: "Allows the player to create decoys that distract enemies.",
     tooltip: "Sidechains for sidekicks! Distract your enemies.",
     thumbnail: "Media/Abilities/SIDECHAIN.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2809,7 +2538,6 @@ const abilityTypes = [
     description: "Reduces the speed of all enemies in a large area.",
     tooltip: "Set a gas limit. Reduce enemy speed in a large area.",
     thumbnail: "Media/Abilities/GASLIMIT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2819,7 +2547,6 @@ const abilityTypes = [
     description: "Deploys a critical patch, significantly buffing all allies and debuffing all enemies.",
     tooltip: "Deploy a critical patch. Buff allies and debuff enemies.",
     thumbnail: "Media/Abilities/CRITICALPATCH.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2829,7 +2556,6 @@ const abilityTypes = [
     description: "Increases movement speed.",
     tooltip: "Light on your feet, quick on your toes.",
     thumbnail: "Media/Abilities/LNRUN.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2839,7 +2565,6 @@ const abilityTypes = [
     description: "Buffs self and allies based on revealed enemy locations.",
     tooltip: "Investigate crypto. Buff self and allies based on enemy locations.",
     thumbnail: "Media/Abilities/CRYPTOINVESTIGATION.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2849,7 +2574,6 @@ const abilityTypes = [
     description: "Deals extra damage to recently revealed enemies.",
     tooltip: "Hunt criminals. Deal extra damage to revealed enemies.",
     thumbnail: "Media/Abilities/CRIMINALHUNT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2859,7 +2583,6 @@ const abilityTypes = [
     description: "Temporarily reduces enemy speed and reveals weak points.",
     tooltip: "Trace transactions. Reduce speed and reveal weak points.",
     thumbnail: "Media/Abilities/TXTRACE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2869,7 +2592,6 @@ const abilityTypes = [
     description: "Drains multiple protocols simultaneously, dealing massive damage to all enemies and providing significant resources to allies.",
     tooltip: "Drain multiple protocols. Massive damage and resource gain.",
     thumbnail: "Media/Abilities/DRAIN.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2879,7 +2601,6 @@ const abilityTypes = [
     description: "Creates a stunning piece of digital art that distracts enemies and boosts allies' morale.",
     tooltip: "A true masterpiece! Watch as enemies are mesmerized and allies are inspired.",
     thumbnail: "Media/Abilities/NFTMASTERPIECE.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2889,7 +2610,6 @@ const abilityTypes = [
     description: "Marks the strongest enemy, increasing damage dealt to them",
     tooltip: "Spotted a whale in the arena!",
     thumbnail: "Media/Abilities/WHALEALERT.png",
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
         // Implement the effect logic here
@@ -2900,7 +2620,6 @@ const abilityTypes = [
     description: "Deploys a smart contract to trap and damage enemies.",
     tooltip: "Caught in a gas war!",
     thumbnail: 'Media/Abilities/SMARTCONTRACT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
         // Implement the effect logic here
@@ -2911,7 +2630,6 @@ const abilityTypes = [
     description: "Identifies and negates enemy traps.",
     tooltip: "Secure like a certified audit!",
     thumbnail: 'Media/Abilities/SMARTCONTRACTAUDIT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2921,7 +2639,6 @@ const abilityTypes = [
     description: "Deals consistent damage over time to enemies.",
     tooltip: "Exploiting vulnerabilities like a pro!",
     thumbnail: 'Media/Abilities/SMARTCONTRACTHACK.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2931,7 +2648,6 @@ const abilityTypes = [
     description: "Transfers health from enemies to the player.",
     tooltip: "Exchange health. Transfer from enemies to you.",
     thumbnail: 'Media/Abilities/QKEYEX.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2941,7 +2657,6 @@ const abilityTypes = [
     description: "Summons an entire armada of bots for massive support and damage.",
     tooltip: "Call in the bot armada. Maximum support and damage.",
     thumbnail: 'Media/Abilities/ARMADA.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2951,7 +2666,6 @@ const abilityTypes = [
     description: "Drains health from enemies based on their movements.",
     tooltip: "Front-running like an MEV bot!",
     thumbnail: 'Media/Abilities/MEVBOT.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2961,7 +2675,6 @@ const abilityTypes = [
     description: "Spreads fear, causing enemies to flee in random directions.",
     tooltip: "Spread fear. Enemies flee.",
     thumbnail: 'Media/Abilities/FEAR.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2971,7 +2684,6 @@ const abilityTypes = [
     description: "Creates confusion among enemies, reducing their effectiveness.",
     tooltip: "Causing FUD like a pro!",
     thumbnail: 'Media/Abilities/FUDSTORM.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2981,7 +2693,6 @@ const abilityTypes = [
     description: "Grants temporary immunity to damage.",
     tooltip: "Protected by the wisdom of Satoshi!",
     thumbnail: 'Media/Abilities/WHITEPAPER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -2991,7 +2702,6 @@ const abilityTypes = [
     description: "Grants temporary immunity to damage.",
     tooltip: "Protected by the wisdom of Satoshi!",
     thumbnail: 'Media/Abilities/YELLOWPAPER.png',
-    isLocked: false,
     effect(user) { 
         this.update = () => {}
     },
@@ -3011,7 +2721,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.35,
+    movementspeed:0.25,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -3068,7 +2778,7 @@ const challengeTypes = [{
 const worldTypes = [
     {title: 'The Dark Forest',
     class: 'World',
-    description:'Survive in Ethereum, an open neutral futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
+    description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
     tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     challenge:challengeTypes[0],
@@ -3103,44 +2813,35 @@ const worldTypes = [
         side: THREE.DoubleSide,
         wireframe:true,
     }),
+    playerMaterial:new THREE.MeshPhysicalMaterial({
+        envMap: null, 
+        reflectivity: 1,
+        roughness: 0,
+        metalness: 1,
+        clearcoat: 0.13,
+        clearcoatRoughness: 0.1,
+        transmission: 0.82,
+        ior: 2.75, 
+        thickness: 10,
+        sheen: 1,
+        color: new THREE.Color('white'),
+        wireframe : true,
+        ///emissive: 0xfff00f, 
+        emissiveIntensity: 2 
+    }),
+    gridMaterial:null,
+    backgroundColor:new THREE.Color(0x000000),
+    texturePath:'Media/Textures/ENVTEXTURE.png' ,
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
-        scene.background = new THREE.Color(0x000000);
+        scene.background = this.backgroundColor;
         this.renderScene = new THREE.RenderPass(scene, camera);
         this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
-        
-
-const contrastShader = {
-    uniforms: {
-        tDiffuse: { value: null },  // Scene texture
-        contrast: { value: 1.5 }    // Contrast level (default 1.5)
-    },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform sampler2D tDiffuse;
-        uniform float contrast;
-        varying vec2 vUv;
-        void main() {
-            vec4 color = texture2D(tDiffuse, vUv);
-            color.rgb /= color.a;  // Normalize by alpha
-            color.rgb = (color.rgb - 0.5) * contrast + 0.5;  // Apply contrast
-            color.rgb *= color.a;  // Restore alpha
-            gl_FragColor = color;
-        }
-    `
-};
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
         this.pmremGenerator.compileEquirectangularShader();
-        
-        this.envTexture = new THREE.TextureLoader().load('Media/Textures/ENVTEXTURE.png', texture => {
+        this.envTexture = new THREE.TextureLoader().load(this.texturePath, texture => {
             this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
             this.pmremGenerator.dispose();
             scene.environment = this.envMap; 
@@ -3148,7 +2849,7 @@ const contrastShader = {
  
             this.gridSize = 5; 
             this.divisions = 1; 
-            this.numTiles = 20; 
+            this.numTiles = 25; 
         
             this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
         
@@ -3158,7 +2859,7 @@ const contrastShader = {
             this.lightSourceTexture.needsUpdate = true;
             this.gridMaterial = new THREE.ShaderMaterial({
                 uniforms: {
-                    playerInfluenceRadius: { value: 50 } ,
+                    playerInfluenceRadius: { value: 75 } ,
                     time: { value: 0 },
                     playerPosition: { value: new THREE.Vector3() },
                     lightSourceTexture: { value:  this.lightSourceTexture },
@@ -3255,14 +2956,11 @@ const contrastShader = {
             this.radiusDirection = 1;
 
     this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-    this.octahedronGeometry.scale(4.5,5.25,3.75); 
-            
+    this.octahedronGeometry.scale(5.6,5.25,3.75); 
     this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh);   
     this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
     scene.add(this.octahedronMesh2); 
-    this.octahedronMesh2.scale.set(1, 0.75, 0.75);
-    this.octahedronMesh.scale.set(1, 0.75, 0.75);
 
     const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
     const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
@@ -3333,9 +3031,19 @@ this.meshScaleThreshold = 0.1;
     update: function(scene, camera, renderer) {
         const timeNow = Date.now() * 0.001;
         this.material.uniforms.time.value += 0.01;
+        this.gridMaterial.uniforms.time.value += 0.01;
+        this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
+
+        const playerGridX = Math.floor(player.position.x / this.gridSize) * this.gridSize;
+        const playerGridZ = Math.floor(player.position.z / this.gridSize) * this.gridSize;
+        this.gridMesh.position.set(playerGridX, 0, playerGridZ);
+
         if (isMainMenu) {
             if (player.mesh) player.mesh.scale.set(0, 0, 0);
     
+            this.gridMesh.position.set(playerGridX, this.axisY, playerGridZ);
+            this.gridGeometry.rotateY(this.gridRotationSpeed);
+            
             this.octahedronMesh.rotation.z -= this.rotationIncrement;
             this.octahedronMesh2.rotation.z += this.rotationIncrement;
     
@@ -3382,10 +3090,6 @@ this.meshScaleThreshold = 0.1;
                 }
             });
         }
-    
-        this.gridMaterial.uniforms.time.value += 0.01;
-        this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
-    
             this.lightSourceIndex = 0;
             const addLightSource = (obj) => {
                 if (obj.visible && this.lightSourceIndex < this.lightSourceTextureSize * this.lightSourceTextureSize) {
@@ -3396,55 +3100,44 @@ this.meshScaleThreshold = 0.1;
             droppedItems.forEach(item => {
                 addLightSource(item); 
             });
-            lightObjects .forEach(item => {
+            lightObjects.forEach(item => {
                 addLightSource(item); 
             });
 
             for (let i = 0; i < enemies.length; i++) {
                 const enemy = enemies[i];
                 const distanceToPlayer = enemy.position.distanceTo(player.position); 
-    
-                // Check if enemy is outside the illuminated radius
                 if (distanceToPlayer > this.gridMaterial.uniforms.playerInfluenceRadius.value) {
-                    enemy.visible = false; // Hide the enemy
+                    enemy.visible = false; 
                 } else {
-                    enemy.visible = true; // Show the enemy
+                    enemy.visible = true; 
                 }
-
                 if(!enemy.visible)
                 for (let k = 0; k < droppedItems.length; k++) {
                     const droppedItem = droppedItems[k];
                     const distanceToItem = enemy.position.distanceTo(droppedItem.position);
-                    if (distanceToItem <= 10) { // Adjust 10 to your desired item radius
-                        enemy.visible = true; // Hide the enemy
+                    if (distanceToItem <= 10) {
+                        enemy.visible = true; 
                     } else {
-                        enemy.visible = false; // Show the enemy
+                        enemy.visible = false;
                     }
                 }
-
                 if(!enemy.visible)
-                lightObjects.forEach(item => {
-                    const distanceToItem = enemy.position.distanceTo(item);
-                    if (distanceToItem <= 10) { // Adjust 10 to your desired item radius
-                        enemy.visible = true; // Hide the enemy
+                    for (let k = 0; k < lightObjects.length; k++) {
+                        const droppedItem = lightObjects[k];
+                    const distanceToItem = enemy.position.distanceTo(droppedItem.position);
+                    if (distanceToItem <= 10) { 
+                        enemy.visible = true; 
                     } else {
-                        enemy.visible = false; // Show the enemy
+                        enemy.visible = false; 
                     }
-                });
-
+                };
             }
 
         this.lightSourceTexture.needsUpdate = true;
         this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
     
-        const playerGridX = Math.floor(player.position.x / this.gridSize) * this.gridSize;
-        const playerGridZ = Math.floor(player.position.z / this.gridSize) * this.gridSize;
-        this.gridMesh.position.set(playerGridX, 0, playerGridZ);
-    
-        if (isMainMenu) {
-            this.gridMesh.position.set(playerGridX, this.axisY, playerGridZ);
-            this.gridGeometry.rotateY(this.gridRotationSpeed);
-        } else {
+        if (!isMainMenu) {
             const influenceRadius = this.gridMaterial.uniforms.playerInfluenceRadius.value;
             if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
@@ -3467,18 +3160,13 @@ this.meshScaleThreshold = 0.1;
     },
     resumeGame: function(){
         player.mesh.scale.set(2.5,2.5,2.5);
-    },
-    cleanUp: function(scene) {
-        this.sceneObjects.forEach(object => scene.remove(object));
-        this.sceneObjects = []; 
-    }       
+    }  
 },
 {title: 'Digital Goldland',
     class: 'World',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
     tooltip:'15.000 U S D O L L A R S 💀 \n THERE IS NO SECOND BEST',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    isLocked: false,
     material: new THREE.MeshPhysicalMaterial({
         reflectivity: 1.0,          
         roughness: 0,            
@@ -3826,11 +3514,7 @@ this.frameCount = 0;
 
        /// this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
     },
-    resumeGame: function(){},
-    cleanUp: function(scene) {
-        this.sceneObjects.forEach(object => scene.remove(object));
-        this.sceneObjects = []; 
-    }      
+    resumeGame: function(){}  
 }
 ];
 /*---------------------------------------------------------------------------
@@ -3883,7 +3567,6 @@ const rotationSpeed = 0.1;
 let dropUpdateFrame = 0; 
 
 function createOrb(user) {
-
     const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.6, 16, 6),
         new THREE.MeshBasicMaterial({ color: 0xff0000 })
@@ -3892,8 +3575,8 @@ function createOrb(user) {
     orb.position.copy(user.position); 
     orb.updateMatrixWorld(true);
     orb.boundingBox = new THREE.Box3().setFromObject(orb);
-    scene.add(orb);
     lightObjects.push(orb);
+    scene.add(orb);
 
     const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
     const shootSpeed = 0.5;
@@ -3904,13 +3587,16 @@ function createOrb(user) {
     function updateOrb() {
         if (Date.now() - startTime > orbLifetime) {
             scene.remove(orb);
+            const index = lightObjects.indexOf(orb);
+            if (index > -1) lightObjects.splice(index, 1); 
+
             return;
         }
         orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
         requestAnimationFrame(updateOrb);
         orb.boundingBox.setFromObject(orb);
     }
-    
+
     updateOrb();
 
 }
@@ -3977,7 +3663,6 @@ function updatePlayerMovement() {
                player.takeDamage(1);  
                hpBar.style.width = (player.health / player.maxhealth * 100) + '%';
             }
-
             lightObjects.forEach((lightObject) => {
                 if (!lightObject.boundingBox) return;
                 if (lightObject.boundingBox.intersectsBox(enemy.boundingBox)) {
@@ -3998,7 +3683,6 @@ function randomAbility() {
 
     const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
     const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
-    abilityToUpgrade.isLocked = false; 
     player.addAbility(new Ability(player, { ...abilityToUpgrade}));
     hideUI();
     refreshDisplay();
@@ -4020,8 +3704,6 @@ function chooseAbility() {
     for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
         const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
-        abilityToUpgrade.isLocked = false; 
-        console.log(abilityToUpgrade.level)
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
@@ -4204,7 +3886,7 @@ UI.createTitleContainer= function (text,tooltip) {
        // description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
-        img.style.filter = 'inverse(5px)';
+        img.style.filter = 'blur(5px)';
         button.title = 'Insert unlock hint here'
     }
     
@@ -4446,7 +4128,7 @@ function createChallengeMenu() {
 
          popUpContainer.appendChild(menuButtonsContainer); 
          popUpContainer.appendChild(inputContainer); 
-         const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n', "subtitle")
+         const yourSpot = UI.createTitleElement('Add 0.01Ξ for Rank 24°.\n\n', "subtitle")
          popUpContainer.appendChild(yourSpot); 
 
          const fineprint = UI.createTitleElement('Terms and conditions:\n\n', "subtitle")
@@ -4534,7 +4216,7 @@ function handleEntitySelection(entity, type) {
         const checkRanks = UI.createTitleElement('\nChallenge\nQueue', 'sorry for all the gimmicky words, technically it is true tho', "title")
 
         const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-        topChallengerContainer.appendChild(UI.createTitleElement('\n#\nSpot', 'lazy subtitle too btw', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
@@ -4559,6 +4241,12 @@ function handleEntitySelection(entity, type) {
         topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
    
+        const buttons = topChallengerContainer.querySelectorAll('button');
+        buttons.forEach(button => {
+          button.style.cursor = 'default';
+        });
+
+
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -4571,7 +4259,6 @@ function handleEntitySelection(entity, type) {
 
      
         const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
-        ability.isLocked=false;
         const abilitiesButton = createButton(ability,  0.6 );
         const classAbilityContainer = document.createElement('div');
         classAbilityContainer.appendChild(abilitiesSubTitle);
@@ -4625,7 +4312,7 @@ function handleEntitySelection(entity, type) {
          const goal = 1000000; 
          const percentage = (currentAmount / goal) * 100;
          loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='\nNext Challenge (#1°) starts in 500 blocks!';
+         loadingText.innerText ='\n Rank #1 Challenge starts in 500 blocks!';
          loadingText.classList.add('rainbow-text'); 
      }
      function simulateLoading() {
@@ -4651,7 +4338,6 @@ function handleEntitySelection(entity, type) {
         description: "Allows you to verify previous official Challengers.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/CHALLENGERS.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -4669,7 +4355,6 @@ function handleEntitySelection(entity, type) {
          description: "Allows you to verify previous official Survivors. ",
          tooltip: "...",
          thumbnail: 'Media/Abilities/HALL.png',
-         isLocked: false,
          effect(user) { 
              this.update = () => {} 
          },
@@ -4686,7 +4371,6 @@ function handleEntitySelection(entity, type) {
          description: "Fun. Decentralization and transparency. View the transparency report in real time.",
          tooltip: "...",
          thumbnail: 'Media/Abilities/LAW.png',
-         isLocked: false,
          effect(user) { 
              this.update = () => {} 
          },
@@ -4702,7 +4386,6 @@ function handleEntitySelection(entity, type) {
         description: "Allows you to check the full Challenge Queue.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/CHALLENGEQUEUE.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -4786,7 +4469,7 @@ function refreshDisplay() {
     abilitiesContainer.appendChild(worldButton);
     
     player.abilities.forEach(ability => {
-        const clonedAbility = { ...ability, isLocked: false };
+        const clonedAbility = { ...ability };
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
@@ -4828,7 +4511,7 @@ function createPlayerInfoMenu() {
 
   
     player.abilities.forEach(ability => {
-      const clonedAbility = { ...ability, isLocked: false };
+      const clonedAbility = { ...ability };
       const abilityButton = createButton(clonedAbility, 1);
       playerClassContainer.appendChild(abilityButton);
     });
@@ -5081,7 +4764,6 @@ function createTransparencyReport() {
         description: "Allows you to check the client source code, line by line, public for everyone to verify.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -5098,7 +4780,6 @@ function createTransparencyReport() {
         description: "Allows you to check the Ranking Smart Contract source code, line by line, public for everyone to verify.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -5115,7 +4796,6 @@ function createTransparencyReport() {
         description: "Allows you to check the Sponsor Smart Contract source code, line by line, public for everyone to verify.",
         tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -5143,15 +4823,15 @@ addContainerUI('center-container', [popUpContainer]);
 function createRunMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
-    const titleButton = UI.createTitleContainer('\nThe Daily\n Challenge Queue', 'Return to the game', "subtitle");
+    const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', 'Return to the game', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game changes \n  according to the #1 rank Challenger, choosing \n the Character, Ability &  Chain for a day! \n\n Next 5 Days Challenges:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger, changing \n the Character, Ability &  Chain for a day! \n\n Next 5 Days (Example):', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
 
     const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-    topChallengerContainer.appendChild(UI.createTitleElement('\n#\nSpot', 'lazy subtitle too btw', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
@@ -5178,7 +4858,7 @@ function createRunMenu() {
    
     popUpContainer.appendChild(topChallengerContainer);
 
-    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, all the others rank up one\n spot daily, eventually setting the Challenge!\n\n Queue Example:\n\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress Example:\n\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(rankingText);
 
     const topbidContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
@@ -5188,30 +4868,29 @@ function createRunMenu() {
     topbidContainer.appendChild(UI.createTitleElement('🔗', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topbidContainer.appendChild(UI.createTitleElement('Next day', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#1 0x...be2', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#1 0x...e2', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[3], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[0], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('Recorded', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('Record', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#2 0x...02a', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#2 0x...2a', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[1], .33));
     topbidContainer.appendChild(createButton(abilityTypes[6], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[1], .33 ));
     topbidContainer.appendChild(UI.createTitleElement('#1▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#3 0x...73d', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#3 0x...3d', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
     topbidContainer.appendChild(UI.createTitleElement('#2▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#4 0x...421', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#4 0x...21', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
     topbidContainer.appendChild(UI.createTitleElement('#3▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-
     popUpContainer.appendChild(topbidContainer);
 
 
@@ -5226,7 +4905,6 @@ function createRunMenu() {
 
  
     const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
-    ability.isLocked=false;
     const abilitiesButton = createButton(ability,  0.6 );
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesSubTitle);
@@ -5251,12 +4929,7 @@ function createRunMenu() {
  const submitButton = document.createElement('button'); 
  submitButton.classList.add('rainbow-button'); 
  submitButton.classList.add('subtitle'); 
- submitButton.innerText = 'Add';
- submitButton.style.cursor = 'not-allowed';
- sponsorAmount.style.cursor = 'default';
- classButton.style.cursor = 'default';
- abilitiesButton.style.cursor = 'default';
- worldButton.style.cursor = 'default';
+ submitButton.innerText = 'Added';
  sponsorAmount.disabled = true;
  inputContainer.appendChild(sponsorAmount);
  inputContainer.appendChild(submitButton); 
@@ -5266,6 +4939,10 @@ function createRunMenu() {
     const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
+    const buttons = popUpContainer.querySelectorAll('button');
+    buttons.forEach(button => {
+      button.style.cursor = 'default';
+    });
     const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
     goBackButton.style.cursor = 'pointer';
 
@@ -5312,7 +4989,6 @@ function triggerGameOver() {
         description: 'Save your current score in the Hall of Survivors.',
         tooltip: 'Click to restart the game',
         thumbnail: 'Media/Abilities/RECORD.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -5325,7 +5001,6 @@ function triggerGameOver() {
         description: 'Survivors never give up. Run it back turbo.',
         tooltip: 'Click to restart the game',
         thumbnail: 'Media/Abilities/TRYAGAIN.png',
-        isLocked: false,
         effect(user) { 
             this.update = () => {} 
         },
@@ -5349,7 +5024,7 @@ function triggerGameOver() {
     recordsContainer.appendChild(playerButton);
     recordsContainer.appendChild(worldButton);
     player.abilities.forEach(ability => {
-        const clonedAbility = { ...ability, isLocked: false };
+        const clonedAbility = { ...ability };
         const  abilButton = createButton(clonedAbility, .5 );
         recordsContainer.appendChild(abilButton);
     });

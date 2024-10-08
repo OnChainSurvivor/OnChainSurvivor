@@ -5,7 +5,7 @@ export const playerTypes = [{
     tooltip:'despite losing it all in the 2018 market crash, he kept grinding every day.',
     health: 5,
     maxhealth: 5,
-    movementspeed:0.35,
+    movementspeed:0.25,
     xp: 0,
     evasion: 0,
     xpToNextLevel:10,
