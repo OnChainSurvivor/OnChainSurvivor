@@ -302,42 +302,28 @@ const abilityTypes = [
         tooltip: "It would be cool if this could backfire and damage the user no?",
         thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
         effect(user) { 
-            this.update = () => {};
-            this.lastHitTime = 0;
             let previousPosition = new THREE.Vector3().copy(user.position); 
-            const orb = {
-                mesh: null,
-                boundingBox: null,
-                leadFactor: 25, 
-                create: () => {
-                    const material = world.material;
-                    const geometry = new THREE.SphereGeometry(1, 18, 6);
-                    orb.mesh = new THREE.Mesh(geometry, material);
-                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                    scene.add(orb.mesh);
-                    lightObjects.push(orb.mesh);
-                }
-            };
-            
+            const orb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 6),
+                world.material 
+            );
+            orb.position.copy(user.position); 
+            orb.updateMatrixWorld(true);
+            orb.boundingBox = new THREE.Box3().setFromObject(orb);
+            lightObjects.push(orb);
+            scene.add(orb);
             this.update = () => {
                 const currentPosition = new THREE.Vector3().copy(user.position);
                 const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
                 const newOrbPosition = new THREE.Vector3(
-                    user.position.x + playerDirection.x * orb.leadFactor,
+                    user.position.x + playerDirection.x * 25,
                     user.position.y + 2, 
-                    user.position.z + playerDirection.z * orb.leadFactor
+                    user.position.z + playerDirection.z * 25
                 );
-                orb.mesh.position.lerp(newOrbPosition, 0.1);
-                orb.boundingBox.setFromObject(orb.mesh);
+                orb.position.lerp(newOrbPosition, 0.1);
+                orb.boundingBox.setFromObject(orb);
                 previousPosition.copy(currentPosition);
             };
-            this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-            };
-            orb.create();
         },
     },
     {title: "Sniping Bot",
@@ -3090,11 +3076,16 @@ this.meshScaleThreshold = 0.1;
                 }
             });
         }
+
             this.lightSourceIndex = 0;
+            const illuminatingPositions = [];
+            illuminatingPositions.push(player.position); 
+
             const addLightSource = (obj) => {
                 if (obj.visible && this.lightSourceIndex < this.lightSourceTextureSize * this.lightSourceTextureSize) {
                     this.lightSourceTextureData.set([obj.position.x, obj.position.y, obj.position.z], this.lightSourceIndex * 4);
                     this.lightSourceIndex++;
+                    illuminatingPositions.push(obj.position);
                 }
             };
             droppedItems.forEach(item => {
@@ -3106,32 +3097,16 @@ this.meshScaleThreshold = 0.1;
 
             for (let i = 0; i < enemies.length; i++) {
                 const enemy = enemies[i];
-                const distanceToPlayer = enemy.position.distanceTo(player.position); 
-                if (distanceToPlayer > this.gridMaterial.uniforms.playerInfluenceRadius.value) {
-                    enemy.visible = false; 
-                } else {
-                    enemy.visible = true; 
-                }
-                if(!enemy.visible)
-                for (let k = 0; k < droppedItems.length; k++) {
-                    const droppedItem = droppedItems[k];
-                    const distanceToItem = enemy.position.distanceTo(droppedItem.position);
-                    if (distanceToItem <= 10) {
-                        enemy.visible = true; 
-                    } else {
-                        enemy.visible = false;
+                let isVisible = false;
+                for (let j = 0; j < illuminatingPositions.length; j++) {
+                    const lightPos = illuminatingPositions[j];
+                    const distanceToLight = enemy.position.distanceTo(lightPos);
+                    if (distanceToLight <= 10) { 
+                        isVisible = true;
+                        break; 
                     }
                 }
-                if(!enemy.visible)
-                    for (let k = 0; k < lightObjects.length; k++) {
-                        const droppedItem = lightObjects[k];
-                    const distanceToItem = enemy.position.distanceTo(droppedItem.position);
-                    if (distanceToItem <= 10) { 
-                        enemy.visible = true; 
-                    } else {
-                        enemy.visible = false; 
-                    }
-                };
+                enemy.visible = isVisible; 
             }
 
         this.lightSourceTexture.needsUpdate = true;
@@ -3155,8 +3130,6 @@ this.meshScaleThreshold = 0.1;
             }
         }
        this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
-
-
     },
     resumeGame: function(){
         player.mesh.scale.set(2.5,2.5,2.5);
@@ -3596,7 +3569,7 @@ function createOrb(user) {
         requestAnimationFrame(updateOrb);
         orb.boundingBox.setFromObject(orb);
     }
-
+    
     updateOrb();
 
 }

@@ -8,7 +8,7 @@ export const playerTypes = [{
     movementspeed:0.25,
     xp: 0,
     evasion: 0,
-    xpToNextLevel:10,
+    xpToNextLevel:1,
     tags: ['player'],
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     level:0,
