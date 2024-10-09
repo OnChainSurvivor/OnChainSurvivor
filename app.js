@@ -4685,6 +4685,7 @@ async function createInfoMenu() {
 
     const worldContainer = UI.createContainer(['abilities-grid']); 
     const worldButton = createButton(world, 1);
+    worldButton.style.cursor = 'default';
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
@@ -4693,6 +4694,7 @@ async function createInfoMenu() {
 
     const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
     const classButton = createButton(player, 1);
+    classButton.style.cursor = 'default';
     todaysPlayerContainer.appendChild(classButton);
     popUpContainer.appendChild(todaysPlayerContainer);
 
@@ -4701,6 +4703,7 @@ async function createInfoMenu() {
 
     const todaysAbilityContainer = UI.createContainer(['abilities-grid']); 
     const abilButton = createButton(ability, 1);
+    abilButton.style.cursor = 'default';
     todaysAbilityContainer.appendChild(abilButton);
     popUpContainer.appendChild(todaysAbilityContainer);
 
