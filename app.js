@@ -3,7 +3,9 @@
 ---------------------------------------------------------------------------*/
 const loader = new THREE.FBXLoader();
 const objectMap = new Map(); 
-const objectPool= [];
+const objectPool = [];
+const initialPoolSize = 200;
+
 class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config });
@@ -30,21 +32,35 @@ class Entity extends THREE.Object3D {
 
         const modelKey = 'SurvivorModel';
 
-        if (objectMap.has(modelKey)) {
+        if (objectMap.has(modelKey) && objectPool.length > 0) {
             this.initEntity(objectPool.pop());
+        } else if (objectMap.has(modelKey)) {
+            this.loadMoreObjects(modelKey, 50, () => this.initEntity(objectPool.pop()));
         } else {
             loader.load('Media/Models/Survivor.fbx', (object) => {
                 const serializedObject = object.toJSON();
                 objectMap.set(modelKey, serializedObject);
-                for (let index = 0; index <2000; index++) {
-                    objectPool.push(new THREE.ObjectLoader().parse(objectMap.get(modelKey)))
-                }
-
-                this.initEntity(object);
+                this.loadMoreObjects(modelKey, initialPoolSize, () => this.initEntity(object));
             });
         }
 
         this.initAbilities(config.abilities);
+    }
+
+    loadMoreObjects(modelKey, count, callback) {
+        for (let index = 0; index < count; index++) {
+            const newObject = new THREE.ObjectLoader().parse(objectMap.get(modelKey));
+            objectPool.push(newObject);
+        }
+        if (callback) callback();
+    }
+
+    returnToPool() {
+        if (this.mesh) {
+            this.mesh.mixer.stopAllAction();
+            scene.remove(this); 
+            objectPool.push(this.mesh);
+        }
     }
 
     initEntity(object) {
@@ -59,35 +75,33 @@ class Entity extends THREE.Object3D {
         this.playerRun = this.mesh.mixer.clipAction(object.animations[0]);
         this.playerRun.play();
         this.playerRun.setLoop(THREE.LoopRepeat);
-        this.mesh.scale.set(3,3,3);
+        this.mesh.scale.set(3, 3, 3);
         this.updateMatrixWorld(true);
-        this.mesh.updateMatrixWorld(true);  
-        this.boundingBox = new THREE.Box3().setFromObject(this.mesh); 
+        this.mesh.updateMatrixWorld(true);
+        this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
         scene.add(this);
     }
 
     updateMesh() {
         if (this.mesh) {
-            this.mesh.mixer.update(.01);
+            this.mesh.mixer.update(0.01);
             this.boundingBox.setFromObject(this.mesh);
         }
     }
 
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
-                const ability = abilityTypes.find(type => type.title === entityAbility.type);
-                    this.addAbility(new Ability(this, {...ability}));
-            }
-        )
+            const ability = abilityTypes.find(type => type.title === entityAbility.type);
+            this.addAbility(new Ability(this, { ...ability }));
+        });
     }
 
     getUpgradableAbilities() {
         return abilityTypes.filter(ability => {
-
-          const isActive = this.abilities.some(pa => pa.title === ability.title);
-          return !isActive; 
+            const isActive = this.abilities.some(pa => pa.title === ability.title);
+            return !isActive;
         });
-      }
+    }
 
     addAbility(ability) {
         this.abilities.push(ability);
@@ -115,7 +129,6 @@ class Entity extends THREE.Object3D {
         if (this.evasionCooldown) return;
         if (this.inmuneCooldown) return;
 
-
         const evasionSuccess = Math.random() < (this.evasion / 100);
         if (evasionSuccess) {
             console.log("EVADED");
@@ -132,9 +145,11 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
+        this.returnToPool(); // Return the entity to the pool after death
         handleEntityDeath(this, enemies);
     }
 }
+
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
 ---------------------------------------------------------------------------*/
