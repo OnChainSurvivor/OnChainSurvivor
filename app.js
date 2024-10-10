@@ -156,6 +156,7 @@ class Entity extends THREE.Object3D {
 let player;
 let ability;
 let world;
+let time = 0,liquidations = 0, experience = 0, distance = 0, levels = 0,secrets = 0,bosses = 0;
 
 let isPaused = true;
 let isMainMenu = true;
@@ -210,16 +211,20 @@ const handleEntityDeath = (entity, enemies) => {
     if (player.health <= 0){
         canMove= false;
         hideUI();
-        setTimeout(() => { triggerGameOver(); }, 1000);
+        setTimeout(() => { triggerGameOver("Liquidation notice",'Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n'); }, 1000);
     } 
-
+    //secrets+= 1; when enemy drops a secret
+    //bosses+= 1; when boss defeatec
+   liquidations += 1;
+   experience += 1;
    player.xp += 1;
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
    if (player.xp >= player.xpToNextLevel) {
     dropItem(entity.position);
-      
        player.xp = 0;  
-       player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;   
+       player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
+       levels += 1
+
    }
 
     scene.remove(entity);
@@ -2721,7 +2726,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.25,
+    movementspeed:0.2,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -2743,11 +2748,18 @@ const challengeTypes = [{
     },
     update(){
         this.countdown--;
-      //  if(this.countdown<=0)
-       // gameOverScreen();
+        time++
+        if(this.countdown<=0){
+            isPaused=true;  
+            canMove= false;
+            hideUI();
+            setTimeout(() => { triggerGameOver("Survivor Notice","Dear Survivor, we proudly inform that you beat \n the challenge and this run is completed.\n\n "); }, 1000);
+            return;
+        }
         const seconds = Math.floor(this.countdown / 60);
         const mseconds = this.countdown % 60;
         challengeDisplay.innerText = `${seconds}:${mseconds < 10 ? '0' : ''}${mseconds}`;
+        
     },
 },
 {
@@ -2824,9 +2836,25 @@ const worldTypes = [
         ior: 2.75, 
         thickness: 10,
         sheen: 1,
+        color: new THREE.Color('transparent'),
+        wireframe : true,
+        emissive: 0xffffff, 
+        emissiveIntensity: 0.25
+    }),
+    enemyMaterial:new THREE.MeshPhysicalMaterial({
+        envMap: null, 
+        reflectivity: 1,
+        roughness: 0,
+        metalness: 1,
+        clearcoat: 0.13,
+        clearcoatRoughness: 0.1,
+        transmission: 0.82,
+        ior: 2.75, 
+        thickness: 10,
+        sheen: 1,
         color: new THREE.Color('white'),
         wireframe : true,
-        ///emissive: 0xfff00f, 
+        emissive: 0x0ff00, 
         emissiveIntensity: 2 
     }),
     gridMaterial:null,
@@ -3612,6 +3640,7 @@ function updatePlayerMovement() {
         const adjustedAngle = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
         player.rotation.y += Math.sign(adjustedAngle) * Math.min(rotationSpeed, Math.abs(adjustedAngle));
         player.updateMesh();
+        distance++;
     }
 
     const cosAngle = Math.cos(cameraAngle); 
@@ -3748,7 +3777,7 @@ function updateEnemies() {
 }
 
 
-function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 75, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 50, numberOfEnemies = 5) {
     const spawnEnemy = () => {
         if(isPaused) return;
         if(enemies.length >100) return;
@@ -3765,7 +3794,11 @@ function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 75, num
             
             const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
             const enemy = new Entity(enemyConfig,new THREE.Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
-       
+            enemy.mesh.traverse((child) => {
+                if (child.isMesh) {
+                    child.material = world.enemyMaterial;
+                }
+            });
             enemies.push(enemy);
         }
     };
@@ -4957,10 +4990,10 @@ function generateRandomHash() {
         .join('');
 }
  //triggerGameOver();
-function triggerGameOver() {
+function triggerGameOver(notice,message ) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
-    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\nLiquidation notice.','You ran out of health! 💀');
+    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\n'+ notice ,'You ran out of health! 💀');
     popUpContainer.appendChild(titleContainer);
 
     const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
@@ -4971,7 +5004,7 @@ function triggerGameOver() {
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
-    const liquidatedTitle = UI.createTitleElement('Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n','You ran out of health! 💀',"subtitle");
+    const liquidatedTitle = UI.createTitleElement(message,'You ran out of health! 💀',"subtitle");
     popUpContainer.appendChild(liquidatedTitle);
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
@@ -5006,7 +5039,7 @@ function triggerGameOver() {
 
     const randomHash = generateRandomHash();
 
-    const scoreTitle = UI.createTitleElement('\nRun Details','You ran out of health! 💀',"title");
+    const scoreTitle = UI.createTitleElement('\n Run Scores','MORE POINTS!?!?!?!?!',"title");
     popUpContainer.appendChild(scoreTitle);
 
     const recordsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
@@ -5024,37 +5057,37 @@ function triggerGameOver() {
 
     const recordsTextContainer = UI.createContainer(['abilities-grid']);
     const timeScoreTitle = UI.createTitleElement('Time','You ran out of health! 💀',"subtitle");
-    const timeScore = UI.createTitleElement('4:35','You ran out of health! 💀',"subtitle");
+    const timeScore = UI.createTitleElement(time,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(timeScoreTitle);
     recordsTextContainer.appendChild(timeScore);
 
     const liquidationScoreTitle = UI.createTitleElement('Liquidations','You ran out of health! 💀',"subtitle");
-    const liquidationScore = UI.createTitleElement('4141','You ran out of health! 💀',"subtitle");
+    const liquidationScore = UI.createTitleElement(liquidations,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(liquidationScoreTitle);
     recordsTextContainer.appendChild(liquidationScore);
 
     const expScoreTitle = UI.createTitleElement('Experience','You ran out of health! 💀',"subtitle");
-    const expScore = UI.createTitleElement('34525','You ran out of health! 💀',"subtitle");
+    const expScore = UI.createTitleElement(experience,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(expScoreTitle);
     recordsTextContainer.appendChild(expScore);
 
     const distanceScoreTitle = UI.createTitleElement('Distance','You ran out of health! 💀',"subtitle");
-    const distanceScore = UI.createTitleElement('22324','You ran out of health! 💀',"subtitle");
+    const distanceScore = UI.createTitleElement(distance,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(distanceScoreTitle);
     recordsTextContainer.appendChild(distanceScore);
 
     const levelScoreTitle = UI.createTitleElement('Lvls','You ran out of health! 💀',"subtitle");
-    const levelScore = UI.createTitleElement('6','You ran out of health! 💀',"subtitle");
+    const levelScore = UI.createTitleElement(levels,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(levelScoreTitle);
     recordsTextContainer.appendChild(levelScore);
 
     const secretsScoreTitle = UI.createTitleElement('Secrets','You ran out of health! 💀',"subtitle");
-    const secretsScore = UI.createTitleElement('0','You ran out of health! 💀',"subtitle");
+    const secretsScore = UI.createTitleElement(secrets,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(secretsScoreTitle);
     recordsTextContainer.appendChild(secretsScore);
 
-    const bossesScoreTitle = UI.createTitleElement('Bosses\n\n','You ran out of health! 💀',"subtitle");
-    const bossesScore = UI.createTitleElement('0\n\n','You ran out of health! 💀',"subtitle");
+    const bossesScoreTitle = UI.createTitleElement('Bosses\n','You ran out of health! 💀',"subtitle");
+    const bossesScore = UI.createTitleElement(bosses,'You ran out of health! 💀',"subtitle");
     recordsTextContainer.appendChild(bossesScoreTitle);
     recordsTextContainer.appendChild(bossesScore);
 
