@@ -34,14 +34,8 @@ class Entity extends THREE.Object3D {
             this.initEntity(objectPool.pop());
         } else {
             loader.load('Media/Models/Survivor.fbx', (object) => {
-                object.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material = world.playerMaterial;
-                    }
-                });
                 const serializedObject = object.toJSON();
                 objectMap.set(modelKey, serializedObject);
-
                 for (let index = 0; index <2000; index++) {
                     objectPool.push(new THREE.ObjectLoader().parse(objectMap.get(modelKey)))
                 }
@@ -54,6 +48,11 @@ class Entity extends THREE.Object3D {
     }
 
     initEntity(object) {
+        object.traverse((child) => {
+            if (child.isMesh) {
+                child.material = world.playerMaterial;
+            }
+        });
         this.mesh = object;
         this.add(this.mesh);
         this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
@@ -3751,6 +3750,7 @@ function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 75, num
             
             const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
             const enemy = new Entity(enemyConfig,new THREE.Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
+       
             enemies.push(enemy);
         }
     };
