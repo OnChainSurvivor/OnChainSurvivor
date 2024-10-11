@@ -3592,9 +3592,8 @@ function createOrb(user) {
     scene.add(orb);
 
     const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
-    const shootSpeed = 0.5;
-
-    const orbLifetime = 3000; 
+    const shootSpeed = 0.25;
+    const orbLifetime = 1000; 
     const startTime = Date.now();
     
     function updateOrb() {
@@ -3786,7 +3785,7 @@ function updateEnemies() {
 }
 
 
-function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 50, numberOfEnemies = 5) {
+function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 50, numberOfEnemies =3) {
     const spawnEnemy = () => {
         if(isPaused) return;
         if(enemies.length >100) return;
@@ -4531,19 +4530,64 @@ function createPlayerInfoMenu() {
     const statusButton = UI.createTitleContainer('\nChallenge\nStatus', 'Return to the game', "subtitle");
     popUpContainer.appendChild(statusButton);
 
-    const playerOnlyContainer = UI.createContainer(['abilities-grid']); 
-    const classButton = createButton(player, 1);
-    playerOnlyContainer.appendChild(classButton);
-    popUpContainer.appendChild(playerOnlyContainer);
-    const playerClassContainer = UI.createContainer(['abilities-grid']); 
+    const oneOnlyContainer = UI.createContainer(['abilities-grid']); 
     const worldButton = createButton(world, 1);
-    playerClassContainer.appendChild(worldButton);
+    oneOnlyContainer.appendChild(worldButton);
+    worldButton.style.cursor = 'default';
+    popUpContainer.appendChild(oneOnlyContainer);
+  
+    const recordsTextContainer = UI.createContainer(['abilities-grid']);
+    const timeScoreTitle = UI.createTitleElement('\nTime','You ran out of health! 💀',"subtitle");
+    const timeScore = UI.createTitleElement('\n'+time,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(timeScoreTitle);
+    recordsTextContainer.appendChild(timeScore);
 
+    const liquidationScoreTitle = UI.createTitleElement('Liquidations','You ran out of health! 💀',"subtitle");
+    const liquidationScore = UI.createTitleElement(liquidations,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(liquidationScoreTitle);
+    recordsTextContainer.appendChild(liquidationScore);
+
+    const expScoreTitle = UI.createTitleElement('Experience','You ran out of health! 💀',"subtitle");
+    const expScore = UI.createTitleElement(experience,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(expScoreTitle);
+    recordsTextContainer.appendChild(expScore);
+
+    const distanceScoreTitle = UI.createTitleElement('Distance','You ran out of health! 💀',"subtitle");
+    const distanceScore = UI.createTitleElement(distance,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(distanceScoreTitle);
+    recordsTextContainer.appendChild(distanceScore);
+
+    const levelScoreTitle = UI.createTitleElement('Lvls','You ran out of health! 💀',"subtitle");
+    const levelScore = UI.createTitleElement(levels,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(levelScoreTitle);
+    recordsTextContainer.appendChild(levelScore);
+
+    const secretsScoreTitle = UI.createTitleElement('Secrets','You ran out of health! 💀',"subtitle");
+    const secretsScore = UI.createTitleElement(secrets,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(secretsScoreTitle);
+    recordsTextContainer.appendChild(secretsScore);
+
+    const bossesScoreTitle = UI.createTitleElement('Bosses\n','You ran out of health! 💀',"subtitle");
+    const bossesScore = UI.createTitleElement(bosses,'You ran out of health! 💀',"subtitle");
+    recordsTextContainer.appendChild(bossesScoreTitle);
+    recordsTextContainer.appendChild(bossesScore);
+
+    popUpContainer.appendChild(recordsTextContainer);
+
+    const randomHash = generateRandomHash();
+    const secretContainer = UI.createTitleElement('\n Gamestate Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
+    popUpContainer.appendChild(secretContainer);
+
+    const playerClassContainer = UI.createContainer(['abilities-grid']); 
+    const classButton = createButton(player, 1);
+    playerClassContainer.appendChild(classButton);
+    classButton.style.cursor = 'default';
   
     player.abilities.forEach(ability => {
       const clonedAbility = { ...ability };
       const abilityButton = createButton(clonedAbility, 1);
       playerClassContainer.appendChild(abilityButton);
+      abilityButton.style.cursor = 'default';
     });
 
     popUpContainer.appendChild(playerClassContainer);
