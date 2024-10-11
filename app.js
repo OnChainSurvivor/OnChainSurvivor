@@ -2724,7 +2724,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.2,
+    movementspeed:0.15,
     xp: 0,
     evasion: 0,
     tags: ['enemy'],
@@ -3141,7 +3141,7 @@ this.meshScaleThreshold = 0.1;
                 for (let j = 0; j < illuminatingPositions.length; j++) {
                     const lightPos = illuminatingPositions[j];
                     const distanceToLight = enemy.position.distanceTo(lightPos);
-                    if (distanceToLight <= 10) { 
+                    if (distanceToLight <= 9) { 
                         isVisible = true;
                         break; 
                     }
