@@ -7,7 +7,7 @@ const objectPool = [];
 const initialPoolSize = 200;
 
 class Ability {
-    constructor(user, config) {
+constructor(user, config) {
         Object.assign(this, { user, ...config });
     }
     activate() {
@@ -179,7 +179,7 @@ let colorIndex = 0;
 
 const droppedItems = []; 
 const lightObjects = [];
-const itemGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const itemGeometry = new THREE.SphereGeometry(0.35, 32, 32);
 
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
@@ -200,7 +200,7 @@ const dropItem = (position) => {
     const itemMaterial = world.material;
     const item = new THREE.Mesh(itemGeometry, itemMaterial);
     item.position.copy(position);
-   /// item.position.y=;
+    item.position.y=1;
     item.boundingBox = new THREE.Box3().setFromObject(item);
     createParticleEffect(position, 'gold', 10);  
     scene.add(item);
@@ -217,13 +217,7 @@ const handleEntityDeath = (entity, enemies) => {
     //bosses+= 1; when boss defeatec
     dropItem(entity.position);
    liquidations += 1;
-   xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-   if (player.xp >= player.xpToNextLevel) {
-       player.xp = 0;  
-       player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
-       levels += 1
-       chooseAbility();
-   }
+
 
     scene.remove(entity);
 
@@ -2862,7 +2856,7 @@ const worldTypes = [
         this.challenge.initialize();
         scene.background = this.backgroundColor;
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .75, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -3669,6 +3663,14 @@ function updatePlayerMovement() {
             droppedItems.splice(i, 1); 
             player.xp += 1;
             experience += 1;
+            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+            createParticleEffect(player.position, 'gold', 50);  
+            if (player.xp >= player.xpToNextLevel) {
+                player.xp = 0;  
+                player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
+                levels += 1
+                chooseAbility();
+            }
            // chooseAbility();
            // randomAbility();
         }
