@@ -3662,6 +3662,13 @@ function updatePlayerMovement() {
 
     for (let i = droppedItems.length - 1; i >= 0; i--) {
         const item = droppedItems[i];
+
+        const directionToPlayer = new THREE.Vector3().subVectors(player.position, item.position).normalize();
+        const distanceToPlayer = item.position.distanceTo(player.position);
+        const attractionSpeed = 0.15; 
+        if(distanceToPlayer<=9)
+        item.position.add(directionToPlayer.multiplyScalar(attractionSpeed));
+
         item.boundingBox.setFromObject(item);
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
             scene.remove(item);  
