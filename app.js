@@ -197,14 +197,20 @@ const uiContainers = [];
 ---------------------------------------------------------------------------*/
 
 const dropItem = (position) => {
-    const itemMaterial = world.material;
-    const item = new THREE.Mesh(itemGeometry, itemMaterial);
-    item.position.copy(position);
-    item.position.y=1;
-    item.boundingBox = new THREE.Box3().setFromObject(item);
-    createParticleEffect(position, 'gold', 10);  
-    scene.add(item);
-    droppedItems.push(item);
+
+    const expDropSuccess = Math.random() < (1 / 100);
+    if (expDropSuccess) {
+        const itemMaterial = world.material;
+        const item = new THREE.Mesh(itemGeometry, itemMaterial);
+        item.position.copy(position);
+        item.position.y=1;
+        item.boundingBox = new THREE.Box3().setFromObject(item);
+        createParticleEffect(position, 'gold', 10);  
+        scene.add(item);
+        droppedItems.push(item);
+        return;
+    }
+
 };
 
 const handleEntityDeath = (entity, enemies) => {
