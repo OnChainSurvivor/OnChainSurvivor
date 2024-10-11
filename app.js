@@ -179,7 +179,7 @@ let colorIndex = 0;
 
 const droppedItems = []; 
 const lightObjects = [];
-const itemGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+const itemGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
@@ -200,7 +200,7 @@ const dropItem = (position) => {
     const itemMaterial = world.material;
     const item = new THREE.Mesh(itemGeometry, itemMaterial);
     item.position.copy(position);
-    item.position.y=+2;
+   /// item.position.y=;
     item.boundingBox = new THREE.Box3().setFromObject(item);
     createParticleEffect(position, 'gold', 10);  
     scene.add(item);
@@ -215,16 +215,14 @@ const handleEntityDeath = (entity, enemies) => {
     } 
     //secrets+= 1; when enemy drops a secret
     //bosses+= 1; when boss defeatec
+    dropItem(entity.position);
    liquidations += 1;
-   experience += 1;
-   player.xp += 1;
    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
    if (player.xp >= player.xpToNextLevel) {
-    dropItem(entity.position);
        player.xp = 0;  
        player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
        levels += 1
-
+       chooseAbility();
    }
 
     scene.remove(entity);
@@ -2864,7 +2862,7 @@ const worldTypes = [
         this.challenge.initialize();
         scene.background = this.backgroundColor;
         this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, .5, 0.01); 
+        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1, .5, 0.01); 
         composer.addPass(this.renderScene);
         composer.addPass(this.bloomPass);
         this.pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -2949,7 +2947,7 @@ const worldTypes = [
                             vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
                             vec3 lightPos = texture(lightSourceTexture, uv).xyz;
                             float dist = distance(vWorldPos.xz, lightPos.xz);
-                            lightSourceInfluence += smoothstep(10.0, 5.0, dist);
+                            lightSourceInfluence += smoothstep(8.0, 1.0, dist);
                         }
             
                         vec2 cellCoord = floor(vUv);
@@ -3159,13 +3157,13 @@ this.meshScaleThreshold = 0.1;
             if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
-            } else if (this.radiusDirection === -1 && influenceRadius > 15) {
+            } else if (this.radiusDirection === -1 && influenceRadius > 10) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
             } else {
                 if (this.radiusDirection === 1) {
                     this.radiusDirection = -1;
-                    this.radiusTarget = 15;
+                    this.radiusTarget = 10;
                 } else {
                     this.radiusDirection = 0;
                 }
@@ -3669,7 +3667,10 @@ function updatePlayerMovement() {
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
             scene.remove(item);  
             droppedItems.splice(i, 1); 
-            randomAbility();
+            player.xp += 1;
+            experience += 1;
+           // chooseAbility();
+           // randomAbility();
         }
     }
         for (let i = 0; i < enemies.length; i++) {
@@ -4478,7 +4479,7 @@ function refreshDisplay() {
     hpBar.style.width =  (player.health / player.maxhealth * 100) + '%';
     hpBarContainer.appendChild(hpBar);
 
-    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(8, auto)' }); 
+    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(7, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
     const playerButton = createButton(player, .25 );
