@@ -333,9 +333,9 @@ const abilityTypes = [
                 const currentPosition = new THREE.Vector3().copy(user.position);
                 const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
                 const newOrbPosition = new THREE.Vector3(
-                    user.position.x + playerDirection.x * 25,
+                    user.position.x + playerDirection.x * user.range,
                     user.position.y + 2, 
-                    user.position.z + playerDirection.z * 25
+                    user.position.z + playerDirection.z * user.range
                 );
                 orb.position.lerp(newOrbPosition, 0.1);
                 orb.boundingBox.setFromObject(orb);

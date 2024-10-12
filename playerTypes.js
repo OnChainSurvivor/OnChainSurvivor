@@ -7,6 +7,7 @@ export const playerTypes = [{
     maxhealth: 5,
     movementspeed:0.15,
     xp: 0,
+    range:15,
     evasion: 0,
     xpToNextLevel:1,
     tags: ['player'],
