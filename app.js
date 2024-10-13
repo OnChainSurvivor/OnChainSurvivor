@@ -91,7 +91,7 @@ class Entity extends THREE.Object3D {
 
     initAbilities(entityAbilities) {
         entityAbilities.forEach(entityAbility => {
-            const ability = abilityTypes.find(type => type.title === entityAbility.type);
+            const ability = abilityTypes.find(type => type.title === entityAbility.title);
             this.addAbility(new Ability(this, { ...ability }));
         });
     }
@@ -222,9 +222,9 @@ const handleEntityDeath = (entity, enemies) => {
     //secrets+= 1; when enemy drops a secret
     //bosses+= 1; when boss defeatec
     dropItem(entity.position);
-   liquidations += 1;
+    liquidations += 1;
 
-
+    entity.deactivateAbilities();
     scene.remove(entity);
 
     const index = scene.children.indexOf(entity);
@@ -340,6 +340,12 @@ const abilityTypes = [
                 orb.position.lerp(newOrbPosition, 0.1);
                 orb.boundingBox.setFromObject(orb);
                 previousPosition.copy(currentPosition);
+            };
+            this.deactivate = () => {
+                scene.remove(orb);
+                const index = lightObjects.indexOf(orb);
+                if (index > -1) lightObjects.splice(index, 1); 
+
             };
         },
     },
@@ -2730,6 +2736,7 @@ const enemyTypes = [{
     tags: ['enemy'],
     thumbnail: 0,
     abilities: [
+    //{"title": "Frontrunning Bot"}
     ],
     level:0,
 }

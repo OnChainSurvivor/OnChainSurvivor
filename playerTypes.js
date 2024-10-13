@@ -14,7 +14,8 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     level:0,
     isLocked: false,
-    abilities: [],
+    abilities: [
+    ],
 },{
     class: 'Survivor',
     title: 'Onchain Survivor',
