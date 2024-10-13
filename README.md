@@ -67,7 +67,6 @@ Not a roadmap per se, but More or less a loose list of the current development c
 - **Power-Ups:** 3D models in the arena representing different power-ups (e.g., a hatch on the floor for the Exit hatch Ability).
 
 ## Arena Design 🏟️
-For the initial survivors arena, 
 - **Theme:** Blockchain-themed elements (e.g., nodes, blocks, chains).
 - **Obstacles:** Various blockchain-related obstacles (e.g., smart contracts, consensus mechanisms).
 - **Environmental Hazards:** Dynamic elements such as gas clouds, electric fields, and node failures that add challenges.
