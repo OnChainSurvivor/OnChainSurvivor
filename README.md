@@ -121,50 +121,38 @@ As frictionless and simple as possible, No wallet required to play, the game's f
 
 ```mermaid
 graph TD
-A[Welcome Screen] -->B[Quick Free to play mode]
+A[Welcome Screen] -->B[Quick start play ]
 A[Welcome Screen] --> D{Connect Wallet}
-A --> C[Join a peer survivor Run]
-D --> E[Request/Bid  a Run]
-D --> z[Sponsor Official Run]
-D --> G[Write run records]
+D --> E[Set Challenge in queue]
+D --> G[Write run record]
 ```
 
 Rank based auction system with periodic reset model, giving chances for all the supported chains to be able to write into the Hall of survivors!
 
 ```mermaid
 graph TD
-    A[ L1 and L2 Players] -->|Place Bids to own the game state| B{Bid Pool}
-    B -->|Sorted by Global Bid Value| C{Daily Ranked List}
-    C --> D1[1st Place chain]
+    A[ L1 and L2 Challengers] -->|Place Bids to own the game state| B{Challenge Queue }
+    B -->|Sorted by Value| C{Daily Ranked List}
+    C --> D1[1st Place Challenge]
     C --> D2[2nd Place]
-    C --> D3[3rd Place]
-  
-    C --> D12[11th...12th... N chain]
-    
-    %% At midnight reset logic
-    D1 -->| Owns the game for a day | E[Resets at midnight, other chains gain a rank]
-    E -->|Winner Becomes Last, must bid or wait his turn| C
-
-    F[Rebidding Process] -->|Outbid to Regain #1| B
+    C --> D12[3rd...100th... N Challenges]
+    D1 -->| Owns game state for a day | E[Wins,Goes to hall of challengers, others gain a rank]
+    E -->| Rebids to join queue | C
 ```
 Final design of onchain survivor, a peer-to-peer multiplayer, trustless, descentralized  game that keeps the survivors honest cryptography! 
 
 ```mermaid
    sequenceDiagram
-    participant User as Survivor
     participant Client as Survivor Host
     participant SmartContract as Smart Contract
     participant OnChainData as OnChain Record
     participant Consensus as Consensus Mechanisms
     Client ->> SmartContract: Request Game Run
-    User ->> Client: Access Onchain Survivor
-    SmartContract ->> Client: Provide run, Initialize
-    User -> Client: Finish, Verify Integrity
+    SmartContract ->> Client: Provide run, Initialize, Integrity check
     Client ->> OnChainData: Update results, Meta Progress
     OnChainData ->> SmartContract: Validate client integrity
     SmartContract ->> Consensus: Broadcast Results
-    SmartContract ->> Client: Update UI
-    Client -> User: Display Final Results
+    SmartContract ->> Client: Update UI, Results
 ```
 
 ## 🚀Getting Started🚀 
