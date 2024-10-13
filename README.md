@@ -45,8 +45,8 @@ Onchain Survivor aims to combine the addictive gameplay of survival roguelite ga
 ## Blockchain Integration 🔗
 
 **Record Holding**: The blockchain will serve the challenges so players can have their records stored forever.
-**Smart Contracts**: For holding player challengers consensus over the daily state of the game.
-**Real time diffulty Setting**: -----------------
+**Challenges**: For holding player challengers consensus over the daily state of the game.
+**Real Time Difficulty Setting**: Depending on several  factors related to the blocklchain state!
 
 ## Development Roadmap 🛠️
 
@@ -63,13 +63,13 @@ Not a roadmap per se, but More or less a loose list of the current development c
 
 ## Icons 🖼️
 
-- **Upgrades:** AI generated Icons representing different upgrade types (e.g., a footprint for Onchain Trail).
+- **Upgrades:** AI generated icons representing different upgrade types (e.g., a footprint for Onchain Trail).
 - **Power-Ups:** 3D models in the arena representing different power-ups (e.g., a hatch on the floor for the Exit hatch Ability).
 
 ## Arena Design 🏟️
-- **Theme:** Blockchain-themed elements (e.g., nodes, blocks, chains).
-- **Obstacles:** Various blockchain-related obstacles (e.g., smart contracts, consensus mechanisms).
-- **Environmental Hazards:** Dynamic elements such as gas clouds, electric fields, and node failures that add challenges.
+- **Theme:** Blockchain-themed elements (e.g., nodes, blocks, chains). at the beggining. as the game evolves and partnerships form, this might change. 
+- **Obstacles:** Various blockchain-related obstacles (e.g., smart contracts, consensus mechanisms) and enemies.
+- **Environmental Hazards:** Dynamic elements such as gas clouds, electric fields, fog of war, and node failures that add challenges.
 
 ## Marketing Strategy 📈
 Product is still in development, but as it gains more shape, there are many plans to expand the playerbase!
@@ -80,22 +80,22 @@ Product is still in development, but as it gains more shape, there are many plan
 - **Content Creators:** Engage streamers and content creators to showcase gameplay and mechanics.
 - **Events:** Host in-game events and challenges with other Communities.
 
-### 🥇 Phase 1 🥇: Daily Game Challenges, by players for players!
+### 🥇 Phase 1 🥇: Daily Game Challenges, by challengers for players!
 
-This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the queue. The  system is competitive, with each user placing their challengesaiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenge.
+This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the Challenge queue. The  system is competitive, with each user placing their challenges, aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. The initial plan is to have the challenge queue settle on ethereum until several Usex Experience issues are solved, but this can change in the future to move to a L2.
 
 Queue Process
 
-**Bidding**: Users from Ethereum (L1) and various L2 blockchains submit bids into the centralized bid pool. The bid values determine the ranking, where the highest bid secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
+**Setting Challenge**: Users from Ethereum (L1) and various L2 blockchains submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
 
-**Daily Reset**: At midnight, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
+**Daily Rank up**: At midnight, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
 
 **Adding**: If the previous day's top-ranked in the Challenge Queue wants to secure the first rank again, they must re add with a higher amount to reclaim their position and set the game Challenge for consecutive days.
 
 This system ensures fairness by regularly refreshing the queue, preventing any one user from monopolizing the top position.
 
-### Phase 2: NFT Communities compete for Control the Game 
-### Phase 3: Players compete for the Hall of Survivors
+### Phase 2: Multiple games, all using the same Challenge Queue and Human Consensus.
+### Phase 3: AI generated real time experiences, using Human Consensus, Overlayed on top of the template games. 
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
