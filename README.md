@@ -8,8 +8,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down arena shooter survival roguelite game that utilizes Web3 technologies to enable Open Source, decentralized, peer-to-peer multiSurvivor interactions. Navigate a 3D Blockchained environment to do what they do best... Survive Together!
-
+Onchain Survivor is a web-based top-down survival game that utilizes Web3 technologies to enable open source, decentralized and consensus to the experience. Navigate a 3D Blockchained environment to do what they do best... Survive!
 
 ## Game Overview 🎮
 
@@ -17,26 +16,24 @@ Onchain Survivor is a web-based top-down arena shooter survival roguelite game t
 **Genre**: Top-Down Arena Shooter, Survival Roguelite
 **Platform**: Web
 **Technology**: Web3, Blockchain Integration
-**Objective**: Complete challenges in a blockchain-themed arena, defeating enemies, leveling up, and upgrading abilities.
+**Objective**: Complete challenges in an arena, defeating enemies, leveling up, and upgrading abilities.
 
-Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology and machine learning, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
 
 ### 🔑Key Features🔑
 
-- **Decentralized Gameplay**: Enjoy a truly decentralized multiSurvivor experience with peer-to-peer connections. No central server required.  You can keep a copy of the client and fire it up connecting with a friend!. 
-- **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty.  
-- **3D Graphics**: Experience immersive 3D graphics powered by Three.js, in any browser.
+- **Decentralized Gameplay**: Enjoy a truly consensus based, decentralized experience. No central server required. No log ins. No external dependencies beyond your connection with he blockchain. You can keep a copy of the client and fire it up!. 
+- **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty. And the strong playerbase consensus sets the game experience on a daily basis.   
+- **3D Graphics**: Experience 3D graphics powered by Three.js, in any browser.
 - **Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
-- **Variable Gameplay**: Every experience is different, Guaranteed. 
-- **Meta Progress**: As the game progresses and the user plays more of the game, he discovers unlocks classes, powerups. 
-- **Daily Challenges**: The player must complete challenges in an arena filled with enemies.
-Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, players can choose from various abilities.
-- **Power-Ups**: Enemies may drop power-ups, very low chances.
+- **Variable Gameplay**: Every experience is different on a daily basis, yet all players taking the challenge keep in sync.
+- **Leveling Up**: Defeating enemies grants experience points (XP). Upon leveling up, players can choose from various abilities.
+- **Power-Ups**: Enemies may drop power-ups, experience, and abilities. Very low chances.
 
 ## Art Style 🎨
 
-**Top-Down View**: 3D Low poly, varies by chain.
-**Color Palette**: Bright and vibrant neon colors to distinguish different elements and enemies.
+**Top-Down View**: 3D Low poly style, for phase 1. 
+**Color Palette**: Bright and vibrant neon colors to distinguish different elements and enemies and the vibrant backgrounds.
 **Animation**: AI powered animations for characters, enemies, and effects.
 
 ## Sound Design 🎵
@@ -47,8 +44,9 @@ Leveling Up: Defeating enemies grants experience points (XP). Upon leveling up, 
 
 ## Blockchain Integration 🔗
 
-**Smart Contracts**: Secure and transparent mechanics for upgrades and power-ups, The blockchain will serve official runs so the player can have their records stored forever.
-**Decentralized Multiplayer**: Peer-to-peer multiplayer interactions using Peer to Peer technologies, this is for later in development.
+**Record Holding**: The blockchain will serve the challenges so players can have their records stored forever.
+**Smart Contracts**: For holding player challengers consensus over the daily state of the game.
+**Real time diffulty Setting**: -----------------
 
 ## Development Roadmap 🛠️
 
