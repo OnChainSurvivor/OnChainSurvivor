@@ -177,14 +177,15 @@ Follow these steps to set up Onchain Survivor on your local machine:
 ### 💿Installation💿
 - Download the client release and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
 
+I expect In the future the game will not need a server as I will take take to tidy the code.
+
 A Web3 Wallet is required to participate in the ranks!
 
 ## 🎮How to Survive🎮
 
--   **Connect wallet, and Request a run from the Hall of survivors**
--   **OR Join a run**: Enter an address and click "Join Room" to connect with survivor currenly playing.
--   **Move Your survivor**: Use the arrow keys, on screen joystick, WASD or IJKL to move your character around the 3D environment.
+-   **Move Your survivor to start**: Use the arrow keys, on screen joystick, WASD or IJKL to move your character around the 3D environment.
 -   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time. Every choice affects your gameplay. Every Ability you choose is significant, so choose wisely.
+-   **Connect wallet, Record your run to the Hall of survivors**: Use your favorite wallet, to record into the blockchain.
 
 ## 🤝Contributing🤝
 
@@ -207,7 +208,8 @@ This project license is currently [TBD].
 -   **OpenAI ChatGPT**: For making development great again ❤️.
 -   **Microsoft Copilot**: Best Artist i've ever known ❤️.
 -   **Adobe Mixamo**: Best 3D Animator ❤️.
--   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License
+-   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License.
+-   **Tensor Flow**: -------------------.
 
 ## 📬 Contact
 
