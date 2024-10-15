@@ -3148,7 +3148,7 @@ this.meshScaleThreshold = 0.1;
                 for (let j = 0; j < illuminatingPositions.length; j++) {
                     const lightPos = illuminatingPositions[j];
                     const distanceToLight = enemy.position.distanceTo(lightPos);
-                    if (distanceToLight <= 9) { 
+                    if (distanceToLight <= (player.influenceRadius-1)) { 
                         isVisible = true;
                         break; 
                     }
@@ -3164,13 +3164,13 @@ this.meshScaleThreshold = 0.1;
             if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
-            } else if (this.radiusDirection === -1 && influenceRadius > 10) {
+            } else if (this.radiusDirection === -1 && influenceRadius > player.influenceRadius) {
                 this.gridGeometry.rotateY(this.gridRotationSpeed);
                 this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
             } else {
                 if (this.radiusDirection === 1) {
                     this.radiusDirection = -1;
-                    this.radiusTarget = 10;
+                    this.radiusTarget = player.influenceRadius;
                 } else {
                     this.radiusDirection = 0;
                 }
@@ -3599,10 +3599,10 @@ function createOrb(user) {
     scene.add(orb);
 
     const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
-    const shootSpeed = 0.25;
-    const orbLifetime = 1000; 
+    const shootSpeed = player.attackSpeed;
+    const orbLifetime = player.attackLTL; 
     const startTime = Date.now();
-    
+
     function updateOrb() {
         if (Date.now() - startTime > orbLifetime) {
             scene.remove(orb);
@@ -3661,7 +3661,7 @@ function updatePlayerMovement() {
 
     player.updateAbilities();
 
-    if (dropUpdateFrame++ % 60 === 0) { 
+    if (dropUpdateFrame++ % (60/ player.attackPerSecond) === 0) { 
         if (closeEnemy) {
             createOrb(player);
         }
@@ -3673,7 +3673,7 @@ function updatePlayerMovement() {
         const directionToPlayer = new THREE.Vector3().subVectors(player.position, item.position).normalize();
         const distanceToPlayer = item.position.distanceTo(player.position);
         const attractionSpeed = 0.15; 
-        if(distanceToPlayer<=9)
+        if(distanceToPlayer<=player.influenceRadius)
         item.position.add(directionToPlayer.multiplyScalar(attractionSpeed));
 
         item.boundingBox.setFromObject(item);
