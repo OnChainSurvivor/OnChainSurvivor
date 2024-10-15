@@ -313,7 +313,7 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
-const abilityTypes = [  
+const abilityTypes = [
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
         tooltip: "It would be cool if this could backfire and damage the user no?",
@@ -345,7 +345,6 @@ const abilityTypes = [
                 scene.remove(orb);
                 const index = lightObjects.indexOf(orb);
                 if (index > -1) lightObjects.splice(index, 1); 
-
             };
         },
     },
@@ -354,51 +353,42 @@ const abilityTypes = [
         tooltip: "Get the perfect shot. Increase critical hit chances and accuracy.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
         effect(user) { 
-            this.update = () => {};
-            this.lastHitTime = 0;
             let previousPosition = new THREE.Vector3().copy(user.position); 
-            const orb = {
-                mesh: null,
-                boundingBox: null,
-                leadFactor:-15,
-                beam:null,
-                beamMaterial : new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),
-                create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0ff000 });
-                    const geometry = new THREE.SphereGeometry(1, 16, 6);
-                    orb.mesh = new THREE.Mesh(geometry, material);
-                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                    scene.add(orb.mesh);
-                    lightObjects.push(orb);
-                }
-            };
+            this.lastHitTime = 0;
+            const orb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 6),
+                world.material 
+            );
+            orb.position.copy(user.position); 
+            orb.updateMatrixWorld(true);
+            orb.boundingBox = new THREE.Box3().setFromObject(orb);
+            lightObjects.push(orb);
+            scene.add(orb);
             this.update = () => {
                 const currentPosition = new THREE.Vector3().copy(user.position);
                 const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
                 const newOrbPosition = new THREE.Vector3(
-                    user.position.x + playerDirection.x * orb.leadFactor,
+                    user.position.x + playerDirection.x * user.range,
                     user.position.y + 15, 
-                    user.position.z + playerDirection.z * orb.leadFactor
+                    user.position.z + playerDirection.z * user.range 
                 );
-                orb.mesh.position.lerp(newOrbPosition, .05);
-                orb.boundingBox.setFromObject(orb.mesh);
+                orb.position.lerp(newOrbPosition, .05);
+                orb.boundingBox.setFromObject(orb);
                 previousPosition.copy(currentPosition);
  
                 scene.remove(orb.beam);
-                const testBeamGeometry = new THREE.BufferGeometry().setFromPoints([orb.mesh.position.clone(), closeEnemy]);
-                orb.beam = new THREE.Line(testBeamGeometry, orb.beamMaterial);
+                const testBeamGeometry = new THREE.BufferGeometry().setFromPoints([orb.position.clone(), closeEnemy]);
+                orb.beam = new THREE.Line(testBeamGeometry, new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),);
                 orb.beam.boundingBox = new THREE.Box3().setFromObject(orb.beam);
                 scene.add(orb.beam);
-
             };
-    
+
             this.deactivate = () => {
                 if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
+                    scene.remove(orb);
+                    orb = null;
                 }
             };
-            orb.create();
         },
     },  
     {title: "Data Blob",
@@ -3573,7 +3563,7 @@ world.setup(scene,camera,renderer);
 /*---------------------------------------------------------------------------
                             Abilities Controller
 ---------------------------------------------------------------------------*/
-ability = abilityTypes[0];
+ability = abilityTypes[1];
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
