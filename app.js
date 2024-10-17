@@ -316,7 +316,6 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 const abilityTypes = [
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
-        tooltip: "It would be cool if this could backfire and damage the user no?",
         thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
         effect(user) { 
             let previousPosition = new THREE.Vector3().copy(user.position); 
@@ -350,7 +349,6 @@ const abilityTypes = [
     },
     {title: "Sniping Bot",
         description: "Fast trading bot that liquidates opposing survivors.",
-        tooltip: "Get the perfect shot. Increase critical hit chances and accuracy.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
         effect(user) { 
             let previousPosition = new THREE.Vector3().copy(user.position); 
@@ -393,7 +391,6 @@ const abilityTypes = [
     },  
     {title: "Data Blob",
         description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
-        tooltip: " More health, more power.",
         thumbnail: 'Media/Abilities/BLOB.png',
         effect(user) { 
             this.update = () => {};
@@ -442,7 +439,6 @@ const abilityTypes = [
     },
     {title: "Bot Swarm",
         description: "Summons additional bots to assist in battle.",
-        tooltip: "Summon a bot swarm. Increase your firepower.",
         thumbnail: 'Media/Abilities/SWARM.png',
         effect(user) { 
             this.update = () => {};
@@ -496,7 +492,6 @@ const abilityTypes = [
     }, 
     {title: "Blockchain Backup",
         description: "The survivor keeps a backup of everything always in handy.",
-        tooltip: "Backing up like a secure blockchain!",
         thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
         effect(user) { 
             this.update = () => {};
@@ -550,7 +545,6 @@ const abilityTypes = [
     },      
     {title: "Anti-Rug Bot",
         description: "Detects and disables rug traps.",
-        tooltip: "No more rug-pulls for you. Detect and disable rug traps.",
         thumbnail: 'Media/Abilities/RUGBOT.png',
         effect(user) { 
             this.update = () => {}
@@ -594,7 +588,6 @@ const abilityTypes = [
     },
     {title: "Exploit Finder",
         description: "Scans the blockchain for harmful elements and neutralizes them.",
-        tooltip: "Finding bugs like a true degen!",
         thumbnail: "Media/Abilities/EXPLOITFINDER.png",
         effect(user) { 
             this.update = () => {}
@@ -638,7 +631,6 @@ const abilityTypes = [
     },
     {title: "Scalping Bot",
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
-        tooltip: "Like a true degen",
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
         effect(user) { 
             this.update = () => {}
@@ -689,7 +681,6 @@ const abilityTypes = [
     },
     { title: 'Onchain Trail',
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
-        tooltip: 'Powerful...interesting choice of words, to say the least.',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
         effect(user) { 
             this.update = () => {}
@@ -736,7 +727,6 @@ const abilityTypes = [
     },
     {title: "Veil of Decentralization",
         description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
-        tooltip: "Can't touch this!",
         thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
         effect(user) { 
             this.update = () => {}
@@ -773,7 +763,6 @@ const abilityTypes = [
 {
     title: "Code Refactor",
     description: "Rewrites and optimizes the Survivor's abilities, reducing their cooldowns.",
-    tooltip: "FAST",
     thumbnail: 'Media/Abilities/CODEREFACTOR.png',
     effect(user) { 
         this.update = () => {}
@@ -809,7 +798,6 @@ const abilityTypes = [
 },{
     title: "Sybil Attack",
     description: "Creates multiples identities, disorienting and damaging enemies.",
-    tooltip: "More alts than a telegram schizo",
     thumbnail:'Media/Abilities/SYBILATTACK.png',
     effect(user) { 
         this.update = () => {} 
@@ -817,7 +805,6 @@ const abilityTypes = [
 },{
     title: "Vote Manipulation",
     description: "Illegally uses the voting power of other survivors in range agaisnt their will, turning bonuses into penalties.",
-    tooltip: "no, CEXes totally have never ever done this.",
     thumbnail: 'Media/Abilities/VOTEMANIPULATION.png',
     effect(user) { 
         this.update = () => {} 
@@ -825,28 +812,24 @@ const abilityTypes = [
 },{
     title: "Airdrop Fraud",
     description: "Free, fake tokens fall from the sky, draining the survivors who interact with them.",
-    tooltip: "Free tokens! Just kidding, they're mine.",
     thumbnail: 'Media/Abilities/AIRDROPFRAUD.png', effect(user) { 
         this.update = () => {} 
     },
 },{
     title: "Identity Forge",
     description: "Specializes in creating a whole new persona, gaining the bonuses of a random class.",
-    tooltip: "Fake it till you make it, anon!",
     thumbnail: 'Media/Abilities/IDENTITYFORGE.png', effect(user) { 
         this.update = () => {} 
     },
 },{
     title: "Decentralized Vote Rigging",
     description: "By controlling the majority of the chain validators, the survivor gains a random bonus.",
-    tooltip: " ",
     thumbnail: 'Media/Abilities/VOTERIGGING.png',effect(user) { 
         this.update = () => {} 
     },
 },{
     title: "Confirm Block",
     description: "As transactions become confirmed and secured overtime, the survivor gains defensive bonuses",
-    tooltip: "Block confirmed!.",
     thumbnail: 'Media/Abilities/CONFIRMBLOCK.png',
 effect(user) { 
         this.update = () => {} 
@@ -855,7 +838,6 @@ effect(user) {
 {
     title: "Finality",
     description: "The blockchain inmutality makes it so  buried Survivors can not ever revive, If they take more than 6 blocks.",
-    tooltip: ">Your transaction was succesfull \n>the coin moons, you check your wallet\n>turns out your tx never got in",
     thumbnail: 'Media/Abilities/FINALITY.png',
 effect(user) { 
         this.update = () => {} 
@@ -863,7 +845,6 @@ effect(user) {
 },{
     title: "Copy Trading",
     description: "Creates a shield that absorbs multiple hits.",
-    tooltip: "No double-spending here, buddy!",
     thumbnail: 'Media/Abilities/COPYTRADING.png',
     effect(user) { 
         this.update = () => {} 
@@ -872,7 +853,6 @@ effect(user) {
 {
     title: "Double Spend Prevention ",
     description: "Creates a shield that absorbs multiple hits.",
-    tooltip: "No double-spending here, buddy!",
     thumbnail: 'Media/Abilities/DOUBLESPENDPREVENTION.png',
     effect(user) { 
         this.update = () => {} 
@@ -881,7 +861,6 @@ effect(user) {
 {
     title: "Overclock",
     description: "Greatly increases attack power for a brief period.",
-    tooltip: "Overclocked like a mining rig in a bull run!",
     thumbnail: 'Media/Abilities/OVERCLOCK.png',
     effect(user) { 
         this.update = () => {} 
@@ -890,7 +869,6 @@ effect(user) {
 {
     title: "Mining Rig",
     description: "Deploys a stationary turret that automatically attacks enemies.",
-    tooltip: "Mining while you sleep!",
     thumbnail: 'Media/Abilities/MININGRIG.png',
     effect(user) { 
         this.update = () => {} 
@@ -899,7 +877,6 @@ effect(user) {
 {
     title: "Energy Surge",
     description: "Temporarily increases attack speed and movement speed.",
-    tooltip: "Surging like the latest meme coin!",
     thumbnail: 'Media/Abilities/ENERGYSURGE.png',
     effect(user) { 
         this.update = () => {} 
@@ -908,7 +885,6 @@ effect(user) {
 {
     title: "PoS Migration",
     description: "Increases the player's defense.",
-    tooltip: "Migrated to PoS and feeling safe!",
     thumbnail: 'Media/Abilities/POSMIGRATION.png',
     effect(user) { 
         this.update = () => {} 
@@ -917,7 +893,6 @@ effect(user) {
 {
     title: "PoW Migration ",
     description: "Increases the player's attack power.",
-    tooltip: "Proof of Whacking! Stronger attacks.",
     thumbnail: 'Media/Abilities/POWMIGRATION.png',
     effect(user) { 
         this.update = () => {}
@@ -926,7 +901,6 @@ effect(user) {
 {
     title: "Governance Vote",
     description: "Grants a random beneficial effect based on player needs.",
-    tooltip: "DAO voted, gains distributed!",
     thumbnail: 'Media/Abilities/GOVERNANCEVOTE.png',
     effect(user) { 
         this.update = () => {} 
@@ -935,7 +909,6 @@ effect(user) {
 {
     title: "Protocol Upgrade",
     description: "Improves all abilities for a limited time.",
-    tooltip: "Upgraded like ETH 2.0!",
     thumbnail: "Media/Abilities/PROTOCOLUPGRADE.png",
     effect(user) { 
         this.update = () => {} 
@@ -944,7 +917,6 @@ effect(user) {
 {
     title: "Network Upgrade ",
     description: "Grants a significant buff to a random ability.",
-    tooltip: "Upgrade the network. Buff a random ability.",
     thumbnail: "Media/Abilities/NETWORKUPGRADE.png",
     effect(user) { 
         this.update = () => {}
@@ -953,7 +925,6 @@ effect(user) {
 {
     title: "Quantum Encryption",
     description: "Creates a shield that reduces incoming damage.",
-    tooltip: "Encrypt your defenses. Reduce damage taken.",
     thumbnail: "Media/Abilities/QUANTUMENCRYPTION.png",
     effect(user) { 
         this.update = () => {}
@@ -961,7 +932,6 @@ effect(user) {
 },{
     title: "Transaction Fee",
     description: "Reduces the cooldown of all abilities.",
-    tooltip: "Pay the fee, cut the wait. Reduce your cooldowns.",
     thumbnail: 'Media/Abilities/TRANSACTIONFEE.png',
     effect(user) { 
         this.update = () => {}
@@ -970,7 +940,6 @@ effect(user) {
 {
     title: "Transaction Fee Burn",
     description: "Reduces enemy resources by burning their assets.",
-    tooltip: "Burned like gas fees in a bull run!",
     thumbnail: 'Media/Abilities/FEEBURN.png',
     effect(user) { 
         this.update = () => {}
@@ -979,7 +948,6 @@ effect(user) {
 {
     title: "Whale Power",
     description: "Increases all stats for a short duration.",
-    tooltip: "Unleash the whale power. Dominate the field.",
     thumbnail: "Media/Abilities/WHALEPOWER.png",
     effect(user) { 
         this.update = () => {}
@@ -988,7 +956,6 @@ effect(user) {
 {
     title: "Block Reward",
     description: "Heals the player for a portion of damage dealt.",
-    tooltip: "Reward yourself with health for your efforts.",
     thumbnail: 'Media/Abilities/BLOCKREWARD.png',
     effect(user) { 
         this.update = () => {} 
@@ -997,7 +964,6 @@ effect(user) {
 {
     title: "Crypto MultiSig",
     description: "Secures resources with multiple signatures.",
-    tooltip: "Securing like a multi-signature wallet!",
     thumbnail: 'Media/Abilities/CRYPTOMULTISIG.png',
     effect(user) { 
         this.update = () => {}
@@ -1005,7 +971,6 @@ effect(user) {
 },{
     title: "Transaction Sign",
     description: "Secures resources with a single signature.",
-    tooltip: "Securing like a multi-signature wallet!",
     thumbnail: 'Media/Abilities/CRYPTOSIGN.png',
     effect(user) { 
         this.update = () => {}
@@ -1014,7 +979,6 @@ effect(user) {
 {
     title: "Staking Rewards",
     description: "Provides periodic healing to all allies.",
-    tooltip: "Stake and earn. Heal over time.",
     thumbnail: 'Media/Abilities/STAKINGREWARD.png',
     effect(user) { 
         this.update = () => {}
@@ -1023,7 +987,6 @@ effect(user) {
 {
     title: "DAO Governance",
     description: "Empowers allies with decision-making buffs.",
-    tooltip: "Collective power like a DAO!",
     thumbnail: 'Media/Abilities/DAOGOVERNANCE.png',
     effect(user) { 
         this.update = () => {}
@@ -1032,7 +995,6 @@ effect(user) {
 {
     title: "Finger Pointing",
     description: "Implements a major change, significantly debuffing enemies.",
-    tooltip: "Implement protocol governance. Buff allies and debuff enemies.",
     thumbnail: 'Media/Abilities/FINGER.png',
     effect(user) { 
         this.update = () => {}
@@ -1041,7 +1003,6 @@ effect(user) {
 {
     title: "Surprise Liquidation",
     description: "Causes a massive area-of-effect damage.",
-    tooltip: "Liquidated harder than a leveraged trade gone wrong!",
     thumbnail: "Media/Abilities/LIQUIDATIONEVENT.png",
     effect(user) { 
         this.update = () => {} 
@@ -1050,7 +1011,6 @@ effect(user) {
 {
     title: "Price Divergence ",
     description: "Confuses enemies, causing them to attack each other.",
-    tooltip: "Create price divergence. Confuse enemies to attack each other.",
     thumbnail: "Media/Abilities/DIVERGENCE.png",
     effect(user) { 
         this.update = () => {}
@@ -1059,7 +1019,6 @@ effect(user) {
 {
     title: "Compliance Order",
     description: "Forces enemies to move towards the player, taking damage over time.",
-    tooltip: "Issue a compliance order. Force enemies to move towards you and take damage.",
     thumbnail: "Media/Abilities/COMPLIANCEORDER.png",
     effect(user) { 
         this.update = () => {}
@@ -1067,7 +1026,6 @@ effect(user) {
 },{
     title: "Entanglement",
     description: "Links enemies, causing damage to spread among them.",
-    tooltip: "Entangle your enemies. Damage spreads.",
     thumbnail: "Media/Abilities/ENTANGLEMENT.png",
     effect(user) { 
         this.update = () => {}
@@ -1076,7 +1034,6 @@ effect(user) {
 {
     title: "Decentralized Network",
     description: "Summons allies to assist in battle.",
-    tooltip: "Rally the network. Summon allies to join the fight.",
     thumbnail: 'Media/Abilities/DECENTRALIZEDNETWORK.png',
     effect(user) { 
         this.update = () => {}
@@ -1084,7 +1041,6 @@ effect(user) {
 },{
     title: "Liquidity Pool",
     description: "Creates a pool that heals allies and damages enemies.",
-    tooltip: "Providing liquidity like a degen in a farm!",
     thumbnail: 'Media/Abilities/LIQUIDITYPOOL.png',
     effect(user) { 
         this.update = () => {}
@@ -1092,7 +1048,6 @@ effect(user) {
 },{
     title: "Initial DEX Offering",
     description: "Increases allies' attack power.",
-    tooltip: "Launch on the DEX. Pump up those attacks.",
     thumbnail: 'Media/Abilities/INITIALDEXOFFERING.png',
     effect(user) { 
         this.update = () => {}
@@ -1100,7 +1055,6 @@ effect(user) {
 },{
     title: "No Coin FUD",
     description: "Decreases enemy attack power and movement speed.",
-    tooltip: "Spread FUD. Decrease enemy attack power and speed.",
     thumbnail: "Media/Abilities/NOCOINFUD.png",
     effect(user) { 
         this.update = () => {}
@@ -1108,7 +1062,6 @@ effect(user) {
 },{
     title: "Network Effect",
     description: "Increases the effectiveness of all abilities.",
-    tooltip: "Network effect in action. Boost all your powers.",
     thumbnail: 'Media/Abilities/NETWORKEFFECT.png',
     effect(user) { 
         this.update = () => {}
@@ -1117,7 +1070,6 @@ effect(user) {
 {
     title: "Chain Reaction",
     description: "Causes a chain reaction, revealing all enemies and drastically debuffing them while significantly buffing allies.",
-    tooltip: "Trigger a chain reaction. Reveal, debuff enemies, and buff allies.",
     thumbnail: 'Media/Abilities/CHAINREACTION.png',
     effect(user) { 
         this.update = () => {}
@@ -1126,7 +1078,6 @@ effect(user) {
 {
     title: "FOMO Wave",
     description: "Induces fear of missing out, causing enemies to rush towards the player.",
-    tooltip: "Create a wave of FOMO. Draw enemies towards you.",
     thumbnail: "Media/Abilities/FOMO.png",
     effect(user) { 
         this.update = () => {}
@@ -1135,7 +1086,6 @@ effect(user) {
 {
     title: "Chain Analysis",
     description: "Reveals hidden enemies and tracks their movements.",
-    tooltip: "Analyze the chain. Reveal and track enemies.",
     thumbnail: "Media/Abilities/ANALYSIS.png",
     effect(user) { 
         this.update = () => {}
@@ -1144,7 +1094,6 @@ effect(user) {
 {
     title: "Liquidation Wave",
     description: "Deals area-of-effect damage and reduces enemy defenses.",
-    tooltip: "Create a liquidation wave. Deal AoE damage and reduce enemy defenses.",
     thumbnail: "Media/Abilities/MASSLIQUIDATION.png",
     effect(user) { 
         this.update = () => {}
@@ -1152,7 +1101,6 @@ effect(user) {
 },{
     title: "Quick Flip",
     description: "Deals instant damage to nearby enemies.",
-    tooltip: "Quick flip. Deal instant damage.",
     thumbnail: "Media/Abilities/QUICKFLIP.png",
     effect(user) { 
         this.update = () => {}
@@ -1161,7 +1109,6 @@ effect(user) {
 {
     title: "Dollar Cost average",
     description: "Deals Slow damage to nearby enemies.",
-    tooltip: "Deal Slow damage.",
     thumbnail: "Media/Abilities/DCA.png",
     effect(user) { 
         this.update = () => {}
@@ -1170,7 +1117,6 @@ effect(user) {
 {
     title: "Jackpot",
     description: "Hits the jackpot, dealing massive damage to all enemies and providing significant buffs to allies.",
-    tooltip: "Hit the jackpot. Massive damage and significant buffs.",
     thumbnail: "Media/Abilities/JACKPOT.png",
     effect(user) { 
         this.update = () => {}
@@ -1178,7 +1124,6 @@ effect(user) {
 },{
     title: "Airdrop",
     description: "Drops valuable items or buffs to allies.",
-    tooltip: "Free goodies like an airdrop!",
     thumbnail: 'Media/Abilities/AIRDROP.png',
     effect(user) { 
         this.update = () => {}
@@ -1187,7 +1132,6 @@ effect(user) {
 {
     title: "Blockchain Stress Test ",
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
-    tooltip: "Conduct a stress test. Increase enemy damage and reduce speed.",
     thumbnail: 'Media/Abilities/STRESSTEST.png',
     effect(user) { 
         this.update = () => {}
@@ -1196,7 +1140,6 @@ effect(user) {
 {
     title: "Feature Test ",
     description: "Temporarily boosts allies' abilities.",
-    tooltip: "Test features. Temporarily boost ally abilities.",
     thumbnail: 'Media/Abilities/FEATURETEST.png',
     effect(user) { 
         this.update = () => {}
@@ -1205,7 +1148,6 @@ effect(user) {
 {
     title: "Oracle Insight",
     description: "Predicts enemy movements, increasing evasion.",
-    tooltip: "Seeing the future like an oracle!",
     thumbnail: 'Media/Abilities/ORACLEINSIGHT.png',
     effect(user) { 
         this.update = () => {}
@@ -1214,7 +1156,6 @@ effect(user) {
 {
     title: "Whale Buy",
     description: "Unleashes a powerful area-of-effect attack, representing a large buy order.",
-    tooltip: "Make a whale buy. Execute a powerful area-of-effect attack.",
     thumbnail: "Media/Abilities/WHALEBUY.png",
     effect(user) { 
         this.update = () => {}
@@ -1223,7 +1164,6 @@ effect(user) {
 {
     title: " Trilemma Mastery",
     description: "Master the trilemma by providing significant buffs to attack, defense, and movement speed while weakening enemies.",
-    tooltip: "Achieve trilemma mastery. Boost attack, defense, and movement speed while weakening enemies.",
     thumbnail: "Media/Abilities/LAW.png",
     effect(user) { 
         this.update = () => {}
@@ -1232,7 +1172,6 @@ effect(user) {
 {
     title: "Oracle Manipulation",
     description: "Disrupts enemy abilities based on false data.",
-    tooltip: "Manipulated just like those price feeds!",
     thumbnail: "Media/Abilities/ORACLEMANIPULATION.png",
     effect(user) { 
         this.update = () => {} 
@@ -1241,7 +1180,6 @@ effect(user) {
 {
     title: "Market Manipulation ",
     description: "Temporarily controls enemy movements.",
-    tooltip: "Manipulate the market. Control enemy movements.",
     thumbnail: "Media/Abilities/MARKETMANIPULATION.png",
     effect(user) { 
         this.update = () => {}
@@ -1250,7 +1188,6 @@ effect(user) {
 {
     title: "Impermanent Loss",
     description: "Reduces damage taken from all sources.",
-    tooltip: "Shield against impermanent loss. Take less damage.",
     thumbnail: 'Media/Abilities/IMPERMANENTLOSS.png',
     effect(user) { 
         this.update = () => {}
@@ -1259,7 +1196,6 @@ effect(user) {
 {
     title: "Tripool",
     description: "Creates three separate pools that buff allies' attack power.",
-    tooltip: "Triple the pools, triple the power. Buff your allies.",
     thumbnail: 'Media/Abilities/TRIPOOL.png',
     effect(user) { 
         this.update = () => {}
@@ -1268,7 +1204,6 @@ effect(user) {
 {
     title: "Rug Pull",
     description: "Instantly removes buffs from enemies.",
-    tooltip: "Rugged like a failed project!",
     thumbnail: 'Media/Abilities/RUG.png',
     effect(user) { 
         this.update = () => {}
@@ -1277,7 +1212,6 @@ effect(user) {
 {
     title: "Debt Collector",
     description: "Focuses on sustained damage and debuffs.",
-    tooltip: "Be the debt collector. Sustain damage and apply debuffs.",
     thumbnail: "Media/Abilities/DEBTCOLLECTOR.png",
     effect(user) { 
         this.update = () => {}
@@ -1286,7 +1220,6 @@ effect(user) {
 {
     title: "Market Swing",
     description: "Temporarily increases critical hit chance and attack speed.",
-    tooltip: "Ride the market swing. Increase critical hit chance and attack speed.",
     thumbnail: "Media/Abilities/MARKETSWING.png",
     effect(user) { 
         this.update = () => {}
@@ -1295,7 +1228,6 @@ effect(user) {
 {
     title: "Market Maker",
     description: "Balances the battlefield by adjusting enemy and ally stats.",
-    tooltip: "Balancing like a true market maker!",
     thumbnail: 'Media/Abilities/MARKETMAKER.png',
     effect(user) { 
         this.update = () => {}
@@ -1304,7 +1236,6 @@ effect(user) {
 {
     title: "Two Pool",
     description: "Creates two separate pools that buff allies' attack speed.",
-    tooltip: "Double the pools, double the speed. Boost your allies' attack rate.",
     thumbnail: 'Media/Abilities/TWOPOOL.png',
     effect(user) { 
         this.update = () => {}
@@ -1313,7 +1244,6 @@ effect(user) {
 {
     title: "Crypto Bridge",
     description: "Transfers resources between allies.",
-    tooltip: "Bridging like cross-chain assets!",
     thumbnail: 'Media/Abilities/BRIDGE.png',
     effect(user) { 
         this.update = () => {}
@@ -1322,7 +1252,6 @@ effect(user) {
 {
     title: "Buyout Power",
     description: "Temporarily takes control of an enemy, turning them into an ally.",
-    tooltip: "Leverage your buyout power. Control an enemy.",
     thumbnail: 'Media/Abilities/BUYPOWER.png',
     effect(user) { 
         this.update = () => {}
@@ -1331,7 +1260,6 @@ effect(user) {
 {
     title: "Merkle Proof",
     description: "Verifies resources securely.  preventing theft",
-    tooltip: "Proof like a Merkle tree!",
     thumbnail: 'Media/Abilities/MERKLE.png',
     effect(user) { 
         this.update = () => {}
@@ -1340,7 +1268,6 @@ effect(user) {
 {
     title: "Compliance Check",
     description: "Forces enemies to slow down and take damage over time.",
-    tooltip: "Ensure compliance. Slow down enemies and deal damage.",
     thumbnail: 'Media/Abilities/COMPLIANCE.png',
     effect(user) { 
         this.update = () => {}
@@ -1349,7 +1276,6 @@ effect(user) {
 {
     title: "Crypto Portfolio",
     description: "Increases the efficiency of resource gathering.",
-    tooltip: "Boosting like a diversified portfolio!",
     thumbnail: 'Media/Abilities/FOLIO.png',
     effect(user) { 
         this.update = () => {}
@@ -1357,7 +1283,6 @@ effect(user) {
 },{
     title: "Zodiac Prediction ",
     description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
-    tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     thumbnail: 'Media/Abilities/ZODIAC.png',
     effect(user) { 
         this.update = () => {}
@@ -1366,7 +1291,6 @@ effect(user) {
 {
     title: "DeFi Yield",
     description: "Periodically grants a boost in resources.",
-    tooltip: "APY like a degen farm!",
     thumbnail: 'Media/Abilities/DEFIYIELD.png',
     effect(user) { 
         this.update = () => {} 
@@ -1375,7 +1299,6 @@ effect(user) {
 {
     title: 'Escrow Services',
     description: "Holds resources in escrow, releasing them after a delay.",
-    tooltip: "Escrow like a smart contract!",
     thumbnail: 'Media/Abilities/ESCROW.png',
     effect(user) { 
         this.update = () => {}
@@ -1384,7 +1307,6 @@ effect(user) {
 {
     title: 'Bitcoin Dominance ',
     description: "Temporarily controls all enemies, making them fight each other.",
-    tooltip: "Take total control. Enemies turn on each other.",
     thumbnail: 'Media/Abilities/DOMINANCE.png',
     effect(user) { 
         this.update = () => {}
@@ -1393,7 +1315,6 @@ effect(user) {
 {
     title: "NFT Disruptor",
     description: "Temporarily disables the effects of enemy NFTs.",
-    tooltip: "Disrupt like a true NFT master!",
     thumbnail: 'Media/Abilities/NFTDISRUPTOR.png',
     effect(user) { 
         this.update = () => {}
@@ -1402,7 +1323,6 @@ effect(user) {
 {
     title: "Blockchain Analysis",
     description: "Provides insights to increase strategy effectiveness.",
-    tooltip: "Analyzing like a blockchain expert!",
     thumbnail: 'Media/Abilities/BLOCKANALYSIS.png',
     effect(user) { 
         this.update = () => {}
@@ -1411,7 +1331,6 @@ effect(user) {
 {
     title: "Decentralized Finance Expertise",
     description: "Increases the effectiveness of all resource-gathering abilities.",
-    tooltip: "Go DeFi. Boost your resource gains.",
     thumbnail: 'Media/Abilities/EXPERTISE.png',
     effect(user) { 
         this.update = () => {}
@@ -1420,7 +1339,6 @@ effect(user) {
 {
     title: "Trader's Instinct ",
     description: "Enhances movement speed and reduces skill cooldowns in critical moments.",
-    tooltip: "Instincts kick in. Move faster and reduce cooldowns when it matters most.",
     thumbnail: 'Media/Abilities/INTUITION.png',
     effect(user) { 
         this.update = () => {}
@@ -1429,7 +1347,6 @@ effect(user) {
 {
     title: "Margin Call ",
     description: "Forces enemies to take damage over time.",
-    tooltip: "Issue a margin call. Inflict damage over time.",
     thumbnail: 'Media/Abilities/MARGINCALL.png',
     effect(user) { 
         this.update = () => {}
@@ -1438,7 +1355,6 @@ effect(user) {
 {
     title: "Perfect Arbitrage",
     description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
-    tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
     thumbnail: 'Media/Abilities/ARBITRAGE.png',
     effect(user) { 
         this.update = () => {}
@@ -1447,7 +1363,6 @@ effect(user) {
 {
     title: "Temperature Check",
     description: "Executes a perfect arbitrage, drastically increasing attack power and critical hit chance for a short period.",
-    tooltip: "Execute perfect arbitrage. Increase attack power and critical hit chance.",
     thumbnail: 'Media/Abilities/TEMPCHECK.png',
     effect(user) { 
         this.update = () => {}
@@ -1456,7 +1371,6 @@ effect(user) {
 {
     title: "Treasury Allocation",
     description: "Provides a large amount of resources to all allies.",
-    tooltip: "Allocate the treasury. Distribute the wealth.",
     thumbnail: 'Media/Abilities/TREASURYALLOC.png',
     effect(user) { 
         this.update = () => {}
@@ -1465,7 +1379,6 @@ effect(user) {
 {
     title: "Lucky Streak",
     description: "Temporarily increases critical hit chance and dodge rate.",
-    tooltip: "Ride a lucky streak. Increase critical hit chance and dodge rate.",
     thumbnail: 'Media/Abilities/STREAK.png',
     effect(user) { 
         this.update = () => {}
@@ -1474,7 +1387,6 @@ effect(user) {
 {
     title: "Self Custody",
     description: "Protects resources from being stolen.",
-    tooltip: "Secure like a custody service!",
     thumbnail: 'Media/Abilities/CUSTODY.png',
     effect(user) { 
         this.update = () => {}
@@ -1483,7 +1395,6 @@ effect(user) {
 {
     title: "Flash Crash",
     description: "Briefly stuns all enemies in the area.",
-    tooltip: "Stunning like a sudden market crash!",
     thumbnail: 'Media/Abilities/MARKETCRASH.png',
     effect(user) { 
         this.update = () => {}
@@ -1492,7 +1403,6 @@ effect(user) {
 {
     title: "Stake Defense",
     description: "Increases defense for a short period.",
-    tooltip: "Strengthen your defenses with stakes.",
     thumbnail: 'Media/Abilities/STAKEDEFENSE.png',
     effect(user) { 
         this.update = () => {} 
@@ -1502,7 +1412,6 @@ effect(user) {
 {
     title: "Final Release",
     description: "Launches the final release, significantly buffing all allies and debuffing all enemies.",
-    tooltip: "Release the final version. Buff allies and debuff enemies.",
     thumbnail: 'Media/Abilities/FINALRELEASE.png',
     effect(user) { 
         this.update = () => {}
@@ -1511,7 +1420,6 @@ effect(user) {
 {
     title: "Crypto Fork",
     description: "Creates a duplicate of an ability for a short time.",
-    tooltip: "Forking like a blockchain split!",
     thumbnail: 'Media/Abilities/CRYPTOFORK.png',
     effect(user) { 
         this.update = () => {}
@@ -1520,7 +1428,6 @@ effect(user) {
 {
     title: "Crypto Wallet",
     description: "Stores resources securely.",
-    tooltip: "Storing like a hardware wallet!",
     thumbnail: 'Media/Abilities/WALLET.png',
     effect(user) { 
         this.update = () => {}
@@ -1529,7 +1436,6 @@ effect(user) {
 {
     title: "Slashing Protection",
     description: "Reduces damage taken from critical hits.",
-    tooltip: "Protect against slashing. Reduce crit damage.",
     thumbnail: 'Media/Abilities/SLASHINGPROTECTION.png',
     effect(user) { 
         this.update = () => {}
@@ -1538,7 +1444,6 @@ effect(user) {
 {
     title: "Security Lockdown",
     description: "Reduces damage taken for a short period.",
-    tooltip: "Lock it down, secure the bag. Take less damage.",
     thumbnail: 'Media/Abilities/LOCKDOWN.png',
     effect(user) { 
         this.update = () => {}
@@ -1547,7 +1452,6 @@ effect(user) {
 {
     title: "Scalability Boost",
     description: "Increases attack speed and movement speed.",
-    tooltip: "Scaling up like a true degen, moving fast and striking hard.",
     thumbnail: 'Media/Abilities/SCALABILITYBOOST.png',
     effect(user) { 
         this.update = () => {}
@@ -1557,7 +1461,6 @@ effect(user) {
 {
     title: "ICO Hype",
     description: "Temporarily boosts all stats.",
-    tooltip: "Hyped like an ICO!",
     thumbnail: 'Media/Abilities/ICOHYPE.png',
     effect(user) { 
         this.update = () => {}
@@ -1566,7 +1469,6 @@ effect(user) {
 {
     title: "ReBalancing ",
     description: "Spreads damage taken to nearby enemies.",
-    tooltip: "Balance the load. Spread damage to nearby enemies.",
     thumbnail: 'Media/Abilities/REBALANCING.png',
     effect(user) { 
         this.update = () => {}
@@ -1575,7 +1477,6 @@ effect(user) {
 {
     title: "Crypto Rally",
     description: "Temporarily boosts all allies' speed.",
-    tooltip: "Rallying like a bull market!",
     thumbnail: 'Media/Abilities/RALLY.png',
     effect(user) { 
         this.update = () => {}
@@ -1584,7 +1485,6 @@ effect(user) {
 {
     title: "Crypto Whitelist",
     description: "Grants immunity to debuffs.",
-    tooltip: "Protected like a whitelist spot!",
     thumbnail: 'Media/Abilities/WHITELIST.png',
     effect(user) { 
         this.update = () => {}
@@ -1593,7 +1493,6 @@ effect(user) {
 {
     title: "Crypto Blacklist",
     description: "Grants immunity to buffs.",
-    tooltip: "Blocked",
     thumbnail: 'Media/Abilities/BLACKLIST.png',
     effect(user) { 
         this.update = () => {}
@@ -1602,7 +1501,6 @@ effect(user) {
 {
     title: "Pump and Dump",
     description: "Increases attack power significantly for a short duration, followed by a debuff.",
-    tooltip: "Pump it up, then brace for the dump.",
     thumbnail: 'Media/Abilities/PND.png',
     effect(user) { 
         this.update = () => {}
@@ -1611,7 +1509,6 @@ effect(user) {
 {
     title: "Pump",
     description: "Increases attack power significantly for a short duration",
-    tooltip: "Pump it up.",
     thumbnail: 'Media/Abilities/PUMP.png',
     effect(user) { 
         this.update = () => {}
@@ -1620,7 +1517,6 @@ effect(user) {
 {
     title: 'Lending Protocol',
     description: "Lends resources to allies temporarily.",
-    tooltip: "Lending like a DeFi protocol!",
     thumbnail: 'Media/Abilities/LENDING.png',
     effect(user) { 
         this.update = () => {}
@@ -1629,7 +1525,6 @@ effect(user) {
 {
     title: 'Token Lock',
     description: "Locks an enemy's abilities temporarily.",
-    tooltip: "Locked like funds in a smart contract!",
     thumbnail: 'Media/Abilities/TOKENLOCK.png',
     effect(user) { 
         this.update = () => {}
@@ -1638,7 +1533,6 @@ effect(user) {
 {
     title: "Locked In",
     description: "Maximize your profits and outpace the competition with unparalleled focus and strategic insight.",
-    tooltip: "Locked in and loaded! Maximize your profits and outpace the competition with unparalleled focus.",
     thumbnail: 'Media/Abilities/LOCKEDIN.png',
     effect(user) { 
         this.update = () => {}
@@ -1647,7 +1541,6 @@ effect(user) {
 {
     title: "Adaptive Trading",
     description: "Adapts to the situation, dealing damage based on the player's needs.",
-    tooltip: "Adapt and overcome. Your strikes change to fit the need.",
     thumbnail: 'Media/Abilities/ADAPTIVETRADING.png',
     effect(user) { 
         this.update = () => {}
@@ -1656,7 +1549,6 @@ effect(user) {
 {
     title: "Token Burn",
     description: "Permanently removes a portion of enemy resources.",
-    tooltip: "Burned like tokens in a supply reduction!",
     thumbnail: 'Media/Abilities/TOKENBURN.png',
     effect(user) { 
         this.update = () => {}
@@ -1665,7 +1557,6 @@ effect(user) {
 {
     title: "Delegation",
     description: "Allows the player to share buffs with allies.",
-    tooltip: "Delegate and elevate. Share the wealth.",
     thumbnail: 'Media/Abilities/DELEGATION.png',
     effect(user) { 
         this.update = () => {}
@@ -1674,7 +1565,6 @@ effect(user) {
 {
     title: "Protocol Mastery",
     description: "Master protocols to provide comprehensive buffs to all allies and debuff enemies significantly.",
-    tooltip: "Achieve protocol mastery. Provide extensive buffs and debuffs.",
     thumbnail: 'Media/Abilities/MASTERY.png',
     effect(user) { 
         this.update = () => {}
@@ -1683,7 +1573,6 @@ effect(user) {
 {
     title: "Protocol Exploit ",
     description: "Deals significant damage to a single target and restores health.",
-    tooltip: "Exploit vulnerabilities. Deal damage and restore health.",
     thumbnail: 'Media/Abilities/EXPLOIT.png',
     effect(user) { 
         this.update = () => {}
@@ -1692,7 +1581,6 @@ effect(user) {
 {
     title: "Protocol Patch",
     description: "Creates a temporary area that boosts allies' defenses.",
-    tooltip: "Deploy a patch. Boost allies' defenses.",
     thumbnail: 'Media/Abilities/PATCHDEPLOY.png',
     effect(user) { 
         this.update = () => {}
@@ -1701,7 +1589,6 @@ effect(user) {
 {
     title: "Inside Info",
     description: "Reveals hidden enemies and weak points.",
-    tooltip: "Gain inside information. Reveal hidden enemies and weak points.",
     thumbnail: 'Media/Abilities/INSIDEINFO.png',
     effect(user) { 
         this.update = () => {}
@@ -1710,7 +1597,6 @@ effect(user) {
 {
     title: "Debate",
     description: "Temporarily silences and weakens enemies.",
-    tooltip: "Engage in debate. Silence and weaken enemies.",
     thumbnail: 'Media/Abilities/DEBATE.png',
     effect(user) { 
         this.update = () => {}
@@ -1719,7 +1605,6 @@ effect(user) {
 {
     title: "Profit Taker ",
     description: "Buffs self and allies after defeating enemies.",
-    tooltip: "Take profits. Buff self and allies after defeating enemies.",
     thumbnail: 'Media/Abilities/PROFITTAKING.png',
     effect(user) { 
         this.update = () => {}
@@ -1728,7 +1613,6 @@ effect(user) {
 {
     title: "Regulatory Framework ",
     description: "Creates a barrier that blocks enemy movement.",
-    tooltip: "Establish a regulatory framework. Block enemy movement.",
     thumbnail: 'Media/Abilities/REGULATORYFRAMEWORK.png',
     effect(user) { 
         this.update = () => {}
@@ -1737,7 +1621,6 @@ effect(user) {
 {
     title: "Transaction Revert",
     description: "Teleports the player to a previous location, avoiding damage.",
-    tooltip: "Revert to a previous location. Avoid damage.",
     thumbnail: 'Media/Abilities/TXREVERT.png',
     effect(user) { 
         this.update = () => {}
@@ -1746,7 +1629,6 @@ effect(user) {
 {
     title: "Code Review",
     description: "Temporarily reveals enemy weaknesses and increases damage dealt.",
-    tooltip: "Review code. Reveal weaknesses and increase damage.",
     thumbnail: 'Media/Abilities/REVIEW.png',
     effect(user) { 
         this.update = () => {}
@@ -1755,7 +1637,6 @@ effect(user) {
 {
     title: "QA",
     description: "Enhances ally buffs and reduces enemy effectiveness.",
-    tooltip: "Quality assurance. Enhance buffs and reduce enemy effectiveness.",
     thumbnail: 'Media/Abilities/QUALITYASSURANCE.png',
     effect(user) { 
         this.update = () => {}
@@ -1764,7 +1645,6 @@ effect(user) {
 {
     title: "Let him Cook",
     description: "Over time, gains stats exponentially.",
-    tooltip: "Burned like tokens in a supply reduction!",
     thumbnail: 'Media/Abilities/COOK.png',
     effect(user) { 
         this.update = () => {}
@@ -1774,7 +1654,6 @@ effect(user) {
 {
     title: 'Token UnLock',
     description: "Locks an enemy's abilities temporarily.",
-    tooltip: "Locked like funds in a smart contract!",
     thumbnail: 'Media/Abilities/TOKENUNLOCK.png',
     effect(user) { 
         this.update = () => {}
@@ -1783,7 +1662,6 @@ effect(user) {
 {
     title: "Crop Rotation",
     description: "Switches between different buffs to suit the player's needs.",
-    tooltip: "Rotate crops. Switch between buffs.",
     thumbnail: 'Media/Abilities/ROTATION.png',
     effect(user) { 
         this.update = () => {}
@@ -1792,7 +1670,6 @@ effect(user) {
 {
     title: "Crypto Dapp",
     description: "Creates a decentralized application for resource generation.",
-    tooltip: "Building like a dApp developer!",
     thumbnail: 'Media/Abilities/DAPP.png',
     effect(user) { 
         this.update = () => {}
@@ -1801,7 +1678,6 @@ effect(user) {
 {
     title: "Crypto Bounty",
     description: "Rewards for defeating enemies.",
-    tooltip: "Bounties like finding bugs in protocols!",
     thumbnail: 'Media/Abilities/CRYPTOBOUNTY.png',
     effect(user) { 
         this.update = () => {}
@@ -1810,7 +1686,6 @@ effect(user) {
 {
     title: "Liquidity Vampire",
     description: "Steals resources and buffs self and allies.",
-    tooltip: "Be a liquidity vampire. Steal resources and buff allies.",
     thumbnail: "Media/Abilities/LIQUIDITYVAMPIRE.png",
     effect(user) { 
         this.update = () => {}
@@ -1819,7 +1694,6 @@ effect(user) {
 {
     title: "Malware Injection ",
     description: "Inflicts damage over time and reduces enemy attack speed.",
-    tooltip: "Inject malware. Damage and slow your enemies.",
     thumbnail: "Media/Abilities/BUG.png",
     effect(user) { 
         this.update = () => {}
@@ -1828,7 +1702,6 @@ effect(user) {
 {
     title:  "Network Consensus",
     description: "Achieves network consensus, significantly boosting allies' defense and providing damage immunity for a short period.",
-    tooltip: "Achieve network consensus. Boost defense and provide damage immunity.",
     thumbnail: "Media/Abilities/CONSENSUS.png",
     effect(user) { 
         this.update = () => {}
@@ -1837,7 +1710,6 @@ effect(user) {
 {
     title: "Chain Split",
     description: "Creates a duplicate of yourself to confuse enemies.",
-    tooltip: "Splitting like a forked chain!",
     thumbnail: 'Media/Abilities/CHAINSPLIT.png',
     effect(user) { 
         this.update = () => {}
@@ -1846,7 +1718,6 @@ effect(user) {
 {
     title: "Validator Uptime",
     description: "Increases the duration of all buffs.",
-    tooltip: "Stay online. Extend those buffs.",
     thumbnail: 'Media/Abilities/VALIDATORUPTIME.png',
     effect(user) { 
         this.update = () => {}
@@ -1855,7 +1726,6 @@ effect(user) {
 {
     title: "Exit Scam",
     description: "Teleports to a safe location and leaves a damaging decoy behind.",
-    tooltip: "Execute an exit scam. Teleport and leave a damaging decoy.",
     thumbnail: 'Media/Abilities/EXITSCAM.png',
     effect(user) { 
         this.update = () => {}
@@ -1864,7 +1734,6 @@ effect(user) {
 {
     title: "Sellout",
     description: "Trades a portion of your resources for a temporary power boost.",
-    tooltip: "Sellout for power. Trade resources for a boost.",
     thumbnail: 'Media/Abilities/SELLOUT.png',
     effect(user) { 
         this.update = () => {}
@@ -1873,7 +1742,6 @@ effect(user) {
 {
     title: "Protocol Crash",
     description: "Creates a zone where enemies take increased damage and have reduced speed.",
-    tooltip: "Crash the protocol. Increase damage and slow enemies.",
     thumbnail: 'Media/Abilities/PROTOCOLCRASH.png',
     effect(user) { 
         this.update = () => {}
@@ -1882,7 +1750,6 @@ effect(user) {
 {
     title: "Trading Frenzy",
     description: "Increases speed and critical hit chance drastically for a short time.",
-    tooltip: "Enter a trading frenzy. Maximum speed and precision.",
     thumbnail: 'Media/Abilities/TRADINGFRENZY.png',
     effect(user) { 
         this.update = () => {}
@@ -1891,7 +1758,6 @@ effect(user) {
 {
     title: "Hash Power",
     description: "Temporarily increases attack power.",
-    tooltip: "Harness the power of the hash. Strike with more force.",
     thumbnail: 'Media/Abilities/HASHPOWER.png',
     effect(user) { 
         this.update = () => {} 
@@ -1900,7 +1766,6 @@ effect(user) {
 {
     title: "Miner Network",
     description: "Creates a zone that damages enemies over time.",
-    tooltip: "Lay down the mines. Enemies beware.",
     thumbnail: 'Media/Abilities/MINERNETWORK.png',
     effect(user) { 
         this.update = () => {} 
@@ -1909,7 +1774,6 @@ effect(user) {
 {
     title: "Validator Support",
     description: "Summons a temporary ally to aid in battle.",
-    tooltip: "Call in support from a trusted validator.",
     thumbnail: 'Media/Abilities/VALIDATORSUPPORT.png',
     effect(user) { 
         this.update = () => {} 
@@ -1918,7 +1782,6 @@ effect(user) {
 {
     title: "Diamond Hands ",
     description: "Reduces damage taken significantly for a short period.",
-    tooltip: "Hold with diamond hands. Reduce damage taken.",
     thumbnail: 'Media/Abilities/DIAMONDHANDS.png',
     effect(user) { 
         this.update = () => {}
@@ -1927,7 +1790,6 @@ effect(user) {
 {
     title: "HODL",
     description: "Increases the player's defense.",
-    tooltip: "HODL strong. Boost your defense.",
     thumbnail: 'Media/Abilities/HODL.png',
     effect(user) { 
         this.update = () => {}
@@ -1936,7 +1798,6 @@ effect(user) {
 {
     title: "Titanium Support ",
     description: "Creates a barrier that absorbs damage.",
-    tooltip: "HODL the line. Create a damage-absorbing barrier.",
     thumbnail: 'Media/Abilities/SUPPORT.png',
     effect(user) { 
         this.update = () => {}
@@ -1945,7 +1806,6 @@ effect(user) {
 {
     title: 'The Citadel',
     description: "Constructs a powerful fortress that provides extensive protection to allies and significantly disrupts enemies.",
-    tooltip: "Build a network fortress. Offer extensive protection and disrupt enemies.",
     thumbnail: 'Media/Abilities/CITADEL.png',
     effect(user) { 
         this.update = () => {}
@@ -1954,7 +1814,6 @@ effect(user) {
 {
     title: "Total Shutdown",
     description: "Shuts down all enemy abilities and greatly reduces their stats for a short period.",
-    tooltip: "Initiate total shutdown. Disable and weaken enemies.",
     thumbnail: 'Media/Abilities/SHUTDOWN.png',
     effect(user) { 
         this.update = () => {}
@@ -1963,7 +1822,6 @@ effect(user) {
 {
     title: 'Market Stabilization',
     description: "Stabilizes prices, reducing enemy attack power and increasing ally defense.",
-    tooltip: "Stabilize prices. Reduce enemy attack power and boost ally defense.",
     thumbnail: 'Media/Abilities/STABILIZATION.png',
     effect(user) { 
         this.update = () => {}
@@ -1972,7 +1830,6 @@ effect(user) {
 {
     title: "Contract Breach",
     description: "Disables enemy abilities for a short period.",
-    tooltip: "Breach their systems. Disable enemy abilities.",
     thumbnail: 'Media/Abilities/BREACH.png',
     effect(user) { 
         this.update = () => {}
@@ -1981,7 +1838,6 @@ effect(user) {
 {
     title: "Single Stake",
     description: "Increases health regeneration based on a single stake.",
-    tooltip: "Stake your claim. Boost health regeneration.",
     thumbnail: 'Media/Abilities/SINGLESTAKE.png',
     effect(user) { 
         this.update = () => {}
@@ -1990,7 +1846,6 @@ effect(user) {
 {
     title: "Capital Injection ",
     description: "Provides a significant health boost to the player or an ally.",
-    tooltip: "Inject capital. Boost health significantly.",
     thumbnail: 'Media/Abilities/CAPITALINJECTION.png',
     effect(user) { 
         this.update = () => {}
@@ -1999,7 +1854,6 @@ effect(user) {
 {
     title: "Due Diligence",
     description: "Reveals enemies' weaknesses and reduces their defenses.",
-    tooltip: "Conduct due diligence. Know and weaken your enemies.",
     thumbnail: 'Media/Abilities/DD.png',
     effect(user) { 
         this.update = () => {}
@@ -2008,7 +1862,6 @@ effect(user) {
 {
     title: "Funding Boost ",
     description: "Increases resource generation for a short period.",
-    tooltip: "Boost your funding. Increase resource generation.",
     thumbnail: 'Media/Abilities/FUNDINGBOOST.png',
     effect(user) { 
         this.update = () => {}
@@ -2017,7 +1870,6 @@ effect(user) {
 {
     title: "Firewall Fort",
     description: "Increases the player's defense temporarily.",
-    tooltip: "Raise your firewall. Increase defense.",
     thumbnail: 'Media/Abilities/FIREWALL.png',
     effect(user) { 
         this.update = () => {}
@@ -2026,7 +1878,6 @@ effect(user) {
 {
     title: "DeFi Supremacy",
     description: "Establishes complete DeFi dominance, significantly enhancing all aspects of resource generation and providing massive buffs to allies.",
-    tooltip: "Achieve DeFi supremacy. Enhance resource generation and buff allies extensively.",
     thumbnail: 'Media/Abilities/DEFISUPREMACY.png',
     effect(user) { 
         this.update = () => {}
@@ -2035,7 +1886,6 @@ effect(user) {
 {
     title: "Leveraged Yield",
     description: "Increases resource generation for a short period.",
-    tooltip: "Boost yield. Increase resource generation temporarily.",
     thumbnail: 'Media/Abilities/LEVERAGEDYIELD.png',
     effect(user) { 
         this.update = () => {}
@@ -2044,7 +1894,6 @@ effect(user) {
 {
     title: "Collector Frenzy",
     description: "Calls upon devoted collectors to swarm enemies, dealing massive damage.",
-    tooltip: "Collectors are on the hunt! Unleash their frenzy on your foes.",
     thumbnail: 'Media/Abilities/COLLECTORSFRENZY.png',
     effect(user) { 
         this.update = () => {}
@@ -2053,7 +1902,6 @@ effect(user) {
 {
     title: 'Capitulation',
     description: "Spreads widespread fear and panic, causing enemies to lose resources and morale.",
-    tooltip: "Instill capitulation. Cause widespread fear and resource loss.",
     thumbnail: 'Media/Abilities/CAPITULATION.png',
     effect(user) { 
         this.update = () => {}
@@ -2062,7 +1910,6 @@ effect(user) {
 {
     title: "Maxi Ascendancy",
     description: "Ascends to a state of maximum power, drastically increasing all stats and providing powerful buffs to allies for a short period.",
-    tooltip: "Achieve maxi ascendancy. Drastically boost stats and buff allies.",
     thumbnail: 'Media/Abilities/MAXIAS.png',
     effect(user) { 
         this.update = () => {}
@@ -2071,7 +1918,6 @@ effect(user) {
 {
     title: "Inspection",
     description: "Reveals and debuffs all enemies in a targeted area.",
-    tooltip: "Conduct an inspection. Reveal and debuff enemies.",
     thumbnail: 'Media/Abilities/INSPECTION.png',
     effect(user) { 
         this.update = () => {}
@@ -2080,7 +1926,6 @@ effect(user) {
 {
     title: "Exit Hatch ",
     description: "Grants one extra life.",
-    tooltip: "One chance to escape from a L2+.",
     thumbnail: 'Media/Abilities/EXITHATCH.png',
     effect(user) { 
         this.update = () => {}
@@ -2089,7 +1934,6 @@ effect(user) {
 {
     title: "Chain Reorg",
     description: "Rewinds time slightly to undo recent events.",
-    tooltip: "Reorg'd like a 51% attack!",
     thumbnail: 'Media/Abilities/CHAINREORG.png',
     effect(user) { 
         this.update = () => {} 
@@ -2098,7 +1942,6 @@ effect(user) {
 {
     title: "Pact with the Devil",
     description: "Grants a significant boost in power at the cost of health.",
-    tooltip: "Make a pact. Gain power, but lose health.",
     thumbnail: 'Media/Abilities/PACTWITHTHEDEVIL.png',
     effect(user) { 
         this.update = () => {}
@@ -2107,7 +1950,6 @@ effect(user) {
 {
     title: "Congestion",
     description: "Slows all enemies for a short duration.",
-    tooltip: "Freeze the network! Slow down all activity.",
     thumbnail: "Media/Abilities/CONGESTION.png",
     effect(user) { 
         this.update = () => {}
@@ -2116,7 +1958,6 @@ effect(user) {
 {
     title: "Mining Frenzy",
     description: "Triggers a mining frenzy, drastically increasing attack power and speed for a short period.",
-    tooltip: "Enter a mining frenzy. Drastically increase attack power and speed.",
     thumbnail: "Media/Abilities/MININGFRENZY.PNG",
     effect(user) { 
         this.update = () => {}
@@ -2125,8 +1966,6 @@ effect(user) {
 {
     title: "DDoS Attack",
     description: "Stuns all enemies for a short duration.",
-    tooltip: "Overloaded like a cheap DDoS script!",
-    tooltip: "Freeze the network! Slow down all activity.",
     thumbnail: "Media/Abilities/DDOS.png",
     effect(user) { 
         this.update = () => {} 
@@ -2135,7 +1974,6 @@ effect(user) {
 {
     title: "Interest Yield",
     description: "Gradually regenerates health over time.",
-    tooltip: "Reap the benefits of your interest. Regenerate health.",
     thumbnail: 'Media/Abilities/INTERESTYIELD.png',
     effect(user) { 
         this.update = () => {} 
@@ -2144,7 +1982,6 @@ effect(user) {
 {
     title: "Monolithic Design",
     description: "Provides a significant health boost.",
-    tooltip: "Built like a monolith. More health, more power.",
     thumbnail: 'Media/Abilities/MONOLITHICDESIGN.png',
     effect(user) { 
         this.update = () => {}
@@ -2153,7 +1990,6 @@ effect(user) {
 {
     title: "Multilayer Design",
     description: "Adds an additional layer of defense.",
-    tooltip: "Layer up! More defense, less worry.",
     thumbnail: 'Media/Abilities/MULTILAYERDESIGN.png',
     effect(user) { 
         this.update = () => {}
@@ -2162,7 +1998,6 @@ effect(user) {
 {
     title: "Layer 2 Scaling",
     description: "Reduces the cost and cooldown of all abilities.",
-    tooltip: "Scale up and save! Reduce costs and cooldowns.",
     thumbnail: 'Media/Abilities/LAYERSCALING.png',
     effect(user) { 
         this.update = () => {}
@@ -2171,7 +2006,6 @@ effect(user) {
 {
     title: "Market Patience",
     description: "Gradually regenerates health over time.",
-    tooltip: "Show market patience. Gradually regenerate health.",
     thumbnail: 'Media/Abilities/PATIENCE.png',
     effect(user) { 
         this.update = () => {}
@@ -2180,7 +2014,6 @@ effect(user) {
 {
     title: "Liquidity Mining",
     description: "Generates resources over time.",
-    tooltip: "Earning passively like liquidity mining!",
     thumbnail: 'Media/Abilities/LIQUIDITYMINING.png',
     effect(user) { 
         this.update = () => {}
@@ -2189,7 +2022,6 @@ effect(user) {
 {
     title: "Gas Optimization",
     description: "Decreases mana cost of all abilities.",
-    tooltip: "Optimize your gas, save on costs. Efficiency wins.",
     thumbnail: 'Media/Abilities/GASOPTIMIZATION.png',
     effect(user) { 
         this.update = () => {}
@@ -2198,7 +2030,6 @@ effect(user) {
 {
     title: "Bearish Sentiment",
     description: "Reduces enemies' attack power.",
-    tooltip: "Bearish like a market downturn!",
     thumbnail: 'Media/Abilities/BEARISHSENTIMENT.png',
     effect(user) { 
         this.update = () => {}
@@ -2207,7 +2038,6 @@ effect(user) {
 {
     title: "Whale Games",
     description: "Uses overwhelming power to crush enemies.",
-    tooltip: "Whale-sized like a market mover!",
     thumbnail: 'Media/Abilities/CRYPTOWHALE.png',
     effect(user) { 
         this.update = () => {}
@@ -2216,7 +2046,6 @@ effect(user) {
 {
     title: "Bullish Sentiment",
     description: "Increases allies' attack power.",
-    tooltip: "Bullish like a market rally!",
     thumbnail: 'Media/Abilities/BULLISHSENTIMENT.png',
     effect(user) { 
         this.update = () => {}
@@ -2225,7 +2054,6 @@ effect(user) {
 {
     title: "Vampire ATTACK",
     description: "Steals resources.",
-    tooltip: "Steal resources and buff allies.",
     thumbnail: "Media/Abilities/VAMPIREATTACK.png",
     effect(user) { 
         this.update = () => {}
@@ -2234,7 +2062,6 @@ effect(user) {
 {
     title: "Black Swan Event",
     description: "Creates a chaotic event that massively disrupts enemy abilities and resources while providing significant buffs to allies.",
-    tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     thumbnail: "Media/Abilities/BLACKSWAM.png",
     effect(user) { 
         this.update = () => {}
@@ -2243,7 +2070,6 @@ effect(user) {
 {
     title: "Dead Cat Bounce",
     description: "Temporarily makes the player invincible and greatly increases attack power.",
-    tooltip: "Unbreakable resolve. Become invincible and unleash your power.",
     thumbnail: 'Media/Abilities/DEADCATBOUNCE.png',
     effect(user) { 
         this.update = () => {}
@@ -2252,7 +2078,6 @@ effect(user) {
 {
     title: "White Swan Event",
     description: "Creates an event that massively benefits all market participants providing significant buffs.",
-    tooltip: "Trigger a black swan event. Cause chaos and gain massive advantages.",
     thumbnail: "Media/Abilities/WHITESWAM.png",
     effect(user) { 
         this.update = () => {}
@@ -2261,7 +2086,6 @@ effect(user) {
 {
     title: "Crab Market Action ",
     description: "Reverses buff and debuffs of everyone for the rest of the game .",
-    tooltip: "Trigger a Crab market action.",
     thumbnail: "Media/Abilities/CRABACTION.png",
     effect(user) { 
         this.update = () => {}
@@ -2270,7 +2094,6 @@ effect(user) {
 {
     title: 'Unicorn Startup',
     description: 'a very rare sight.',
-    tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     thumbnail: 'Media/Abilities/UNICORN.png',
     effect(user) { 
         this.update = () => {}
@@ -2279,7 +2102,6 @@ effect(user) {
 {
     title: "Male Astrology",
     description: "Predicts and reveals enemies' weaknesses, reducing their defenses.",
-    tooltip: "The zodiac reveals all. Know your enemies' weaknesses.",
     thumbnail: 'Media/Abilities/ASTROLOGY.png',
     effect(user) { 
         this.update = () => {}
@@ -2288,7 +2110,6 @@ effect(user) {
 {
     title: "NFT Enhancer",
     description: "Boosts the effects of your NFTs.",
-    tooltip: "Enhancing like an NFT upgrade!",
     thumbnail: 'Media/Abilities/NFTREWORK.png',
     effect(user) { 
         this.update = () => {}
@@ -2298,7 +2119,6 @@ effect(user) {
 {
     title: "Debt Drown ",
     description: "Provides a temporary boost to defense and health regeneration.",
-    tooltip: "Unyielding spirit. Boost your defense and health regen.",
     thumbnail: 'Media/Abilities/DEBTDROWN.png',
     effect(user) { 
         this.update = () => {}
@@ -2307,7 +2127,6 @@ effect(user) {
 {
     title: "NFT Marketplace",
     description: "Increases the drop rate of rare items.",
-    tooltip: "Trade NFTs. Find rare items more often.",
     thumbnail: 'Media/Abilities/NFTMARKET.png',
     effect(user) { 
         this.update = () => {}
@@ -2316,7 +2135,6 @@ effect(user) {
 {
     title: "Sanction",
     description: "Targets a single enemy, greatly reducing its speed and defense.",
-    tooltip: "Impose sanctions. Weaken a single enemy.",
     thumbnail: 'Media/Abilities/SANCTION.png',
     effect(user) { 
         this.update = () => {}
@@ -2325,7 +2143,6 @@ effect(user) {
 {
     title: "Scam Alert ",
     description: "Temporarily decreases enemies' attack power and movement speed.",
-    tooltip: "Sound the scam alert. Weaken your enemies.",
     thumbnail: 'Media/Abilities/SCAM.png',
     effect(user) { 
         this.update = () => {}
@@ -2335,7 +2152,6 @@ effect(user) {
 {
     title: "Double or Nothing ",
     description: "Randomly buffs or debuffs the player.",
-    tooltip: "Double or nothing. Randomly buff or debuff yourself.",
     thumbnail: 'Media/Abilities/DOUBLEORNOTHING.png',
     effect(user) { 
         this.update = () => {}
@@ -2344,7 +2160,6 @@ effect(user) {
 {
     title: "Skeptical Scholar",
     description: "Buffs allies' defense and reduces enemy effectiveness.",
-    tooltip: "Skeptical scholar. Buff allies' defense and reduce enemy effectiveness.",
     thumbnail: 'Media/Abilities/SKEPTIC.png',
     effect(user) { 
         this.update = () => {}
@@ -2353,7 +2168,6 @@ effect(user) {
 {
     title: 'Policy Overhaul',
     description: "Executes a policy overhaul, providing massive buffs to allies and drastically debuffing enemies across the battlefield.",
-    tooltip: "Execute a policy overhaul. Buff allies and debuff enemies significantly.",
     thumbnail: 'Media/Abilities/OVERHAUL.png',
     effect(user) { 
         this.update = () => {}
@@ -2363,7 +2177,6 @@ effect(user) {
 {
     title: "Lunar Cycle ",
     description: "Provides buffs or debuffs based on the current moon phase.",
-    tooltip: "Harness the power of the moon. Buffs and debuffs change with each phase.",
     thumbnail: 'Media/Abilities/LUNARCYCLE.png',
     effect(user) { 
         this.update = () => {}
@@ -2372,7 +2185,6 @@ effect(user) {
 {
     title: "Crypto Signal",
     description: "Calls for reinforcements to aid in battle.",
-    tooltip: "Signaling like a trading bot!",
     thumbnail: 'Media/Abilities/CRYPTOSIGNAL.png',
     effect(user) { 
         this.update = () => {}
@@ -2381,7 +2193,6 @@ effect(user) {
 {
     title: "Flash Loan",
     description: "Temporarily boosts resources for a short period.",
-    tooltip: "Leveraged like a flash loan exploit!",
     thumbnail: 'Media/Abilities/FLASHLOAN.png',
     effect(user) { 
         this.update = () => {}
@@ -2390,7 +2201,6 @@ effect(user) {
 {
     title: "Star Alignment ",
     description: "Increases critical hit chance and attack power when stars align.",
-    tooltip: "The stars have aligned! Your attacks become more powerful.",
     thumbnail: 'Media/Abilities/ALIGNMENT.png',
     effect(user) { 
         this.update = () => {}
@@ -2399,7 +2209,6 @@ effect(user) {
 {
     title: "Risk Taker",
     description: "High-risk, high-reward abilities.",
-    tooltip: "Take a risk. High-risk, high-reward abilities.",
     thumbnail: 'Media/Abilities/RISKTAKER.png',
     effect(user) { 
         this.update = () => {}
@@ -2408,7 +2217,6 @@ effect(user) {
 {
     title: "Shill",
     description: "Temporarily increases allies' attack power and speed.",
-    tooltip: "Shill your way to victory. Boost ally attack power and speed.",
     thumbnail: 'Media/Abilities/SHILLING.png',
     effect(user) { 
         this.update = () => {}
@@ -2417,7 +2225,6 @@ effect(user) {
 {
     title: "Compound Interest ",
     description: "Gradually increases attack power and defense over time.",
-    tooltip: "Compound interest. Gradually increase attack power and defense.",
     thumbnail: 'Media/Abilities/COMPOUND.png',
     effect(user) { 
         this.update = () => {}
@@ -2426,7 +2233,6 @@ effect(user) {
 {
     title: "Hype Train",
     description: "Summons a stampede of followers that trample enemies.",
-    tooltip: "Summon the hype train. Trample your enemies.",
     thumbnail: 'Media/Abilities/HYPETRAIN.png',
     effect(user) { 
         this.update = () => {}
@@ -2435,7 +2241,6 @@ effect(user) {
 {
     title: "Virality ",
     description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
-    tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
     thumbnail: 'Media/Abilities/VIRALITY.png',
     effect(user) { 
         this.update = () => {}
@@ -2444,7 +2249,6 @@ effect(user) {
 {
     title: "Viral Spread ",
     description: "Goes viral, drastically increasing the effectiveness of all abilities and summoning followers to fight alongside.",
-    tooltip: "Become a viral sensation. Amplify abilities and summon followers.",
     thumbnail: 'Media/Abilities/SPREAD.png',
     effect(user) { 
         this.update = () => {}
@@ -2453,7 +2257,6 @@ effect(user) {
 {
     title: "Second Best ",
     description: "Gradually increases attack power and defense over time.",
-    tooltip: "Compound interest. Gradually increase attack power and defense.",
     thumbnail: 'Media/Abilities/SECONDBEST.png',
     effect(user) { 
         this.update = () => {}
@@ -2462,7 +2265,6 @@ effect(user) {
 {
     title: "Martket Impact",
     description: "Enhances debuffs and controls enemy behavior.",
-    tooltip: "Critique crypto. Enhance debuffs and control enemies.",
     thumbnail: 'Media/Abilities/MARKETIMPACT.png',
     effect(user) { 
         this.update = () => {}
@@ -2471,7 +2273,6 @@ effect(user) {
 {
     title: "It's Over ",
     description: "over.",
-    tooltip: "Declare the end. Reduce enemy effectiveness and cause them to falter.",
     thumbnail: 'Media/Abilities/OVER.png',
     effect(user) { 
         this.update = () => {}
@@ -2480,7 +2281,6 @@ effect(user) {
 {
     title: "All In",
     description: "Deals massive damage to a single target but leaves the player vulnerable.",
-    tooltip: "Go all in. Deal massive damage but become vulnerable.",
     thumbnail: 'Media/Abilities/ALLIN.png',
     effect(user) { 
         this.update = () => {}
@@ -2489,7 +2289,6 @@ effect(user) {
 {
     title: "Token Swap",
     description: "Exchanges debuffs for buffs with enemies.",
-    tooltip: "Swapped like a dex trade!",
     thumbnail: 'Media/Abilities/COINSWAP.png',
     effect(user) { 
         this.update = () => {}
@@ -2498,7 +2297,6 @@ effect(user) {
 {
     title: 'Bug Fixing',
     description: "Fixes bugs in the code, restoring a small amount of health.",
-    tooltip: "Fix the bugs. Restore your health.",
     thumbnail: 'Media/Abilities/ASSISTEDBUGFIXING.png',
     effect(user) { 
         this.update = () => {}
@@ -2507,7 +2305,6 @@ effect(user) {
 {
     title: 'Upgrade Shiping',
     description: "Splits the player's attacks into multiple projectiles, hitting more enemies.",
-    tooltip: "Divide and conquer! Your attacks hit multiple targets.",
     thumbnail: 'Media/Abilities/SHIPPING.png',
     effect(user) { 
         this.update = () => {}
@@ -2516,7 +2313,6 @@ effect(user) {
 {
     title: "Protocol Raider",
     description: "Focuses on high-damage, single-target attacks.",
-    tooltip: "Raid protocols. High-damage, single-target attacks.",
     thumbnail: 'Media/Abilities/RAIDING.png',
     effect(user) { 
         this.update = () => {}
@@ -2526,7 +2322,6 @@ effect(user) {
 {
     title: "Sidechains",
     description: "Allows the player to create decoys that distract enemies.",
-    tooltip: "Sidechains for sidekicks! Distract your enemies.",
     thumbnail: "Media/Abilities/SIDECHAIN.png",
     effect(user) { 
         this.update = () => {}
@@ -2535,7 +2330,6 @@ effect(user) {
 {
     title: "Gas Limit",
     description: "Reduces the speed of all enemies in a large area.",
-    tooltip: "Set a gas limit. Reduce enemy speed in a large area.",
     thumbnail: "Media/Abilities/GASLIMIT.png",
     effect(user) { 
         this.update = () => {}
@@ -2544,7 +2338,6 @@ effect(user) {
 {
     title: "Critical Patch",
     description: "Deploys a critical patch, significantly buffing all allies and debuffing all enemies.",
-    tooltip: "Deploy a critical patch. Buff allies and debuff enemies.",
     thumbnail: "Media/Abilities/CRITICALPATCH.png",
     effect(user) { 
         this.update = () => {}
@@ -2553,7 +2346,6 @@ effect(user) {
 {
     title: 'Light Node Run',
     description: "Increases movement speed.",
-    tooltip: "Light on your feet, quick on your toes.",
     thumbnail: "Media/Abilities/LNRUN.png",
     effect(user) { 
         this.update = () => {}
@@ -2562,7 +2354,6 @@ effect(user) {
 {
     title: "Crypto Investigation",
     description: "Buffs self and allies based on revealed enemy locations.",
-    tooltip: "Investigate crypto. Buff self and allies based on enemy locations.",
     thumbnail: "Media/Abilities/CRYPTOINVESTIGATION.png",
     effect(user) { 
         this.update = () => {}
@@ -2571,7 +2362,6 @@ effect(user) {
 {
     title: "Criminal Hunt ",
     description: "Deals extra damage to recently revealed enemies.",
-    tooltip: "Hunt criminals. Deal extra damage to revealed enemies.",
     thumbnail: "Media/Abilities/CRIMINALHUNT.png",
     effect(user) { 
         this.update = () => {}
@@ -2580,7 +2370,6 @@ effect(user) {
 {
     title: "Transaction Trace",
     description: "Temporarily reduces enemy speed and reveals weak points.",
-    tooltip: "Trace transactions. Reduce speed and reveal weak points.",
     thumbnail: "Media/Abilities/TXTRACE.png",
     effect(user) { 
         this.update = () => {}
@@ -2589,7 +2378,6 @@ effect(user) {
 {
     title: "Protocol Drain",
     description: "Drains multiple protocols simultaneously, dealing massive damage to all enemies and providing significant resources to allies.",
-    tooltip: "Drain multiple protocols. Massive damage and resource gain.",
     thumbnail: "Media/Abilities/DRAIN.png",
     effect(user) { 
         this.update = () => {}
@@ -2598,7 +2386,6 @@ effect(user) {
 {
     title: "NFT Masterpiece",
     description: "Creates a stunning piece of digital art that distracts enemies and boosts allies' morale.",
-    tooltip: "A true masterpiece! Watch as enemies are mesmerized and allies are inspired.",
     thumbnail: "Media/Abilities/NFTMASTERPIECE.png",
     effect(user) { 
         this.update = () => {}
@@ -2607,7 +2394,6 @@ effect(user) {
 {
     title: "Whale Alert",
     description: "Marks the strongest enemy, increasing damage dealt to them",
-    tooltip: "Spotted a whale in the arena!",
     thumbnail: "Media/Abilities/WHALEALERT.png",
     effect(user) { 
         this.update = () => {}
@@ -2617,7 +2403,6 @@ effect(user) {
 {
     title: "Smart Contract Deployment",
     description: "Deploys a smart contract to trap and damage enemies.",
-    tooltip: "Caught in a gas war!",
     thumbnail: 'Media/Abilities/SMARTCONTRACT.png',
     effect(user) { 
         this.update = () => {}
@@ -2627,7 +2412,6 @@ effect(user) {
 {
     title: "Smart Contract Audit",
     description: "Identifies and negates enemy traps.",
-    tooltip: "Secure like a certified audit!",
     thumbnail: 'Media/Abilities/SMARTCONTRACTAUDIT.png',
     effect(user) { 
         this.update = () => {}
@@ -2636,7 +2420,6 @@ effect(user) {
 {
     title: "Smart Contract Hack",
     description: "Deals consistent damage over time to enemies.",
-    tooltip: "Exploiting vulnerabilities like a pro!",
     thumbnail: 'Media/Abilities/SMARTCONTRACTHACK.png',
     effect(user) { 
         this.update = () => {}
@@ -2645,7 +2428,6 @@ effect(user) {
 {
     title: "Quantum Key Exchange 🔑",
     description: "Transfers health from enemies to the player.",
-    tooltip: "Exchange health. Transfer from enemies to you.",
     thumbnail: 'Media/Abilities/QKEYEX.png',
     effect(user) { 
         this.update = () => {}
@@ -2654,7 +2436,6 @@ effect(user) {
 {
     title: "Bot Armada",
     description: "Summons an entire armada of bots for massive support and damage.",
-    tooltip: "Call in the bot armada. Maximum support and damage.",
     thumbnail: 'Media/Abilities/ARMADA.png',
     effect(user) { 
         this.update = () => {}
@@ -2663,7 +2444,6 @@ effect(user) {
 {
     title: "MEV Bot",
     description: "Drains health from enemies based on their movements.",
-    tooltip: "Front-running like an MEV bot!",
     thumbnail: 'Media/Abilities/MEVBOT.png',
     effect(user) { 
         this.update = () => {}
@@ -2672,7 +2452,6 @@ effect(user) {
 {
     title: "Fear Spread",
     description: "Spreads fear, causing enemies to flee in random directions.",
-    tooltip: "Spread fear. Enemies flee.",
     thumbnail: 'Media/Abilities/FEAR.png',
     effect(user) { 
         this.update = () => {}
@@ -2681,7 +2460,6 @@ effect(user) {
 {
     title: "FUD Storm",
     description: "Creates confusion among enemies, reducing their effectiveness.",
-    tooltip: "Causing FUD like a pro!",
     thumbnail: 'Media/Abilities/FUDSTORM.png',
     effect(user) { 
         this.update = () => {}
@@ -2690,7 +2468,6 @@ effect(user) {
 {
     title: "White Paper",
     description: "Grants temporary immunity to damage.",
-    tooltip: "Protected by the wisdom of Satoshi!",
     thumbnail: 'Media/Abilities/WHITEPAPER.png',
     effect(user) { 
         this.update = () => {}
@@ -2699,7 +2476,6 @@ effect(user) {
 {
     title: "Yellow Paper",
     description: "Grants temporary immunity to damage.",
-    tooltip: "Protected by the wisdom of Satoshi!",
     thumbnail: 'Media/Abilities/YELLOWPAPER.png',
     effect(user) { 
         this.update = () => {}
@@ -2786,7 +2562,6 @@ const worldTypes = [
     {title: 'The Dark Forest',
     class: 'World',
     description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
-    tooltip:'0.04 💀',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     challenge:challengeTypes[0],
     material:new THREE.ShaderMaterial({
@@ -3175,7 +2950,6 @@ this.meshScaleThreshold = 0.1;
 {title: 'Digital Goldland',
     class: 'World',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
-    tooltip:'15.000 U S D O L L A R S 💀 \n THERE IS NO SECOND BEST',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     material: new THREE.MeshPhysicalMaterial({
         reflectivity: 1.0,          
@@ -3827,10 +3601,9 @@ Entity.prototype.die = function() {
 ---------------------------------------------------------------------------*/
 const UI = {};
 
-UI.createTitleElement = function(text, title, classCSS) {
+UI.createTitleElement = function(text, classCSS) {
     const element = document.createElement('div');
     element.innerText = text;
-    element.title = title;
     element.classList.add(classCSS); 
     element.classList.add('rainbow-text'); 
     return element;
@@ -3844,10 +3617,10 @@ UI.createContainer = function(classNames = [], styles = {}) {
     return container;
 }
 
-UI.createTitleContainer= function (text,tooltip) {
+UI.createTitleContainer= function (text) {
     const container = document.createElement('div');
     container.classList.add('choose-menu-title');
-    const title = UI.createTitleElement(text, tooltip, "title"); 
+    const title = UI.createTitleElement(text, "title"); 
     container.appendChild(title);
     return container;
 }
@@ -3868,8 +3641,6 @@ UI.createTitleContainer= function (text,tooltip) {
         button.style.border = '1px solid transparent'; 
         button.style.borderImageSlice = 1; 
         button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)'; 
-
-        button.title = dataType.tooltip;
     
         const title = document.createElement('div');
         title.innerText = dataType.title;
@@ -3920,7 +3691,6 @@ UI.createTitleContainer= function (text,tooltip) {
         description.innerText="?????????????"
         button.style.animation = 'none';
         img.style.filter = 'blur(5px)';
-        button.title = 'Insert unlock hint here'
     }
     
         return button;
@@ -4004,14 +3774,14 @@ UI.createTitleContainer= function (text,tooltip) {
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
     async function createGameTitle(){
-        const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'laziest Logo ive ever seen, isnt the dev just using ai for everything and this is the best he could come up with? 💀','title');
-        const worldTitle = UI.createTitleElement(world.title, 'lazy subtitle too btw', "minititle");
-        const miniTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "minititle");
-        const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️', 'lazy subtitle too btw', "subtitle");
+        const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
+        const worldTitle = UI.createTitleElement(world.title,"minititle");
+        const miniTitle = UI.createTitleElement('Move to Start!', "minititle");
+        const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
-    const challengeTitle = UI.createTitleElement(``, 'lazy subtitle too btw', "minititle");
+    const challengeTitle = UI.createTitleElement(``, "minititle");
     
         const miniplayerButton = createButton(player, 0.4);
         const miniworldButton = createButton(world, 0.4);
@@ -4020,8 +3790,8 @@ UI.createTitleContainer= function (text,tooltip) {
         todaysContainer.appendChild(miniplayerButton);
         todaysContainer.appendChild(miniabilityButton);
         todaysContainer.appendChild(miniworldButton);
-        const subTitle = UI.createTitleElement('Move to Start!', 'lazy subtitle too btw', "title");
-        const aboutTitle = UI.createTitleElement('\n⚙️\n', 'lazy subtitle too btw', "subtitle");
+        const subTitle = UI.createTitleElement('Move to Start!', "title");
+        const aboutTitle = UI.createTitleElement('\n⚙️\n', "subtitle");
 
      
 
@@ -4036,7 +3806,7 @@ UI.createTitleContainer= function (text,tooltip) {
             createSettingsMenu();
         }
 
-        const loadingText =  UI.createTitleElement('New challenge 1:47:52', 'who even keeps track of these', "minititle");
+        const loadingText =  UI.createTitleElement('New challenge 1:47:52', "minititle");
 
         addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
         todaysContainer.style.cursor = 'pointer';
@@ -4098,18 +3868,18 @@ function createChallengeMenu() {
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
-    const classSubTitle = UI.createTitleElement('🏆', 'lazy subtitle too btw', "subtitle")
+    const classSubTitle = UI.createTitleElement('🏆',  "subtitle")
     const classButton = createButton(selectedPlayer,  0.65);
     classContainer.appendChild(classButton);
     classContainer.appendChild(classSubTitle);
 
-    const abilitiesSubTitle = UI.createTitleElement('⚔️', 'lazy subtitle too btw', "subtitle");
+    const abilitiesSubTitle = UI.createTitleElement('⚔️', "subtitle");
     const abilitiesButton = createButton(selectedAbility,  0.65);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesButton);
     classAbilityContainer.appendChild(abilitiesSubTitle);
 
-    const worldSubTitle = UI.createTitleElement('🔗', 'lazy subtitle too btw', "subtitle");
+    const worldSubTitle = UI.createTitleElement('🔗', "subtitle");
     const worldButton = createButton(selectedWorld, 0.65);
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldButton);
@@ -4119,7 +3889,7 @@ function createChallengeMenu() {
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = UI.createTitleElement('\nSend a Challenge!', 'lazy subtitle too btw', "title");
+    const subTitle = UI.createTitleElement('\nSend a Challenge!',  "title");
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
@@ -4194,7 +3964,7 @@ function createInput(type, attributes = {}) {
 
 function createChooseMenu(entityList, text, type) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
-    const titleContainer = UI.createTitleContainer(text,'For now it trully doesnt matter what you choose');
+    const titleContainer = UI.createTitleContainer(text);
     const gridContainer = UI.createContainer(['choose-menu-grid']); 
     addContainerUI('center-container', [popUpContainer]);
     entityList.forEach(entity => {
@@ -4237,7 +4007,7 @@ function handleEntitySelection(entity, type) {
     function createWeb3Menu(address) {
         canMove=false;
 
-        const subTitleLogout = UI.createTitleElement('♢\nLog Out\n♢', 'lazy subtitle too btw',"subtitle");
+        const subTitleLogout = UI.createTitleElement('♢\nLog Out\n♢', "subtitle");
         subTitleLogout.style.cursor = 'pointer';
         subTitleLogout.onclick = () => {
             canMove=true;
@@ -4246,30 +4016,30 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = UI.createTitleElement('\nChallenge\nQueue', 'sorry for all the gimmicky words, technically it is true tho', "title")
+        const checkRanks = UI.createTitleElement('\nChallenge\nQueue',  "title")
 
         const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-        topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',"subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',"subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',"subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('1°',  "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[0], .6));
         topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('2°', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
         topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
         topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('3°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('3°',"subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
         topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
         topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-        topChallengerContainer.appendChild(UI.createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('4°', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
         topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-        topChallengerContainer.appendChild(UI.createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+        topChallengerContainer.appendChild(UI.createTitleElement('5°', "subtitle"));
         topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
         topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
         topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
@@ -4285,20 +4055,20 @@ function handleEntitySelection(entity, type) {
         const worldImages = worldTypes.map(world => world.thumbnail);
      
         const classContainer = document.createElement('div');
-        const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
+        const classSubTitle = UI.createTitleElement('\n🏆 ',  "subtitle");
         const classButton = createButton(player,  0.6);
         classContainer.appendChild(classSubTitle);
         classContainer.appendChild(classButton);
 
      
-        const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
+        const abilitiesSubTitle = UI.createTitleElement('\n⚔️', "subtitle");
         const abilitiesButton = createButton(ability,  0.6 );
         const classAbilityContainer = document.createElement('div');
         classAbilityContainer.appendChild(abilitiesSubTitle);
         classAbilityContainer.appendChild(abilitiesButton);
 
      
-        const worldSubTitle = UI.createTitleElement('\n🔗', 'lazy subtitle too btw', "subtitle");
+        const worldSubTitle = UI.createTitleElement('\n🔗',"subtitle");
         const worldButton = createButton(world, 0.6);
         const worldContainer = document.createElement('div');
         worldContainer.appendChild(worldSubTitle);
@@ -4332,13 +4102,13 @@ function handleEntitySelection(entity, type) {
         }
       });
 
-     const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n ', 'sorry for all the gimmicky words, technically it is true tho', "subtitle")
+     const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n ', "subtitle")
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
      const loadingBar = document.createElement('div');
      loadingBar.classList.add('loading-bar');
-     const loadingText =  UI.createTitleElement('', 'who even keeps track of these', "subtitle");
+     const loadingText =  UI.createTitleElement('', "subtitle");
   
      loadingContainer.appendChild(loadingBar);
      function updateLoadingBar(currentAmount) {
@@ -4362,14 +4132,13 @@ function handleEntitySelection(entity, type) {
          }, 50); 
      }
 
-     const checkRecords = UI.createTitleElement('\nYour challenge\n', 'sorry for all the gimmicky words, technically it is true tho', "title")
+     const checkRecords = UI.createTitleElement('\nYour challenge\n', "title")
    
      const hallreportContainer = UI.createContainer(['abilities-grid']); 
 
     const rankButton = createButton({
         title: "Hall of Challengers ",
         description: "Allows you to verify previous official Challengers.",
-        tooltip: "...",
         thumbnail: 'Media/Abilities/CHALLENGERS.png',
         effect(user) { 
             this.update = () => {} 
@@ -4386,7 +4155,6 @@ function handleEntitySelection(entity, type) {
      const hallButton = createButton({
          title: "Hall of Survivors",
          description: "Allows you to verify previous official Survivors. ",
-         tooltip: "...",
          thumbnail: 'Media/Abilities/HALL.png',
          effect(user) { 
              this.update = () => {} 
@@ -4402,7 +4170,6 @@ function handleEntitySelection(entity, type) {
      const reportButton = createButton({
          title: "Transparency Report",
          description: "Fun. Decentralization and transparency. View the transparency report in real time.",
-         tooltip: "...",
          thumbnail: 'Media/Abilities/LAW.png',
          effect(user) { 
              this.update = () => {} 
@@ -4417,7 +4184,6 @@ function handleEntitySelection(entity, type) {
      const tutButton = createButton({
         title: "Challenge Queue",
         description: "Allows you to check the full Challenge Queue.",
-        tooltip: "...",
         thumbnail: 'Media/Abilities/CHALLENGEQUEUE.png',
         effect(user) { 
             this.update = () => {} 
@@ -4432,7 +4198,7 @@ function handleEntitySelection(entity, type) {
     };
 
 
-    const goBackButton = UI.createTitleContainer('\n Made in 2024 ❤️Ξ', 'Return to the game', "subtitle");
+    const goBackButton = UI.createTitleContainer('\n Made in 2024 ❤️Ξ', "subtitle");
 
      const popUpContainer = UI.createContainer(['choose-menu-container']);;
      popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
@@ -4475,7 +4241,7 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                             In Game UI
 ---------------------------------------------------------------------------*/
-let challengeDisplay = UI.createTitleElement('', 'who even keeps track of these', "minititle");
+let challengeDisplay = UI.createTitleElement('', "minititle");
 function refreshDisplay() {
   let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.id = 'horizontalBarContainer';
@@ -4521,7 +4287,7 @@ function refreshDisplay() {
         hideUI();
         createPlayerInfoMenu();
     };
-    const worldTitle = UI.createTitleElement(world.title, 'lazy subtitle too btw', "minititle");
+    const worldTitle = UI.createTitleElement(world.title, "minititle");
     addContainerUI('top-container',[worldTitle,challengeDisplay]).onclick = () => {
 
     };
@@ -4531,7 +4297,7 @@ function refreshDisplay() {
 
 function createPlayerInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']); 
-    const statusButton = UI.createTitleContainer('\nChallenge\nStatus', 'Return to the game', "subtitle");
+    const statusButton = UI.createTitleContainer('\nChallenge\nStatus', "subtitle");
     popUpContainer.appendChild(statusButton);
 
     const oneOnlyContainer = UI.createContainer(['abilities-grid']); 
@@ -4541,45 +4307,45 @@ function createPlayerInfoMenu() {
     popUpContainer.appendChild(oneOnlyContainer);
   
     const recordsTextContainer = UI.createContainer(['abilities-grid']);
-    const timeScoreTitle = UI.createTitleElement('\nTime','You ran out of health! 💀',"subtitle");
-    const timeScore = UI.createTitleElement('\n'+time,'You ran out of health! 💀',"subtitle");
+    const timeScoreTitle = UI.createTitleElement('\nTime',"subtitle");
+    const timeScore = UI.createTitleElement('\n'+time,"subtitle");
     recordsTextContainer.appendChild(timeScoreTitle);
     recordsTextContainer.appendChild(timeScore);
 
-    const liquidationScoreTitle = UI.createTitleElement('Liquidations','You ran out of health! 💀',"subtitle");
-    const liquidationScore = UI.createTitleElement(liquidations,'You ran out of health! 💀',"subtitle");
+    const liquidationScoreTitle = UI.createTitleElement('Liquidations',"subtitle");
+    const liquidationScore = UI.createTitleElement(liquidations,"subtitle");
     recordsTextContainer.appendChild(liquidationScoreTitle);
     recordsTextContainer.appendChild(liquidationScore);
 
-    const expScoreTitle = UI.createTitleElement('Experience','You ran out of health! 💀',"subtitle");
-    const expScore = UI.createTitleElement(experience,'You ran out of health! 💀',"subtitle");
+    const expScoreTitle = UI.createTitleElement('Experience',"subtitle");
+    const expScore = UI.createTitleElement(experience,"subtitle");
     recordsTextContainer.appendChild(expScoreTitle);
     recordsTextContainer.appendChild(expScore);
 
-    const distanceScoreTitle = UI.createTitleElement('Distance','You ran out of health! 💀',"subtitle");
-    const distanceScore = UI.createTitleElement(distance,'You ran out of health! 💀',"subtitle");
+    const distanceScoreTitle = UI.createTitleElement('Distance',"subtitle");
+    const distanceScore = UI.createTitleElement(distance,"subtitle");
     recordsTextContainer.appendChild(distanceScoreTitle);
     recordsTextContainer.appendChild(distanceScore);
 
-    const levelScoreTitle = UI.createTitleElement('Lvls','You ran out of health! 💀',"subtitle");
-    const levelScore = UI.createTitleElement(levels,'You ran out of health! 💀',"subtitle");
+    const levelScoreTitle = UI.createTitleElement('Lvls',"subtitle");
+    const levelScore = UI.createTitleElement(levels,"subtitle");
     recordsTextContainer.appendChild(levelScoreTitle);
     recordsTextContainer.appendChild(levelScore);
 
-    const secretsScoreTitle = UI.createTitleElement('Secrets','You ran out of health! 💀',"subtitle");
-    const secretsScore = UI.createTitleElement(secrets,'You ran out of health! 💀',"subtitle");
+    const secretsScoreTitle = UI.createTitleElement('Secrets',"subtitle");
+    const secretsScore = UI.createTitleElement(secrets,"subtitle");
     recordsTextContainer.appendChild(secretsScoreTitle);
     recordsTextContainer.appendChild(secretsScore);
 
-    const bossesScoreTitle = UI.createTitleElement('Bosses\n','You ran out of health! 💀',"subtitle");
-    const bossesScore = UI.createTitleElement(bosses,'You ran out of health! 💀',"subtitle");
+    const bossesScoreTitle = UI.createTitleElement('Bosses\n',"subtitle");
+    const bossesScore = UI.createTitleElement(bosses,"subtitle");
     recordsTextContainer.appendChild(bossesScoreTitle);
     recordsTextContainer.appendChild(bossesScore);
 
     popUpContainer.appendChild(recordsTextContainer);
 
     const randomHash = generateRandomHash();
-    const secretContainer = UI.createTitleElement('\n Gamestate Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
+    const secretContainer = UI.createTitleElement('\n Gamestate Hash\n'+randomHash+'\n',"minititle");
     popUpContainer.appendChild(secretContainer);
 
     const playerClassContainer = UI.createContainer(['abilities-grid']); 
@@ -4595,7 +4361,7 @@ function createPlayerInfoMenu() {
     });
 
     popUpContainer.appendChild(playerClassContainer);
-    const goBackButton = UI.createTitleContainer('\n - Continue -', 'Return to the game', "subtitle");
+    const goBackButton = UI.createTitleContainer('\n - Continue -',  "subtitle");
     goBackButton.style.cursor = 'pointer';
     popUpContainer.appendChild(goBackButton);
     addContainerUI('center-container', [popUpContainer]);
@@ -4607,10 +4373,10 @@ function createPlayerInfoMenu() {
 }
 function createSettingsMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
-    const statusButton = UI.createTitleContainer('\n Settings', 'Return to the game', "subtitle");
+    const statusButton = UI.createTitleContainer('\n Settings',  "subtitle");
     popUpContainer.appendChild(statusButton);
 
-    const volumesTitle = UI.createTitleElement('- Volume -\n\n', 'Return to the game', "subtitle");
+    const volumesTitle = UI.createTitleElement('- Volume -\n\n', "subtitle");
     popUpContainer.appendChild(volumesTitle);
 
   const volumesContainer =UI.createContainer(['abilities-grid']);
@@ -4622,7 +4388,7 @@ function createSettingsMenu() {
   fxVolumeSlider.id = 'fxVolumeSlider';
   fxVolumeSlider.classList.add('rainbow-slider');
 
-  const fxVolumeTitle = UI.createTitleElement("FX", '', "subtitle");
+  const fxVolumeTitle = UI.createTitleElement("FX",  "subtitle");
   fxVolumeTitle.htmlFor = 'fxVolumeSlider';
   volumesContainer.appendChild(fxVolumeTitle);
 
@@ -4636,7 +4402,7 @@ function createSettingsMenu() {
   vaVolumeSlider.id = 'vaVolumeSlider';
   vaVolumeSlider.classList.add('rainbow-slider');
 
-  const vaVolumeTitle = UI.createTitleElement("Voices", '', "subtitle");
+  const vaVolumeTitle = UI.createTitleElement("Voices",  "subtitle");
   vaVolumeTitle.htmlFor= 'vaVolumeSlider';
   volumesContainer.appendChild(vaVolumeTitle);
 
@@ -4650,7 +4416,7 @@ function createSettingsMenu() {
   volumeSlider.id = 'volumeSlider';
   volumeSlider.classList.add('rainbow-slider'); 
   
-  const VolumeTitle = UI.createTitleElement("Music", '', "subtitle");
+  const VolumeTitle = UI.createTitleElement("Music", "subtitle");
   VolumeTitle.htmlFor = 'volumeSlider';
   volumesContainer.appendChild(VolumeTitle);
 
@@ -4658,7 +4424,7 @@ function createSettingsMenu() {
   popUpContainer.appendChild(volumesContainer); 
   
   const themeContainer = document.createElement('div');
-  const themesTitle = UI.createTitleElement('\n - Themes -\n\n', 'Return to the game', "subtitle");
+  const themesTitle = UI.createTitleElement('\n - Themes -\n\n', "subtitle");
   themeContainer.appendChild(themesTitle);
   
   const themeOptions = [
@@ -4674,7 +4440,7 @@ function createSettingsMenu() {
       checkbox.type = 'checkbox';
       checkbox.id = option.id;
       checkbox.classList.add('rainbow-checkbox'); 
-      const themeTitle = UI.createTitleElement(option.label, '', "subtitle");
+      const themeTitle = UI.createTitleElement(option.label, "subtitle");
       themeTitle.htmlFor= option.id;
       themeContainer.appendChild(themesTitle);
       themesContainerGrid.appendChild(checkbox);
@@ -4703,7 +4469,7 @@ function createSettingsMenu() {
   popUpContainer.appendChild(themeContainer);
 
   const langContainer = document.createElement('div');
-  const langTitle = UI.createTitleElement('\n - Language -\n\n', 'Return to the game', "subtitle");
+  const langTitle = UI.createTitleElement('\n - Language -\n\n', "subtitle");
   langContainer.appendChild(langTitle);
   
   const languageSelect = document.createElement('select');
@@ -4731,7 +4497,7 @@ function createSettingsMenu() {
   
   langContainer.appendChild(languageSelect);
   popUpContainer.appendChild(langContainer); 
-  const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+  const goBackButton = UI.createTitleContainer('\n- Go back -', "subtitle");
   goBackButton.style.cursor = 'pointer';
   
 addContainerUI('center-container', [popUpContainer]);
@@ -4782,10 +4548,10 @@ checkbox.addEventListener('change', saveSettings);
 async function createInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
-    const newChallengesButton = UI.createTitleContainer('\n New Challenges \neveryday!', 'Return to the game', "subtitle");
+    const newChallengesButton = UI.createTitleContainer('\n New Challenges \neveryday!', "subtitle");
     popUpContainer.appendChild(newChallengesButton);
 
-    const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a free to play global  challenge game\n powered by decentralized blockchains!\n\n Today`s Challenge:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement('Welcome to Onchain Survivor. \n a free to play global  challenge game\n powered by decentralized blockchains!\n\n Today`s Challenge:', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const worldContainer = UI.createContainer(['abilities-grid']); 
@@ -4794,7 +4560,7 @@ async function createInfoMenu() {
     worldContainer.appendChild(worldButton);
     popUpContainer.appendChild(worldContainer);
 
-    const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you complete it, inscribe your records \nto the hall of survivors for all of eternity. \n\n Today`s Character Class:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const objectiveText = UI.createTitleElement('\nEach day brings a new Challenge, and \nafter you complete it, inscribe your records \nto the hall of survivors for all of eternity. \n\n Today`s Character Class:', "subtitle");
     popUpContainer.appendChild(objectiveText);
 
     const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
@@ -4803,7 +4569,7 @@ async function createInfoMenu() {
     todaysPlayerContainer.appendChild(classButton);
     popUpContainer.appendChild(todaysPlayerContainer);
 
-    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move and Survive! each class  \n  has a different base ability, and stats.\n\n Today`s Ability:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const instructionsText = UI.createTitleElement('\n As a survivor you can only \n move and Survive! each class  \n  has a different base ability, and stats.\n\n Today`s Ability:', "subtitle");
     popUpContainer.appendChild(instructionsText);
 
     const todaysAbilityContainer = UI.createContainer(['abilities-grid']); 
@@ -4812,10 +4578,10 @@ async function createInfoMenu() {
     todaysAbilityContainer.appendChild(abilButton);
     popUpContainer.appendChild(todaysAbilityContainer);
 
-    const abilText = UI.createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities combine well.  Good luck!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const abilText = UI.createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities combine well.  Good luck!\n\n    -the dev (@onchainsurvivor)',  "subtitle");
     popUpContainer.appendChild(abilText);
 
-    const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+    const goBackButton = UI.createTitleContainer('\n- Go back -', "subtitle");
     goBackButton.style.cursor = 'pointer';
     
 addContainerUI('center-container', [popUpContainer]);
@@ -4832,18 +4598,17 @@ addContainerUI('center-container', [popUpContainer]);
 function createTransparencyReport() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
-    const titleButton = UI.createTitleContainer('\nTransparency\nReport\n⚖️', 'Return to the game', "subtitle");
+    const titleButton = UI.createTitleContainer('\nTransparency\nReport\n⚖️', "subtitle");
    // titleButton.style.cursor = 'pointer';
 
     popUpContainer.appendChild(titleButton);
-    const aboutButton = UI.createTitleElement(' You can read and run offline every line \n of code of the onchain survivor client !\n\n Repository:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement(' You can read and run offline every line \n of code of the onchain survivor client !\n\n Repository:', "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const githubContainer = UI.createContainer(['abilities-grid']); 
     const githubButton = createButton({
         title: "Read Onchain Survivor Code",
         description: "Allows you to check the client source code, line by line, public for everyone to verify.",
-        tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
         effect(user) { 
             this.update = () => {} 
@@ -4852,14 +4617,13 @@ function createTransparencyReport() {
     githubContainer.appendChild(githubButton);
     popUpContainer.appendChild(githubContainer);
 
-    const rankingText = UI.createTitleElement('\nYou can verify the Global Ranking smart \n contract powering the survivor system\n\n Ranking Smart Contract:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const rankingText = UI.createTitleElement('\nYou can verify the Global Ranking smart \n contract powering the survivor system\n\n Ranking Smart Contract:', "subtitle");
     popUpContainer.appendChild(rankingText);
 
     const rankingContainer = UI.createContainer(['abilities-grid']); 
     const rankingButton = createButton({
         title: "Verify Ranking Smart Contract",
         description: "Allows you to check the Ranking Smart Contract source code, line by line, public for everyone to verify.",
-        tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
         effect(user) { 
             this.update = () => {} 
@@ -4868,14 +4632,13 @@ function createTransparencyReport() {
     rankingContainer.appendChild(rankingButton);
     popUpContainer.appendChild(rankingContainer);
 
-    const sponsorText = UI.createTitleElement('\n You can also verify the Rollup Centric \n Sponsor Contract that settles in Ethereum!\n\n Sponsor Smart Contract:', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const sponsorText = UI.createTitleElement('\n You can also verify the Rollup Centric \n Sponsor Contract that settles in Ethereum!\n\n Sponsor Smart Contract:',  "subtitle");
     popUpContainer.appendChild(sponsorText);
 
     const sponsorContainer = UI.createContainer(['abilities-grid']); 
     const sponsorButton = createButton({
         title: "Verify Sponsor Smart Contract",
         description: "Allows you to check the Sponsor Smart Contract source code, line by line, public for everyone to verify.",
-        tooltip: "...",
         thumbnail: 'Media/Abilities/???.png',
         effect(user) { 
             this.update = () => {} 
@@ -4884,10 +4647,10 @@ function createTransparencyReport() {
     sponsorContainer.appendChild(sponsorButton);
     popUpContainer.appendChild(sponsorContainer);
 
-    const disclaimerText = UI.createTitleElement('\n None of the smart contracts hold balance. \n Every sponsor transaction is final. \n Timeframes might change for the players! \n Theres only one social media account.\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n None of the smart contracts hold balance. \n Every sponsor transaction is final. \n Timeframes might change for the players! \n Theres only one social media account.\n\n    -the dev (@onchainsurvivor)',"subtitle");
     popUpContainer.appendChild(disclaimerText);
 
-    const goBackButton = UI.createTitleContainer('\n- Go back -', 'Return to the game', "subtitle");
+    const goBackButton = UI.createTitleContainer('\n- Go back -',  "subtitle");
     goBackButton.style.cursor = 'pointer';
     
 addContainerUI('center-container', [popUpContainer]);
@@ -4904,95 +4667,95 @@ addContainerUI('center-container', [popUpContainer]);
 function createRunMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
-    const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', 'Return to the game', "subtitle");
+    const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger, changing \n the Character, Ability &  Chain for a day! \n\n Next 5 Days (Example):', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger, changing \n the Character, Ability &  Chain for a day! \n\n Next 5 Days (Example):',   "subtitle");
     popUpContainer.appendChild(aboutButton);
 
 
     const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-    topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank', 'lazy subtitle too btw', "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass', 'lazy subtitle too btw', "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ', 'lazy subtitle too btw', "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', 'lazy subtitle too btw', "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('1°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',  "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',  "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',  "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ',  "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('1°',   "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[1], .6));
     topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('2°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('2°',   "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
     topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
     topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('3°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('3°',   "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
     topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
     topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-    topChallengerContainer.appendChild(UI.createTitleElement('4°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('4°',   "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
     topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-    topChallengerContainer.appendChild(UI.createTitleElement('5°', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topChallengerContainer.appendChild(UI.createTitleElement('5°',   "subtitle"));
     topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
     topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
     topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
    
     popUpContainer.appendChild(topChallengerContainer);
 
-    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress Example:\n\n', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress Example:\n\n',   "subtitle");
     popUpContainer.appendChild(rankingText);
 
     const topbidContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
-    topbidContainer.appendChild(UI.createTitleElement('# Address', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('🏆', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('⚔️', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('🔗', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('Next day', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('# Address',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('🏆',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('⚔️',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('🔗',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('Next day',   "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#1 0x...e2', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#1 0x...e2',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[3], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[0], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('Record', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('Record',   "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#2 0x...2a', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#2 0x...2a',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[1], .33));
     topbidContainer.appendChild(createButton(abilityTypes[6], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[1], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('#1▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#1▲',   "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#3 0x...3d', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#3 0x...3d',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('#2▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#2▲',   "subtitle"));
 
-    topbidContainer.appendChild(UI.createTitleElement('#4 0x...21', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#4 0x...21',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('#3▲', 'sorry for all the gimmicky words, technically it is true tho', "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('#3▲',   "subtitle"));
     popUpContainer.appendChild(topbidContainer);
 
 
-    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Setting a Challenge (Example)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Setting a Challenge (Example)',   "subtitle");
     popUpContainer.appendChild(sponsorText);
  
     const classContainer = document.createElement('div');
-    const classSubTitle = UI.createTitleElement('\n🏆 ', 'lazy subtitle too btw', "subtitle");
+    const classSubTitle = UI.createTitleElement('\n🏆 ',  "subtitle");
     const classButton = createButton(player,  0.6 );
     classContainer.appendChild(classSubTitle);
     classContainer.appendChild(classButton);
 
  
-    const abilitiesSubTitle = UI.createTitleElement('\n⚔️', 'lazy subtitle too btw', "subtitle");
+    const abilitiesSubTitle = UI.createTitleElement('\n⚔️',  "subtitle");
     const abilitiesButton = createButton(ability,  0.6 );
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesSubTitle);
     classAbilityContainer.appendChild(abilitiesButton);
 
  
-    const worldSubTitle = UI.createTitleElement('\n🔗', 'lazy subtitle too btw', "subtitle");
+    const worldSubTitle = UI.createTitleElement('\n🔗',  "subtitle");
     const worldButton = createButton(world,  0.6 );
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldSubTitle);
@@ -5017,14 +4780,14 @@ function createRunMenu() {
 
  popUpContainer.appendChild(inputContainer);
 
-    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)', 'sorry for all the gimmicky words, technically it is true tho', "subtitle");
+    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)',   "subtitle");
     popUpContainer.appendChild(disclaimerText);
 
     const buttons = popUpContainer.querySelectorAll('button');
     buttons.forEach(button => {
       button.style.cursor = 'default';
     });
-    const goBackButton = UI.createTitleContainer('\n- Continue -', 'Return to the game', "subtitle");
+    const goBackButton = UI.createTitleContainer('\n- Continue -', "subtitle");
     goBackButton.style.cursor = 'pointer';
 
     addContainerUI('center-container', [popUpContainer]);
@@ -5050,7 +4813,7 @@ function generateRandomHash() {
 function triggerGameOver(notice,message ) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
-    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\n'+ notice ,'You ran out of health! 💀');
+    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\n'+ notice );
     popUpContainer.appendChild(titleContainer);
 
     const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
@@ -5061,14 +4824,13 @@ function triggerGameOver(notice,message ) {
     img.classList.add('filter');
     imgContainer.appendChild(img);
     popUpContainer.appendChild(imgContainer);
-    const liquidatedTitle = UI.createTitleElement(message,'You ran out of health! 💀',"subtitle");
+    const liquidatedTitle = UI.createTitleElement(message,"subtitle");
     popUpContainer.appendChild(liquidatedTitle);
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
     const inscribeButton = createButton({
         title: "Inscribe Records",
         description: 'Save your current score in the Hall of Survivors.',
-        tooltip: 'Click to restart the game',
         thumbnail: 'Media/Abilities/RECORD.png',
         effect(user) { 
             this.update = () => {} 
@@ -5080,7 +4842,6 @@ function triggerGameOver(notice,message ) {
     const tryAgainButton = createButton({
         title: "Try Again",
         description: 'Survivors never give up. Run it back turbo.',
-        tooltip: 'Click to restart the game',
         thumbnail: 'Media/Abilities/TRYAGAIN.png',
         effect(user) { 
             this.update = () => {} 
@@ -5096,7 +4857,7 @@ function triggerGameOver(notice,message ) {
 
     const randomHash = generateRandomHash();
 
-    const scoreTitle = UI.createTitleElement('\n Run Scores','MORE POINTS!?!?!?!?!',"title");
+    const scoreTitle = UI.createTitleElement('\n Run Scores',"title");
     popUpContainer.appendChild(scoreTitle);
 
     const recordsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
@@ -5113,47 +4874,47 @@ function triggerGameOver(notice,message ) {
     popUpContainer.appendChild(recordsContainer);
 
     const recordsTextContainer = UI.createContainer(['abilities-grid']);
-    const timeScoreTitle = UI.createTitleElement('Time','You ran out of health! 💀',"subtitle");
-    const timeScore = UI.createTitleElement(time,'You ran out of health! 💀',"subtitle");
+    const timeScoreTitle = UI.createTitleElement('Time',"subtitle");
+    const timeScore = UI.createTitleElement(time,"subtitle");
     recordsTextContainer.appendChild(timeScoreTitle);
     recordsTextContainer.appendChild(timeScore);
 
-    const liquidationScoreTitle = UI.createTitleElement('Liquidations','You ran out of health! 💀',"subtitle");
-    const liquidationScore = UI.createTitleElement(liquidations,'You ran out of health! 💀',"subtitle");
+    const liquidationScoreTitle = UI.createTitleElement('Liquidations',"subtitle");
+    const liquidationScore = UI.createTitleElement(liquidations,"subtitle");
     recordsTextContainer.appendChild(liquidationScoreTitle);
     recordsTextContainer.appendChild(liquidationScore);
 
-    const expScoreTitle = UI.createTitleElement('Experience','You ran out of health! 💀',"subtitle");
-    const expScore = UI.createTitleElement(experience,'You ran out of health! 💀',"subtitle");
+    const expScoreTitle = UI.createTitleElement('Experience',"subtitle");
+    const expScore = UI.createTitleElement(experience,"subtitle");
     recordsTextContainer.appendChild(expScoreTitle);
     recordsTextContainer.appendChild(expScore);
 
-    const distanceScoreTitle = UI.createTitleElement('Distance','You ran out of health! 💀',"subtitle");
-    const distanceScore = UI.createTitleElement(distance,'You ran out of health! 💀',"subtitle");
+    const distanceScoreTitle = UI.createTitleElement('Distance',"subtitle");
+    const distanceScore = UI.createTitleElement(distance,"subtitle");
     recordsTextContainer.appendChild(distanceScoreTitle);
     recordsTextContainer.appendChild(distanceScore);
 
-    const levelScoreTitle = UI.createTitleElement('Lvls','You ran out of health! 💀',"subtitle");
-    const levelScore = UI.createTitleElement(levels,'You ran out of health! 💀',"subtitle");
+    const levelScoreTitle = UI.createTitleElement('Lvls',"subtitle");
+    const levelScore = UI.createTitleElement(levels,"subtitle");
     recordsTextContainer.appendChild(levelScoreTitle);
     recordsTextContainer.appendChild(levelScore);
 
-    const secretsScoreTitle = UI.createTitleElement('Secrets','You ran out of health! 💀',"subtitle");
-    const secretsScore = UI.createTitleElement(secrets,'You ran out of health! 💀',"subtitle");
+    const secretsScoreTitle = UI.createTitleElement('Secrets',"subtitle");
+    const secretsScore = UI.createTitleElement(secrets,"subtitle");
     recordsTextContainer.appendChild(secretsScoreTitle);
     recordsTextContainer.appendChild(secretsScore);
 
-    const bossesScoreTitle = UI.createTitleElement('Bosses\n','You ran out of health! 💀',"subtitle");
-    const bossesScore = UI.createTitleElement(bosses,'You ran out of health! 💀',"subtitle");
+    const bossesScoreTitle = UI.createTitleElement('Bosses\n',"subtitle");
+    const bossesScore = UI.createTitleElement(bosses,"subtitle");
     recordsTextContainer.appendChild(bossesScoreTitle);
     recordsTextContainer.appendChild(bossesScore);
 
     popUpContainer.appendChild(recordsTextContainer);
 
-    const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n','You ran out of health! 💀',"minititle");
+    const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n',"minititle");
     popUpContainer.appendChild(secretContainer);
 
-    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n','You ran out of health! 💀',"minititle");
+    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n',"minititle");
     popUpContainer.appendChild(reminderTitle);
 
     addContainerUI('center-container', [popUpContainer]);
