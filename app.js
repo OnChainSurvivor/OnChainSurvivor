@@ -2499,7 +2499,6 @@ const enemyTypes = [{
     movementspeed:0.15,
     xp: 0,
     evasion: 0,
-    tags: ['enemy'],
     thumbnail: 0,
     abilities: [
     //{"title": "Frontrunning Bot"}
