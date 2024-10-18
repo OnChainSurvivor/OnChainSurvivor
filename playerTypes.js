@@ -44,9 +44,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/MMINER.png',
     level:0,
     isLocked: true,
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Miner',
@@ -59,9 +57,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Miner/FMINER.png',
     level:0,
     isLocked: false,
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Staker',
@@ -74,9 +70,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Staker/MSTAKER.png',  
     level:0,
     isLocked: true,
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Staker',
@@ -90,7 +84,6 @@ export const playerTypes = [{
     level:0,
     isLocked: true,
     abilities: [
-
     ],
 },{
     class: 'Survivor',
@@ -101,13 +94,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Developer/MDEVELOPER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Developer',
@@ -119,9 +108,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Developer/FDEVELOPER.png',
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [ ],
 },{
     class: 'Survivor',
     title: 'Trader',
@@ -157,13 +144,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Regulator/MREGULATOR.png',
-    
-
-    level:0,
+     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Regulator',
@@ -173,13 +156,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Regulator/FREGULATOR.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Quantum Cryptographer',
@@ -189,13 +168,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Quantum/MQUANTUM.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Quantum Cryptographer',
@@ -205,13 +180,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Quantum/FQUANTUM.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Crypto Botter',
@@ -221,13 +192,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Crypto Botter/MBOTTER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Crypto Botter',
@@ -237,13 +204,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Crypto Botter/FBOTTER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Fudder',
@@ -253,13 +216,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Fudder/MFUDDER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Fudder',
@@ -269,13 +228,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Fudder/FFUDDER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -286,13 +241,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Astrologer/MASTROLOGER.png',
-    
-
     level:0,
     isLocked: true,
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -303,13 +254,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Astrologer/FASTROLOGER.png',
-    
-
     level:0,
     isLocked: true,
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -320,13 +267,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Influencer/MINFLUENCER.jpg',
-    
-
     level:0,
     isLocked: true,
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -337,14 +280,10 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Influencer/FINFLUENCER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
-
-
-    ],
+],
 },{
     class: 'Survivor',
     title: 'Cabal Insider',
@@ -354,8 +293,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Insider Cabal/MCABAL.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -370,8 +307,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Insider Cabal/FCABAL.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -386,8 +321,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Maxi/MMAXI.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -402,8 +335,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Maxi/FMAXI.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -418,8 +349,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Gambler/MGAMBLER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -434,8 +363,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Gambler/FGAMBLER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -450,8 +377,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Liquidator/MLIQUIDATOR.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -466,8 +391,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Liquidator/FLIQUIDATOR.png', // Debt: fix the green borders, make them black
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -679,8 +602,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Validator/MVALIDATOR.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -696,13 +617,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Validator/FVALIDATOR.jpg',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Industrial Miner',
@@ -712,13 +629,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Industrial Miner/MINDUSTRIAL.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -729,13 +642,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Industrial Miner/FINDUSTRIAL.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'High Frequency Trader',
@@ -745,13 +654,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/HFT/MHFT.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -762,13 +667,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/HFT/FHFT.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Liquid Staker',
@@ -778,13 +679,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Liquid/MLIQUID.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Liquid Staker',
@@ -794,13 +691,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Liquid/FLIQUID.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Dormant Holder',
@@ -887,13 +780,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Governance Staker/MGOV.jpg',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Governance Staker',
@@ -903,13 +792,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Governance Staker/FGOV.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Yield Farmer',
@@ -921,9 +806,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Farmer/MFARMER.png',  //Debt ADD PERSONALITY
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Yield Farmer',
@@ -935,9 +818,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Farmer/FFARMER.png',  //Debt ADD PERSONALITY
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },
 {
     class: 'Survivor',
@@ -948,13 +829,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Venture Capital/MVC.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Venture Capital',
@@ -964,13 +841,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Venture Capital/FVC.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Decentralization Trillemma Solver',
@@ -980,13 +853,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Trillemma Solver/MSOLVER.jpg',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Decentralization Trillemma Solver',
@@ -996,13 +865,9 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Trillemma Solver/FSOLVER.png',
-    
-
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Tether Truther',
@@ -1014,9 +879,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/TRUTHER/MTRUTHER.png',
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Tether Truther',
@@ -1028,9 +891,7 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/TRUTHER/FTRUTHER.png',
     level:0,
     isLocked: true, 
-    abilities: [
-
-    ],
+    abilities: [],
 },{
     class: 'Survivor',
     title: 'Mercerany Capital',
@@ -1054,8 +915,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Mercenary Capital/FMERCENARY.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1070,8 +929,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Copy Trader/MCOPYTRADER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1086,8 +943,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Copy Trader/FCOPYTRADER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1102,8 +957,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Policy Maker/MPOLICYMAKER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1118,8 +971,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Policy Maker/FPOLICYMAKER.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1134,8 +985,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Angel/MANGEL.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1150,8 +999,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 50,
     thumbnail: 'Media/Classes/Angel/FANGEL.png',
-    
-
     level:0,
     isLocked: true,
     abilities: [
@@ -1323,10 +1170,6 @@ export const playerTypes = [{
     xp: 0,
     evasion: 20,
     thumbnail: 'Media/Classes/Whale/MWHALE.png', 
-    geometry: new THREE
-
-.BoxGeometry(1, 1, 1),
-
     level: 0,
     isLocked: true,
     abilities: [],
