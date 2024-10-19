@@ -3796,14 +3796,14 @@ UI.createTitleContainer= function (text) {
 
        addContainerUI('top-container', [mainTitle,worldTitle]);
 
-        addContainerUI('BR-container', [aboutTitle]);
-        aboutTitle.style.cursor = 'pointer';
-        aboutTitle.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            createSettingsMenu();
-        }
+      //  addContainerUI('BR-container', [aboutTitle]);
+       // aboutTitle.style.cursor = 'pointer';
+       // aboutTitle.onclick = () => {
+      //      canMove = false;
+       //     isPaused = true;
+       //     hideUI();
+       //     createSettingsMenu();
+       // }
 
         const loadingText =  UI.createTitleElement('New challenge 1:47:52', "minititle");
 
