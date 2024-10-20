@@ -13,9 +13,9 @@ Onchain Survivor is a web-based top-down survival game that utilizes Web3 techno
 ## Game Overview 🎮
 
 **Title**: Onchain Survivor  
-**Genre**: Top-Down Arena Shooter, Survival Roguelite
+**Genre**: Top-Down, Survival Roguelite
 **Platform**: Web
-**Technology**: Web3, Blockchain Integration
+**Technology**: Web3, Blockchain Integration, AI
 **Objective**: Complete challenges in an arena, defeating enemies, leveling up, and upgrading abilities.
 
 Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology and machine learning, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
