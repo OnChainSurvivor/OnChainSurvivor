@@ -8,7 +8,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes Web3 technologies to enable open source, decentralized and consensus to the experience. Navigate a 3D Blockchained environment to do what they do best... Survive!
+Onchain Survivor is a web-based top-down survival game that utilizes Web3 technologies to enable open source, decentralized and a social consensus experience. Navigate a 3D Blockchained environment to do what they do best... Survive!
 
 ## Game Overview 🎮
 
