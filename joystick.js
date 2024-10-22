@@ -53,17 +53,6 @@ function setupEventListeners() {
         if (event.key === 'ArrowLeft' || event.key === 'j') keys['a'] = true;
         if (event.key === 'ArrowDown' || event.key === 'k') keys['s'] = true;
         if (event.key === 'ArrowRight' || event.key === 'l') keys['d'] = true;
-
-      //  if (event.key === 'ArrowUp' || event.key === 'i' || event.key === 'w') keys['s'] = false;
-      //  if (event.key === 'ArrowLeft' || event.key === 'j' || event.key === 'a') keys['d'] = false;
-      //  if (event.key === 'ArrowDown' || event.key === 'k' || event.key === 's') keys['w'] = false;
-      //  if (event.key === 'ArrowRight' || event.key === 'l' || event.key === 'd') keys['a'] = false;
-
-      //  if ((event.key === 'ArrowUp' || event.key === 'i' || event.key === 'w') && (event.key === 'ArrowLeft' || event.key === 'j' || event.key === 'a')) keys['s'] =  keys['d'] = false;
-      //  if ((event.key === 'ArrowLeft' || event.key === 'j' || event.key === 'a')&& (event.key === 'ArrowDown' || event.key === 'k' || event.key === 's')) keys['d']  =  keys['w'] = false;
-      //  if ((event.key === 'ArrowDown' || event.key === 'k' || event.key === 's')&& (event.key === 'ArrowRight' || event.key === 'l' || event.key === 'd') ) keys['w'] =  keys['a']  = false;
-      //  if ((event.key === 'ArrowRight' || event.key === 'l' || event.key === 'd')&& (event.key === 'ArrowUp' || event.key === 'i' || event.key === 'w') ) keys['a'] =  keys['s']  = false;
-    
     });
     document.addEventListener('keyup', (event) => {
         if (keys.hasOwnProperty(event.key)) {
