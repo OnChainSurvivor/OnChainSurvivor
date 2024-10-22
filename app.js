@@ -4856,7 +4856,7 @@ function triggerGameOver(notice,message ) {
 
     const randomHash = generateRandomHash();
 
-    const scoreTitle = UI.createTitleElement('\n Run Scores',"title");
+    const scoreTitle = UI.createTitleElement('\n Run Score\n\n',"title");
     popUpContainer.appendChild(scoreTitle);
 
     const recordsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
@@ -4873,8 +4873,8 @@ function triggerGameOver(notice,message ) {
     popUpContainer.appendChild(recordsContainer);
 
     const recordsTextContainer = UI.createContainer(['abilities-grid']);
-    const timeScoreTitle = UI.createTitleElement('Time',"subtitle");
-    const timeScore = UI.createTitleElement(time,"subtitle");
+    const timeScoreTitle = UI.createTitleElement('\nTime',"subtitle");
+    const timeScore = UI.createTitleElement("\n"+time,"subtitle");
     recordsTextContainer.appendChild(timeScoreTitle);
     recordsTextContainer.appendChild(timeScore);
 

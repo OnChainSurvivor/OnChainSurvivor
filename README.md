@@ -38,7 +38,7 @@ Onchain Survivor aims to combine the addictive gameplay of survival roguelite ga
 
 ## Sound Design 🎵
 
-**Background Music**: Upbeat, electronic AI made music to match the fast-paced gameplay.
+**Background Music**: AI made music to match the fast-paced gameplay. Players get to choose!
 **Sound Effects**: Distinct sounds for enemy attacks, power-ups, and level-ups.
 **Voiceovers**: Occasional voice lines for level-ups, power-up pickups, and mini-events.
 
