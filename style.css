@@ -402,9 +402,6 @@ html, body {
     filter: var(--image-filter); 
 }
 
-
-
-/* Checkbox Styles */
 .rainbow-checkbox {
     -webkit-appearance: none;
     appearance: none;
