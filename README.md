@@ -8,7 +8,7 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes Web3 technologies to enable open source, decentralized and a social consensus experience. Navigate a 3D Blockchained environment to do what they do best... Survive!
+Onchain Survivor is a web-based top-down survival game that utilizes AI and  Web3 technologies to enable  a new kind of browser game experience. Players will navigate an AI generated 3D Blockchained environment to do what they do best... Survive!
 
 ## Game Overview 🎮
 
@@ -16,17 +16,17 @@ Onchain Survivor is a web-based top-down survival game that utilizes Web3 techno
 **Genre**: Top-Down, Survival Roguelite
 **Platform**: Web
 **Technology**: Web3, Blockchain Integration, AI
-**Objective**: Complete challenges in an arena, defeating enemies, leveling up, and upgrading abilities.
+**Objective**: Complete challenges in an arena, defeat enemies, level up, and upgrade abilities.
 
-Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of blockchain technology and machine learning, creating a unique and engaging experience for players. With a variety of classes, enemies, power-ups, and upgrades, players will enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of generative AI and  blockchain technology, creating a unique and engaging experience for players around the world. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
 
 ### 🔑Key Features🔑
 
-- **Decentralized Gameplay**: Enjoy a truly consensus based, decentralized experience. No central server required. No log ins. No external dependencies beyond your connection with he blockchain. You can keep a copy of the client and fire it up!. 
+- **Decentralized Gameplay**: Enjoy a truly consensus based, decentralized experience. No central server required. No log ins. No external dependencies beyond your connection with the blockchain. You can keep a copy of the client and fire it up! 
 - **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty. And the strong playerbase consensus sets the game experience on a daily basis.   
 - **3D Graphics**: Experience 3D graphics powered by Three.js, in any browser.
 - **Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
-- **Variable Gameplay**: Every experience is different on a daily basis, yet all players taking the challenge keep in sync.
+- **Variable Gameplay**: Every experience is different on a daily basis, yet all players taking the challenge keep in sync!
 - **Leveling Up**: Defeating enemies grants experience points (XP). Upon leveling up, players can choose from various abilities.
 - **Power-Ups**: Enemies may drop power-ups, experience, and abilities. Very low chances.
 
@@ -80,7 +80,7 @@ Product is still in development, but as it gains more shape, there are many plan
 - **Content Creators:** Engage streamers and content creators to showcase gameplay and mechanics.
 - **Events:** Host in-game events and challenges with other Communities.
 
-### 🥇 Phase 1 🥇: Daily Game Challenges, by challengers for players!
+### 🥇 Phase 1 🥇: Daily Survival Challenges, by players for players!
 
 This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the Challenge queue. The  system is competitive, with each user placing their challenges, aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. The initial plan is to have the challenge queue settle on ethereum until several Usex Experience issues are solved, but this can change in the future to move to a L2.
 
@@ -88,14 +88,19 @@ Queue Process
 
 **Setting Challenge**: Users from Ethereum (L1) and various L2 blockchains submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
 
-**Daily Rank up**: At midnight, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
+**Daily Rank up**: Every n Blocks, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
 
 **Adding**: If the previous day's top-ranked in the Challenge Queue wants to secure the first rank again, they must re add with a higher amount to reclaim their position and set the game Challenge for consecutive days.
 
 This system ensures fairness by regularly refreshing the queue, preventing any one user from monopolizing the top position.
 
 ### Phase 2: Multiple games, all using the same Challenge Queue and Human Consensus.
-### Phase 3: AI generated real time experiences, using Human Consensus, Overlayed on top of the template games. 
+
+As additional game templates are developed and integrated into the main client, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
+
+### Phase 3: AI generated real time experiences, layered on top of the template games. 
+
+Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming. Users will be able to input a prompt into the system, allowing them to "modify" the game as they desire. Onchain Survivor plans to eventually (within months to years) implement an open-source, real-time technology that enables this experience.
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
