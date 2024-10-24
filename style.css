@@ -1,5 +1,5 @@
 :root {
-    --image-filter: ''; /* Define the variable with an empty string */
+    --image-filter: ''; 
 }
   
 body {
@@ -92,21 +92,21 @@ button, div {
     opacity: 1;
 }
 .rainbow-slider {
-    height: 10px; /* Adjust this value for the desired height */
-    -webkit-appearance: none; /* Remove default styles for more control */
-    width: 200px; /* Set a width for the slider */
-    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); /* Example rainbow gradient */
+    height: 10px; 
+    -webkit-appearance: none; 
+    width: 200px; 
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); 
     outline: none; 
-    border-radius: 10px; /* Rounded corners */
+    border-radius: 10px; 
     filter: var(--image-filter); 
   }
   
-  .rainbow-slider::-webkit-slider-thumb { /* Style the slider thumb */
+  .rainbow-slider::-webkit-slider-thumb { 
     -webkit-appearance: none;
     appearance: none;
     width: 20px;
     height: 20px;
-    border-radius: 50%; /* Circular thumb */
+    border-radius: 50%; 
     background: white;
     cursor: pointer;
     filter: var(--image-filter); 
