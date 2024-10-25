@@ -353,6 +353,7 @@ const abilityTypes = [
         effect(user) { 
             let previousPosition = new THREE.Vector3().copy(user.position); 
             this.lastHitTime = 0;
+            let dropUpdateFrame = 0; 
             const orb = new THREE.Mesh(
                 new THREE.SphereGeometry(0.6, 16, 6),
                 world.material 
@@ -379,6 +380,13 @@ const abilityTypes = [
                 orb.beam = new THREE.Line(testBeamGeometry, new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),);
                 orb.beam.boundingBox = new THREE.Box3().setFromObject(orb.beam);
                 scene.add(orb.beam);
+
+                if (dropUpdateFrame++ % (60/ player.attackPerSecond) === 0) { 
+                    if (closeEnemy) {
+                        createOrb(orb);
+                    }
+                }
+            
             };
 
             this.deactivate = () => {
