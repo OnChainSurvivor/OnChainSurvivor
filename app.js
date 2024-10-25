@@ -302,6 +302,186 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
 const abilityTypes = [
+    {title: "Scalping Bot",
+        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
+        thumbnail: 'Media/Abilities/SCALPINGBOT.png',
+        effect(user) { 
+            this.update = () => {}
+                this.lastHitTime=0;
+                let time = Date.now();
+                let direction= null;
+                const orb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.6, 16, 6),
+                    world.material 
+                );
+                orb.position.copy(user.position); 
+                orb.updateMatrixWorld(true);
+                orb.boundingBox = new THREE.Box3().setFromObject(orb);
+                lightObjects.push(orb);
+                scene.add(orb);
+                orb.target= null;
+                orb.orbitRadius= 2;
+                orb.orbitSpeed= 0.01;
+                orb.homingSpeed= 0.5;
+
+                this.update = () => {
+                        if (!orb.target) {
+                            time = Date.now() * orb.orbitSpeed;
+                            orb.position.set(
+                                user.position.x + Math.cos(time) * orb.orbitRadius,
+                                user.position.y,
+                                user.position.z + Math.sin(time) * orb.orbitRadius
+                            );
+                            orb.target=true;
+                            if ((Date.now() - this.lastHitTime > (500))) {
+                            this.lastHitTime = Date.now();
+                            }
+                        } else {
+                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.position).normalize();
+                            orb.position.add(direction.multiplyScalar(orb.homingSpeed));
+                            orb.boundingBox.setFromObject(orb);
+                        }
+                };
+                this.deactivate = () => {
+                        if (orb) {
+                            scene.remove(orb);
+                            orb = null;
+                        }
+                };
+                orb.create();
+        },
+    },
+    { title: 'Onchain Trail',
+        description: 'Your onchain movements leave a trail behind, damaging pursuers',
+        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+        effect(user) { 
+            this.update = () => {}
+            const trailBullets = [];
+            this.lastTrailTime = 0;
+            const trail = {
+                create: () => {
+                    if (trailBullets.length >= (7)) {
+                        const oldestBullet = trailBullets.shift(); 
+                        scene.remove(oldestBullet); 
+                        const index = lightObjects.indexOf(oldestBullet);
+                        if (index > -1) lightObjects.splice(index, 1); 
+            
+                    } 
+                    const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1,.5,1 ),world.material);
+                    trailStep.position.copy(user.position);
+                    trailStep.position.y-=1;
+                    scene.add(trailStep);
+                    trailStep.boundingBox = new THREE.Box3().setFromObject(trailStep);
+                    trailBullets.push(trailStep);
+                    lightObjects.push(trailStep);
+                }
+            };
+            this.update = () => {
+                if ((Date.now() - this.lastTrailTime > 400)) {
+                    this.lastTrailTime = Date.now();
+                    trail.create();
+                }
+            };
+            this.deactivate = () => {
+                trailBullets.forEach(bullet => { 
+                    scene.remove(bullet);
+                    const index = lightObjects.indexOf(oldestBullet);
+                    if (index > -1) lightObjects.splice(index, 1); 
+                });
+                trailBullets.length = 0; 
+            };
+        },
+    },
+    {title: "Anti-Rug Bot",
+        description: "Detects and disables rug traps.",
+        thumbnail: 'Media/Abilities/RUGBOT.png',
+        effect(user) { 
+            this.update = () => {}
+                this.lastHitTime=0;
+                let time = Date.now();
+                let direction= null;
+                const orb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.6, 16, 6),
+                    world.material 
+                );
+                orb.position.copy(user.position); 
+                orb.updateMatrixWorld(true);
+                orb.boundingBox = new THREE.Box3().setFromObject(orb);
+                lightObjects.push(orb);
+                scene.add(orb);
+                orb.orbitRadius= 10;
+                orb.orbitSpeed= 0.0075;
+                orb.homingSpeed= 0.25;
+
+                this.update = () => {
+                            time = Date.now() * orb.orbitSpeed;
+                            orb.position.set(
+                                user.position.x + Math.cos(time) * orb.orbitRadius,
+                                user.position.y+1.5,
+                               // user.position.z + Math.sin(time) * orb.orbitRadius
+                            );
+                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.position).normalize();
+                            orb.position.add(direction.multiplyScalar(orb.homingSpeed));
+                            orb.boundingBox.setFromObject(orb);
+                        
+                };
+                this.deactivate = () => {
+                        if (orb) {
+                            scene.remove(orb);
+                            orb = null;
+                        }
+                };
+        },
+    },
+    {title: "Bot Swarm",
+        description: "Summons additional bots to assist in battle.",
+        thumbnail: 'Media/Abilities/SWARM.png',
+        effect(user) { 
+            this.update = () => {};
+            let time = Date.now();
+            const orb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 6),
+                world.material 
+            );
+            orb.maxDistance= 20;
+            orb.offsetAmount= 5;
+            orb.followSpeed= 0.1;
+            orb.position.copy(user.position); 
+            orb.updateMatrixWorld(true);
+            orb.boundingBox = new THREE.Box3().setFromObject(orb);
+            lightObjects.push(orb);
+            scene.add(orb);
+          
+            this.update = () => {
+                time = Date.now();
+                const forwardOffset = Math.sin(time * 0.001) * orb.offsetAmount; 
+                const targetX = user.position.x + forwardOffset;  
+                const targetZ = user.position.z; 
+                const distanceFromPlayer = Math.sqrt(
+                    Math.pow(targetX + orb.position.x, 2) + 
+                    Math.pow(targetZ + orb.position.z, 2)
+                );
+                if (distanceFromPlayer > orb.maxDistance) {
+                    const direction = new THREE.Vector3(
+                        targetX - orb.position.x,
+                        0, 
+                        targetZ - orb.position.z
+                    ).normalize();
+    
+                    orb.position.add(direction.multiplyScalar(orb.followSpeed * distanceFromPlayer));
+                } else {
+                    orb.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), orb.followSpeed);
+                }
+                orb.boundingBox.setFromObject(orb);
+            };
+            this.deactivate = () => {
+                if (orb) {
+                    scene.remove(orb);
+                    orb = null;
+                }
+            };
+        },
+    },
     {title: "Veil of Decentralization",
         description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
         thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
@@ -542,190 +722,6 @@ const abilityTypes = [
             };
         },
     }, 
-    
-    
-
-    {title: "Bot Swarm",
-        description: "Summons additional bots to assist in battle.",
-        thumbnail: 'Media/Abilities/SWARM.png',
-        effect(user) { 
-            this.update = () => {};
-            this.lastHitTime = 0;
-            let time = Date.now();
-            const orb = {
-                mesh: null,
-                boundingBox: null,
-                maxDistance: 20, 
-                offsetAmount: 5, 
-                followSpeed: 0.1,
-                create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-                    const geometry = new THREE.SphereGeometry(1, 16, 6);
-                    orb.mesh = new THREE.Mesh(geometry, material);
-                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                    scene.add(orb.mesh);
-                    lightObjects.push(orb);
-                }
-            };
-            this.update = () => {
-                time = Date.now();
-                const forwardOffset = Math.sin(time * 0.001) * orb.offsetAmount; 
-                const targetX = user.position.x + forwardOffset;  
-                const targetZ = user.position.z; 
-                const distanceFromPlayer = Math.sqrt(
-                    Math.pow(targetX + orb.mesh.position.x, 2) + 
-                    Math.pow(targetZ + orb.mesh.position.z, 2)
-                );
-                if (distanceFromPlayer > orb.maxDistance) {
-                    const direction = new THREE.Vector3(
-                        targetX - orb.mesh.position.x,
-                        0, 
-                        targetZ - orb.mesh.position.z
-                    ).normalize();
-    
-                    orb.mesh.position.add(direction.multiplyScalar(orb.followSpeed * distanceFromPlayer));
-                } else {
-                    orb.mesh.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), orb.followSpeed);
-                }
-                orb.boundingBox.setFromObject(orb.mesh);
-            };
-            this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-            };
-            orb.create();
-        },
-    },      
-    {title: "Anti-Rug Bot",
-        description: "Detects and disables rug traps.",
-        thumbnail: 'Media/Abilities/RUGBOT.png',
-        effect(user) { 
-            this.update = () => {}
-                this.lastHitTime=0;
-                let time = Date.now();
-                let direction= null;
-                const orb = {
-                    mesh: null,
-                    orbitRadius: 10,
-                    orbitSpeed: 0.01,
-                    homingSpeed: 0.5,
-                    create: () => {
-                        const material = new THREE.MeshBasicMaterial({ color: 0xff00ff});
-                        const geometry = new THREE.SphereGeometry(0.6, 16, 6);
-                        orb.mesh = new THREE.Mesh(geometry, material);
-                        orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                        scene.add(orb.mesh);
-                        lightObjects.push(orb)
-                    }
-                };
-                this.update = () => {
-                            time = Date.now() * orb.orbitSpeed;
-                            orb.mesh.position.set(
-                                user.position.x + Math.cos(time) * orb.orbitRadius,
-                                user.position.y+1.5,
-                               // user.position.z + Math.sin(time) * orb.orbitRadius
-                            );
-                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.mesh.position).normalize();
-                            orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                            orb.boundingBox.setFromObject(orb.mesh);
-                        
-                };
-                this.deactivate = () => {
-                        if (orb.mesh) {
-                            scene.remove(orb.mesh);
-                            orb.mesh = null;
-                        }
-                };
-                orb.create();
-        },
-    },
-    {title: "Scalping Bot",
-        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
-        thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        effect(user) { 
-            this.update = () => {}
-                this.lastHitTime=0;
-                let time = Date.now();
-                let direction= null;
-                const orb = {
-                    mesh: null,
-                    target: null,
-                    orbitRadius: 2,
-                    orbitSpeed: 0.01,
-                    homingSpeed: 0.5,
-                    create: () => {
-                        const material = new THREE.MeshBasicMaterial({ color: 0xff0000});
-                        const geometry = new THREE.SphereGeometry(0.6, 16, 6);
-                        orb.mesh = new THREE.Mesh(geometry, material);
-                        orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                        scene.add(orb.mesh);
-                        lightObjects.push(orb)
-                    }
-                };
-                this.update = () => {
-                        if (!orb.target) {
-                            time = Date.now() * orb.orbitSpeed;
-                            orb.mesh.position.set(
-                                user.position.x + Math.cos(time) * orb.orbitRadius,
-                                user.position.y,
-                                user.position.z + Math.sin(time) * orb.orbitRadius
-                            );
-                            orb.target=true;
-                            if ((Date.now() - this.lastHitTime > (500))) {
-                            this.lastHitTime = Date.now();
-                            }
-                        } else {
-                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.mesh.position).normalize();
-                            orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                            orb.boundingBox.setFromObject(orb.mesh);
-                        }
-                };
-                this.deactivate = () => {
-                        if (orb.mesh) {
-                            scene.remove(orb.mesh);
-                            orb.mesh = null;
-                        }
-                };
-                orb.create();
-        },
-    },
-    { title: 'Onchain Trail',
-        description: 'Your onchain movements leave a trail behind, damaging pursuers',
-        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        effect(user) { 
-            this.update = () => {}
-            const trailBullets = [];
-            this.lastTrailTime = 0;
-            const trail = {
-                create: () => {
-                    if (trailBullets.length >= (10)) {
-                        const oldestBullet = trailBullets.shift(); 
-                        scene.remove(oldestBullet); 
-                    }
-                    const trailStepMaterial = world.material.clone(); 
-                    const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1,.5,1 ),trailStepMaterial);
-                    trailStep.position.copy(user.position);
-                    trailStep.position.y-=1;
-                    trailStep.castShadow = true;
-                    scene.add(trailStep);
-                    trailStep.trailBox = new THREE.Box3().setFromObject(trailStep);
-                    trailBullets.push(trailStep);
-                }
-            };
-            this.update = () => {
-                if ((Date.now() - this.lastTrailTime > 400)) {
-                    this.lastTrailTime = Date.now();
-                    trail.create();
-                }
-            };
-            this.deactivate = () => {
-                trailBullets.forEach(bullet => { scene.remove(bullet); });
-                trailBullets.length = 0; 
-            };
-        },
-    },
 ];
 
 /*---------------------------------------------------------------------------
