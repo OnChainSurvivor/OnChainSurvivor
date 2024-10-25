@@ -233,27 +233,21 @@ const handleEntityDeath = (entity, enemies) => {
 
 function createParticleEffect(position, color = 'green', particleCount = 50) {
     const particleGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array(particleCount * 9); // Each particle is a triangle (3 vertices)
-    const directions = new Float32Array(particleCount * 3); // One direction per particle
+    const vertices = new Float32Array(particleCount * 9);
+    const directions = new Float32Array(particleCount * 3); 
 
-    const spread = 3; // Initial spread factor for random positioning
+    const spread = 3; 
 
     for (let i = 0; i < particleCount; i++) {
         const baseIndex = i * 9;
-
-        // Generate random triangle vertices around the initial position
         for (let j = 0; j < 9; j += 3) {
             vertices[baseIndex + j] = position.x + (Math.random() - 0.5) * spread;
             vertices[baseIndex + j + 1] = position.y + (Math.random() - 0.5) * spread;
             vertices[baseIndex + j + 2] = position.z + (Math.random() - 0.5) * spread;
         }
-
-        // Calculate a direction vector for each particle
         const dirX = vertices[baseIndex] - position.x;
         const dirY = vertices[baseIndex + 1] - position.y;
         const dirZ = vertices[baseIndex + 2] - position.z;
-
-        // Normalize the direction vector (unit length)
         const length = Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
         directions[i * 3] = dirX / length;
         directions[i * 3 + 1] = dirY / length;
@@ -272,9 +266,8 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 
     const particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
     scene.add(particleMesh);
-
-    const duration = 0.15; // Particle lifetime in seconds
-    const expansionSpeed = 5; // Speed at which particles expand outward
+    const duration = 0.15;
+    const expansionSpeed = 5;
     const startTime = performance.now();
 
     function animateParticles() {
@@ -282,8 +275,6 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 
         for (let i = 0; i < particleCount; i++) {
             const baseIndex = i * 9;
-
-            // Move each particle's triangle vertices outward along the direction vector
             for (let j = 0; j < 9; j += 3) {
                 vertices[baseIndex + j] += directions[i * 3] * expansionSpeed * elapsedTime;
                 vertices[baseIndex + j + 1] += directions[i * 3 + 1] * expansionSpeed * elapsedTime;
@@ -292,7 +283,7 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
         }
 
         particleGeometry.attributes.position.needsUpdate = true;
-        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration)); // Fade out
+        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration)); 
 
         if (elapsedTime < duration) {
             requestAnimationFrame(animateParticles);
@@ -728,14 +719,6 @@ const abilityTypes = [
                     this.lastTrailTime = Date.now();
                     trail.create();
                 }
-            // playerCollisionList.forEach((trailBullet,index) => {
-                //             if (trailBullet.trailBox.intersectsBox(other)) { 
-                //               scene.remove(trailBullet); 
-                //               trailBullets.splice(index, 1);
-                //               player.takeDamage(1);  
-                //            }
-            //  
-            //});
             };
             this.deactivate = () => {
                 trailBullets.forEach(bullet => { scene.remove(bullet); });
@@ -2371,7 +2354,6 @@ effect(user) {
     thumbnail: "Media/Abilities/WHALEALERT.png",
     effect(user) { 
         this.update = () => {}
-        // Implement the effect logic here
     }
 },
 {
@@ -2380,7 +2362,6 @@ effect(user) {
     thumbnail: 'Media/Abilities/SMARTCONTRACT.png',
     effect(user) { 
         this.update = () => {}
-        // Implement the effect logic here
     }
 },
 {
@@ -2699,7 +2680,7 @@ const worldTypes = [
                         float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
                         float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
                         
-                        // Apply the rainbow effect using the time uniform
+                       
                         vec3 color = rainbowColor(hue + time * 0.1) * brightness;
             
                         gl_FragColor = vec4(color, 1.0); 
@@ -3189,9 +3170,7 @@ this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahe
 this.frameCount = 0;
 },
     update: function(scene, camera, renderer) {
-       // this.frameCount++;
-      //  if (this.frameCount % 3 !== 0) return;  
-    
+
         this.gridMaterial.uniforms.time.value = performance.now() / 1000; 
  
         if(isMainMenu){
@@ -3269,7 +3248,7 @@ this.frameCount = 0;
                 }
         }
 
-       /// this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
+   
     },
     resumeGame: function(){}  
 }
@@ -3654,13 +3633,13 @@ UI.createTitleContainer= function (text) {
         if (onClick) button.onclick = onClick;
 
         if(dataType.isLocked){
-      //  button.style.color = 'gray';
+       //  button.style.color = 'gray';
        // button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
+       // title.style.color = 'gray';
+       // description.style.color = 'gray';
         button.style.cursor = 'not-allowed';
         button.style.opacity = '0.5';
         title.innerText="???"
-       // title.style.color = 'gray';
-       // description.style.color = 'gray';
         description.innerText="?????????????"
         button.style.animation = 'none';
         img.style.filter = 'blur(5px)';
@@ -3770,10 +3749,10 @@ UI.createTitleContainer= function (text) {
 
        addContainerUI('top-container', [mainTitle,worldTitle]);
 
-      //  addContainerUI('BR-container', [aboutTitle]);
+       //  addContainerUI('BR-container', [aboutTitle]);
        // aboutTitle.style.cursor = 'pointer';
        // aboutTitle.onclick = () => {
-      //      canMove = false;
+       //      canMove = false;
        //     isPaused = true;
        //     hideUI();
        //     createSettingsMenu();
@@ -3881,7 +3860,6 @@ function createChallengeMenu() {
         submitButton.classList.add('subtitle'); 
         submitButton.innerText = 'Agree & Send';
         inputContainer.appendChild(sponsorAmount);
-        //inputContainer.appendChild(submitButton); 
    
         sponsorAmount.addEventListener('input', async () => {
            const amount = sponsorAmount.value; 
@@ -4096,7 +4074,7 @@ function handleEntitySelection(entity, type) {
          const increment = 10000; 
          const loadingInterval = setInterval(() => {
              if (currentAmount >= 1000000) {
-             //TODO
+            
              } else {
                 if(currentAmount <=750000)
                  currentAmount += increment;
@@ -4572,8 +4550,6 @@ function createTransparencyReport() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
     const titleButton = UI.createTitleContainer('\nTransparency\nReport\n⚖️', "subtitle");
-   // titleButton.style.cursor = 'pointer';
-
     popUpContainer.appendChild(titleButton);
     const aboutButton = UI.createTitleElement(' You can read and run offline every line \n of code of the onchain survivor client !\n\n Repository:', "subtitle");
     popUpContainer.appendChild(aboutButton);
