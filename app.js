@@ -145,7 +145,7 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
-        this.returnToPool(); // Return the entity to the pool after death
+        this.returnToPool(); 
         handleEntityDeath(this, enemies);
     }
 }
@@ -173,9 +173,6 @@ let cameraHeight = 0;
 let canMove = true;
 
 let xpLoadingBar, hpBar;
-
-const rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
-let colorIndex = 0;
 
 const droppedItems = []; 
 const lightObjects = [];
@@ -314,6 +311,163 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
 const abilityTypes = [
+    {title: "Veil of Decentralization",
+        description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
+        thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
+        effect(user) { 
+            this.update = () => {}
+            const veil = {
+                create: () => {
+                    if (veil.shield) scene.remove(veil.shield);
+                    user.evasion += 50;
+                    const shieldMaterial = world.material
+                    const shieldGeometry = new THREE.SphereGeometry(2);
+                    veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
+                    veil.shield.position.copy(user.position);
+                    scene.add(veil.shield);
+                }
+            };
+            this.update = () => {
+                    if (veil.shield) 
+                        veil.shield.position.set(user.position.x ,user.position.y + 2, user.position.z );
+            };
+            this.deactivate = () => {
+                    if (veil.shield) {
+                        scene.remove(veil.shield);
+                        veil.shield = null;
+                    }
+            };
+            veil.create();
+        },
+    },
+    {title: "Exploit Finder",
+        description: "Scans the blockchain for harmful elements and neutralizes them.",
+        thumbnail: "Media/Abilities/EXPLOITFINDER.png",
+        effect(user) { 
+            this.update = () => {}
+                let time = Date.now();
+                let direction= null;
+                const orb = new THREE.Mesh(
+                    new THREE.SphereGeometry(1, 16, 6),
+                    world.material 
+                );
+                orb.orbitRadius= 10;
+                orb.orbitSpeed= 0.0035;
+                orb.homingSpeed= 0.5;
+                orb.position.copy(user.position); 
+                orb.updateMatrixWorld(true);
+                orb.boundingBox = new THREE.Box3().setFromObject(orb);
+                lightObjects.push(orb);
+                scene.add(orb);
+                this.update = () => {
+                            time = Date.now() * orb.orbitSpeed;
+                            orb.position.set(
+                                user.position.x + Math.cos(time) * orb.orbitRadius,
+                                user.position.y+1.5,
+                                user.position.z + Math.sin(time) * orb.orbitRadius
+                            );
+                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.position).normalize();
+                            orb.position.add(direction.multiplyScalar(orb.homingSpeed));
+                            orb.boundingBox.setFromObject(orb);
+                };
+                this.deactivate = () => {
+                        if (orb) {
+                            scene.remove(orb);
+                            orb = null;
+                        }
+                };
+        },
+    },
+    {title: "Blockchain Backup",
+        description: "The survivor keeps a backup of everything always in handy.",
+        thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
+        effect(user) { 
+            this.update = () => {};
+            let time = Date.now();
+            const orb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 6),
+                world.material 
+            );
+            orb.offsetAmount= 5, 
+            orb.maxDistance= 20, 
+            orb.followSpeed= 0.1,
+            orb.position.copy(user.position); 
+            orb.updateMatrixWorld(true);
+            orb.boundingBox = new THREE.Box3().setFromObject(orb);
+            lightObjects.push(orb);
+            scene.add(orb);
+            
+            this.update = () => {
+                time = Date.now();
+                const forwardOffset = Math.sin(time * 0.001) * orb.offsetAmount; 
+                const targetX = user.position.x + forwardOffset;  
+                const targetZ = user.position.z; 
+                const distanceFromPlayer = Math.sqrt(
+                    Math.pow(targetX - orb.position.x, 2) + 
+                    Math.pow(targetZ - orb.position.z, 2)
+                );
+                if (distanceFromPlayer > orb.maxDistance) {
+                    const direction = new THREE.Vector3(
+                        targetX - orb.position.x,
+                        0, 
+                        targetZ - orb.position.z
+                    ).normalize();
+    
+                    orb.position.add(direction.multiplyScalar(orb.followSpeed * distanceFromPlayer));
+                } else {
+                    orb.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), orb.followSpeed);
+                }
+                orb.boundingBox.setFromObject(orb);
+            };
+            this.deactivate = () => {
+                if (orb) {
+                    scene.remove(orb);
+                    orb = null;
+                }
+            };
+        },
+    }, 
+    {title: "Data Blob",
+        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
+        thumbnail: 'Media/Abilities/BLOB.png',
+        effect(user) { 
+            this.update = () => {};
+            const maxDistance = 20;
+            const orb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 16, 6),
+                world.material 
+            );
+            orb.position.copy(user.position); 
+            orb.updateMatrixWorld(true);
+            orb.boundingBox = new THREE.Box3().setFromObject(orb);
+            lightObjects.push(orb);
+            scene.add(orb);
+            this.update = () => {
+                const distanceX = orb.position.x - user.position.x;
+                const distanceZ = orb.position.z - user.position.z;
+                const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
+                if (distance > maxDistance) {
+                    const scale = maxDistance / distance;  
+                    orb.position.x = user.position.x + distanceX * scale;
+                    orb.position.z = user.position.z + distanceZ * scale;
+                } else {
+                    orb.position.set(
+                        user.position.x + distanceX,
+                        user.position.y + 2, 
+                        user.position.z + distanceZ
+                    );
+                }
+                orb.boundingBox.setFromObject(orb);
+            };
+    
+            this.deactivate = () => {
+                if (orb) {
+                    scene.remove(orb);
+                    orb = null;
+                }
+            };
+        },
+    },
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
         thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
@@ -396,55 +550,10 @@ const abilityTypes = [
                 }
             };
         },
-    },  
-    {title: "Data Blob",
-        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
-        thumbnail: 'Media/Abilities/BLOB.png',
-        effect(user) { 
-            this.update = () => {};
-            this.lastHitTime = 0;
-            const maxDistance = 20;
-            const orb = {
-                mesh: null,
-                boundingBox: null,
-                homingSpeed: 0.5,
-                create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-                    const geometry = new THREE.SphereGeometry(1, 16, 6);
-                    orb.mesh = new THREE.Mesh(geometry, material);
-                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                    scene.add(orb.mesh);
-                    lightObjects.push(orb);
-                }
-            };
-            this.update = () => {
-                const distanceX = orb.mesh.position.x - user.position.x;
-                const distanceZ = orb.mesh.position.z - user.position.z;
-                const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
-                if (distance > maxDistance) {
-                    const scale = maxDistance / distance; // Scaling factor to reduce the distance to maxDistance
-                    orb.mesh.position.x = user.position.x + distanceX * scale;
-                    orb.mesh.position.z = user.position.z + distanceZ * scale;
-                } else {
-                    orb.mesh.position.set(
-                        user.position.x + distanceX,
-                        user.position.y + 2, // Keep Y slightly above the player
-                        user.position.z + distanceZ
-                    );
-                }
-                orb.boundingBox.setFromObject(orb.mesh);
-            };
+    }, 
     
-            this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-            };
     
-            orb.create();
-        },
-    },
+
     {title: "Bot Swarm",
         description: "Summons additional bots to assist in battle.",
         thumbnail: 'Media/Abilities/SWARM.png',
@@ -455,9 +564,9 @@ const abilityTypes = [
             const orb = {
                 mesh: null,
                 boundingBox: null,
-                maxDistance: 20, // Maximum allowed distance ahead/behind the player
-                offsetAmount: 5,  // How far ahead or behind the bot can go
-                followSpeed: 0.1, // How fast the bot adjusts its position
+                maxDistance: 20, 
+                offsetAmount: 5, 
+                followSpeed: 0.1,
                 create: () => {
                     const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
                     const geometry = new THREE.SphereGeometry(1, 16, 6);
@@ -475,59 +584,6 @@ const abilityTypes = [
                 const distanceFromPlayer = Math.sqrt(
                     Math.pow(targetX + orb.mesh.position.x, 2) + 
                     Math.pow(targetZ + orb.mesh.position.z, 2)
-                );
-                if (distanceFromPlayer > orb.maxDistance) {
-                    const direction = new THREE.Vector3(
-                        targetX - orb.mesh.position.x,
-                        0, 
-                        targetZ - orb.mesh.position.z
-                    ).normalize();
-    
-                    orb.mesh.position.add(direction.multiplyScalar(orb.followSpeed * distanceFromPlayer));
-                } else {
-                    orb.mesh.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), orb.followSpeed);
-                }
-                orb.boundingBox.setFromObject(orb.mesh);
-            };
-            this.deactivate = () => {
-                if (orb.mesh) {
-                    scene.remove(orb.mesh);
-                    orb.mesh = null;
-                }
-            };
-            orb.create();
-        },
-    }, 
-    {title: "Blockchain Backup",
-        description: "The survivor keeps a backup of everything always in handy.",
-        thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-        effect(user) { 
-            this.update = () => {};
-            this.lastHitTime = 0;
-            let time = Date.now();
-            const orb = {
-                mesh: null,
-                boundingBox: null,
-                maxDistance: 20, // Maximum allowed distance ahead/behind the player
-                offsetAmount: 5,  // How far ahead or behind the bot can go
-                followSpeed: 0.1, // How fast the bot adjusts its position
-                create: () => {
-                    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-                    const geometry = new THREE.SphereGeometry(1, 16, 6);
-                    orb.mesh = new THREE.Mesh(geometry, material);
-                    orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                    scene.add(orb.mesh);
-                    lightObjects.push(orb);
-                }
-            };
-            this.update = () => {
-                time = Date.now();
-                const forwardOffset = Math.sin(time * 0.001) * orb.offsetAmount; 
-                const targetX = user.position.x + forwardOffset;  
-                const targetZ = user.position.z; 
-                const distanceFromPlayer = Math.sqrt(
-                    Math.pow(targetX - orb.mesh.position.x, 2) + 
-                    Math.pow(targetZ - orb.mesh.position.z, 2)
                 );
                 if (distanceFromPlayer > orb.maxDistance) {
                     const direction = new THREE.Vector3(
@@ -579,49 +635,6 @@ const abilityTypes = [
                                 user.position.x + Math.cos(time) * orb.orbitRadius,
                                 user.position.y+1.5,
                                // user.position.z + Math.sin(time) * orb.orbitRadius
-                            );
-                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.mesh.position).normalize();
-                            orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
-                            orb.boundingBox.setFromObject(orb.mesh);
-                        
-                };
-                this.deactivate = () => {
-                        if (orb.mesh) {
-                            scene.remove(orb.mesh);
-                            orb.mesh = null;
-                        }
-                };
-                orb.create();
-        },
-    },
-    {title: "Exploit Finder",
-        description: "Scans the blockchain for harmful elements and neutralizes them.",
-        thumbnail: "Media/Abilities/EXPLOITFINDER.png",
-        effect(user) { 
-            this.update = () => {}
-                this.lastHitTime=0;
-                let time = Date.now();
-                let direction= null;
-                const orb = {
-                    mesh: null,
-                    orbitRadius: 10,
-                    orbitSpeed: 0.01,
-                    homingSpeed: 0.5,
-                    create: () => {
-                        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff});
-                        const geometry = new THREE.SphereGeometry(0.6, 16, 6);
-                        orb.mesh = new THREE.Mesh(geometry, material);
-                        orb.boundingBox = new THREE.Box3().setFromObject(orb.mesh);
-                        scene.add(orb.mesh);
-                        lightObjects.push(orb)
-                    }
-                };
-                this.update = () => {
-                            time = Date.now() * orb.orbitSpeed;
-                            orb.mesh.position.set(
-                                user.position.x + Math.cos(time) * orb.orbitRadius,
-                                user.position.y+1.5,
-                                user.position.z + Math.sin(time) * orb.orbitRadius
                             );
                             direction = new THREE.Vector3().subVectors(closeEnemy, orb.mesh.position).normalize();
                             orb.mesh.position.add(direction.multiplyScalar(orb.homingSpeed));
@@ -700,10 +713,7 @@ const abilityTypes = [
                         const oldestBullet = trailBullets.shift(); 
                         scene.remove(oldestBullet); 
                     }
-                    colorIndex = (colorIndex + 1) % rainbowColors.length;
                     const trailStepMaterial = world.material.clone(); 
-                   // trailStepMaterial.color.setHex(rainbowColors[colorIndex]); 
-                   // trailStepMaterial.emissive.setHex(rainbowColors[colorIndex]);
                     const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1,.5,1 ),trailStepMaterial);
                     trailStep.position.copy(user.position);
                     trailStep.position.y-=1;
@@ -733,36 +743,6 @@ const abilityTypes = [
             };
         },
     },
-    {title: "Veil of Decentralization",
-        description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
-        thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
-        effect(user) { 
-            this.update = () => {}
-            const veil = {
-                create: () => {
-                    if (veil.shield) scene.remove(veil.shield);
-                    user.evasion += 50;
-                    const shieldMaterial = world.material.clone();
-                    shieldMaterial.transparent = true;
-                    shieldMaterial.opacity = 0.1; 
-                    const shieldGeometry = new THREE.SphereGeometry(2.5);
-                    veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
-                    veil.shield.position.copy(user.position);
-                    scene.add(veil.shield);
-                }
-            };
-            this.update = () => {
-                    if (veil.shield) veil.shield.position.copy(user.position);
-            };
-            this.deactivate = () => {
-                    if (veil.shield) {
-                        scene.remove(veil.shield);
-                        veil.shield = null;
-                    }
-            };
-            veil.create();
-        },
-    },
 ];
 
 /*---------------------------------------------------------------------------
@@ -776,20 +756,6 @@ const abilityTypes = [
         this.update = () => {}
         const veil = {
             create: () => {
-                if (veil.shield) scene.remove(veil.shield);
-                user.evasion += 3;
-                colorIndex = (colorIndex + 1) % rainbowColors.length;
-                const shieldMaterial = world.material.clone(); 
-                shieldMaterial.color.setHex(rainbowColors[colorIndex]);
-                shieldMaterial.transparent = true;
-                shieldMaterial.opacity = 0.1;
-                shieldMaterial.emissive.setHex(rainbowColors[colorIndex]);
-                shieldMaterial.emissiveIntensity = 1;
-    
-                const shieldGeometry = new THREE.SphereGeometry(1.5, 32, 32);
-                veil.shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
-                veil.shield.position.copy(user.position);
-                scene.add(veil.shield);
             }
         };
         this.update = () => {
@@ -3344,7 +3310,7 @@ world.setup(scene,camera,renderer);
 /*---------------------------------------------------------------------------
                             Abilities Controller
 ---------------------------------------------------------------------------*/
-ability = abilityTypes[1];
+ability = abilityTypes[0];
 /*---------------------------------------------------------------------------
                               Player Controller
 ---------------------------------------------------------------------------*/
