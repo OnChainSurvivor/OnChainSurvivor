@@ -173,14 +173,14 @@ button, div {
 
 .BL-container {
     position: fixed;
-    bottom: 10px;     
+    bottom: 15px;     
     left: 10px;   
     display: flex;
 }
 
 .BR-container {
     position: fixed;
-    bottom: 10px;     
+    bottom: 15px;     
     right: 10px;   
     display: flex;
 }
@@ -188,7 +188,7 @@ button, div {
 
 .bottom-container{
     position : absolute;
-    bottom : 10px;
+    bottom : 15px;
     left : 50%;
     transform : translateX(-50%);
     display : flex;
