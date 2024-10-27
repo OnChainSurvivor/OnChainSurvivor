@@ -1491,19 +1491,6 @@ UI.createTitleContainer= function (text) {
         button.appendChild(description);
         
         if (onClick) button.onclick = onClick;
-
-        if(dataType.isLocked){
-       //  button.style.color = 'gray';
-       // button.style.borderImageSource = 'linear-gradient(45deg, gray, gray)';
-       // title.style.color = 'gray';
-       // description.style.color = 'gray';
-        button.style.cursor = 'not-allowed';
-        button.style.opacity = '0.5';
-        title.innerText="???"
-        description.innerText="?????????????"
-        button.style.animation = 'none';
-        img.style.filter = 'blur(5px)';
-    }
     
         return button;
     }
