@@ -622,7 +622,7 @@ const abilityTypes = [
                 orb.beam.boundingBox = new THREE.Box3().setFromObject(orb.beam);
                 scene.add(orb.beam);
 
-                if (dropUpdateFrame++ % (60/ player.attackPerSecond) === 0) { 
+                if (dropUpdateFrame++ % (60/ (1 + player.attackPerSecond)) === 0) { 
                     if (closeEnemy) {
                         createOrb(orb);
                     }
@@ -1151,6 +1151,18 @@ world = worldTypes[0];
 world.setup(scene,camera,renderer);
 ability = abilityTypes[0];
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+player.health=  5;
+player.maxhealth= 5;
+player.movementspeed= 0.15;
+player.attackSpeed=  0.25;
+player.attackLTL+1000;
+player.attackPerSecond=0;
+player.influenceRadius=10;
+player.xp= 0;
+player.range=15;
+player.evasion=0;
+player.xpToNextLevel=1;
+player.level=0;
 
 /*---------------------------------------------------------------------------
                              Player Controller
@@ -1237,7 +1249,7 @@ function updatePlayerMovement() {
 
     player.updateAbilities();
 
-    if (dropUpdateFrame++ % (60/ player.attackPerSecond) === 0) { 
+    if (dropUpdateFrame++ % (60/ (1 +player.attackPerSecond)) === 0) { 
         if (closeEnemy) {
             createOrb(player);
         }
