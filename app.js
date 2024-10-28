@@ -1592,7 +1592,7 @@ UI.createTitleContainer= function (text) {
         web3Title.style.cursor = 'pointer';
         const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
-    const challengeTitle = UI.createTitleElement(``, "minititle");
+        const challengeTitle = UI.createTitleElement(``, "minititle");
     
         const miniplayerButton = createButton(player, 0.4);
         const miniworldButton = createButton(world, 0.4);
@@ -1603,8 +1603,6 @@ UI.createTitleContainer= function (text) {
         todaysContainer.appendChild(miniworldButton);
         const subTitle = UI.createTitleElement('Move to Start!', "title");
         const aboutTitle = UI.createTitleElement('\n⚙️\n', "subtitle");
-
-     
 
        addContainerUI('top-container', [mainTitle,worldTitle]);
 
