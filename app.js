@@ -131,20 +131,20 @@ class Entity extends THREE.Object3D {
     }
 
     die() {
-    this.returnToPool(); 
-    createParticleEffect(this.position);
+        this.returnToPool(); 
+        createParticleEffect(this.position);
 
-    //secrets+= 1; when secret enemy defeated
-    //bosses+= 1; when boss defeated
-    //liquidations += 1; when base enemy defeated
-    dropItem(this.position);
-    scene.remove(this);
+        //secrets+= 1; when secret enemy defeated
+        //bosses+= 1; when boss defeated
+        //liquidations += 1; when base enemy defeated
+        dropItem(this.position);
+        scene.remove(this);
 
-    const index = scene.children.indexOf(this);
-    if (index > -1) scene.children.splice(index, 1);
+        const index = scene.children.indexOf(this);
+        if (index > -1) scene.children.splice(index, 1);
 
-    const enemyIndex = enemies.indexOf(this);
-    if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
+        const enemyIndex = enemies.indexOf(this);
+        if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
     }
 }
 
