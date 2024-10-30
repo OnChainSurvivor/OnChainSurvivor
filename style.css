@@ -316,6 +316,10 @@ html, body {
     white-space: nowrap; 
 }
 
+.smalltitle {
+    font-size: 1vw;
+}
+
 .loading-container {
     position: relative;
     width: 25%;
@@ -346,6 +350,10 @@ html, body {
     .minititle {
         font-size: 3.5vw;
         white-space: nowrap; 
+    }
+
+    .smalltitle {
+        font-size: 3vw;
     }
 
     .loading-container {

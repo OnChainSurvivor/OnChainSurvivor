@@ -1698,7 +1698,7 @@ function createChallengeMenu() {
     menuButtonsContainer.appendChild(classContainer);
     menuButtonsContainer.appendChild(classAbilityContainer);
     menuButtonsContainer.appendChild(worldContainer);
-    const subTitle = UI.createTitleElement('\nSend a Challenge!',  "title");
+    const subTitle = UI.createTitleElement('\nSet Challenge!',  "title");
 
         menuButtonsContainer.childNodes.forEach(button => {
             button.addEventListener('click', () => {
@@ -1732,7 +1732,7 @@ function createChallengeMenu() {
            }
          });
 
-         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor, and interacting with the smart contracts, is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes, and participants should not expect financial returns.\n\n By sending any transaction to the smart contract, you confirm that you are not subject to any country-specific restrictions, regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze or stop the Challenge Queue, during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events, updates and unforeseen circumstances, always in favour of the players. Any changes in timing will be publicly communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply), as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible, please doublecheck before sending your challenge.  \n\n', "minititle")
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze \nor stop the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events\n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
          const popUpContainer = UI.createContainer(['choose-menu-container']);;
          popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
          popUpContainer.appendChild(subTitle); 
@@ -1754,7 +1754,7 @@ function createChallengeMenu() {
         createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
         createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
     };
- //createChallengeMenu()
+ // createChallengeMenu()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
