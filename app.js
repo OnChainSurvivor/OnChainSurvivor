@@ -1784,7 +1784,6 @@ function createChooseMenu(entityList, text, type) {
     popUpContainer.appendChild(gridContainer);
 }
 
-
 function handleEntitySelection(entity, type) {
     if (type === "Upgrade") {
         keys.w = keys.a = keys.s = keys.d = false;
