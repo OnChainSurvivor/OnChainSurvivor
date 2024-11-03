@@ -199,7 +199,7 @@ This project license is currently [TBD].
 -   **Microsoft Copilot**: Best Artist i've ever known ❤️.
 -   **Adobe Mixamo**: Best 3D Animator ❤️.
 -   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License.
--   **Tensor Flow**: -------------------.
+-   **Tensor Flow**: open source platform for machine learning ❤️
 
 ## 📬 Contact
 
