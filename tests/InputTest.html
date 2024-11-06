@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TensorFlow Game Canvas</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #gameCanvas {
+            border: 2px solid #333;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <!-- TensorFlow.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Circle setup
+        let circle = {
+            x: 200,
+            y: 200,
+            radius: 20,
+            dx: 2,
+            dy: 2
+        };
+
+        // Draw the circle on the canvas
+        function drawCircle() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        // TensorFlow.js model setup
+        const model = tf.sequential();
+        model.add(tf.layers.dense({units: 10, inputShape: [2], activation: 'relu'})); // Increase units
+        model.add(tf.layers.dense({units: 1})); // Output layer
+        model.compile({loss: 'meanSquaredError', optimizer: 'adam'}); // More efficient optimizer
+
+        // Expanded training data for better generalization
+        const xs = tf.tensor2d([
+            [0, 0], [400, 0], [0, 400], [400, 400],
+            [200, 200], [100, 100], [300, 300], [200, 100], [100, 200]
+        ]);
+        const ys = tf.tensor2d([
+            [200], [300], [100], [50], [200], [150], [250], [175], [125]
+        ]);
+
+        // Train the model
+        model.fit(xs, ys, {epochs: 200}).then(() => {
+            console.log("Model trained.");
+            animate();
+        });
+
+        // Normalize function
+        function normalize(value, max) {
+            return value / max;
+        }
+
+        // Updated Animation Function with Memory Management
+        function animate() {
+            // Normalize inputs
+            const normalizedX = normalize(circle.x, canvas.width);
+            const normalizedY = normalize(circle.y, canvas.height);
+
+            // Predict the new y position
+            tf.tidy(() => {
+                const input = tf.tensor2d([[normalizedX, normalizedY]]);
+                const prediction = model.predict(input);
+                
+                // Ensure prediction is valid
+                const newY = prediction.dataSync()[0];
+                if (!isNaN(newY)) {
+                    circle.y = newY * canvas.height; // De-normalize
+                } else {
+                    console.error("Prediction returned NaN. Check model training or input.");
+                }
+            });
+
+            // Update the x position for horizontal movement
+            circle.x += circle.dx;
+
+            // Bounce horizontally
+            if (circle.x + circle.radius > canvas.width || circle.x - circle.radius < 0) {
+                circle.dx *= -1;
+            }
+
+            drawCircle();
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>
