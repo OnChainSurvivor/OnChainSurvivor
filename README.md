@@ -81,8 +81,6 @@ Product is still in development, but as it gains more shape, there are many plan
 
 This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the Challenge queue. The  system is competitive, with each user placing their challenges, aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. The initial plan is to have the challenge queue settle on ethereum until several Usex Experience issues are solved, but this can change in the future to move to a L2.
 
-Queue Process
-
 **Setting Challenge**: Users from Ethereum (L1) and various L2 blockchains submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
 
 **Daily Rank up**: Every n Blocks, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
@@ -93,11 +91,11 @@ This system ensures fairness by regularly refreshing the queue, preventing any o
 
 ### Phase 2: Multiple games, all using the same Challenge Queue and Human Consensus.
 
-As additional game templates are developed and integrated into the main client, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
+As additional game "templates" are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
 
-### Phase 3: AI generated real time experiences, layered on top of the template games. 
+### Phase 3: User generated real time experiences,from locally run neural networks. 
 
-Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming. Users will be able to input a prompt into the system, allowing them to "modify" the game as they desire. Onchain Survivor plans to eventually (within months to years) implement an open-source, real-time technology that enables this experience.
+Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. If in the future players will be able to create with all kinds experiences with just one prompt, then having consensus on "what to play" on a daily basis might have value in an AI only era. for Onchain survivor, Challengers will be able to choose an style, and  using fast style transfer technology, Onchain survivor will adapt it into the main gameplay loop, allowing Challengers to "modify" the game as they desire using these technologies , and have all the others survivors enjoy it too, this way we all have the same experience. Onchain Survivor plans to eventually implement (within months to years) wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -199,7 +197,7 @@ This project license is currently [TBD].
 -   **Microsoft Copilot**: Best Artist i've ever known ❤️.
 -   **Adobe Mixamo**: Best 3D Animator ❤️.
 -   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License.
--   **Tensor Flow**: Best Neural Style transfer tool ❤️
+-   **Tensor Flow**:Best Neural Style transfer tool ❤️
 
 ## 📬 Contact
 
