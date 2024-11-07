@@ -2,52 +2,82 @@ export const abilityTypes = [
     {title: "Scalping Bot",
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     { title: 'Onchain Trail',
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Anti-Rug Bot",
         description: "Detects and disables rug traps.",
         thumbnail: 'Media/Abilities/RUGBOT.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Bot Swarm",
         description: "Summons additional bots to assist in battle.",
         thumbnail: 'Media/Abilities/SWARM.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Veil of Decentralization",
         description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
         thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Exploit Finder",
         description: "Scans the blockchain for harmful elements and neutralizes them.",
         thumbnail: "Media/Abilities/EXPLOITFINDER.png",
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Blockchain Backup",
         description: "The survivor keeps a backup of everything always in handy.",
         thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     }, 
     {title: "Data Blob",
         description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
         thumbnail: 'Media/Abilities/BLOB.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
         thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     },
     {title: "Sniping Bot",
         description: "Fast trading bot that liquidates opposing survivors.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
-        effect: [],
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
     }, 
 ];
 

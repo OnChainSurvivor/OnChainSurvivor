@@ -7,17 +7,29 @@ const objectPool = [];
 const initialPoolSize = 200;
 
 class Ability {
-constructor(user, config) {
+    constructor(user, config) {
         Object.assign(this, { user, ...config });
-    }
-    activate() {
-        this.effect(this.user);
     }
 
     update() {
-        this.effect.update();
+        this.effect.forEach(effectName => {
+            abilityEffects[effectName].update?.(this.user, this);
+        });
+    }
+
+    activate(){
+        this.effect.forEach(effectName => {
+            abilityEffects[effectName].initialize?.(this.user, this);
+          });
+    }
+
+    terminate(){
+        this.effects.forEach(effectName => {
+            abilityEffects[effectName].terminate?.(this.user, this);
+          });
     }
 }
+
 
 class Entity extends THREE.Object3D {
     constructor(config, position) {
@@ -271,52 +283,59 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
     animateParticles();
 }
 
-
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
-const abilityTypes = [
-    {title: "Scalping Bot",
-        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
-        thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        effect(user) { 
-                this.lastHitTime=0;
-                let time = Date.now();
-                let direction= null;
-                const orb = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.6, 16, 6),
-                    world.material 
-                );
-                orb.position.copy(user.position); 
-                orb.updateMatrixWorld(true);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb);
-                lightObjects.push(orb);
-                scene.add(orb);
-                orb.target= null;
-                orb.orbitRadius= 2;
-                orb.orbitSpeed= 0.01;
-                orb.homingSpeed= 0.5;
+import { abilityTypes } from './abilityTypes.js';
 
-                this.update = () => {
-                        if (!orb.target) {
-                            time = Date.now() * orb.orbitSpeed;
-                            orb.position.set(
-                                user.position.x + Math.cos(time) * orb.orbitRadius,
-                                user.position.y,
-                                user.position.z + Math.sin(time) * orb.orbitRadius
-                            );
-                            orb.target=true;
-                            if ((Date.now() - this.lastHitTime > (500))) {
-                            this.lastHitTime = Date.now();
-                            }
-                        } else {
-                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.position).normalize();
-                            orb.position.add(direction.multiplyScalar(orb.homingSpeed));
-                            orb.boundingBox.setFromObject(orb);
-                        }
-                };
-        },
+const abilityEffects = {
+"Create Bot": {
+    initialize: (user, ability) => {
+        const bot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.6, 16, 6),
+            world.material
+        );
+        bot.position.copy(user.position);
+        bot.updateMatrixWorld(true);
+        bot.boundingBox = new THREE.Box3().setFromObject(bot);
+        lightObjects.push(bot);
+        scene.add(bot);
+        bot.target = null;
+        bot.orbitRadius = 2;
+        bot.orbitSpeed = 0.01;
+        bot.homingSpeed = 0.5;
+        ability.bot = bot;
+        ability.lastHitTime = 0;
     },
+    update: (user, ability) => {
+    },
+    terminate: (user, ability) => {
+        scene.remove(ability.bot);
+        const index = lightObjects.indexOf(ability.bot);
+        if (index > -1) {
+            lightObjects.splice(index, 1);
+        }
+        delete ability.bot;
+    },
+},
+
+"Scalp": {
+    update: (user, ability) => {
+        const bot = ability.bot;
+        if (!bot) return;
+        if (closeEnemy) {
+            bot.target = closeEnemy;
+            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize();
+            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
+            bot.boundingBox.setFromObject(bot);
+        } else {
+            bot.target = null;
+        }
+    },
+},
+}
+
+const oldabilityTypes = [
     { title: 'Onchain Trail',
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
