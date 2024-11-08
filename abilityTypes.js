@@ -1,4 +1,28 @@
 export const abilityTypes = [
+    { title: 'Onchain Trail',
+        description: 'Your onchain movements leave a trail behind, damaging pursuers',
+        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
+        effect: [
+            "Create Trail Step",
+            "Manage Trail",
+        ],
+    },
+    {title: "Veil of Decentralization",
+        description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
+        thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
+        effect: [
+            "Create Veil",
+            "EvasionUP"
+        ],
+    },
+    {title: "Bot Swarm",
+        description: "Summons additional bots to assist in battle.",
+        thumbnail: 'Media/Abilities/SWARM.png',
+        effect: [
+            "Create Bot",
+            "Swarm"
+        ],
+    },
     {title: "Anti-Rug Bot",
         description: "Detects and disables rug traps.",
         thumbnail: 'Media/Abilities/RUGBOT.png',
@@ -10,30 +34,6 @@ export const abilityTypes = [
     {title: "Scalping Bot",
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    { title: 'Onchain Trail',
-        description: 'Your onchain movements leave a trail behind, damaging pursuers',
-        thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Bot Swarm",
-        description: "Summons additional bots to assist in battle.",
-        thumbnail: 'Media/Abilities/SWARM.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Veil of Decentralization",
-        description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
-        thumbnail: 'Media/Abilities/VEILOFDECENTRALIZATION.png',
         effect: [
             "Create Bot",
             "Scalp"
