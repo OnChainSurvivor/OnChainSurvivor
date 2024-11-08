@@ -333,6 +333,22 @@ const abilityEffects = {
         }
     },
 },
+"Swipe": {
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            time = Date.now() * bot.orbitSpeed;
+            bot.position.set(
+                user.position.x + Math.cos(time) * bot.orbitRadius,
+                user.position.y+1.5,
+                //user.position.z + Math.sin(time) * bot.orbitRadius
+            );
+            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize();
+            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
+            bot.boundingBox.setFromObject(bot);
+        },
+    },
+
 }
 
 const oldabilityTypes = [

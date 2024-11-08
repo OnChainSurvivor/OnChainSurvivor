@@ -1,4 +1,12 @@
 export const abilityTypes = [
+    {title: "Anti-Rug Bot",
+        description: "Detects and disables rug traps.",
+        thumbnail: 'Media/Abilities/RUGBOT.png',
+        effect: [
+            "Create Bot",
+            "Swipe"
+        ],
+    },
     {title: "Scalping Bot",
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
@@ -10,14 +18,6 @@ export const abilityTypes = [
     { title: 'Onchain Trail',
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Anti-Rug Bot",
-        description: "Detects and disables rug traps.",
-        thumbnail: 'Media/Abilities/RUGBOT.png',
         effect: [
             "Create Bot",
             "Scalp"
