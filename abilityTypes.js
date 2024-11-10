@@ -1,4 +1,47 @@
 export const abilityTypes = [
+    {title: "Sniping Bot",
+        description: "Fast trading bot that liquidates opposing survivors.",
+        thumbnail: 'Media/Abilities/SNIPEBOT.png',
+        effect: [
+            "Create Bot",
+            "Elevate",
+            "Frontrun",
+            "Point Laser",
+            "Shoot Closest Enemy", 
+        ],
+    }, 
+    {title: "Frontrunning Bot",
+        description: "A fast bot that outpaces you and your enemy movements.",
+        thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
+        effect: [
+            "Create Bot",
+            "Frontrun"
+        ],
+    },
+    {title: "Blockchain Backup",
+        description: "The survivor keeps a backup of everything always in handy.",
+        thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
+        effect: [
+            "Create Bot",
+            "Follow Close"
+        ],
+    }, 
+    {title: "Data Blob",
+        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
+        thumbnail: 'Media/Abilities/BLOB.png',
+        effect: [
+            "Create Bot",
+            "Follow Far"
+        ],
+    },
+    {title: "Exploit Finder",
+        description: "Scans the blockchain for harmful elements and neutralizes them.",
+        thumbnail: "Media/Abilities/EXPLOITFINDER.png",
+        effect: [
+            "Create Bot",
+            "Orbit"
+        ],
+    },
     { title: 'Onchain Trail',
         description: 'Your onchain movements leave a trail behind, damaging pursuers',
         thumbnail: 'Media/Abilities/ONCHAINTRAIL.png',
@@ -39,46 +82,6 @@ export const abilityTypes = [
             "Scalp"
         ],
     },
-    {title: "Exploit Finder",
-        description: "Scans the blockchain for harmful elements and neutralizes them.",
-        thumbnail: "Media/Abilities/EXPLOITFINDER.png",
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Blockchain Backup",
-        description: "The survivor keeps a backup of everything always in handy.",
-        thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    }, 
-    {title: "Data Blob",
-        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
-        thumbnail: 'Media/Abilities/BLOB.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Frontrunning Bot",
-        description: "A fast bot that outpaces you and your enemy movements.",
-        thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    },
-    {title: "Sniping Bot",
-        description: "Fast trading bot that liquidates opposing survivors.",
-        thumbnail: 'Media/Abilities/SNIPEBOT.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
-    }, 
 ];
 
 

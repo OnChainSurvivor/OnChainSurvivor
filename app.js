@@ -448,155 +448,128 @@ const abilityEffects = {
 },
     "EvasionUP": {
         initialize: (user, ability) => {
-            user.evasion += 50; // Increase evasion on activation
-            ability.initialEvasion = user.evasion;  // Store initial evasion value
+            user.evasion += 50; 
+            ability.initialEvasion = user.evasion;  
         },
         terminate: (user, ability) => {
-            if (ability.initialEvasion !== undefined) { //Check if initialEvasion was stored
-                user.evasion = ability.initialEvasion - 50; // Restore evasion on termination
-                delete ability.initialEvasion;  //remove the stored value
+            if (ability.initialEvasion !== undefined) { 
+                user.evasion = ability.initialEvasion - 50; 
+                delete ability.initialEvasion; 
             }
 
         }
     },
+    "Orbit": {
+        // should be orbitRadius= 10;
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            const time = Date.now() * bot.orbitSpeed; 
+            bot.position.set(
+                user.position.x + Math.cos(time) * bot.orbitRadius,
+                user.position.y + 1.5,
+                user.position.z + Math.sin(time) * bot.orbitRadius 
+            );
+            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize(); // Homing towards closest enemy
+            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
+            bot.boundingBox.setFromObject(bot);
+        },
+    },
+
+    "Follow Close": {
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            const time = Date.now();
+            const forwardOffset = Math.sin(time * 0.001) * bot.offsetAmount;
+            const targetX = user.position.x + forwardOffset;
+            const targetZ = user.position.z;
+            bot.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), bot.followSpeed);
+            bot.boundingBox.setFromObject(bot);
+        },
+    },
+
+    "Follow Far": {
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            const distanceX = bot.position.x - user.position.x;
+            const distanceZ = bot.position.z - user.position.z;
+            const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
+            if (distance > bot.maxDistance) {
+                const scale = bot.maxDistance / distance;  
+                bot.position.x = user.position.x + distanceX * scale;
+                bot.position.z = user.position.z + distanceZ * scale;
+            } else {
+                bot.position.set(
+                    user.position.x + distanceX,
+                    user.position.y + 2, 
+                    user.position.z + distanceZ
+                );
+            }
+            bot.boundingBox.setFromObject(bot);
+        },
+    },
+
+    "Frontrun": {
+        initialize: (user, ability) => {
+            ability.previousPosition = new THREE.Vector3().copy(user.position);
+        },
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            const currentPosition = new THREE.Vector3().copy(user.position);
+            const playerDirection = new THREE.Vector3().subVectors(currentPosition, ability.previousPosition).normalize();
+            const newOrbPosition = new THREE.Vector3(
+                user.position.x + playerDirection.x * user.range,
+                user.position.y + 2,
+                user.position.z + playerDirection.z * user.range
+            );
+            bot.position.lerp(newOrbPosition, 0.1);  
+            bot.boundingBox.setFromObject(bot);
+            ability.previousPosition.copy(currentPosition);
+        },
+
+    },
+
+
+    "Elevate":{
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot) return;
+            bot.position.y = user.position.y + 15;
+        }
+    },
+
+    "Point Laser": {
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (!bot && !closeEnemy) return;  
+            scene.remove(bot.beam);
+            const testBeamGeometry = new THREE.BufferGeometry().setFromPoints([bot.position.clone(), closeEnemy]);
+            bot.beam = new THREE.Line(testBeamGeometry, new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),);
+            bot.beam.boundingBox = new THREE.Box3().setFromObject(bot.beam);
+            scene.add(bot.beam);
+        },
+    },
+
+    "Shoot Closest Enemy": {
+        initialize: (user, ability) => {
+          ability.bot.dropUpdateFrame = 0;  
+        },
+        update: (user, ability) => {
+            const bot = ability.bot;
+            if (bot.dropUpdateFrame++ % (60/ (1 + player.attackPerSecond)) === 0) { 
+                if (closeEnemy) {
+                    createOrb(bot);
+                }
+            }
+        },
+    },
+
 }
 
 const oldabilityTypes = [
-    {title: "Exploit Finder",
-        effect(user) { 
-            this.update = () => {}
-                let time = Date.now();
-                let direction= null;
-                const orb = new THREE.Mesh(
-                    new THREE.SphereGeometry(1, 16, 6),
-                    world.material 
-                );
-                orb.orbitRadius= 10;
-                orb.orbitSpeed= 0.0035;
-                orb.homingSpeed= 0.5;
-                orb.position.copy(user.position); 
-                orb.updateMatrixWorld(true);
-                orb.boundingBox = new THREE.Box3().setFromObject(orb);
-                lightObjects.push(orb);
-                scene.add(orb);
-                this.update = () => {
-                            time = Date.now() * orb.orbitSpeed;
-                            orb.position.set(
-                                user.position.x + Math.cos(time) * orb.orbitRadius,
-                                user.position.y+1.5,
-                                user.position.z + Math.sin(time) * orb.orbitRadius
-                            );
-                            direction = new THREE.Vector3().subVectors(closeEnemy, orb.position).normalize();
-                            orb.position.add(direction.multiplyScalar(orb.homingSpeed));
-                            orb.boundingBox.setFromObject(orb);
-                };
-        },
-    },
-    {title: "Blockchain Backup",
-        description: "The survivor keeps a backup of everything always in handy.",
-        thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',
-        effect(user) { 
-            this.update = () => {};
-            let time = Date.now();
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.6, 16, 6),
-                world.material 
-            );
-            orb.offsetAmount= 5, 
-            orb.maxDistance= 20, 
-            orb.followSpeed= 0.1,
-            orb.position.copy(user.position); 
-            orb.updateMatrixWorld(true);
-            orb.boundingBox = new THREE.Box3().setFromObject(orb);
-            lightObjects.push(orb);
-            scene.add(orb);
-            
-            this.update = () => {
-                time = Date.now();
-                const forwardOffset = Math.sin(time * 0.001) * orb.offsetAmount; 
-                const targetX = user.position.x + forwardOffset;  
-                const targetZ = user.position.z; 
-                const distanceFromPlayer = Math.sqrt(
-                    Math.pow(targetX - orb.position.x, 2) + 
-                    Math.pow(targetZ - orb.position.z, 2)
-                );
-                if (distanceFromPlayer > orb.maxDistance) {
-                    const direction = new THREE.Vector3(
-                        targetX - orb.position.x,
-                        0, 
-                        targetZ - orb.position.z
-                    ).normalize();
-    
-                    orb.position.add(direction.multiplyScalar(orb.followSpeed * distanceFromPlayer));
-                } else {
-                    orb.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), orb.followSpeed);
-                }
-                orb.boundingBox.setFromObject(orb);
-            };
-        },
-    }, 
-    {title: "Data Blob",
-        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
-        thumbnail: 'Media/Abilities/BLOB.png',
-        effect(user) { 
-            this.update = () => {};
-            const maxDistance = 20;
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.6, 16, 6),
-                world.material 
-            );
-            orb.position.copy(user.position); 
-            orb.updateMatrixWorld(true);
-            orb.boundingBox = new THREE.Box3().setFromObject(orb);
-            lightObjects.push(orb);
-            scene.add(orb);
-            this.update = () => {
-                const distanceX = orb.position.x - user.position.x;
-                const distanceZ = orb.position.z - user.position.z;
-                const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
-                if (distance > maxDistance) {
-                    const scale = maxDistance / distance;  
-                    orb.position.x = user.position.x + distanceX * scale;
-                    orb.position.z = user.position.z + distanceZ * scale;
-                } else {
-                    orb.position.set(
-                        user.position.x + distanceX,
-                        user.position.y + 2, 
-                        user.position.z + distanceZ
-                    );
-                }
-                orb.boundingBox.setFromObject(orb);
-            };
-        },
-    },
-    {title: "Frontrunning Bot",
-        description: "A fast bot that outpaces you and your enemy movements.",
-        thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
-        effect(user) { 
-            let previousPosition = new THREE.Vector3().copy(user.position); 
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.6, 16, 6),
-                world.material 
-            );
-            orb.position.copy(user.position); 
-            orb.updateMatrixWorld(true);
-            orb.boundingBox = new THREE.Box3().setFromObject(orb);
-            lightObjects.push(orb);
-            scene.add(orb);
-            this.update = () => {
-                const currentPosition = new THREE.Vector3().copy(user.position);
-                const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
-                const newOrbPosition = new THREE.Vector3(
-                    user.position.x + playerDirection.x * user.range,
-                    user.position.y + 2, 
-                    user.position.z + playerDirection.z * user.range
-                );
-                orb.position.lerp(newOrbPosition, 0.1);
-                orb.boundingBox.setFromObject(orb);
-                previousPosition.copy(currentPosition);
-            };
-        },
-    },
     {title: "Sniping Bot",
         description: "Fast trading bot that liquidates opposing survivors.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
