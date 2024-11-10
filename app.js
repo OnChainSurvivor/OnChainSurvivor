@@ -569,51 +569,6 @@ const abilityEffects = {
 
 }
 
-const oldabilityTypes = [
-    {title: "Sniping Bot",
-        description: "Fast trading bot that liquidates opposing survivors.",
-        thumbnail: 'Media/Abilities/SNIPEBOT.png',
-        effect(user) { 
-            let previousPosition = new THREE.Vector3().copy(user.position); 
-            this.lastHitTime = 0;
-            let dropUpdateFrame = 0; 
-            const orb = new THREE.Mesh(
-                new THREE.SphereGeometry(0.6, 16, 6),
-                world.material 
-            );
-            orb.position.copy(user.position); 
-            orb.updateMatrixWorld(true);
-            orb.boundingBox = new THREE.Box3().setFromObject(orb);
-            lightObjects.push(orb);
-            scene.add(orb);
-            this.update = () => {
-                const currentPosition = new THREE.Vector3().copy(user.position);
-                const playerDirection = new THREE.Vector3().subVectors(currentPosition, previousPosition).normalize();
-                const newOrbPosition = new THREE.Vector3(
-                    user.position.x + playerDirection.x * user.range,
-                    user.position.y + 15, 
-                    user.position.z + playerDirection.z * user.range 
-                );
-                orb.position.lerp(newOrbPosition, .05);
-                orb.boundingBox.setFromObject(orb);
-                previousPosition.copy(currentPosition);
- 
-                scene.remove(orb.beam);
-                const testBeamGeometry = new THREE.BufferGeometry().setFromPoints([orb.position.clone(), closeEnemy]);
-                orb.beam = new THREE.Line(testBeamGeometry, new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),);
-                orb.beam.boundingBox = new THREE.Box3().setFromObject(orb.beam);
-                scene.add(orb.beam);
-
-                if (dropUpdateFrame++ % (60/ (1 + player.attackPerSecond)) === 0) { 
-                    if (closeEnemy) {
-                        createOrb(orb);
-                    }
-                }
-            
-            };
-        },
-    }, 
-];
 /*---------------------------------------------------------------------------
                               Survivors Blueprint
 ---------------------------------------------------------------------------*/
@@ -1137,7 +1092,7 @@ player.health=  5;
 player.maxhealth= 5;
 player.movementspeed= 0.15;
 player.attackSpeed=  0.25;
-player.attackLTL+1000;
+player.attackLTL=1000;
 player.attackPerSecond=0;
 player.influenceRadius=10;
 player.xp= 0;
