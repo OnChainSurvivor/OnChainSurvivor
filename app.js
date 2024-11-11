@@ -1240,7 +1240,6 @@ function updatePlayerMovement() {
               }); 
                 
         }    
-
 }
 function randomAbility() {
     const upgradableAbilities = player.getUpgradableAbilities();

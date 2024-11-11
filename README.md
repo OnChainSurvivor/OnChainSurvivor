@@ -89,7 +89,7 @@ This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users fr
 
 This system ensures fairness by regularly refreshing the queue, preventing any one user from monopolizing the top position.
 
-### Phase 2: Multiple games, all using the same Challenge Queue and Human Consensus.
+### Phase 2: Multiple games, all using the same Challenge Queue !
 
 As additional game "templates" are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
 
