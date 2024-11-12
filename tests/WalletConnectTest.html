@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Wallet Connect</title>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.8/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Connect Wallet Example</h1>
+    <button id="connectMetaMask">Connect MetaMask</button>
+    <button id="connectWalletConnect">Connect WalletConnect</button>
+    <p id="status"></p>
+
+    <script>
+        // Handle MetaMask connection
+        document.getElementById("connectMetaMask").addEventListener("click", async () => {
+            const statusElement = document.getElementById("status");
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    // Request account access
+                    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+                    statusElement.innerText = `MetaMask Connected: ${accounts[0]}`;
+                    console.log("MetaMask Connected:", accounts[0]);
+                } catch (error) {
+                    statusElement.innerText = "MetaMask Connection Failed.";
+                    console.error("MetaMask Connection Failed:", error);
+                }
+            } else {
+                statusElement.innerText = "MetaMask not detected.";
+                console.error("MetaMask not detected.");
+            }
+        });
+
+        // Handle WalletConnect connection
+        document.getElementById("connectWalletConnect").addEventListener("click", async () => {
+            const statusElement = document.getElementById("status");
+            const provider = new WalletConnectProvider.default({
+                rpc: {
+         1: "https://cloudflare-eth.com", // Cloudflare's free Ethereum RPC endpoint
+               },
+            });
+
+            try {
+                // Enable session (opens WalletConnect modal)
+                await provider.enable();
+
+                // Initialize Web3 instance
+                const web3 = new Web3(provider);
+
+                // Get connected accounts
+                const accounts = await web3.eth.getAccounts();
+                statusElement.innerText = `WalletConnect Connected: ${accounts[0]}`;
+                console.log("WalletConnect Connected:", accounts[0]);
+            } catch (error) {
+                statusElement.innerText = "WalletConnect Connection Failed.";
+                console.error("WalletConnect Connection Failed:", error);
+            }
+        });
+    </script>
+</body>
+</html>
