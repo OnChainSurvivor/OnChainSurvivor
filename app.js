@@ -580,7 +580,7 @@ const enemyTypes = [{
     class: 'Enemy',
     title: 'Basic',
     health: 1,
-    movementspeed:0.15,
+    movementspeed:0.2,
     xp: 0,
     evasion: 0,
     thumbnail: 0,
@@ -1090,7 +1090,7 @@ ability = abilityTypes[0];
 player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
 player.health=  5;
 player.maxhealth= 5;
-player.movementspeed= 0.15;
+player.movementspeed= 0.2;
 player.attackSpeed=  0.25;
 player.attackLTL=1000;
 player.attackPerSecond=0;
