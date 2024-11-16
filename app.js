@@ -566,7 +566,6 @@ const abilityEffects = {
             }
         },
     },
-
 }
 
 /*---------------------------------------------------------------------------
@@ -581,11 +580,8 @@ const enemyTypes = [{
     title: 'Basic',
     health: 1,
     movementspeed:0.2,
-    xp: 0,
     evasion: 0,
-    thumbnail: 0,
     abilities: [],
-    level:0,
 }
 ];
 /*---------------------------------------------------------------------------
@@ -1792,7 +1788,6 @@ function handleEntitySelection(entity, type) {
           button.style.cursor = 'default';
         });
 
-
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
         const worldImages = worldTypes.map(world => world.thumbnail);
@@ -1940,7 +1935,6 @@ function handleEntitySelection(entity, type) {
         createRunMenu();
     };
 
-
     const goBackButton = UI.createTitleContainer('\n Made in 2024 ❤️Ξ', "subtitle");
 
      const popUpContainer = UI.createContainer(['choose-menu-container']);;
@@ -1973,7 +1967,6 @@ function handleEntitySelection(entity, type) {
                     }
                 });
              });
-
   
             createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
             createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
@@ -2030,10 +2023,8 @@ function refreshDisplay() {
     };
     const worldTitle = UI.createTitleElement(world.title, "minititle");
     addContainerUI('top-container',[worldTitle,challengeDisplay]).onclick = () => {
-
     };
     
-
 }
 
 function createPlayerInfoMenu() {
@@ -2146,7 +2137,6 @@ function createSettingsMenu() {
   const vaVolumeTitle = UI.createTitleElement("Voices",  "subtitle");
   vaVolumeTitle.htmlFor= 'vaVolumeSlider';
   volumesContainer.appendChild(vaVolumeTitle);
-
   volumesContainer.appendChild(vaVolumeSlider);
 
   const volumeSlider = document.createElement('input');
