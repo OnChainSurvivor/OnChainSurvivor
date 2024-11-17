@@ -1,13 +1,13 @@
 export const playerTypes = [{
     class: 'Survivor',
     title: 'Onchain Survivor',
-    description:'The jack of all trades , adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',
+    description:'The jack of all traders, after surviving the past bear market he decided to stay around and keep trying.',
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     abilities:[],
 },{
     class: 'Survivor',
     title: 'Onchain Survivor',
-    description: 'The jill of all trades, adaptable and versatile with a balanced set of abilities that covers a wide range of effects.',    
+    description: 'This Character Bio has not been discovered',    
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
     abilities: [],
 },{
