@@ -1,7 +1,7 @@
 export const playerTypes = [{
     class: 'Survivor',
     title: 'Onchain Survivor',
-    description:'The jack of all traders, after surviving the past bear market he decided to stay around and keep trying.',
+    description:'The jack of all traders, after losing it all in the 2018 bear market he decided to stay around and keep trying.',
     thumbnail: 'Media/Classes/Onchain Survivor/MSURVIVOR.png',
     abilities:[],
 },{
