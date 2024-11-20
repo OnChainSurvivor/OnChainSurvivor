@@ -323,13 +323,13 @@ const abilityEffects = {
 },
 "Create Veil": {
         initialize: (user, ability) => {
-            if (ability.veil) scene.remove(ability.veil); // Remove old veil if it exists
+            if (ability.veil) scene.remove(ability.veil); 
             const shieldMaterial = world.material;
             const shieldGeometry = new THREE.SphereGeometry(2);
             const veil = new THREE.Mesh(shieldGeometry, shieldMaterial);
             veil.position.copy(user.position);
             scene.add(veil);
-            ability.veil = veil; // Store the veil in the ability object
+            ability.veil = veil; 
         },
         update: (user, ability) => {
             if (ability.veil) {
@@ -470,7 +470,7 @@ const abilityEffects = {
                 user.position.y + 1.5,
                 user.position.z + Math.sin(time) * bot.orbitRadius 
             );
-            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize(); // Homing towards closest enemy
+            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize(); 
             bot.position.add(direction.multiplyScalar(bot.homingSpeed));
             bot.boundingBox.setFromObject(bot);
         },
@@ -2677,8 +2677,6 @@ window.addEventListener('load', async () => {
   }  
 
 });
-
-
 
 /*---------------------------------------------------------------------------
                              GAMESTATE CONTROLLER  
