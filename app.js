@@ -298,7 +298,7 @@ const abilityEffects = {
         bot.position.copy(user.position);
         bot.updateMatrixWorld(true);
         bot.boundingBox = new THREE.Box3().setFromObject(bot);
-        // lightObjects.push(bot);
+        lightObjects.push(bot);
         scene.add(bot);
         bot.target = null;
         bot.orbitRadius = 2;
@@ -1091,7 +1091,7 @@ player.movementspeed= 0.2;
 player.attackSpeed=  0.25;
 player.attackLTL=1000;
 player.attackPerSecond=0;
-player.influenceRadius=20;
+player.influenceRadius=10;
 player.xp= 0;
 player.range=15;
 player.evasion=0;

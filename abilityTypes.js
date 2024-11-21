@@ -1,4 +1,20 @@
 export const abilityTypes = [
+    {title: "Frontrunning Bot",
+        description: "A fast bot that outpaces you and your enemy movements.",
+        thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
+        effect: [
+            "Create Bot",
+            "Frontrun"
+        ],
+    },
+    {title: "Scalping Bot",
+        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
+        thumbnail: 'Media/Abilities/SCALPINGBOT.png',
+        effect: [
+            "Create Bot",
+            "Scalp"
+        ],
+    },
     {title: "Sniping Bot",
         description: "Fast trading bot that liquidates opposing survivors.",
         thumbnail: 'Media/Abilities/SNIPEBOT.png',
@@ -72,14 +88,6 @@ export const abilityTypes = [
         effect: [
             "Create Bot",
             "Swipe"
-        ],
-    },
-    {title: "Scalping Bot",
-        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
-        thumbnail: 'Media/Abilities/SCALPINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
         ],
     },
 ];
