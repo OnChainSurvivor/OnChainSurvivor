@@ -96,12 +96,18 @@ contract ChallengeQueue is Ownable {
         return pastRoundWinners;
     }
 
+    //Added events for more  transparency
+    event ChallengeWalletUpdated(address indexed previousWallet, address indexed newWallet);
+    event ChallengeIntervalUpdated(uint256 previousInterval, uint256 newInterval);
+
     function setChallengeRoundBlockInterval(uint256 _interval) public onlyOwner {
         require(_interval >= 300, "Interval cannot be less than 1 hour");
+        emit ChallengeIntervalUpdated(challengeRoundBlockInterval, _interval);
         challengeRoundBlockInterval = _interval;
     }
 
-    function setchallengeWallet(address _newWallet) public onlyOwner {
+    function setChallengeWallet(address _newWallet) public onlyOwner {
+        emit ChallengeWalletUpdated(challengeWallet, _newWallet);
         challengeWallet = _newWallet;
     }
 
