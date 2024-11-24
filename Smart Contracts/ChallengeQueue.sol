@@ -21,13 +21,15 @@ contract ChallengeQueue is Ownable {
 
     event ChallengeAdded(address indexed challenger, uint256 amount, uint8[3] parameters);
     event WinnerDeclared(address indexed winner, uint256 amount, uint8[3] parameters,uint256 winningBlock);
+    event ChallengeWalletUpdated(address indexed previousWallet, address indexed newWallet);
+    event ChallengeIntervalUpdated(uint256 previousInterval, uint256 newInterval);
 
     function addChallenge(uint8[3] memory _parameters) public payable {
         require(msg.value > 0.00035 ether, "Challenge amount must be greater than 0.00035 ether");
 
         // Check if it's time to declare a winner
         if (block.number >= lastWinnerBlock + challengeRoundBlockInterval && challenges.length > 0) {
-            declareWinner();
+             declareWinner();
         }
 
         bool found = false;
@@ -95,10 +97,6 @@ contract ChallengeQueue is Ownable {
     function getPastWinners() public view returns (Challenge[] memory) {
         return pastRoundWinners;
     }
-
-    //Added events for more  transparency
-    event ChallengeWalletUpdated(address indexed previousWallet, address indexed newWallet);
-    event ChallengeIntervalUpdated(uint256 previousInterval, uint256 newInterval);
 
     function setChallengeRoundBlockInterval(uint256 _interval) public onlyOwner {
         require(_interval >= 300, "Interval cannot be less than 1 hour");
