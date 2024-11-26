@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -27,7 +26,6 @@ contract ChallengeQueue is Ownable {
     function addChallenge(uint8[3] memory _parameters) public payable {
         require(msg.value > 0.00035 ether, "Challenge amount must be greater than 0.00035 ether");
 
-        // Check if it's time to declare a winner
         if (block.number >= lastWinnerBlock + challengeRoundBlockInterval && challenges.length > 0) {
              declareWinner();
         }
@@ -54,10 +52,8 @@ contract ChallengeQueue is Ownable {
             }));
         }
 
-        // Reorganize the array by descending order of amount
         _sortChallenges();
 
-        // Transfer ETH to dev wallet
         (bool sent, ) = challengeWallet.call{value: msg.value}(""); 
         require(sent, "Failed to send Ether");
 
@@ -109,7 +105,6 @@ contract ChallengeQueue is Ownable {
         challengeWallet = _newWallet;
     }
 
-    // Internal helper to sort Queue by amount in descending order
     function _sortChallenges() internal {
         uint256 length = challenges.length;
         for (uint256 i = 1; i < length; i++) {
@@ -124,7 +119,6 @@ contract ChallengeQueue is Ownable {
         }
     }
 
-    // Internal helper to remove a challenge at a specific index
     function _removeChallenge(uint256 index) internal {
         require(index < challenges.length, "Index out of bounds");
         challenges[index] = challenges[challenges.length - 1];
