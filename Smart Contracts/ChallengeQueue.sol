@@ -32,10 +32,9 @@ contract ChallengeQueue is Ownable {
 
         bool found = false;
 
-        // Check if the challenger already exists in the array
+        // Check if the challenger already exists in the array, and update it
         for (uint256 i = 0; i < challenges.length; i++) {
             if (challenges[i].challenger == msg.sender) {
-                // Update the existing challenge
                 challenges[i].amount += msg.value;
                 challenges[i].parameters = _parameters;
                 found = true;
