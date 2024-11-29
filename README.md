@@ -79,9 +79,9 @@ Product is still in development, but as it gains more shape, there are many plan
 
 ### 🥇 Phase 1 🥇: Daily Survival Challenges, by players for players!
 
-This  system integrates both L1 (Ethereum) and L2 blockchains, allowing users from these networks to add their challenges to the Challenge queue. The  system is competitive, with each user placing their challenges, aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. The initial plan is to have the challenge queue settle on ethereum until several Usex Experience issues are solved, but this can change in the future to move to a L2.
+This  system allows users to add their challenges to the Challenge queue. The system is a queue, with each user placing their challenges aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. 
 
-**Setting Challenge**: Users from Ethereum (L1) and various L2 blockchains submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
+**Setting Challenge**: Users submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
 
 **Daily Rank up**: Every n Blocks, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
 
