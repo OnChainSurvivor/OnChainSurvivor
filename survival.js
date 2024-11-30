@@ -196,6 +196,10 @@ const closeEnemy = new THREE.Vector3();
 const farEnemy = new THREE.Vector3();    
 const centerEnemy = new THREE.Vector3();
 
+let web3;
+let contract;
+
+
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 const uiContainers = [];
@@ -1561,9 +1565,223 @@ UI.createTitleContainer= function (text) {
 
         addContainerUI('TR-container', [web3Title]).onclick = async () => {
             if (window.ethereum) {
-                const web3 = new Web3(window.ethereum);
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.enable(); // Request account access
+        
+                const CONTRACT_ADDRESS = "0x776e2b52d1D7273B06F88EA18cb6FFaCf6E3908F";
+                const CONTRACT_ABI = [
+                  {
+                    "type": "constructor",
+                    "inputs": [],
+                    "stateMutability": "nonpayable"
+                  },
+                  {
+                    "type": "error",
+                    "name": "OwnableInvalidOwner",
+                    "inputs": [
+                      { "internalType": "address", "name": "owner", "type": "address" }
+                    ]
+                  },
+                  {
+                    "type": "error",
+                    "name": "OwnableUnauthorizedAccount",
+                    "inputs": [
+                      { "internalType": "address", "name": "account", "type": "address" }
+                    ]
+                  },
+                  {
+                    "type": "event",
+                    "name": "ChallengeAdded",
+                    "inputs": [
+                      { "indexed": true, "internalType": "address", "name": "challenger", "type": "address" },
+                      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+                      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+                    ]
+                  },
+                  {
+                    "type": "event",
+                    "name": "ChallengeIntervalUpdated",
+                    "inputs": [
+                      { "indexed": false, "internalType": "uint256", "name": "previousInterval", "type": "uint256" },
+                      { "indexed": false, "internalType": "uint256", "name": "newInterval", "type": "uint256" }
+                    ]
+                  },
+                  {
+                    "type": "event",
+                    "name": "ChallengeWalletUpdated",
+                    "inputs": [
+                      { "indexed": true, "internalType": "address", "name": "previousWallet", "type": "address" },
+                      { "indexed": true, "internalType": "address", "name": "newWallet", "type": "address" }
+                    ]
+                  },
+                  {
+                    "type": "event",
+                    "name": "OwnershipTransferred",
+                    "inputs": [
+                      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+                      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+                    ]
+                  },
+                  {
+                    "type": "event",
+                    "name": "WinnerDeclared",
+                    "inputs": [
+                      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
+                      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+                      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" },
+                      { "indexed": false, "internalType": "uint256", "name": "winningBlock", "type": "uint256" }
+                    ]
+                  },
+                  {
+                    "type": "function",
+                    "name": "addChallenge",
+                    "inputs": [
+                      { "internalType": "uint8[3]", "name": "_parameters", "type": "uint8[3]" }
+                    ],
+                    "outputs": [],
+                    "stateMutability": "payable"
+                  },
+                  {
+                    "type": "function",
+                    "name": "blocksUntilNextWinner",
+                    "inputs": [],
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "challengeRoundBlockInterval",
+                    "inputs": [],
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "challengeWallet",
+                    "inputs": [],
+                    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "challenges",
+                    "inputs": [
+                      { "internalType": "uint256", "name": "", "type": "uint256" }
+                    ],
+                    "outputs": [
+                      { "internalType": "address", "name": "challenger", "type": "address" },
+                      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "declareWinner",
+                    "inputs": [],
+                    "outputs": [],
+                    "stateMutability": "nonpayable"
+                  },
+                  {
+                    "type": "function",
+                    "name": "getChallenges",
+                    "inputs": [],
+                    "outputs": [
+                      {
+                        "components": [
+                          { "internalType": "address", "name": "challenger", "type": "address" },
+                          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+                          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+                        ],
+                        "internalType": "struct ChallengeQueue.Challenge[]",
+                        "name": "",
+                        "type": "tuple[]"
+                      }
+                    ],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "getPastWinners",
+                    "inputs": [],
+                    "outputs": [
+                      {
+                        "components": [
+                          { "internalType": "address", "name": "challenger", "type": "address" },
+                          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+                          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+                        ],
+                        "internalType": "struct ChallengeQueue.Challenge[]",
+                        "name": "",
+                        "type": "tuple[]"
+                      }
+                    ],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "lastWinnerBlock",
+                    "inputs": [],
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "owner",
+                    "inputs": [],
+                    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "pastRoundWinners",
+                    "inputs": [
+                      { "internalType": "uint256", "name": "", "type": "uint256" }
+                    ],
+                    "outputs": [
+                      { "internalType": "address", "name": "challenger", "type": "address" },
+                      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "stateMutability": "view"
+                  },
+                  {
+                    "type": "function",
+                    "name": "renounceOwnership",
+                    "inputs": [],
+                    "outputs": [],
+                    "stateMutability": "nonpayable"
+                  },
+                  {
+                    "type": "function",
+                    "name": "setChallengeRoundBlockInterval",
+                    "inputs": [
+                      { "internalType": "uint256", "name": "_interval", "type": "uint256" }
+                    ],
+                    "outputs": [],
+                    "stateMutability": "nonpayable"
+                  },
+                  {
+                    "type": "function",
+                    "name": "setChallengeWallet",
+                    "inputs": [
+                      { "internalType": "address", "name": "_newWallet", "type": "address" }
+                    ],
+                    "outputs": [],
+                    "stateMutability": "nonpayable"
+                  },
+                  {
+                    "type": "function",
+                    "name": "transferOwnership",
+                    "inputs": [
+                      { "internalType": "address", "name": "newOwner", "type": "address" }
+                    ],
+                    "outputs": [],
+                    "stateMutability": "nonpayable"
+                  }
+                ]
+               contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+               console.log("Contract initialized:", contract);
                 try {
-                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x1' }] });
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const accounts = await web3.eth.getAccounts();
                     const address = accounts[0];
@@ -1651,6 +1869,7 @@ function createChallengeMenu() {
         submitButton.innerText = 'Agree & Send';
         inputContainer.appendChild(sponsorAmount);
    
+        //todo fix this 
         sponsorAmount.addEventListener('input', async () => {
            const amount = sponsorAmount.value; 
            if (amount) {
@@ -1678,7 +1897,30 @@ function createChallengeMenu() {
          const fineprint = UI.createTitleElement('Terms and conditions:\n\n', "subtitle")
          popUpContainer.appendChild(fineprint); 
          popUpContainer.appendChild(disclaimer); 
-         popUpContainer.appendChild(submitButton); 
+
+        popUpContainer.appendChild(submitButton); 
+
+        //todo fix this
+        submitButton.addEventListener("click", async () => {
+            const parameters = [2, 2, 2]; // uint8[3] parameters
+            const value = Web3.utils.toWei("0.001", "ether"); // 0.001 ether
+        
+            try {
+                const accounts = await web3.eth.getAccounts();
+                const sender = accounts[0]; 
+        
+                await contract.methods.addChallenge(parameters).send({
+                    from: sender,
+                    value: value,
+                });
+        
+                alert("Challenge sent successfully!");
+            } catch (error) {
+                console.error("Error sending challenge:", error);
+                alert("Failed to send challenge. Check console for details.");
+            }
+        });
+
          const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks, -the dev\n\n', "subtitle")
          popUpContainer.appendChild(support); 
 
@@ -1827,6 +2069,7 @@ function handleEntitySelection(entity, type) {
      inputContainer.appendChild(sponsorAmount);
      inputContainer.appendChild(submitButton); 
 
+     //todo: fix this 
      sponsorAmount.addEventListener('input', async () => {
         const amount = sponsorAmount.value; 
         if (amount) {
@@ -2477,14 +2720,12 @@ function createRunMenu() {
     classContainer.appendChild(classSubTitle);
     classContainer.appendChild(classButton);
 
- 
     const abilitiesSubTitle = UI.createTitleElement('\n⚔️',  "subtitle");
     const abilitiesButton = createButton(ability,  0.6 );
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesSubTitle);
     classAbilityContainer.appendChild(abilitiesButton);
 
- 
     const worldSubTitle = UI.createTitleElement('\n🔗',  "subtitle");
     const worldButton = createButton(world,  0.6 );
     const worldContainer = document.createElement('div');
@@ -2661,13 +2902,14 @@ window.addEventListener('load', async () => {
      //Set volume and other parameters once set  
     }
 
-    const storedAddress = localStorage.getItem('metaMaskAddress');
-    if (storedAddress) {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createRunMenu();
-    }
+    //Todo: Add contract loading functionality here, for better user experience
+    //const storedAddress = localStorage.getItem('metaMaskAddress');
+    //if (storedAddress) {
+    //    canMove = false;
+    //    isPaused = true;
+    //    hideUI();
+    //    createRunMenu();
+    //}
     
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
