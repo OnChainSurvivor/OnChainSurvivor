@@ -1052,6 +1052,31 @@ this.meshScaleThreshold = 0.1;
     setup: function(scene, camera, renderer) {},
     update: function(scene, camera, renderer) {},
     resumeGame: function(){}  
+},
+{title: 'Digital Goldland',
+    class: 'World',
+    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
+    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
+    material: new THREE.MeshPhysicalMaterial({
+        reflectivity: 1.0,          
+        roughness: 0,            
+        metalness: 1.0,            
+        clearcoat: 1.0,            
+        clearcoatRoughness: 0.05,   
+        transmission: 0.0,         
+        ior: 1.45,                  
+        thickness: 0.0,          
+        sheen: new THREE.Color('gold'), 
+        sheenRoughness: 0.2,       
+        color: new THREE.Color(0xffd700), 
+        emissive: new THREE.Color(0x331a00),  
+        emissiveIntensity: 0.3,    
+        envMapIntensity: 2.0,      
+        sheenRoughness: 0.1         
+    }),
+    setup: function(scene, camera, renderer) {},
+    update: function(scene, camera, renderer) {},
+    resumeGame: function(){}  
 }
 ];
 /*---------------------------------------------------------------------------
@@ -1998,7 +2023,7 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = UI.createTitleElement('\nChallenge\nQueue',  "title")
+        const checkRanks = UI.createTitleElement('\nLive\nChallenge Queue',  "title")
 
         const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
         topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',"subtitle"));
@@ -2643,39 +2668,35 @@ function createRunMenu() {
     const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger, changing \n the Character, Ability &  Chain for a day! \n\n Next 5 Days (Example):',   "subtitle");
+    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger in the queue, \n Setting the Character, Ability &  Chain for a day! \n\n Top 5 Queue:',   "subtitle");
     popUpContainer.appendChild(aboutButton);
-
 
     const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
     topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',  "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',  "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',  "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ',  "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('1°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[1], .6));
-    topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('2°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
-    topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
-    topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('3°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
-    topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
-    topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-    topChallengerContainer.appendChild(UI.createTitleElement('4°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
-    topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-    topChallengerContainer.appendChild(UI.createTitleElement('5°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
-    topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
-   
+
+    getLatestChallenges().then(latestChallenges => {
+        let buttonSize= 0.6
+        latestChallenges.forEach((challenge, index) => {
+            const parameters = challenge.parameters;
+            if (parameters[0]>133) parameters[0]=133;
+            if (parameters[1]>9) parameters[1]=9;
+            if (parameters[2]>1) parameters[2]=1;
+            topChallengerContainer.appendChild(UI.createTitleElement(`${index + 1}°`,   "subtitle"));
+            topChallengerContainer.appendChild(createButton(playerTypes[parameters[0]], buttonSize));
+            topChallengerContainer.appendChild(createButton(abilityTypes[parameters[1]], buttonSize ));
+            topChallengerContainer.appendChild(createButton(worldTypes[parameters[2]], buttonSize ));
+            console.log(`Challenger: ${challenge.challenger}`);
+            console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
+            buttonSize-=0.1;
+       });
+    });
+
     popUpContainer.appendChild(topChallengerContainer);
 
-    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress Example:\n\n',   "subtitle");
+    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress (Example):\n\n',   "subtitle");
     popUpContainer.appendChild(rankingText);
 
     const topbidContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
@@ -2689,29 +2710,29 @@ function createRunMenu() {
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[3], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[0], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('Record',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('Morphs\nthe game',   "subtitle"));
 
     topbidContainer.appendChild(UI.createTitleElement('#2 0x...2a',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[1], .33));
     topbidContainer.appendChild(createButton(abilityTypes[6], .33 ));
     topbidContainer.appendChild(createButton(worldTypes[1], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('#1▲',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('to #1▲',   "subtitle"));
 
     topbidContainer.appendChild(UI.createTitleElement('#3 0x...3d',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('#2▲',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('to #2▲',   "subtitle"));
 
     topbidContainer.appendChild(UI.createTitleElement('#4 0x...21',   "subtitle"));
     topbidContainer.appendChild(createButton(playerTypes[0], .33));
     topbidContainer.appendChild(createButton(abilityTypes[9], .33));
     topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('#3▲',   "subtitle"));
+    topbidContainer.appendChild(UI.createTitleElement('to #3▲',   "subtitle"));
     popUpContainer.appendChild(topbidContainer);
 
 
-    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount and \n accumulate until they get the first rank!\nKeep in mind that you cannot cancel once set! \n\n Setting a Challenge (Example)',   "subtitle");
+    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount to \n accumulate until they get the first rank,\nKeep in mind challenges cannot be cancelled! \n\n Setting a Challenge (Example)',   "subtitle");
     popUpContainer.appendChild(sponsorText);
  
     const classContainer = document.createElement('div');
@@ -2771,6 +2792,72 @@ function createRunMenu() {
     popUpContainer.appendChild(goBackButton);
 }
 //createRunMenu();
+/*---------------------------------------------------------------------------
+                                Smart Contract Functions 
+---------------------------------------------------------------------------*/
+
+async function getLatestChallenges(count = 5) {
+    try {
+        // Fetch all challenges
+        const allChallenges = await contract.methods.getChallenges().call();
+
+        if (allChallenges.length === 0) {
+            console.log("No challenges available.");
+            return [];
+        }
+
+        // Get the latest `count` challenges
+        const latestChallenges = allChallenges.slice(-count);
+
+        console.log(`Latest ${count} Challenges:`, latestChallenges);
+        return latestChallenges;
+    } catch (error) {
+        console.error("Error fetching challenges:", error);
+        return [];
+    }
+}
+
+    // Example: Call the function and log the latest challenges
+    //getLatestChallenges().then(latestChallenges => {
+    //    latestChallenges.forEach((challenge, index) => {
+    //       console.log(`Challenge #${index + 1}:`);
+    //       console.log(`Challenger: ${challenge.challenger}`);
+    //       console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
+    //       console.log(`Parameters: ${challenge.parameters.join(", ")}`);
+    //   });
+    //});
+
+
+
+async function getLatestWinner() {
+    try {
+        // Fetch all past winners
+        const pastWinners = await contract.methods.getPastWinners().call();
+
+        if (pastWinners.length === 0) {
+            console.log("No winners yet.");
+            return null;
+        }
+
+        // Get the latest winner (last element in the array)
+        const latestWinner = pastWinners[pastWinners.length - 1];
+
+        console.log("Latest Winner:", latestWinner);
+        return latestWinner;
+    } catch (error) {
+        console.error("Error fetching latest winner:", error);
+        return null;
+    }
+}
+
+    // Example: Call the function and log the latest winner
+    //getLatestWinner().then(latestWinner => {
+    //    if (latestWinner) {
+    //       console.log(`Challenger: ${latestWinner.challenger}`);
+    //       console.log(`Amount: ${web3.utils.fromWei(latestWinner.amount, "ether")} ETH`);
+    //       console.log(`Parameters: ${latestWinner.parameters.join(", ")}`);
+    //   }
+    //});
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
