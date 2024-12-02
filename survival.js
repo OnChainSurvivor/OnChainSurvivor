@@ -1053,31 +1053,6 @@ this.meshScaleThreshold = 0.1;
     update: function(scene, camera, renderer) {},
     resumeGame: function(){}  
 },
-{title: 'Digital Goldland',
-    class: 'World',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
-    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    material: new THREE.MeshPhysicalMaterial({
-        reflectivity: 1.0,          
-        roughness: 0,            
-        metalness: 1.0,            
-        clearcoat: 1.0,            
-        clearcoatRoughness: 0.05,   
-        transmission: 0.0,         
-        ior: 1.45,                  
-        thickness: 0.0,          
-        sheen: new THREE.Color('gold'), 
-        sheenRoughness: 0.2,       
-        color: new THREE.Color(0xffd700), 
-        emissive: new THREE.Color(0x331a00),  
-        emissiveIntensity: 0.3,    
-        envMapIntensity: 2.0,      
-        sheenRoughness: 0.1         
-    }),
-    setup: function(scene, camera, renderer) {},
-    update: function(scene, camera, renderer) {},
-    resumeGame: function(){}  
-}
 ];
 /*---------------------------------------------------------------------------
                               Scene Initialization
@@ -1823,7 +1798,7 @@ UI.createTitleContainer= function (text) {
                     setTimeout(() => {
                         canMove = false;
                         isPaused = true;
-                        createRunMenu();
+                        showMainMenu();
                     }, 1100);
         
                 } catch (error) {
@@ -1842,12 +1817,12 @@ UI.createTitleContainer= function (text) {
 /*---------------------------------------------------------------------------
                                 Challenge Editor
 ---------------------------------------------------------------------------*/
-let selectedPlayer = playerTypes[0]; // previously Selected Class, LOAD FROM ETHEREUM
-let selectedAbility = abilityTypes[0]; // previously Selected ability, LOAD FROM ETHEREUM
-let selectedWorld = worldTypes[0]; // previously Selected world, LOAD FROM ETHEREUM 
+let selectedPlayer = playerTypes[0]; // previously Selected Class, LOAD FROM CA
+let selectedAbility = abilityTypes[0]; // previously Selected ability, LOAD FROM CA
+let selectedWorld = worldTypes[0]; // previously Selected world, LOAD FROM CA 
 let selectedValue = 0; // Default Value, Going for Next rank 
 
-function createChallengeMenu() {
+function showToC() {
     const classImages = playerTypes.map(player => player.thumbnail);
     const abilityImages = abilityTypes.map(ability => ability.thumbnail);
     const worldImages = worldTypes.map(world => world.thumbnail);
@@ -1894,38 +1869,6 @@ function createChallengeMenu() {
         submitButton.innerText = 'Agree & Send';
         inputContainer.appendChild(sponsorAmount);
    
-        //todo fix this 
-        sponsorAmount.addEventListener('input', async () => {
-           const amount = sponsorAmount.value; 
-           if (amount) {
-             const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); 
-             if (rank !== null) {
-               rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
-             } else {
-               rankInfo.innerText = "Error fetching rank"; 
-             }
-           } else {
-             rankInfo.innerText = "Enter an amount"; 
-           }
-         });
-
-         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze \nor stop the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events\n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
-         const popUpContainer = UI.createContainer(['choose-menu-container']);;
-         popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-         popUpContainer.appendChild(subTitle); 
-
-         popUpContainer.appendChild(menuButtonsContainer); 
-         popUpContainer.appendChild(inputContainer); 
-         const yourSpot = UI.createTitleElement('Add 0.01Ξ for Rank 24°.\n\n', "subtitle")
-         popUpContainer.appendChild(yourSpot); 
-
-         const fineprint = UI.createTitleElement('Terms and conditions:\n\n', "subtitle")
-         popUpContainer.appendChild(fineprint); 
-         popUpContainer.appendChild(disclaimer); 
-
-        popUpContainer.appendChild(submitButton); 
-
-        //todo fix this
         submitButton.addEventListener("click", async () => {
             const parameters = [2, 2, 2]; // uint8[3] parameters
             const value = Web3.utils.toWei("0.001", "ether"); // 0.001 ether
@@ -1946,15 +1889,46 @@ function createChallengeMenu() {
             }
         });
 
-         const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks, -the dev\n\n', "subtitle")
-         popUpContainer.appendChild(support); 
+        //todo fix this 
+        sponsorAmount.addEventListener('input', async () => {
+           const amount = sponsorAmount.value; 
+           if (amount) {
+             const rank = await fetchRankForAmount(web3.utils.toWei(amount, 'ether')); 
+             if (rank !== null) {
+               rankInfo.innerText = `Add ${amount}Ξ to reach rank ${rank}°!`; 
+             } else {
+               rankInfo.innerText = "Error fetching rank"; 
+             }
+           } else {
+             rankInfo.innerText = "Enter an amount"; 
+           }
+         });
+
+         const termsAndConditions = UI.createTitleElement('Terms and conditions:\n\n', "subtitle")
+         const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze \nor stop the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events\n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
+         const popUpContainer = UI.createContainer(['choose-menu-container']);;
+         popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+         popUpContainer.appendChild(subTitle); 
+
+         popUpContainer.appendChild(menuButtonsContainer); 
+         popUpContainer.appendChild(inputContainer); 
+         const yourSpot = UI.createTitleElement('Add 0.01Ξ for Rank 24°.\n\n', "subtitle")
+         popUpContainer.appendChild(yourSpot); 
+      
+         popUpContainer.appendChild(termsAndConditions); 
+         popUpContainer.appendChild(disclaimer); 
+
+        popUpContainer.appendChild(submitButton); 
+
+        const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks, -the dev\n\n', "subtitle")
+        popUpContainer.appendChild(support); 
 
         addContainerUI('center-container', [popUpContainer]);
         createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
         createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
         createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
     };
- // createChallengeMenu()
+ // showToC()
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -1997,21 +1971,24 @@ function handleEntitySelection(entity, type) {
     } else if (type === "Survivor")  {
         selectedPlayer = entity;
         hideUI();
-        createChallengeMenu();
+        showToC();
+        //showMainMenu();
     } else if (type === "Ability") {
         selectedAbility = entity;
         hideUI();
-        createChallengeMenu();
+        showToC();
+        //showMainMenu();
     } else if (type === "World") {
         selectedWorld = entity;
         hideUI();
-        createChallengeMenu();
+        showToC();
+        //showMainMenu();
     }
 }
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
-    function createWeb3Menu(address) {
+    function showMainMenu(address) {
         canMove=false;
 
         const subTitleLogout = UI.createTitleElement('♢\nLog Out\n♢', "subtitle");
@@ -2023,38 +2000,40 @@ function handleEntitySelection(entity, type) {
             createGameTitle();
         };
 
-        const checkRanks = UI.createTitleElement('\nLive\nChallenge Queue',  "title")
+        const checkRanks = UI.createTitleElement('\nTop 5 \nChallengers',  "title")
 
-        const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
+        const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
         topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',"subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',"subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',"subtitle"));
         topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('1°',  "subtitle"));
-        topChallengerContainer.appendChild(createButton(playerTypes[0], .6));
-        topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
-        topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('2°', "subtitle"));
-        topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
-        topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
-        topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-        topChallengerContainer.appendChild(UI.createTitleElement('3°',"subtitle"));
-        topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
-        topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
-        topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-        topChallengerContainer.appendChild(UI.createTitleElement('4°', "subtitle"));
-        topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
-        topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
-        topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-        topChallengerContainer.appendChild(UI.createTitleElement('5°', "subtitle"));
-        topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
-        topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
-        topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
-   
+        topChallengerContainer.appendChild(UI.createTitleElement('\nΞ\nEther ', "subtitle"));
+
+        getLatestChallenges().then(latestChallenges => {
+            let buttonSize= 0.6
+            latestChallenges.forEach((challenge, index) => {
+                const parameters = challenge.parameters;
+                if (parameters[0]>133) parameters[0]=133;
+                if (parameters[1]>9) parameters[1]=9;
+                if (parameters[2]>1) parameters[2]=1;
+                topChallengerContainer.appendChild(UI.createTitleElement(`${index + 1}°`,   "subtitle"));
+                topChallengerContainer.appendChild(createButton(playerTypes[parameters[0]], buttonSize));
+                topChallengerContainer.appendChild(createButton(abilityTypes[parameters[1]], buttonSize ));
+                topChallengerContainer.appendChild(createButton(worldTypes[parameters[2]], buttonSize ));
+                topChallengerContainer.appendChild(UI.createTitleElement(`${web3.utils.fromWei(challenge.amount, "ether")}`,   "subtitle"));
+               
+                console.log(`Challenger: ${challenge.challenger}`);
+                console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
+                buttonSize-=0.1;
+           });
+        });
+
         const buttons = topChallengerContainer.querySelectorAll('button');
         buttons.forEach(button => {
           button.style.cursor = 'default';
         });
+
+        const yourChallenge = UI.createTitleElement('\nYour challenge\n', "title")
 
         const classImages = playerTypes.map(player => player.thumbnail);
         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
@@ -2066,7 +2045,6 @@ function handleEntitySelection(entity, type) {
         classContainer.appendChild(classSubTitle);
         classContainer.appendChild(classButton);
 
-     
         const abilitiesSubTitle = UI.createTitleElement('\n⚔️', "subtitle");
         const abilitiesButton = createButton(ability,  0.6 );
         const classAbilityContainer = document.createElement('div');
@@ -2085,14 +2063,14 @@ function handleEntitySelection(entity, type) {
         galleryButtonsContainer.appendChild(classAbilityContainer);
         galleryButtonsContainer.appendChild(worldContainer);
  
-     const inputContainer = document.createElement('div');
-     const sponsorAmount = createInput('number', { placeholder: '0.00Ξ, Rank: ----', id: 'sponsorAmount' });
-     const submitButton = document.createElement('button'); 
-     submitButton.classList.add('rainbow-button'); 
-     submitButton.classList.add('subtitle'); 
-     submitButton.innerText = 'Add';
-     inputContainer.appendChild(sponsorAmount);
-     inputContainer.appendChild(submitButton); 
+        const inputContainer = document.createElement('div');
+        const sponsorAmount = createInput('number', { placeholder: '0.00Ξ, Rank: ----', id: 'sponsorAmount' });
+        const submitButton = document.createElement('button'); 
+        submitButton.classList.add('rainbow-button'); 
+        submitButton.classList.add('subtitle'); 
+        submitButton.innerText = 'Add';
+        inputContainer.appendChild(sponsorAmount);
+        inputContainer.appendChild(submitButton); 
 
      //todo: fix this 
      sponsorAmount.addEventListener('input', async () => {
@@ -2109,38 +2087,63 @@ function handleEntitySelection(entity, type) {
         }
       });
 
-     const yourSpot = UI.createTitleElement('Add 0.01Ξ for spot 24°.\n\n ', "subtitle")
+     const yourSpot = UI.createTitleElement('By sending a challenge, you agree \nour Terms and Conditions ⓘ\n ', "subtitle")
+     yourSpot.style.cursor = 'pointer';
+     yourSpot.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        showToC();
+    };
 
      const loadingContainer = document.createElement('div');
      loadingContainer.classList.add('loading-container'); 
      const loadingBar = document.createElement('div');
      loadingBar.classList.add('loading-bar');
      const loadingText =  UI.createTitleElement('', "subtitle");
-  
+     loadingText.style.cursor = 'pointer';
+     loadingText.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        showQueueTutorialMenu();
+    };
+
      loadingContainer.appendChild(loadingBar);
      function updateLoadingBar(currentAmount) {
-         const goal = 1000000; 
-         const percentage = (currentAmount / goal) * 100;
-         loadingBar.style.width = percentage + '%';
-         loadingText.innerText ='\n Rank #1 Challenge starts in 500 blocks!';
-         loadingText.classList.add('rainbow-text'); 
-     }
-     function simulateLoading() {
-         let currentAmount = 0;
-         const increment = 10000; 
-         const loadingInterval = setInterval(() => {
-             if (currentAmount >= 1000000) {
-            
-             } else {
-                if(currentAmount <=750000)
-                 currentAmount += increment;
-                 updateLoadingBar(currentAmount);
-             }
-         }, 50); 
-     }
+        const goal = 7200; 
+        const percentage = ((goal - currentAmount) / goal) * 100;
+        loadingBar.style.width = percentage + '%';
+        loadingText.innerText = `\n Next Challenge starts in ${currentAmount} blocks! ⓘ`;
+        loadingText.classList.add('rainbow-text'); 
+    }
+    
+    async function simulateLoading() {
+        try {
+            const realBlocksRemaining = await getBlocksUntilNextWinner();
+            const goal = 7200;
+    
+            let displayedAmount = goal; 
+            const decrement = 111;
+    
+            const loadingInterval = setInterval(() => {
+                if (displayedAmount <= realBlocksRemaining) {
+                    displayedAmount = realBlocksRemaining; 
+                    clearInterval(loadingInterval);
+                } else {
+                    displayedAmount -= decrement; 
+                    if (displayedAmount < realBlocksRemaining) {
+                        displayedAmount = realBlocksRemaining; 
+                    }
+                    updateLoadingBar(displayedAmount);
+                }
+            }, 50);
+        } catch (error) {
+            console.error("Error in simulateLoading:", error);
+        }
+    }
 
-     const checkRecords = UI.createTitleElement('\nYour challenge\n', "title")
-   
+
      const hallreportContainer = UI.createContainer(['abilities-grid']); 
 
     const rankButton = createButton({
@@ -2156,10 +2159,10 @@ function handleEntitySelection(entity, type) {
         canMove = false;
         isPaused = true;
         hideUI();
-        createRunMenu();
+        showQueueTutorialMenu();
     };
 
-     const hallButton = createButton({
+     const hallOfSurvivorsButton = createButton({
          title: "Hall of Survivors",
          description: "Allows you to verify previous official Survivors. ",
          thumbnail: 'Media/Abilities/HALL.png',
@@ -2168,13 +2171,13 @@ function handleEntitySelection(entity, type) {
          },
      }, 1);
 
-     hallreportContainer.appendChild(hallButton);
-     hallButton.onclick = () => {
+     hallreportContainer.appendChild(hallOfSurvivorsButton);
+     hallOfSurvivorsButton.onclick = () => {
          hideUI();
-         createTransparencyReport();
+         showQueueTutorialMenu();
      };
 
-     const reportButton = createButton({
+     const transparencyReportButton = createButton({
          title: "Transparency Report",
          description: "Fun. Decentralization and transparency. View the transparency report in real time.",
          thumbnail: 'Media/Abilities/LAW.png',
@@ -2182,13 +2185,13 @@ function handleEntitySelection(entity, type) {
              this.update = () => {} 
          },
      }, 1);
-     reportButton.onclick = () => {
+     transparencyReportButton.onclick = () => {
          hideUI();
-         createTransparencyReport();
+         showTransparencyReport();
      };
-     hallreportContainer.appendChild(reportButton);
+     hallreportContainer.appendChild(transparencyReportButton);
 
-     const tutButton = createButton({
+     const challengeQueueButton = createButton({
         title: "Challenge Queue",
         description: "Allows you to check the full Challenge Queue.",
         thumbnail: 'Media/Abilities/CHALLENGEQUEUE.png',
@@ -2196,26 +2199,29 @@ function handleEntitySelection(entity, type) {
             this.update = () => {} 
         },
     }, 1);
-    hallreportContainer.appendChild(tutButton);
-    tutButton.onclick = () => {
+    hallreportContainer.appendChild(challengeQueueButton);
+    challengeQueueButton.onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
-        createRunMenu();
+        showQueueTutorialMenu();
     };
 
     const goBackButton = UI.createTitleContainer('\n Made in 2024 ❤️Ξ', "subtitle");
 
      const popUpContainer = UI.createContainer(['choose-menu-container']);;
      popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+
+     popUpContainer.appendChild(yourChallenge);
+     popUpContainer.appendChild(galleryButtonsContainer);
+     popUpContainer.appendChild(inputContainer);
+     popUpContainer.appendChild(yourSpot);
+
      popUpContainer.appendChild(checkRanks);
      popUpContainer.appendChild(loadingText);
      popUpContainer.appendChild(loadingContainer);
      popUpContainer.appendChild(topChallengerContainer);
-     popUpContainer.appendChild(checkRecords);
-     popUpContainer.appendChild(galleryButtonsContainer);
-     popUpContainer.appendChild(inputContainer);
-     popUpContainer.appendChild(yourSpot);
+
      popUpContainer.appendChild(hallreportContainer);
      popUpContainer.appendChild(goBackButton);
 
@@ -2595,7 +2601,7 @@ addContainerUI('center-container', [popUpContainer]);
 
 }
 
-function createTransparencyReport() {
+function showTransparencyReport() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
     const titleButton = UI.createTitleContainer('\nTransparency\nReport\n⚖️', "subtitle");
@@ -2656,19 +2662,19 @@ addContainerUI('center-container', [popUpContainer]);
         canMove = false;
         isPaused = true;
         hideUI();
-        createWeb3Menu();
+        showMainMenu();
     };
     popUpContainer.appendChild(goBackButton);
 }
-//createTransparencyReport();
+//showTransparencyReport();
 
-function createRunMenu() {
+function showQueueTutorialMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
 
     const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', "subtitle");
     popUpContainer.appendChild(titleButton);
 
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger in the queue, \n Setting the Character, Ability &  Chain for a day! \n\n Top 5 Queue:',   "subtitle");
+    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger in the queue, \n Setting the Character, Ability &  Chain for a day! \n\n Queue Example:',   "subtitle");
     popUpContainer.appendChild(aboutButton);
 
     const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
@@ -2676,23 +2682,26 @@ function createRunMenu() {
     topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',  "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',  "subtitle"));
     topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ',  "subtitle"));
-
-    getLatestChallenges().then(latestChallenges => {
-        let buttonSize= 0.6
-        latestChallenges.forEach((challenge, index) => {
-            const parameters = challenge.parameters;
-            if (parameters[0]>133) parameters[0]=133;
-            if (parameters[1]>9) parameters[1]=9;
-            if (parameters[2]>1) parameters[2]=1;
-            topChallengerContainer.appendChild(UI.createTitleElement(`${index + 1}°`,   "subtitle"));
-            topChallengerContainer.appendChild(createButton(playerTypes[parameters[0]], buttonSize));
-            topChallengerContainer.appendChild(createButton(abilityTypes[parameters[1]], buttonSize ));
-            topChallengerContainer.appendChild(createButton(worldTypes[parameters[2]], buttonSize ));
-            console.log(`Challenger: ${challenge.challenger}`);
-            console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
-            buttonSize-=0.1;
-       });
-    });
+    topChallengerContainer.appendChild(UI.createTitleElement('1°',   "subtitle"));
+    topChallengerContainer.appendChild(createButton(playerTypes[1], .6));
+    topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
+    topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
+    topChallengerContainer.appendChild(UI.createTitleElement('2°',   "subtitle"));
+    topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
+    topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
+    topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
+    topChallengerContainer.appendChild(UI.createTitleElement('3°',   "subtitle"));
+    topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
+    topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
+    topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
+    topChallengerContainer.appendChild(UI.createTitleElement('4°',   "subtitle"));
+    topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
+    topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
+    topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
+    topChallengerContainer.appendChild(UI.createTitleElement('5°',   "subtitle"));
+    topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
+    topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
+    topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
 
     popUpContainer.appendChild(topChallengerContainer);
 
@@ -2760,17 +2769,17 @@ function createRunMenu() {
 
     popUpContainer.appendChild(galleryButtonsContainer);
 
- const inputContainer = document.createElement('div');
- const sponsorAmount = createInput('number', { placeholder: '0.01Ξ, Rank: 8', id: 'sponsorAmount' });
- const submitButton = document.createElement('button'); 
- submitButton.classList.add('rainbow-button'); 
- submitButton.classList.add('subtitle'); 
- submitButton.innerText = 'Added';
- sponsorAmount.disabled = true;
- inputContainer.appendChild(sponsorAmount);
- inputContainer.appendChild(submitButton); 
+    const inputContainer = document.createElement('div');
+    const sponsorAmount = createInput('number', { placeholder: '0.01Ξ, Rank: 8', id: 'sponsorAmount' });
+    const submitButton = document.createElement('button'); 
+    submitButton.classList.add('rainbow-button'); 
+    submitButton.classList.add('subtitle'); 
+    submitButton.innerText = 'Added';
+    sponsorAmount.disabled = true;
+    inputContainer.appendChild(sponsorAmount);
+    inputContainer.appendChild(submitButton); 
 
- popUpContainer.appendChild(inputContainer);
+    popUpContainer.appendChild(inputContainer);
 
     const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)',   "subtitle");
     popUpContainer.appendChild(disclaimerText);
@@ -2787,11 +2796,10 @@ function createRunMenu() {
         canMove = false;
         isPaused = true;
         hideUI();
-        createWeb3Menu();
+        showMainMenu();
     };
     popUpContainer.appendChild(goBackButton);
 }
-//createRunMenu();
 /*---------------------------------------------------------------------------
                                 Smart Contract Functions 
 ---------------------------------------------------------------------------*/
@@ -2858,6 +2866,20 @@ async function getLatestWinner() {
     //       console.log(`Parameters: ${latestWinner.parameters.join(", ")}`);
     //   }
     //});
+
+    async function getBlocksUntilNextWinner() {
+        try {
+            const blocksRemaining = await contract.methods.blocksUntilNextWinner().call();
+            console.log(`Blocks until next winner: ${blocksRemaining}`);
+            return parseInt(blocksRemaining, 10); // Convert string to integer
+        } catch (error) {
+            console.error("Error fetching blocks until next winner:", error);
+            return 0; // Default to 0 in case of an error
+        }
+    }
+
+    // Call the function to display the result
+    //getBlocksUntilNextWinner();
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
@@ -2995,7 +3017,7 @@ window.addEventListener('load', async () => {
     //    canMove = false;
     //    isPaused = true;
     //    hideUI();
-    //    createRunMenu();
+    //    showQueueTutorialMenu();
     //}
     
     if ('serviceWorker' in navigator) {
