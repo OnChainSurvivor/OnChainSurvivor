@@ -13,10 +13,15 @@ Onchain Survivor is a web-based top-down survival game that utilizes AI and  Web
 ## Overview 🎮 & Key Features 🔑
 
 **Title**: Onchain Survivor.
+
 **Genre**: Top-Down, Survival Roguelite.
+
 **Platform**: Web.
+
 **Technology**: Web3, Blockchain Integration, AI.
+
 **Objective**: Complete challenges in an arena, defeat enemies, level up, and upgrade abilities.
+
 **Decentralized Gameplay**: Enjoy a truly consensus based, decentralized experience. No central server required. No log ins. No external dependencies beyond your connection with the blockchain. You can keep a copy of the client and fire it up! 
 
 **Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty. And the strong playerbase consensus sets the game experience on a daily basis.   
