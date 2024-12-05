@@ -58,15 +58,22 @@ Onchain Survivor aims to combine the addictive gameplay of survival roguelite ga
 
 ## Development Roadmap 🛠️
 
-Not a roadmap per se, but More or less a loose list of the current development cycle, as certain items are all being executing in parallel in real time.
+Not a roadmap per se, but more or less a loose list of the current development cycle, as certain items are all being executing in parallel in real time.
 
-**Prototype Development**: Basic mechanics, character movement, and enemy AI.
+**Prototype Development**: Basic mechanics, character movement, and so on. 
+
 **Core Mechanics**: Implement leveling up, power-ups, and upgrades.
+
 **UI Design**: Develop and integrate the UI elements.
+
 **Blockchain Integration**: Integrate Web3 technologies for decentralized interactions.
+
 **Art and Sound Design**: Develop and integrate art assets and sound effects.
+
 **Testing**: Conduct playtesting and debugging.
+
 **Launch**: Deploy the game on the web platform.
+
 **Constant Content Updates**: Regular updates with new content, events, and features.
 
 ## Icons 🖼️

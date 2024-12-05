@@ -200,6 +200,218 @@ let web3;
 let contract;
 
 
+const CONTRACT_ADDRESS = "0x776e2b52d1D7273B06F88EA18cb6FFaCf6E3908F";
+const CONTRACT_ABI = [
+  {
+    "type": "constructor",
+    "inputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "error",
+    "name": "OwnableInvalidOwner",
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "OwnableUnauthorizedAccount",
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ChallengeAdded",
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "challenger", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ChallengeIntervalUpdated",
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "previousInterval", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "newInterval", "type": "uint256" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "ChallengeWalletUpdated",
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousWallet", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newWallet", "type": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "WinnerDeclared",
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" },
+      { "indexed": false, "internalType": "uint256", "name": "winningBlock", "type": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "addChallenge",
+    "inputs": [
+      { "internalType": "uint8[3]", "name": "_parameters", "type": "uint8[3]" }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "blocksUntilNextWinner",
+    "inputs": [],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "challengeRoundBlockInterval",
+    "inputs": [],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "challengeWallet",
+    "inputs": [],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "challenges",
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "outputs": [
+      { "internalType": "address", "name": "challenger", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "declareWinner",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getChallenges",
+    "inputs": [],
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "challenger", "type": "address" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+        ],
+        "internalType": "struct ChallengeQueue.Challenge[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPastWinners",
+    "inputs": [],
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "challenger", "type": "address" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
+        ],
+        "internalType": "struct ChallengeQueue.Challenge[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "lastWinnerBlock",
+    "inputs": [],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pastRoundWinners",
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "outputs": [
+      { "internalType": "address", "name": "challenger", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "renounceOwnership",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setChallengeRoundBlockInterval",
+    "inputs": [
+      { "internalType": "uint256", "name": "_interval", "type": "uint256" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "setChallengeWallet",
+    "inputs": [
+      { "internalType": "address", "name": "_newWallet", "type": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]
+
+
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 const uiContainers = [];
@@ -640,7 +852,7 @@ const challengeTypes = [{
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
 const worldTypes = [
-    {title: 'The Dark Forest \nBETA VERSION',
+    {title: 'The Dark Forest',
     class: 'World',
     description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
@@ -1083,12 +1295,40 @@ updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
 window.addEventListener('load', updateRendererSize);
 /*---------------------------------------------------------------------------
-                             Controllers
+                            Challenge Controllers, Initialization
 ---------------------------------------------------------------------------*/
-world = worldTypes[0];
-world.setup(scene,camera,renderer);
-ability = abilityTypes[0];
-player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+function validateParameters(params) {
+    // Ensure parameters stay within valid bounds
+    if (params[0] > 133) params[0] = 133; // Max index for playerTypes
+    if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
+    if (params[2] > 0) params[2] = 0;     // Max index for worldTypes (wraps back to default)
+    return params; // Return the validated parameters
+}
+
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        try {
+            let winners = await getLatestWinner(); 
+            let challenger = winners[winners.length - 1];
+            challenger.parameters = validateParameters(challenger.parameters);
+            world =worldTypes[challenger.parameters[2]];
+            world.setup(scene,camera,renderer);
+            ability = abilityTypes[challenger.parameters[1]];
+            player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
+        } catch (error) {
+            if (error.code === 4902) {
+                alert('The Ethereum Sepolia chain is not available in your MetaMask, please add it manually.');
+            } else {
+                console.error('Error:', error);
+            }
+        }
+    } else {
+        world = worldTypes[0];
+        world.setup(scene,camera,renderer);
+        ability = abilityTypes[0];
+        player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+    }
 player.health=  5;
 player.maxhealth= 5;
 player.movementspeed= 0.2;
@@ -1551,9 +1791,25 @@ UI.createTitleContainer= function (text) {
        //     hideUI();
        //     createSettingsMenu();
        // }
+       
 
-        const loadingText =  UI.createTitleElement('New challenge 1:47:52', "minititle");
+       const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
 
+     //Todo: Make it clear that the website is "live", even in safari
+       //let remainingBlocks = await getBlocksUntilNextWinner(); 
+       //const loadingText = UI.createTitleElement(`Next challenge starts in ${remainingBlocks} blocks`, "minititle");
+       
+       //function updateRemainingBlocks() {
+        //   if (remainingBlocks > 0) {
+        //       remainingBlocks--;
+        //       loadingText.innerText = `New challenge starts in ${remainingBlocks} blocks`;
+        //   } else {
+        //       clearInterval(blockCountdownInterval);
+        //       loadingText.innerText = "Challenge started!";
+        //   }
+       //}
+       //const blockCountdownInterval = setInterval(updateRemainingBlocks, 13000);
+       
         addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
         todaysContainer.style.cursor = 'pointer';
         todaysContainer.onclick = () => {
@@ -1565,234 +1821,20 @@ UI.createTitleContainer= function (text) {
 
         addContainerUI('TR-container', [web3Title]).onclick = async () => {
             if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
                 await window.ethereum.enable(); // Request account access
-        
-                const CONTRACT_ADDRESS = "0x776e2b52d1D7273B06F88EA18cb6FFaCf6E3908F";
-                const CONTRACT_ABI = [
-                  {
-                    "type": "constructor",
-                    "inputs": [],
-                    "stateMutability": "nonpayable"
-                  },
-                  {
-                    "type": "error",
-                    "name": "OwnableInvalidOwner",
-                    "inputs": [
-                      { "internalType": "address", "name": "owner", "type": "address" }
-                    ]
-                  },
-                  {
-                    "type": "error",
-                    "name": "OwnableUnauthorizedAccount",
-                    "inputs": [
-                      { "internalType": "address", "name": "account", "type": "address" }
-                    ]
-                  },
-                  {
-                    "type": "event",
-                    "name": "ChallengeAdded",
-                    "inputs": [
-                      { "indexed": true, "internalType": "address", "name": "challenger", "type": "address" },
-                      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-                      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-                    ]
-                  },
-                  {
-                    "type": "event",
-                    "name": "ChallengeIntervalUpdated",
-                    "inputs": [
-                      { "indexed": false, "internalType": "uint256", "name": "previousInterval", "type": "uint256" },
-                      { "indexed": false, "internalType": "uint256", "name": "newInterval", "type": "uint256" }
-                    ]
-                  },
-                  {
-                    "type": "event",
-                    "name": "ChallengeWalletUpdated",
-                    "inputs": [
-                      { "indexed": true, "internalType": "address", "name": "previousWallet", "type": "address" },
-                      { "indexed": true, "internalType": "address", "name": "newWallet", "type": "address" }
-                    ]
-                  },
-                  {
-                    "type": "event",
-                    "name": "OwnershipTransferred",
-                    "inputs": [
-                      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-                      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
-                    ]
-                  },
-                  {
-                    "type": "event",
-                    "name": "WinnerDeclared",
-                    "inputs": [
-                      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
-                      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-                      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" },
-                      { "indexed": false, "internalType": "uint256", "name": "winningBlock", "type": "uint256" }
-                    ]
-                  },
-                  {
-                    "type": "function",
-                    "name": "addChallenge",
-                    "inputs": [
-                      { "internalType": "uint8[3]", "name": "_parameters", "type": "uint8[3]" }
-                    ],
-                    "outputs": [],
-                    "stateMutability": "payable"
-                  },
-                  {
-                    "type": "function",
-                    "name": "blocksUntilNextWinner",
-                    "inputs": [],
-                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "challengeRoundBlockInterval",
-                    "inputs": [],
-                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "challengeWallet",
-                    "inputs": [],
-                    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "challenges",
-                    "inputs": [
-                      { "internalType": "uint256", "name": "", "type": "uint256" }
-                    ],
-                    "outputs": [
-                      { "internalType": "address", "name": "challenger", "type": "address" },
-                      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-                    ],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "declareWinner",
-                    "inputs": [],
-                    "outputs": [],
-                    "stateMutability": "nonpayable"
-                  },
-                  {
-                    "type": "function",
-                    "name": "getChallenges",
-                    "inputs": [],
-                    "outputs": [
-                      {
-                        "components": [
-                          { "internalType": "address", "name": "challenger", "type": "address" },
-                          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-                          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-                        ],
-                        "internalType": "struct ChallengeQueue.Challenge[]",
-                        "name": "",
-                        "type": "tuple[]"
-                      }
-                    ],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "getPastWinners",
-                    "inputs": [],
-                    "outputs": [
-                      {
-                        "components": [
-                          { "internalType": "address", "name": "challenger", "type": "address" },
-                          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-                          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-                        ],
-                        "internalType": "struct ChallengeQueue.Challenge[]",
-                        "name": "",
-                        "type": "tuple[]"
-                      }
-                    ],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "lastWinnerBlock",
-                    "inputs": [],
-                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "owner",
-                    "inputs": [],
-                    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "pastRoundWinners",
-                    "inputs": [
-                      { "internalType": "uint256", "name": "", "type": "uint256" }
-                    ],
-                    "outputs": [
-                      { "internalType": "address", "name": "challenger", "type": "address" },
-                      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-                    ],
-                    "stateMutability": "view"
-                  },
-                  {
-                    "type": "function",
-                    "name": "renounceOwnership",
-                    "inputs": [],
-                    "outputs": [],
-                    "stateMutability": "nonpayable"
-                  },
-                  {
-                    "type": "function",
-                    "name": "setChallengeRoundBlockInterval",
-                    "inputs": [
-                      { "internalType": "uint256", "name": "_interval", "type": "uint256" }
-                    ],
-                    "outputs": [],
-                    "stateMutability": "nonpayable"
-                  },
-                  {
-                    "type": "function",
-                    "name": "setChallengeWallet",
-                    "inputs": [
-                      { "internalType": "address", "name": "_newWallet", "type": "address" }
-                    ],
-                    "outputs": [],
-                    "stateMutability": "nonpayable"
-                  },
-                  {
-                    "type": "function",
-                    "name": "transferOwnership",
-                    "inputs": [
-                      { "internalType": "address", "name": "newOwner", "type": "address" }
-                    ],
-                    "outputs": [],
-                    "stateMutability": "nonpayable"
-                  }
-                ]
-               contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-               console.log("Contract initialized:", contract);
+                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
                 try {
                     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const accounts = await web3.eth.getAccounts();
                     const address = accounts[0];
-     
                     let ensName = null;
-                    try {
-                        ensName = await web3.eth.ens.lookup(address);
-                    } catch (error) {
-                        console.error('Error looking up ENS:', error);
-                    }
-                    const displayName = ensName || address;
+                   //try {
+                   //     ensName = await web3.eth.ens.lookup(address);
+                   // } catch (error) {
+                   //     console.error('Error looking up ENS:', error);
+                   // }
+                   // const displayName = ensName || address;
                     localStorage.setItem('metaMaskAddress', address); 
 
                     let challenges = await getAllChallenges(); 
@@ -1806,9 +1848,7 @@ UI.createTitleContainer= function (text) {
                             ability: false,
                             world: false
                         };
-                        if (userChallenge.parameters[0]>133) userChallenge.parameters[0]=133;
-                        if (userChallenge.parameters[1]>9) userChallenge.parameters[1]=9;
-                        if (userChallenge.parameters[2]>1) userChallenge.parameters[2]=1;
+                        userChallenge.parameters = validateParameters(userChallenge.parameters);
                         selectedPlayer = playerTypes[userChallenge.parameters[0]];
                         selectedAbility = abilityTypes[userChallenge.parameters[1]];
                         selectedWorld = worldTypes[userChallenge.parameters[2]];
@@ -1989,10 +2029,8 @@ async function showMainMenu(address) {
         getLatestChallenges().then(latestChallenges => {
             let buttonSize= 0.6
             latestChallenges.forEach((challenge, index) => {
-                const parameters = challenge.parameters;
-                if (parameters[0]>133) parameters[0]=133;
-                if (parameters[1]>9) parameters[1]=9;
-                if (parameters[2]>1) parameters[2]=1;
+                let parameters = challenge.parameters;
+                parameters = validateParameters(parameters);
                 topChallengerContainer.appendChild(UI.createTitleElement(`${index + 1}°`,   "subtitle"));
                 topChallengerContainer.appendChild(createButton(playerTypes[parameters[0]], buttonSize));
                 topChallengerContainer.appendChild(createButton(abilityTypes[parameters[1]], buttonSize ));
@@ -2769,6 +2807,16 @@ function showQueueTutorialMenu() {
                                 Smart Contract Functions 
 ---------------------------------------------------------------------------*/
 
+async function getLatestWinner() {
+    try {
+        const pastWinners = await contract.methods.getPastWinners().call();
+        return pastWinners;
+    } catch (error) {
+        console.error("Error fetching the latest winner:", error);
+        return null;
+    }
+}
+
 async function getLatestChallenges(count = 5) {
     try {
         const allChallenges = await contract.methods.getChallenges().call();
@@ -2813,36 +2861,6 @@ async function getLatestChallenges(count = 5) {
         }
     }
 
-async function getLatestWinner() {
-    try {
-        // Fetch all past winners
-        const pastWinners = await contract.methods.getPastWinners().call();
-
-        if (pastWinners.length === 0) {
-            console.log("No winners yet.");
-            return null;
-        }
-
-        // Get the latest winner (last element in the array)
-        const latestWinner = pastWinners[pastWinners.length - 1];
-
-        console.log("Latest Winner:", latestWinner);
-        return latestWinner;
-    } catch (error) {
-        console.error("Error fetching latest winner:", error);
-        return null;
-    }
-}
-
-    // Example: Call the function and log the latest winner
-    //getLatestWinner().then(latestWinner => {
-    //    if (latestWinner) {
-    //       console.log(`Challenger: ${latestWinner.challenger}`);
-    //       console.log(`Amount: ${web3.utils.fromWei(latestWinner.amount, "ether")} ETH`);
-    //       console.log(`Parameters: ${latestWinner.parameters.join(", ")}`);
-    //   }
-    //});
-
     async function getBlocksUntilNextWinner() {
         try {
             const blocksRemaining = await contract.methods.blocksUntilNextWinner().call();
@@ -2854,8 +2872,6 @@ async function getLatestWinner() {
         }
     }
 
-    // Call the function to display the result
-    //getBlocksUntilNextWinner();
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
