@@ -8,83 +8,23 @@ Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI i
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes AI and  Web3 technologies to enable  a new kind of browser game experience. Players will navigate an AI generated 3D Blockchained environment to do what they do best... Survive!
+Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive!
 
 ## Overview 🎮 & Key Features 🔑
 
-**Title**: Onchain Survivor.
-
-**Genre**: Top-Down, Survival Roguelite.
-
-**Platform**: Web.
-
-**Technology**: Web3, Blockchain Integration, AI.
-
-**Objective**: Complete challenges in an arena, defeat enemies, level up, and upgrade abilities.
-
-**Decentralized Gameplay**: Enjoy a truly consensus based, decentralized experience. No central server required. No log ins. No external dependencies beyond your connection with the blockchain. You can keep a copy of the client and fire it up! 
-
-**Blockchain Integration**: Interact with the dynamic blockchain technology and data, The game uses block data to generate the difficulty. And the strong playerbase consensus sets the game experience on a daily basis.   
-
-**3D Graphics**: Powered by Three.js, in any browser.
-
-**Cross-Platform**: Survive directly Either desktop or mobile, without the need for additional hardware. Simple is best. You can even play from your wallet!
-
-**Variable Gameplay**: Every experience is different on a daily basis, yet all players taking the challenge keep in sync!
-
-**Leveling Up**: Defeating enemies grants experience points (XP). Upon leveling up, players can choose from various abilities.
-
-**Power-Ups**: Enemies may drop power-ups, experience, and abilities. Very low chances.
-
 Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of generative AI and  blockchain technology, creating a unique and engaging experience for players around the world. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+
 
 ## Art Style 🎨
 
-**Top-Down View**: 3D Low poly style, for phase 1. 
-**Color Palette**: Bright and vibrant neon colors to distinguish different elements and enemies and the vibrant backgrounds.
-**Animation**: AI powered animations for characters, enemies, and effects.
+Currently 3d is the main focus of the game.
 
 ## Sound Design 🎵
 
-**Background Music**: AI made music to match the fast-paced gameplay. Players get to choose!
-**Sound Effects**: Distinct sounds for enemy attacks, power-ups, and level-ups.
-**Voiceovers**: Occasional voice lines for level-ups, power-up pickups, and mini-events.
 
 ## Blockchain Integration 🔗
 
-**Record Holding**: The blockchain will serve the challenges so players can have their records stored forever.
-**Challenges**: For holding player challengers consensus over the daily state of the game.
-**Real Time Difficulty Setting**: Depending on several  factors related to the blocklchain state!
-
-## Development Roadmap 🛠️
-
-Not a roadmap per se, but more or less a loose list of the current development cycle, as certain items are all being executing in parallel in real time.
-
-**Prototype Development**: Basic mechanics, character movement, and so on. 
-
-**Core Mechanics**: Implement leveling up, power-ups, and upgrades.
-
-**UI Design**: Develop and integrate the UI elements.
-
-**Blockchain Integration**: Integrate Web3 technologies for decentralized interactions.
-
-**Art and Sound Design**: Develop and integrate art assets and sound effects.
-
-**Testing**: Conduct playtesting and debugging.
-
-**Launch**: Deploy the game on the web platform.
-
-**Constant Content Updates**: Regular updates with new content, events, and features.
-
-## Icons 🖼️
-
-- **Upgrades:** AI generated icons representing different upgrade types (e.g., a footprint for Onchain Trail).
-- **Power-Ups:** 3D models in the arena representing different power-ups (e.g., a hatch on the floor for the Exit hatch Ability).
-
 ## Arena Design 🏟️
-- **Theme:** Blockchain-themed elements (e.g., nodes, blocks, chains). at the beggining. as the game evolves and partnerships form, this might change. 
-- **Obstacles:** Various blockchain-related obstacles (e.g., smart contracts, consensus mechanisms) and enemies.
-- **Environmental Hazards:** Dynamic elements such as gas clouds, electric fields, fog of war, and node failures that add challenges.
 
 ## Marketing Strategy 📈
 Product is still in development, but as it gains more shape, there are many plans to expand the playerbase!
@@ -94,6 +34,8 @@ Product is still in development, but as it gains more shape, there are many plan
 - **Partnerships:** Collaborate with blockchain projects and influencers for cross-promotion.
 - **Content Creators:** Engage streamers and content creators to showcase gameplay and mechanics.
 - **Events:** Host in-game events and challenges with other Communities.
+
+## Development Roadmap 🛠️
 
 ### 🥇 Phase 1 🥇: Daily Survival Challenges, by players for players!
 
@@ -111,13 +53,13 @@ This system ensures fairness by regularly refreshing the queue, preventing any o
 
 As additional game "templates" are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
 
-### Phase 3: User generated real time experiences,from locally run neural networks. 
+### Phase 3: User generated real time experiences, from locally run neural networks. 
 
 Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. If in the future players will be able to create with all kinds experiences with just one prompt, then having consensus on "what to play" on a daily basis might have value in an AI only era. for Onchain survivor, Challengers will be able to choose an style, and  using fast style transfer technology, Onchain survivor will adapt it into the main gameplay loop, allowing Challengers to "modify" the game as they desire using these technologies , and have all the others survivors enjoy it too, this way we all have the same experience. Onchain Survivor plans to eventually implement (within months to years) wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
-The *Onchain Survivor Dynamic Difficulty Scaling  function* will be satisfying gameplay up until minute 30. We'll assume the difficulty increases exponentially until the end. Depending on several accounting factors related to both the Players $P$ and the blockchain $B$. Let  $D(t)$  be the difficulty at time  $t$.   The final difficulty can be modeled as:
+The *Onchain Survivor Dynamic Difficulty Scaling function* will be satisfying gameplay up until minute 30. We'll assume the difficulty increases exponentially until the end. Depending on several accounting factors related to both the Players $P$ and the blockchain $B$. Let  $D(t)$  be the difficulty at time  $t$.   The final difficulty can be modeled as:
 
 $D(t) = D_0 e^{kt} +α(Pavg​−P(t)+βB(t))$
 
