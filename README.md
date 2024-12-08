@@ -1,39 +1,29 @@
 # Congratulations, 🔗 Survivor 🏆 !
 
-Survivor! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
+Welcome to **OnChain Survivor** Official Repository ! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
-## Onchain Survivor🔗🏆
-
-Welcome to **OnChain Survivor** Official Repository ! 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
+ 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
 
 ## 🌟About the Project🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive!
+Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchains.
 
-## Overview 🎮 & Key Features 🔑
+## The problem & the solution: The Challenger system, Blockchain Integration 🔗 & Game Design 🏟️
 
-Onchain Survivor aims to combine the addictive gameplay of survival roguelite games with the innovative potential of generative AI and  blockchain technology, creating a unique and engaging experience for players around the world. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchain.
+In the near future, players will be capable to create with all kinds of experiences with just one prompt using GenAI technology, being able to totally inmerse in virtual worlds beyond human imagination. this brings the problem of such beautiful generated experiences being "isolated" from the rest of the world, and I figured this a problem blockchains actually can solve.
 
+Onchain survivors uses what I call the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during a day (around 7200 ethereum blocks). This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This Rank based auction system with periodic reset model, also gives chances for all players who sent challenges in the queue to eventually be able to set the game for a day!
 
-## Art Style 🎨
-
-Currently 3d is the main focus of the game.
-
-## Sound Design 🎵
-
-
-## Blockchain Integration 🔗
-
-## Arena Design 🏟️
-
-## Marketing Strategy 📈
-Product is still in development, but as it gains more shape, there are many plans to expand the playerbase!
-- **Peer to Peer, Word of mouth**: The best of the best method to gain users. a fun game that everyone wants to play with friends. 
-- **Community Engagement:** Leverage blockchain and their communities for promotion.
-- **Social Media:** Utilize social media platforms to share updates and engage with players.
-- **Partnerships:** Collaborate with blockchain projects and influencers for cross-promotion.
-- **Content Creators:** Engage streamers and content creators to showcase gameplay and mechanics.
-- **Events:** Host in-game events and challenges with other Communities.
+```mermaid
+graph TD
+    A[Challengers] -->|Place Bids to set the game| B{Challenge Queue}
+    B -->|Sorted by Value| C{Daily Ranked List}
+    C --> D1[1st Place Challenge]
+    C --> D2[2nd Place]
+    C --> D12[3rd...100th... N Challenges]
+    D1 -->| Sets game state for a day | E[Wins,Goes to hall of challengers, others gain a rank]
+    E -->| Bids to join queue | C
+```
 
 ## Development Roadmap 🛠️
 
@@ -41,7 +31,7 @@ Product is still in development, but as it gains more shape, there are many plan
 
 This  system allows users to add their challenges to the Challenge queue. The system is a queue, with each user placing their challenges aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. 
 
-**Setting Challenge**: Users submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
+**Setting Challenges**: Users submit challenges into the global queue. The challenge values determine the ranking, where the highest one of the day secures the first position and the game state, while the second-highest becomes the next in line, and so on until all ranks are fille,  ensuring opportunities for all participants.
 
 **Daily Rank up**: Every n Blocks, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
 
@@ -49,13 +39,13 @@ This  system allows users to add their challenges to the Challenge queue. The sy
 
 This system ensures fairness by regularly refreshing the queue, preventing any one user from monopolizing the top position.
 
-### Phase 2: Multiple games, all using the same Challenge Queue !
+### Phase 2: Multiple games, all using the same Challenge Queue!
 
-As additional game "templates" are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! However, specific design constraints must be maintained to ensure the games remain coherent with one another.
+As additional game "templates"  or models are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! I figured it would be a very fun experience to set a challenge for my favorite game, and see what kind of challenge gets generated across different other games. However, specific design constraints must be maintained to ensure the games remain coherent with one another trought the challenges.
 
 ### Phase 3: User generated real time experiences, from locally run neural networks. 
 
-Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. If in the future players will be able to create with all kinds experiences with just one prompt, then having consensus on "what to play" on a daily basis might have value in an AI only era. for Onchain survivor, Challengers will be able to choose an style, and  using fast style transfer technology, Onchain survivor will adapt it into the main gameplay loop, allowing Challengers to "modify" the game as they desire using these technologies , and have all the others survivors enjoy it too, this way we all have the same experience. Onchain Survivor plans to eventually implement (within months to years) wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
+Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. for Onchain survivor, Challengers will be able to choose an style and the general gameplay, then using fast style transfer technology, it will adapt it into the main gameplay loop by re-rendering each frame in real time as it is being executed, allowing Challengers to "modify" the game as they desire using these technologies, and have all the others survivors enjoy it too at the same time. Onchain Survivor plans to eventually (Realistically a couple of years)  implement wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
 
 ## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
 
@@ -75,6 +65,10 @@ where:
 
 Note:  Random difficulty factor $B(t)$ that is extracted from the latest block in the blockchain. The factor $B(t)$ could be based on various metrics from the blockchain, such as transaction volume, block size, or other relevant activities. The term $βB(t)$ allows the difficulty to adapt dynamically based on real-time blockchain data, adding an element of unpredictability and aligning with the decentralized nature of blockchain games. 
 
+## Art Style 🎨 & Sound Design 🎵
+
+Any kind of submissions are welcomed as long as they are coherent!, theres no dead set art and musical style being planned in the long term, so even if current version is being made in 3D with basic music, with the usage of neural style transfer for rendering in real time and AI generatic music in the future will allow for different styles to be applied. 
+
 ##  📚  Interaction Models 🕹️
 
 As frictionless and simple as possible, No wallet required to play, the game's first priority is FUN. If the game is not fun then it will not be sustainable! 
@@ -87,19 +81,7 @@ D --> E[Set Challenge in queue]
 D --> G[Write run record]
 ```
 
-Rank based auction system with periodic reset model, giving chances for all the supported chains to be able to write into the Hall of survivors!
-
-```mermaid
-graph TD
-    A[ L1 and L2 Challengers] -->|Place Bids to own the game state| B{Challenge Queue }
-    B -->|Sorted by Value| C{Daily Ranked List}
-    C --> D1[1st Place Challenge]
-    C --> D2[2nd Place]
-    C --> D12[3rd...100th... N Challenges]
-    D1 -->| Owns game state for a day | E[Wins,Goes to hall of challengers, others gain a rank]
-    E -->| Rebids to join queue | C
-```
-Final design of onchain survivor, a peer-to-peer multiplayer, trustless, descentralized  game that keeps the survivors honest cryptography! 
+Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, descentralized  game that keeps the survivors honest cryptography! 
 
 ```mermaid
    sequenceDiagram
@@ -128,12 +110,6 @@ Follow these steps to set up Onchain Survivor on your local machine:
 I expect In the future the game will not need a server as I will take take to tidy the code.
 
 A Web3 Wallet is required to participate in the ranks!
-
-## 🎮How to Survive🎮
-
--   **Move Your survivor to start**: Use the arrow keys, on screen joystick, WASD or IJKL to move your character around the 3D environment.
--   **Upgrade, evolve, fork, Survive**: Your movements and decisions will be broadcast to your partner in real-time. Every choice affects your gameplay. Every Ability you choose is significant, so choose wisely.
--   **Connect wallet, Record your run to the Hall of survivors**: Use your favorite wallet, to record into the blockchain.
 
 ## 🤝Contributing🤝
 
