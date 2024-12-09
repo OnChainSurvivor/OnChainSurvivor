@@ -26,14 +26,6 @@ export const abilityTypes = [
             "Shoot Closest Enemy", 
         ],
     }, 
-    {title: "Frontrunning Bot",
-        description: "A fast bot that outpaces you and your enemy movements.",
-        thumbnail: 'Media/Abilities/FRONTRUNNINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Frontrun"
-        ],
-    },
     {title: "Blockchain Backup",
         description: "The survivor keeps a backup of everything always in handy.",
         thumbnail: 'Media/Abilities/BLOCKCHAINBACKUP.png',

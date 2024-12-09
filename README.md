@@ -18,7 +18,7 @@ flowchart TD
     C -->|Player One prompt| D[Experience X]
     C -->|Player Two prompt| E[Experience  Y]
     C -->|Player Three prompt| F[Experience Z]
-    ```
+```
 
 Onchain survivors uses what I call the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during a day (around 7200 ethereum blocks). This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This Rank based auction system with periodic reset model, also gives chances for all players who sent challenges in the queue to eventually be able to set the game for a day!
 

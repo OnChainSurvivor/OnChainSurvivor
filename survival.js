@@ -1311,7 +1311,7 @@ function validateParameters(params) {
             let winners = await getLatestWinner(); 
             let challenger = winners[winners.length - 1];
             challenger.parameters = validateParameters(challenger.parameters);
-            world =worldTypes[challenger.parameters[2]];
+            world = worldTypes[challenger.parameters[2]];
             world.setup(scene,camera,renderer);
             ability = abilityTypes[challenger.parameters[1]];
             player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
