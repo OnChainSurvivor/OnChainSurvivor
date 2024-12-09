@@ -10,7 +10,15 @@ Onchain Survivor is a web-based top-down survival game that utilizes AI in tande
 
 ## The problem & the solution: The Challenger system, Blockchain Integration 🔗 & Game Design 🏟️
 
-In the near future, players will be capable to create with all kinds of experiences with just one prompt using GenAI technology, being able to totally inmerse in virtual worlds beyond human imagination. this brings the problem of such beautiful generated experiences being "isolated" from the rest of the world, and I figured this a problem blockchains actually can solve.
+In the near future, players will be capable to create with all kinds of experiences with just one prompt using GenAI technology, being able to totally inmerse in virtual worlds beyond human imagination. this brings the problem of such beautiful generated experiences being "isolated" from the rest of their communities or peers, and this a problem blockchains actually can solve.
+
+```mermaid
+flowchart TD
+ C{Gen AI System}
+    C -->|Player One prompt| D[Experience X]
+    C -->|Player Two prompt| E[Experience  Y]
+    C -->|Player Three prompt| F[Experience Z]
+    ```
 
 Onchain survivors uses what I call the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during a day (around 7200 ethereum blocks). This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This Rank based auction system with periodic reset model, also gives chances for all players who sent challenges in the queue to eventually be able to set the game for a day!
 
@@ -27,7 +35,7 @@ graph TD
 
 ## Development Roadmap 🛠️
 
-### 🥇 Phase 1 🥇: Daily Survival Challenges, by players for players!
+### 🥇 Phase 1 🥇: Daily Challenges, by players for players!
 
 This  system allows users to add their challenges to the Challenge queue. The system is a queue, with each user placing their challenges aiming for the top positions on the leaderboard. The structure is dynamic and ONLY the number one in the queue becomes the main challenger for the next day!. 
 
