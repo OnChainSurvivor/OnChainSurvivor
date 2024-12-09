@@ -386,8 +386,8 @@ button, div {
 }
 
 .rainbow-input:focus {
-    outline: none; /* Remove default browser focus outline */
-    border: 0.1px solid; /* Ensure the border style remains consistent */
+    outline: none; 
+    border: 0.1px solid; 
     border-image-slice: 1;
     border-image-source: linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet);
 }
