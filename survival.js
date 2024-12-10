@@ -851,8 +851,7 @@ const challengeTypes = [{
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
 const worldTypes = [
-    {title: 'The Dark Forest',
-    class: 'World',
+{title: 'The Dark Forest',
     description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
     challenge:challengeTypes[0],
@@ -922,39 +921,140 @@ const worldTypes = [
     gridMaterial:null,
     backgroundColor:new THREE.Color(0x000000),
     texturePath:'Media/Textures/ENVTEXTURE.png' ,
+    components: ["BloomEnvironment","Octahedron", "MiniOctahedron","NeonGrid"],
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
-        scene.background = this.backgroundColor;
-        this.renderScene = new THREE.RenderPass(scene, camera);
-        this.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .75, .5, 0.01); 
-        composer.addPass(this.renderScene);
-        composer.addPass(this.bloomPass);
-        this.pmremGenerator = new THREE.PMREMGenerator(renderer);
-        this.pmremGenerator.compileEquirectangularShader();
-        this.envTexture = new THREE.TextureLoader().load(this.texturePath, texture => {
-            this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
-            this.pmremGenerator.dispose();
-            scene.environment = this.envMap; 
+        this.components.forEach(componentName => {
+            worldComponents[componentName].initialize?.(this, scene, camera, renderer);
         });
- 
-            this.gridSize = 5; 
-            this.divisions = 1; 
-            this.numTiles = 25; 
-        
-            this.gridGeometry = new THREE.PlaneGeometry( this.gridSize,  this.gridSize,  this.divisions,  this.divisions);
-        
-            this.lightSourceTextureSize = 256; 
-            this.lightSourceTextureData = new Float32Array( this.lightSourceTextureSize *  this.lightSourceTextureSize * 4);
-            this.lightSourceTexture = new THREE.DataTexture( this.lightSourceTextureData,  this.lightSourceTextureSize,  this.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
-            this.lightSourceTexture.needsUpdate = true;
-            this.gridMaterial = new THREE.ShaderMaterial({
+            const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
+            const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
+            camera.position.set(cameraX, 0, cameraZ);
+            camera.lookAt(0,0,0);
+    },
+    update: function(scene, camera, renderer) {
+        this.components.forEach(componentName => {
+            worldComponents[componentName].update?.(this, scene, camera, renderer);
+        });
+        if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
+    },
+    resumeGame: function(){
+     player.mesh.scale.set(2.5,2.5,2.5);
+    }  
+},
+{title: 'Digital Goldland',
+    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
+    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
+    challenge:challengeTypes[0],
+    material:new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0.0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+        uniform float time;
+        varying vec2 vUv;
+    
+        vec3 rainbowColor(float t) {
+            return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+            );
+        }
+    
+        void main() {
+            float t = vUv.y + time * 0.2;
+            gl_FragColor = vec4(rainbowColor(t), 1.0);
+        }
+    `,
+        side: THREE.DoubleSide,
+        wireframe:true,
+    }),
+    playerMaterial:new THREE.MeshPhysicalMaterial({
+        envMap: null, 
+        reflectivity: 1,
+        roughness: 0,
+        metalness: 1,
+        clearcoat: 0.13,
+        clearcoatRoughness: 0.1,
+        transmission: 0.82,
+        ior: 2.75, 
+        thickness: 10,
+        sheen: 1,
+        color: new THREE.Color('transparent'),
+        wireframe : true,
+        emissive: 0xffffff, 
+        emissiveIntensity: 0.25
+    }),
+    enemyMaterial:new THREE.MeshPhysicalMaterial({
+        envMap: null, 
+        reflectivity: 1,
+        roughness: 0,
+        metalness: 1,
+        clearcoat: 0.13,
+        clearcoatRoughness: 0.1,
+        transmission: 0.82,
+        ior: 2.75, 
+        thickness: 10,
+        sheen: 1,
+        color: new THREE.Color('white'),
+        wireframe : true,
+        emissive: 0x0ff00, 
+        emissiveIntensity: 2 
+    }),
+    gridMaterial:null,
+    backgroundColor:new THREE.Color(0xffffff),
+    texturePath:'Media/Textures/ENVTEXTURE.png' ,
+    components: ["BloomEnvironment","Octahedron", "MiniOctahedron","NeonGrid"],
+    setup: function(scene, camera, renderer) {
+        this.challenge.initialize();
+        this.components.forEach(componentName => {
+            worldComponents[componentName].initialize?.(this, scene, camera, renderer);
+        });
+            const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
+            const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
+            camera.position.set(cameraX, 0, cameraZ);
+            camera.lookAt(0,0,0);
+    },
+    update: function(scene, camera, renderer) {
+        this.components.forEach(componentName => {
+            worldComponents[componentName].update?.(this, scene, camera, renderer);
+        });
+        if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
+    },
+    resumeGame: function(){
+     player.mesh.scale.set(2.5,2.5,2.5);
+    }   
+},
+];
+
+const worldComponents = {
+    "NeonGrid": {
+        initialize: function(world, scene, camera, renderer) {
+            world.gridSize = 5; 
+            world.divisions = 1; 
+            world.numTiles = 25; 
+            world.gridGeometry = new THREE.PlaneGeometry( world.gridSize,  world.gridSize,  world.divisions,  world.divisions);
+            world.lightSourceTextureSize = 256; 
+            world.lightSourceTextureData = new Float32Array( world.lightSourceTextureSize *  world.lightSourceTextureSize * 4);
+            world.lightSourceTexture = new THREE.DataTexture( world.lightSourceTextureData,  world.lightSourceTextureSize,  world.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
+            world.lightSourceTexture.needsUpdate = true;
+
+            world.gridMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     playerInfluenceRadius: { value: 75 } ,
                     time: { value: 0 },
                     playerPosition: { value: new THREE.Vector3() },
-                    lightSourceTexture: { value:  this.lightSourceTexture },
+                    lightSourceTexture: { value: world.lightSourceTexture },
                     lightSourceCount: { value: 0 },
-                    lightSourceTextureSize: { value:  this.lightSourceTextureSize },
+                    lightSourceTextureSize: { value: world.lightSourceTextureSize },
                 },
                 vertexShader: `
                     uniform vec3 playerPosition;
@@ -1028,167 +1128,47 @@ const worldTypes = [
             });
             
             const offsets = [];
-            const halfTiles = Math.floor( this.numTiles / 2);
+            const halfTiles = Math.floor( world.numTiles / 2);
         
             for (let x = -halfTiles; x <= halfTiles; x++) {
                 for (let z = -halfTiles; z <= halfTiles; z++) {
-                    offsets.push(x *  this.gridSize, z *  this.gridSize);  
+                    offsets.push(x *  world.gridSize, z *  world.gridSize);  
                 }
             }
         
             const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
-            this.gridGeometry.setAttribute('offset', offsetAttribute); 
-            this.gridGeometry.rotateX(-Math.PI / 2);
-            this.gridMesh = new THREE.InstancedMesh( this.gridGeometry,  this.gridMaterial, offsets.length / 2);
-            scene.add( this.gridMesh);
-        
-            this.radiusTarget = 100;
-            this.radiusDirection = 1;
 
-    this.octahedronGeometry = new THREE.OctahedronGeometry(1);
-    this.octahedronGeometry.scale(5.6,5.25,3.75); 
-    this.octahedronMesh = new THREE.Mesh(this.octahedronGeometry, this.material);
-    scene.add(this.octahedronMesh);   
-    this.octahedronMesh2 = new THREE.Mesh(this.octahedronGeometry, this.material);
-    scene.add(this.octahedronMesh2); 
+            world.radiusTarget = 100;
+            world.radiusDirection = 1;
+            world.radiusSpeed = 0.50;
+            world.gridRotationSpeed = 0.002;
+            world.gridGeometry.setAttribute('offset', offsetAttribute); 
+            world.gridGeometry.rotateX(-Math.PI / 2);
+            world.gridMesh = new THREE.InstancedMesh( world.gridGeometry,  world.gridMaterial, offsets.length / 2);
+            scene.add(world.gridMesh);
+        },
+        update: function(world) {
+            world.material.uniforms.time.value += 0.01;
+            world.gridMaterial.uniforms.time.value += 0.01;
+            world.gridMaterial.uniforms.playerPosition.value.copy(player.position);
 
-    const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
-    const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
-    camera.position.set(cameraX, 0, cameraZ);
-    camera.lookAt(this.octahedronMesh.position);
+            const playerGridX = Math.floor(player.position.x / world.gridSize) * world.gridSize;
+            const playerGridZ = Math.floor(player.position.z / world.gridSize) * world.gridSize;
 
-    this.miniOctahedrons = [];
-    const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.25);
-    const miniOctahedronMaterial = this.material;
-    miniOctahedronGeometry.scale(0.5,0.75,0.5)
-    let numCrystals = 750;
-    
-    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+            world.gridMesh.position.set(playerGridX, 0, playerGridZ);
 
-    const possibleRadii = [1, 25, 50];
-    const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
-    const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
-    const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+            if (isMainMenu) world.gridMesh.position.set(playerGridX, world.axisY, playerGridZ);
+            world.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
 
-    const possibleRoot = [1,2,3];
-    const possibleSqrt = [0.1,0.5,1,2];
 
-    const root =possibleRoot[Math.floor(Math.random() * possibleRoot.length)];
-    const Sqrt =possibleSqrt[Math.floor(Math.random() * possibleSqrt.length)];
-
-    for (let i = 0; i < numCrystals; i++) {
-        this.miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
-
-        const y = 1 - (i / (numCrystals - 1)) * root; 
-        const radius = Math.sqrt(Sqrt - y * y); 
-
-        const phi = goldenAngle * i; 
-        const theta = Math.atan2(radius, y); 
-
-        this.miniOctahedron.position.set(
-            radiusx* Math.cos(phi) * Math.sin(theta),
-            radiusy* y,
-            radiusz* Math.sin(phi) * Math.sin(theta)
-        );
- 
-        this.miniOctahedron.rotation.set(
-            Math.random() * 2 * Math.PI,
-            Math.random() * 2 * Math.PI,
-            Math.random() * 2 * Math.PI
-        );
-
-        scene.add(this.miniOctahedron);
-        this.miniOctahedrons.push(this.miniOctahedron);
-
-    }
-
-this.sceneObjects = [];
-this.sceneObjects.push(this.gridMesh);
-this.sceneObjects.push(this.octahedronMesh);
-this.sceneObjects.push(this.octahedronMesh2);
-this.miniOctahedrons.forEach(miniOctahedron => this.sceneObjects.push(miniOctahedron)); 
-this.orbitSpeed = 0.5;
-this.attractionSpeed = 0.025;
-this.rotationIncrement = 0.005;
-this.miniRotationIncrement = 0.01;
-this.scaleDecayFactor = 0.95;
-this.miniScaleSpeed = 0.005;
-this.radiusSpeed = 0.50;
-this.gridRotationSpeed = 0.002;
-this.scaleThreshold = 0.3;
-this.meshScaleThreshold = 0.1;
-},
-    update: function(scene, camera, renderer) {
-        const timeNow = Date.now() * 0.001;
-        this.material.uniforms.time.value += 0.01;
-        this.gridMaterial.uniforms.time.value += 0.01;
-        this.gridMaterial.uniforms.playerPosition.value.copy(player.position);
-
-        const playerGridX = Math.floor(player.position.x / this.gridSize) * this.gridSize;
-        const playerGridZ = Math.floor(player.position.z / this.gridSize) * this.gridSize;
-        this.gridMesh.position.set(playerGridX, 0, playerGridZ);
-
-        if (isMainMenu) {
-            if (player.mesh) player.mesh.scale.set(0, 0, 0);
-    
-            this.gridMesh.position.set(playerGridX, this.axisY, playerGridZ);
-            this.gridGeometry.rotateY(this.gridRotationSpeed);
-            
-            this.octahedronMesh.rotation.z -= this.rotationIncrement;
-            this.octahedronMesh2.rotation.z += this.rotationIncrement;
-    
-            this.miniOctahedrons.forEach((miniOctahedron, index) => {
-                miniOctahedron.rotation.x += this.miniRotationIncrement;
-                miniOctahedron.rotation.y += this.miniRotationIncrement;
-    
-                const orbitRadius = miniOctahedron.position.distanceTo(this.octahedronMesh.position);
-                const phi = Math.PI * index / this.miniOctahedrons.length;
-                const theta = Math.sqrt(this.miniOctahedrons.length * Math.PI) * phi;
-                const angle = timeNow * this.orbitSpeed;
-    
-                miniOctahedron.position.set(
-                    this.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
-                    this.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
-                    this.octahedronMesh.position.z + orbitRadius * Math.sin(angle + theta) * Math.sin(phi)
-                );
-    
-                const direction = miniOctahedron.position.clone().normalize().negate();
-                if (miniOctahedron.position.length() > 1) {
-                    miniOctahedron.position.addScaledVector(direction, this.attractionSpeed);
-                }
-            });
-        } else if (this.miniOctahedrons.length > 1) {
-            this.octahedronMesh.scale.multiplyScalar(this.scaleDecayFactor);
-            this.octahedronMesh2.scale.multiplyScalar(this.scaleDecayFactor);
-    
-            if (this.octahedronMesh.scale.x <= this.meshScaleThreshold) {
-                scene.remove(this.octahedronMesh, this.octahedronMesh2);
-            }
-    
-            this.miniOctahedrons.forEach((miniOctahedron, index) => {
-                miniOctahedron.position.addScaledVector(
-                    miniOctahedron.position.clone().sub(this.octahedronMesh.position).normalize(),
-                    0.2
-                );
-                miniOctahedron.rotation.x += this.miniRotationIncrement;
-                miniOctahedron.rotation.y += this.miniRotationIncrement;
-                miniOctahedron.scale.multiplyScalar(1 - this.miniScaleSpeed);
-    
-                if (miniOctahedron.scale.x <= this.scaleThreshold) {
-                    scene.remove(miniOctahedron);
-                    this.miniOctahedrons.splice(index, 1);
-                }
-            });
-        }
-
-            this.lightSourceIndex = 0;
+            world.lightSourceIndex = 0;
             const illuminatingPositions = [];
             illuminatingPositions.push(player.position); 
 
             const addLightSource = (obj) => {
-                if (obj.visible && this.lightSourceIndex < this.lightSourceTextureSize * this.lightSourceTextureSize) {
-                    this.lightSourceTextureData.set([obj.position.x, obj.position.y, obj.position.z], this.lightSourceIndex * 4);
-                    this.lightSourceIndex++;
+                if (obj.visible && world.lightSourceIndex < world.lightSourceTextureSize * world.lightSourceTextureSize) {
+                    world.lightSourceTextureData.set([obj.position.x, obj.position.y, obj.position.z], world.lightSourceIndex * 4);
+                    world.lightSourceIndex++;
                     illuminatingPositions.push(obj.position);
                 }
             };
@@ -1213,62 +1193,168 @@ this.meshScaleThreshold = 0.1;
                 enemy.visible = isVisible; 
             }
 
-        this.lightSourceTexture.needsUpdate = true;
-        this.gridMaterial.uniforms.lightSourceCount.value = this.lightSourceIndex;
+            world.lightSourceTexture.needsUpdate = true;
+            world.gridMaterial.uniforms.lightSourceCount.value = world.lightSourceIndex;
     
-        if (!isMainMenu) {
-            const influenceRadius = this.gridMaterial.uniforms.playerInfluenceRadius.value;
-            if (this.radiusDirection === 1 && influenceRadius < this.radiusTarget) {
-                this.gridGeometry.rotateY(this.gridRotationSpeed);
-                this.gridMaterial.uniforms.playerInfluenceRadius.value += this.radiusSpeed;
-            } else if (this.radiusDirection === -1 && influenceRadius > player.influenceRadius) {
-                this.gridGeometry.rotateY(this.gridRotationSpeed);
-                this.gridMaterial.uniforms.playerInfluenceRadius.value -= this.radiusSpeed;
-            } else {
-                if (this.radiusDirection === 1) {
-                    this.radiusDirection = -1;
-                    this.radiusTarget = player.influenceRadius;
+            if (!isMainMenu) {
+                const influenceRadius = world.gridMaterial.uniforms.playerInfluenceRadius.value;
+                if (world.radiusDirection === 1 && influenceRadius < world.radiusTarget) {
+                    world.gridGeometry.rotateY(world.gridRotationSpeed);
+                    world.gridMaterial.uniforms.playerInfluenceRadius.value += world.radiusSpeed;
+                } else if (world.radiusDirection === -1 && influenceRadius > player.influenceRadius) {
+                    world.gridGeometry.rotateY(world.gridRotationSpeed);
+                    world.gridMaterial.uniforms.playerInfluenceRadius.value -= world.radiusSpeed;
                 } else {
-                    this.radiusDirection = 0;
+                    if (world.radiusDirection === 1) {
+                        world.radiusDirection = -1;
+                        world.radiusTarget = player.influenceRadius;
+                    } else {
+                        world.radiusDirection = 0;
+                    }
                 }
             }
         }
-       this.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
     },
-    resumeGame: function(){
-        player.mesh.scale.set(2.5,2.5,2.5);
-    }  
-},
-{title: 'Digital Goldland',
-    class: 'World',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
-    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    material: new THREE.MeshPhysicalMaterial({
-        reflectivity: 1.0,          
-        roughness: 0,            
-        metalness: 1.0,            
-        clearcoat: 1.0,            
-        clearcoatRoughness: 0.05,   
-        transmission: 0.0,         
-        ior: 1.45,                  
-        thickness: 0.0,          
-        sheen: new THREE.Color('gold'), 
-        sheenRoughness: 0.2,       
-        color: new THREE.Color(0xffd700), 
-        emissive: new THREE.Color(0x331a00),  
-        emissiveIntensity: 0.3,    
-        envMapIntensity: 2.0,      
-        sheenRoughness: 0.1         
-    }),
-    setup: function(scene, camera, renderer) {},
-    update: function(scene, camera, renderer) {},
-    resumeGame: function(){}  
-},
-];
+    "Octahedron": {
+        initialize: function(world, scene) {
+            world.rotationIncrement = 0.005;
+            world.scaleDecayFactor = 0.95;
+            world.meshScaleThreshold = 0.1;
 
-const worldComponents = [
+            world.octahedronGeometry = new THREE.OctahedronGeometry(1);
+            world.octahedronGeometry.scale(5.6, 5.25, 3.75);
+            world.octahedronMesh = new THREE.Mesh(world.octahedronGeometry, world.material);
+            scene.add(world.octahedronMesh);
+            world.octahedronMesh2 = new THREE.Mesh(world.octahedronGeometry, world.material);
+            scene.add(world.octahedronMesh2);
 
-]
+        },
+        update: function(world, scene) {
+            if (isMainMenu) {
+                world.octahedronMesh.rotation.z -= world.rotationIncrement;
+                world.octahedronMesh2.rotation.z += world.rotationIncrement;
+            } else if (world.miniOctahedrons.length > 1){
+                world.octahedronMesh.scale.multiplyScalar(world.scaleDecayFactor);
+                world.octahedronMesh2.scale.multiplyScalar(world.scaleDecayFactor);
+        
+                if (world.octahedronMesh.scale.x <= world.meshScaleThreshold) {
+                    scene.remove(world.octahedronMesh, world.octahedronMesh2);
+                }
+            }
+        }
+    },
+    "MiniOctahedron": {
+        initialize: function(world, scene) {
+            world.miniOctahedrons = [];
+            const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.25);
+            miniOctahedronGeometry.scale(0.5, 0.75, 0.5);
+            const miniOctahedronMaterial = world.material;
+            let numCrystals = 750;
+
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+            const possibleRadii = [1, 25, 50];
+            const radiusx = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+            const radiusy = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+            const radiusz = possibleRadii[Math.floor(Math.random() * possibleRadii.length)];
+
+            const possibleRoot = [1, 2, 3];
+            const possibleSqrt = [0.1, 0.5, 1, 2];
+
+            const root = possibleRoot[Math.floor(Math.random() * possibleRoot.length)];
+            const Sqrt = possibleSqrt[Math.floor(Math.random() * possibleSqrt.length)];
+
+            for (let i = 0; i < numCrystals; i++) {
+                const miniOctahedron = new THREE.Mesh(miniOctahedronGeometry, miniOctahedronMaterial);
+
+                const y = 1 - (i / (numCrystals - 1)) * root;
+                const radius = Math.sqrt(Sqrt - y * y);
+
+                const phi = goldenAngle * i;
+                const theta = Math.atan2(radius, y);
+
+                miniOctahedron.position.set(
+                    radiusx * Math.cos(phi) * Math.sin(theta),
+                    radiusy * y,
+                    radiusz * Math.sin(phi) * Math.sin(theta)
+                );
+
+                miniOctahedron.rotation.set(
+                    Math.random() * 2 * Math.PI,
+                    Math.random() * 2 * Math.PI,
+                    Math.random() * 2 * Math.PI
+                );
+                world.miniOctahedrons.push(miniOctahedron);
+                scene.add(miniOctahedron);
+
+            }
+            world.miniRotationIncrement = 0.01;
+            world.scaleThreshold = 0.3;
+            world.miniScaleSpeed = 0.005;
+            world.orbitSpeed = 0.5;
+            world.attractionSpeed = 0.025;
+        },
+        update: function(world, scene) {
+            const timeNow = Date.now() * 0.001;
+            if (isMainMenu) {
+                world.miniOctahedrons.forEach((miniOctahedron, index) => {
+                    miniOctahedron.rotation.x += world.miniRotationIncrement;
+                    miniOctahedron.rotation.y += world.miniRotationIncrement;
+
+                    const orbitRadius = miniOctahedron.position.distanceTo(world.octahedronMesh.position); 
+                    const phi = Math.PI * index / world.miniOctahedrons.length;
+                    const theta = Math.sqrt(world.miniOctahedrons.length * Math.PI) * phi;
+                    const angle = timeNow * world.orbitSpeed;
+
+                    miniOctahedron.position.set(
+                        world.octahedronMesh.position.x + orbitRadius * Math.cos(angle + theta) * Math.sin(phi),
+                        world.octahedronMesh.position.y + orbitRadius * Math.cos(phi),
+                        world.octahedronMesh.position.z + orbitRadius * Math.sin(angle + theta) * Math.sin(phi)
+                    );
+
+                    const direction = miniOctahedron.position.clone().normalize().negate();
+                    if (miniOctahedron.position.length() > 1) {
+                        miniOctahedron.position.addScaledVector(direction, world.attractionSpeed);
+                    }
+                });
+            } else if (world.miniOctahedrons.length > 1) {
+                world.miniOctahedrons.forEach((miniOctahedron, index) => {
+                    miniOctahedron.position.addScaledVector(
+                        miniOctahedron.position.clone().sub(world.octahedronMesh.position).normalize(), 
+                        0.2
+                    );
+                    miniOctahedron.rotation.x += world.miniRotationIncrement;
+                    miniOctahedron.rotation.y += world.miniRotationIncrement;
+                    miniOctahedron.scale.multiplyScalar(1 - world.miniScaleSpeed);
+
+                    if (miniOctahedron.scale.x <= world.scaleThreshold) {
+                        scene.remove(miniOctahedron);
+                        world.miniOctahedrons.splice(index, 1);
+                    }
+                });
+            }
+        }
+    },
+    "BloomEnvironment": {
+        initialize: function(world, scene, camera, renderer) {
+            scene.background = world.backgroundColor;
+            world.renderScene = new THREE.RenderPass(scene, camera);
+            world.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .75, .5, 0.01);
+            composer.addPass(world.renderScene);
+            composer.addPass(world.bloomPass);
+            world.pmremGenerator = new THREE.PMREMGenerator(renderer);
+            world.pmremGenerator.compileEquirectangularShader();
+
+            new THREE.TextureLoader().load(world.texturePath, texture => {
+                world.envMap = world.pmremGenerator.fromEquirectangular(texture).texture;
+                world.pmremGenerator.dispose();
+                scene.environment = world.envMap;
+            });
+        },
+        update: function(world) {
+        },
+    },
+};
 
 /*---------------------------------------------------------------------------
                               Scene Initialization
@@ -1341,7 +1427,7 @@ function validateParameters(params) {
     player.evasion=0;
     player.xpToNextLevel=1;
     player.level=0;
-
+    
 /*---------------------------------------------------------------------------
                              Player Controller
 ---------------------------------------------------------------------------*/
