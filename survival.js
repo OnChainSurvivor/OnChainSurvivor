@@ -409,7 +409,6 @@ const CONTRACT_ABI = [
   }
 ]
 
-
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 const uiContainers = [];
@@ -497,6 +496,68 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
     animateParticles();
 }
 
+function validateParameters(params) {
+    // Ensure parameters stay within valid bounds
+    if (params[0] > 133) params[0] = 133; // Max index for playerTypes
+    if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
+    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes (wraps back to default)
+    return params; // Return the validated parameters
+}
+
+async function initweb3(){
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        try {
+            let winners = await getLatestWinner(); 
+            let challenger = winners[winners.length - 1];
+            challenger.parameters = validateParameters(challenger.parameters);
+            world = worldTypes[challenger.parameters[2]];
+            world.setup(scene,camera,renderer);
+            ability = abilityTypes[challenger.parameters[1]];
+            player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
+        } catch (error) {
+                console.error('Error:', error);
+        }
+    } else {
+        world = worldTypes[0];
+        world.setup(scene,camera,renderer);
+        ability = abilityTypes[0];
+        player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+    }
+}
+
+function createOrb(user) {
+    const orb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.6, 16, 6),
+        new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    );
+
+    orb.position.copy(user.position); 
+    orb.updateMatrixWorld(true);
+    orb.boundingBox = new THREE.Box3().setFromObject(orb);
+    lightObjects.push(orb);
+    scene.add(orb);
+
+    const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
+    const shootSpeed = player.attackSpeed;
+    const orbLifetime = player.attackLTL; 
+    const startTime = Date.now();
+
+    function updateOrb() {
+        if (Date.now() - startTime > orbLifetime) {
+            scene.remove(orb);
+            const index = lightObjects.indexOf(orb);
+            if (index > -1) lightObjects.splice(index, 1); 
+
+            return;
+        }
+        orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
+        requestAnimationFrame(updateOrb);
+        orb.boundingBox.setFromObject(orb);
+    }
+    updateOrb();
+}
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
@@ -1505,56 +1566,23 @@ function updateRendererSize() {
 updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
 window.addEventListener('load', updateRendererSize);
-/*---------------------------------------------------------------------------
-                            Challenge Controllers, Initialization
----------------------------------------------------------------------------*/
-function validateParameters(params) {
-    // Ensure parameters stay within valid bounds
-    if (params[0] > 133) params[0] = 133; // Max index for playerTypes
-    if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
-    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes (wraps back to default)
-    return params; // Return the validated parameters
-}
 
-async function initweb3(){
-    if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        try {
-            let winners = await getLatestWinner(); 
-            let challenger = winners[winners.length - 1];
-            challenger.parameters = validateParameters(challenger.parameters);
-            world = worldTypes[challenger.parameters[2]];
-            world.setup(scene,camera,renderer);
-            ability = abilityTypes[challenger.parameters[1]];
-            player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
-        } catch (error) {
-                console.error('Error:', error);
-        }
-    } else {
-        world = worldTypes[0];
-        world.setup(scene,camera,renderer);
-        ability = abilityTypes[0];
-        player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
-    }
-}
-    await initweb3();
-    player.health=  5;
-    player.maxhealth= 5;
-    player.movementspeed= 0.2;
-    player.attackSpeed=  0.25;
-    player.attackLTL=1000;
-    player.attackPerSecond=0;
-    player.influenceRadius=10;
-    player.xp= 0;
-    player.range=15;
-    player.evasion=0;
-    player.xpToNextLevel=1;
-    player.level=0;
-    
 /*---------------------------------------------------------------------------
                              Player Controller
 ---------------------------------------------------------------------------*/
+await initweb3();
+player.health=  5;
+player.maxhealth= 5;
+player.movementspeed= 0.2;
+player.attackSpeed=  0.25;
+player.attackLTL=1000;
+player.attackPerSecond=0;
+player.influenceRadius=10;
+player.xp= 0;
+player.range=15;
+player.evasion=0;
+player.xpToNextLevel=1;
+player.level=0;
 
 const direction = new THREE.Vector3();
 const cameraDirection = new THREE.Vector3();
@@ -1562,38 +1590,6 @@ const moveDirection = new THREE.Vector3();
 const rotationAxis = new THREE.Vector3(0, 1, 0);  
 const rotationSpeed = 0.1;
 let dropUpdateFrame = 0; 
-
-function createOrb(user) {
-    const orb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.6, 16, 6),
-        new THREE.MeshBasicMaterial({ color: 0xff0000 })
-    );
-
-    orb.position.copy(user.position); 
-    orb.updateMatrixWorld(true);
-    orb.boundingBox = new THREE.Box3().setFromObject(orb);
-    lightObjects.push(orb);
-    scene.add(orb);
-
-    const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
-    const shootSpeed = player.attackSpeed;
-    const orbLifetime = player.attackLTL; 
-    const startTime = Date.now();
-
-    function updateOrb() {
-        if (Date.now() - startTime > orbLifetime) {
-            scene.remove(orb);
-            const index = lightObjects.indexOf(orb);
-            if (index > -1) lightObjects.splice(index, 1); 
-
-            return;
-        }
-        orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
-        requestAnimationFrame(updateOrb);
-        orb.boundingBox.setFromObject(orb);
-    }
-    updateOrb();
-}
 
 function updatePlayerMovement() {
     if (!canMove) return;
@@ -3101,8 +3097,8 @@ function triggerGameOver(notice,message ) {
 
     const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
     const inscribeButton = createButton({
-        title: "Inscribe Records",
-        description: 'Save your current score in the Hall of Survivors.',
+        title: "Inscribe Records (SOON)",
+        description: 'In the future, you will be able to Save your final score in the Hall of Survivors.',
         thumbnail: 'Media/Abilities/RECORD.png',
         effect(user) { 
             this.update = () => {} 
