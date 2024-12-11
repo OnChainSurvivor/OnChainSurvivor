@@ -1538,7 +1538,7 @@ async function initweb3(){
         player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
     }
 }
-    initweb3();
+    await initweb3();
     player.health=  5;
     player.maxhealth= 5;
     player.movementspeed= 0.2;
