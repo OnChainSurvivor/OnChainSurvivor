@@ -30,7 +30,6 @@ class Ability {
     }
 }
 
-
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
@@ -558,9 +557,8 @@ const abilityEffects = {
                 delete ability.veil;
             }
         }
-    },
-
-    "Create Trail Step": {  
+},
+"Create Trail Step": {  
         initialize: (user, ability) => {
             const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1, .5, 1), world.material);
             trailStep.position.copy(user.position);
@@ -574,9 +572,8 @@ const abilityEffects = {
              ability.trailBullets.push(trailStep);
              lightObjects.push(trailStep);
         },
-    },
-
-    "Manage Trail": { 
+},
+"Manage Trail": { 
         initialize: (user, ability) => {
             ability.lastTrailTime = 0;
             ability.maxTrailLength = 7;
@@ -603,8 +600,7 @@ const abilityEffects = {
             });
             delete ability.trailBullets;
         }
-    },
-
+},
 "Scalp": {
     update: (user, ability) => {
         const bot = ability.bot;
@@ -634,8 +630,6 @@ const abilityEffects = {
             bot.boundingBox.setFromObject(bot);
         },
 },
-
-
 "Swarm": {
     update: (user, ability) => {
         const bot = ability.bot;
@@ -662,7 +656,7 @@ const abilityEffects = {
         bot.boundingBox.setFromObject(bot);
     },
 },
-    "EvasionUP": {
+"EvasionUP": {
         initialize: (user, ability) => {
             user.evasion += 50; 
             ability.initialEvasion = user.evasion;  
@@ -674,8 +668,8 @@ const abilityEffects = {
             }
 
         }
-    },
-    "Orbit": {
+},
+"Orbit": {
         // should be orbitRadius= 10;
         update: (user, ability) => {
             const bot = ability.bot;
@@ -690,9 +684,8 @@ const abilityEffects = {
             bot.position.add(direction.multiplyScalar(bot.homingSpeed));
             bot.boundingBox.setFromObject(bot);
         },
-    },
-
-    "Follow Close": {
+},
+"Follow Close": {
         update: (user, ability) => {
             const bot = ability.bot;
             if (!bot) return;
@@ -703,9 +696,8 @@ const abilityEffects = {
             bot.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), bot.followSpeed);
             bot.boundingBox.setFromObject(bot);
         },
-    },
-
-    "Follow Far": {
+},
+"Follow Far": {
         update: (user, ability) => {
             const bot = ability.bot;
             if (!bot) return;
@@ -725,9 +717,8 @@ const abilityEffects = {
             }
             bot.boundingBox.setFromObject(bot);
         },
-    },
-
-    "Frontrun": {
+},
+"Frontrun": {
         initialize: (user, ability) => {
             ability.previousPosition = new THREE.Vector3().copy(user.position);
         },
@@ -746,18 +737,15 @@ const abilityEffects = {
             ability.previousPosition.copy(currentPosition);
         },
 
-    },
-
-
-    "Elevate":{
+},
+"Elevate":{
         update: (user, ability) => {
             const bot = ability.bot;
             if (!bot) return;
             bot.position.y = user.position.y + 15;
         }
-    },
-
-    "Point Laser": {
+},
+"Point Laser": {
         update: (user, ability) => {
             const bot = ability.bot;
             if (!bot && !closeEnemy) return;  
@@ -767,9 +755,8 @@ const abilityEffects = {
             bot.beam.boundingBox = new THREE.Box3().setFromObject(bot.beam);
             scene.add(bot.beam);
         },
-    },
-
-    "Shoot Closest Enemy": {
+},
+"Shoot Closest Enemy": {
         initialize: (user, ability) => {
           ability.bot.dropUpdateFrame = 0;  
         },
@@ -781,7 +768,7 @@ const abilityEffects = {
                 }
             }
         },
-    },
+},
 }
 
 /*---------------------------------------------------------------------------
@@ -924,6 +911,7 @@ const worldTypes = [
     components: ["BloomEnvironment","Octahedron", "MiniOctahedron","NeonGrid"],
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
+        document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
         this.components.forEach(componentName => {
             worldComponents[componentName].initialize?.(this, scene, camera, renderer);
         });
@@ -942,8 +930,8 @@ const worldTypes = [
      player.mesh.scale.set(2.5,2.5,2.5);
     }  
 },
-{title: 'Digital Goldland',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
+{title: 'Electric Goldland',
+    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Electric Gold.',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     challenge:challengeTypes[0],
     material:new THREE.ShaderMaterial({
@@ -961,17 +949,17 @@ const worldTypes = [
         uniform float time;
         varying vec2 vUv;
     
-        vec3 rainbowColor(float t) {
+        vec3 goldColor(float t) {
             return vec3(
-                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
-                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
-                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+                1.0, // Bright gold
+                0.843, // Deep yellow
+                0.0
             );
         }
     
         void main() {
             float t = vUv.y + time * 0.2;
-            gl_FragColor = vec4(rainbowColor(t), 1.0);
+            gl_FragColor = vec4(goldColor(t), 1.0);
         }
     `,
         side: THREE.DoubleSide,
@@ -980,41 +968,42 @@ const worldTypes = [
     playerMaterial:new THREE.MeshPhysicalMaterial({
         envMap: null, 
         reflectivity: 1,
-        roughness: 0,
+        roughness: 0.2,
         metalness: 1,
-        clearcoat: 0.13,
+        clearcoat: 0.25,
         clearcoatRoughness: 0.1,
-        transmission: 0.82,
-        ior: 2.75, 
-        thickness: 10,
-        sheen: 1,
-        color: new THREE.Color('transparent'),
-        wireframe : true,
-        emissive: 0xffffff, 
-        emissiveIntensity: 0.25
+        transmission: 0.85,
+        ior: 1.5, 
+        thickness: 5,
+        sheen: 0.8,
+        color: new THREE.Color(0xFFD700),
+        wireframe : false,
+        emissive: 0xFFD700, 
+        emissiveIntensity: 0.8
     }),
     enemyMaterial:new THREE.MeshPhysicalMaterial({
         envMap: null, 
         reflectivity: 1,
-        roughness: 0,
+        roughness: 0.3,
         metalness: 1,
-        clearcoat: 0.13,
+        clearcoat: 0.25,
         clearcoatRoughness: 0.1,
-        transmission: 0.82,
-        ior: 2.75, 
-        thickness: 10,
-        sheen: 1,
-        color: new THREE.Color('white'),
-        wireframe : true,
-        emissive: 0x0ff00, 
-        emissiveIntensity: 2 
+        transmission: 0.85,
+        ior: 1.5, 
+        thickness: 5,
+        sheen: 0.8,
+        color: new THREE.Color(0xFFCC33),
+        wireframe : false,
+        emissive: 0xFFCC33, 
+        emissiveIntensity: 1.2 
     }),
     gridMaterial:null,
-    backgroundColor:new THREE.Color(0xffffff),
+    backgroundColor:new THREE.Color(0x000000),
     texturePath:'Media/Textures/ENVTEXTURE.png' ,
-    components: ["BloomEnvironment","Octahedron", "MiniOctahedron","NeonGrid"],
+    components: ["BloomEnvironment","Sphere","GoldenGrid"],
     setup: function(scene, camera, renderer) {
         this.challenge.initialize();
+        document.documentElement.style.setProperty('--image-filter', 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)');
         this.components.forEach(componentName => {
             worldComponents[componentName].initialize?.(this, scene, camera, renderer);
         });
@@ -1215,6 +1204,93 @@ const worldComponents = {
             }
         }
     },
+    "GoldenGrid": {
+        initialize: function(world, scene, camera, renderer) {
+            world.gridSize = 50; 
+            world.divisions = 20; 
+            world.numTiles = 10; 
+            world.gridGeometry = new THREE.CircleGeometry( world.gridSize,  world.gridSize,  world.divisions,  world.divisions);
+
+            world.gridMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    playerPosition: { value: new THREE.Vector3() },
+                },
+                vertexShader: `
+                    uniform vec3 playerPosition;
+                    uniform float time;
+                    attribute vec2 offset;
+                    varying vec3 vWorldPos;
+                    varying vec2 vUv; 
+                    void main() {
+                        vec3 pos = position;
+                        pos.x += offset.x;
+                        pos.z += offset.y;
+                        vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 playerPosition;
+                    uniform float time;
+                    varying vec3 vWorldPos;
+                    varying vec2 vUv;
+
+                    float wave(vec2 coord, vec2 origin, float time) {
+                        float dist = distance(coord, origin);
+                        return sin(dist * 10.0 - time * 5.0) * exp(-dist * 5.0);
+                    }
+
+                    vec3 liquidGold(float waveEffect) {
+                        vec3 baseColor = vec3(1.0, 0.84, 0.0); // Gold RGB
+                        vec3 highlight = vec3(1.5, 1.2, 0.8) * waveEffect; // Amplified highlight
+                        return baseColor + highlight;
+                    }
+
+                    void main() {
+                        vec2 uv = vUv * 10.0;
+                        vec2 playerUV = vec2(playerPosition.x, playerPosition.z) * 0.1;
+                        float waveEffect = wave(uv, playerUV, time);
+
+                        float shadow = 0.5 + 0.5 * waveEffect; // Balanced shadow range
+
+                        vec3 color = liquidGold(waveEffect) * shadow;
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `,
+            wireframe:true,
+            });
+
+            const offsets = [];
+            const halfTiles = Math.floor(world.numTiles / 2);
+        
+            for (let x = -halfTiles; x <= halfTiles; x++) {
+                for (let z = -halfTiles; z <= halfTiles; z++) {
+                    offsets.push(x *  world.gridSize, z *  world.gridSize);  
+                }
+            }
+        
+            const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
+
+            world.gridRotationSpeed = 0.0002;
+            world.gridGeometry.setAttribute('offset', offsetAttribute); 
+            world.gridGeometry.rotateX(-Math.PI / 2);
+            world.gridMesh = new THREE.InstancedMesh( world.gridGeometry,  world.gridMaterial, offsets.length / 2);
+            scene.add(world.gridMesh);
+        },
+        update: function(world) {
+            world.gridGeometry.rotateY(-Math.PI / 2 + 0.0002); 
+            world.material.uniforms.time.value += 0.1;
+            world.gridMaterial.uniforms.time.value += 0.1;
+            world.gridMaterial.uniforms.playerPosition.value.copy(player.position);
+            const playerGridX = Math.floor(player.position.x / world.gridSize) * world.gridSize;
+            const playerGridZ = Math.floor(player.position.z / world.gridSize) * world.gridSize;
+            world.gridMesh.position.set(playerGridX, 0, playerGridZ);
+
+            if (isMainMenu) world.gridMesh.position.set(playerGridX, world.axisY, playerGridZ);
+        }
+    },
     "Octahedron": {
         initialize: function(world, scene) {
             world.rotationIncrement = 0.005;
@@ -1237,6 +1313,32 @@ const worldComponents = {
                 world.octahedronMesh.scale.multiplyScalar(world.scaleDecayFactor);
                 world.octahedronMesh2.scale.multiplyScalar(world.scaleDecayFactor);
         
+                if (world.octahedronMesh.scale.x <= world.meshScaleThreshold) {
+                    scene.remove(world.octahedronMesh, world.octahedronMesh2);
+                }
+            }
+        }
+    },
+    "Sphere": {
+        initialize: function(world, scene) {
+            world.rotationIncrement = 0.005;
+            world.scaleDecayFactor = 0.95;
+            world.meshScaleThreshold = 0.1;
+
+            world.octahedronGeometry = new THREE.SphereGeometry(1,1,50);
+            world.octahedronGeometry.scale(5.6, 5, 3.75);
+            world.octahedronMesh = new THREE.Mesh(world.octahedronGeometry, world.playerMaterial);
+            scene.add(world.octahedronMesh);
+            world.octahedronMesh2 = new THREE.Mesh(world.octahedronGeometry, world.playerMaterial);
+            scene.add(world.octahedronMesh2);
+        },
+        update: function(world, scene) {
+            if (isMainMenu) {
+                world.octahedronMesh.rotation.z -= world.rotationIncrement;
+                world.octahedronMesh2.rotation.z -= world.rotationIncrement;
+            } else if (world.octahedronMesh){
+                world.octahedronMesh.scale.multiplyScalar(world.scaleDecayFactor);
+                world.octahedronMesh2.scale.multiplyScalar(world.scaleDecayFactor);
                 if (world.octahedronMesh.scale.x <= world.meshScaleThreshold) {
                     scene.remove(world.octahedronMesh, world.octahedronMesh2);
                 }
@@ -1354,6 +1456,25 @@ const worldComponents = {
         update: function(world) {
         },
     },
+    "BrightEnvironment": {
+        initialize: function(world, scene, camera, renderer) {
+            scene.background = world.backgroundColor;
+            world.renderScene = new THREE.RenderPass(scene, camera);
+            world.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .05, .05, 0.001);
+            composer.addPass(world.renderScene);
+            composer.addPass(world.bloomPass);
+            world.pmremGenerator = new THREE.PMREMGenerator(renderer);
+            world.pmremGenerator.compileEquirectangularShader();
+
+            new THREE.TextureLoader().load(world.texturePath, texture => {
+                world.envMap = world.pmremGenerator.fromEquirectangular(texture).texture;
+                world.pmremGenerator.dispose();
+                scene.environment = world.envMap;
+            });
+        },
+        update: function(world) {
+        },
+    },
 };
 
 /*---------------------------------------------------------------------------
@@ -1391,10 +1512,11 @@ function validateParameters(params) {
     // Ensure parameters stay within valid bounds
     if (params[0] > 133) params[0] = 133; // Max index for playerTypes
     if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
-    if (params[2] > 0) params[2] = 0;     // Max index for worldTypes (wraps back to default)
+    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes (wraps back to default)
     return params; // Return the validated parameters
 }
-//todo: make a initweb3 function  
+
+async function initweb3(){
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
         contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
@@ -1415,6 +1537,8 @@ function validateParameters(params) {
         ability = abilityTypes[0];
         player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
     }
+}
+    initweb3();
     player.health=  5;
     player.maxhealth= 5;
     player.movementspeed= 0.2;
@@ -1468,9 +1592,7 @@ function createOrb(user) {
         requestAnimationFrame(updateOrb);
         orb.boundingBox.setFromObject(orb);
     }
-    
     updateOrb();
-
 }
 
 function updatePlayerMovement() {
@@ -1877,7 +1999,6 @@ UI.createTitleContainer= function (text) {
        //     hideUI();
        //     createSettingsMenu();
        // }
-       
 
       // const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
 
@@ -1913,13 +2034,7 @@ UI.createTitleContainer= function (text) {
                     await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const accounts = await web3.eth.getAccounts();
                     const address = accounts[0];
-                    let ensName = null;
-                   //try {
-                   //     ensName = await web3.eth.ens.lookup(address);
-                   // } catch (error) {
-                   //     console.error('Error looking up ENS:', error);
-                   // }
-                   // const displayName = ensName || address;
+
                     localStorage.setItem('metaMaskAddress', address); 
 
                     let challenges = await getAllChallenges(); 
@@ -3080,13 +3195,13 @@ function triggerGameOver(notice,message ) {
                         Load Settings for Offline Play  
 ---------------------------------------------------------------------------*/
 window.addEventListener('load', async () => {
-    document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
-    const savedSettings = localStorage.getItem('onchainSurvivorSettings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      document.documentElement.style.setProperty('--image-filter', settings.theme);
-     //Set volume and other parameters once set  
-    }
+   // document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
+   // const savedSettings = localStorage.getItem('onchainSurvivorSettings');
+   // if (savedSettings) {
+   //  const settings = JSON.parse(savedSettings);
+   //   document.documentElement.style.setProperty('--image-filter', settings.theme);
+   //Set volume and other parameters once set  
+   // }
 
     //Todo: Add contract loading functionality here, for better user experience
     //const storedAddress = localStorage.getItem('metaMaskAddress');
