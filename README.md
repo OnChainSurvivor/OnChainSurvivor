@@ -23,6 +23,12 @@ flowchart TD
 Onchain survivors uses what I call the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during a day (around 7200 ethereum blocks). This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This Rank based auction system with periodic reset model, also gives chances for all players who sent challenges in the queue to eventually be able to set the game for a day!
 
 ```mermaid
+flowchart TD
+    X[Player sends Challenge] --> Y{Challenge Climbs the rank}
+    Y --> Z[Challenge Wins, Becomes the game for a day]
+```
+
+```mermaid
 graph TD
     A[Challengers] -->|Add Challenges to modify the game| B{Challenge Queue}
     B -->|Sorted by Ξ | C{Daily Ranked List}
