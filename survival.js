@@ -1,11 +1,6 @@
 /*---------------------------------------------------------------------------
                               Classes
 ---------------------------------------------------------------------------*/
-const loader = new THREE.FBXLoader();
-const objectMap = new Map(); 
-const objectPool = [];
-const initialPoolSize = 200;
-
 class Ability {
     constructor(user, config) {
         Object.assign(this, { user, ...config });
@@ -158,10 +153,14 @@ class Entity extends THREE.Object3D {
         if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
     }
 }
-
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
 ---------------------------------------------------------------------------*/
+const loader = new THREE.FBXLoader();
+const objectMap = new Map(); 
+const objectPool = [];
+const initialPoolSize = 200;
+
 let player;
 let ability;
 let world;
@@ -527,6 +526,7 @@ async function initweb3(){
     }
 }
 
+//todo: rework this, make it dual shooter
 function createOrb(user) {
     const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.6, 16, 6),
@@ -986,10 +986,7 @@ const worldTypes = [
             worldComponents[componentName].update?.(this, scene, camera, renderer);
         });
         if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
-    },
-    resumeGame: function(){
-     player.mesh.scale.set(2.5,2.5,2.5);
-    }  
+    }
 },
 {title: 'Electric Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Electric Gold.',
@@ -1078,10 +1075,7 @@ const worldTypes = [
             worldComponents[componentName].update?.(this, scene, camera, renderer);
         });
         if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
-    },
-    resumeGame: function(){
-     player.mesh.scale.set(2.5,2.5,2.5);
-    }   
+    } 
 },
 ];
 
@@ -1537,10 +1531,13 @@ const worldComponents = {
         },
     },
 };
-
 /*---------------------------------------------------------------------------
                               Scene Initialization
 ---------------------------------------------------------------------------*/
+let selectedPlayer = playerTypes[0]; 
+let selectedAbility = abilityTypes[0];
+let selectedWorld = worldTypes[0]; 
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const canvas = document.getElementById('survivorCanvas');
@@ -1567,10 +1564,11 @@ updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
 window.addEventListener('load', updateRendererSize);
 
+await initweb3();
+
 /*---------------------------------------------------------------------------
                              Player Controller
 ---------------------------------------------------------------------------*/
-await initweb3();
 player.health=  5;
 player.maxhealth= 5;
 player.movementspeed= 0.2;
@@ -1686,6 +1684,7 @@ function updatePlayerMovement() {
                 
         }    
 }
+
 function randomAbility() {
     const upgradableAbilities = player.getUpgradableAbilities();
     if (upgradableAbilities.length === 0) {
@@ -1726,7 +1725,6 @@ function chooseAbility() {
 /*---------------------------------------------------------------------------
                               Enemies Controller
 ---------------------------------------------------------------------------*/
-
 function updateEnemies() {
     let closestDistance = Infinity;
     let farthestDistance = 0;
@@ -1800,7 +1798,6 @@ function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 50, num
     setInterval(spawnEnemy, spawnInterval);
 }
 startSpawningEnemies(player);
-
 /*---------------------------------------------------------------------------
                                 UI UTILITIES 
 ---------------------------------------------------------------------------*/
@@ -1830,276 +1827,244 @@ UI.createTitleContainer= function (text) {
     return container;
 }
 
-    function createButton(dataType, scale = 1, onClick) {
-        const button = document.createElement('button');
-        button.style.width = `${175 * scale}px`;
-        button.style.margin = '3px';
-        button.style.display = 'flex';
-        button.style.flexDirection = 'column';
-        button.style.alignItems = 'center';
-        button.style.backgroundColor = 'black';
-        button.style.overflow = 'hidden';
-        button.style.padding = '0';
-        button.style.cursor = 'pointer';
-        button.style.fontFamily = 'Arial, sans-serif';
+function createButton(dataType, scale = 1, onClick) {
+    const button = document.createElement('button');
+    button.style.width = `${175 * scale}px`;
+    button.style.margin = '3px';
+    button.style.display = 'flex';
+    button.style.flexDirection = 'column';
+    button.style.alignItems = 'center';
+    button.style.backgroundColor = 'black';
+    button.style.overflow = 'hidden';
+    button.style.padding = '0';
+    button.style.cursor = 'pointer';
+    button.style.fontFamily = 'Arial, sans-serif';
 
-        button.style.border = '1px solid transparent'; 
-        button.style.borderImageSlice = 1; 
-        button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)'; 
+    button.style.border = '1px solid transparent'; 
+    button.style.borderImageSlice = 1; 
+    button.style.borderImageSource = 'linear-gradient(45deg, red, orange, yellow, green, deepskyblue, blueviolet, violet)'; 
+
+    const title = document.createElement('div');
+    title.innerText = dataType.title;
+    title.style.fontSize = `${20 * scale}px`;
+    title.classList.add('rainbow-text'); 
+    title.style.height = `${2.5 * scale}em`; 
+    title.style.lineHeight = `${1.5 * scale}em`;
+    title.style.overflow = 'hidden';
+    title.style.textAlign = 'center'; 
+    title.style.display = scale > 0.751 ? 'flex' : 'none';  
+    title.style.alignItems = 'center';
+    title.style.justifyContent = 'center';
+    title.style.padding = `${5 * scale}px 0`;
+
+    const img = document.createElement('img');
+    img.src = dataType.thumbnail;
+    img.style.width = `${150 * scale}px`;
+    img.style.height = `${150 * scale}px`;
+
+    const description = document.createElement('div');
+    description.innerText = `${dataType.description}`;
+    description.style.fontSize = `${14.5 * scale}px`;
+    description.classList.add('rainbow-text'); 
+
+    description.style.height = `${5 * scale}em`; 
+    description.style.lineHeight = `${1 * scale}em`; 
+    description.style.overflow = 'hidden'; 
+    description.style.textAlign = 'center';
+    description.style.alignItems = 'center'; 
+    description.style.justifyContent = 'center';
+    description.style.padding = `${5 * scale}px`;
+    description.style.display = scale > 0.751 ? 'flex' : 'none'; 
+
+    button.appendChild(title);
+    button.appendChild(img);
+    button.appendChild(description);
     
-        const title = document.createElement('div');
-        title.innerText = dataType.title;
-        title.style.fontSize = `${20 * scale}px`;
-        title.classList.add('rainbow-text'); 
-        title.style.height = `${2.5 * scale}em`; 
-        title.style.lineHeight = `${1.5 * scale}em`;
-        title.style.overflow = 'hidden';
-        title.style.textAlign = 'center'; 
-        title.style.display = scale > 0.751 ? 'flex' : 'none';  
-        title.style.alignItems = 'center';
-        title.style.justifyContent = 'center';
-        title.style.padding = `${5 * scale}px 0`;
+    if (onClick) button.onclick = onClick;
 
-        const img = document.createElement('img');
-        img.src = dataType.thumbnail;
-        img.style.width = `${150 * scale}px`;
-        img.style.height = `${150 * scale}px`;
-    
-        const description = document.createElement('div');
-        description.innerText = `${dataType.description}`;
-        description.style.fontSize = `${14.5 * scale}px`;
-        description.classList.add('rainbow-text'); 
+    return button;
+}
 
-        description.style.height = `${5 * scale}em`; 
-        description.style.lineHeight = `${1 * scale}em`; 
-        description.style.overflow = 'hidden'; 
-        description.style.textAlign = 'center';
-        description.style.alignItems = 'center'; 
-        description.style.justifyContent = 'center';
-        description.style.padding = `${5 * scale}px`;
-        description.style.display = scale > 0.751 ? 'flex' : 'none'; 
-    
-        button.appendChild(title);
-        button.appendChild(img);
-        button.appendChild(description);
-        
-        if (onClick) button.onclick = onClick;
-    
-        return button;
-    }
+function addContainerUI(location,uiElements){
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    container.classList.add(location, 'fade-in');
+    uiElements.forEach(element => {
+        container.appendChild(element);
+    });
+    uiContainers.push(container);
+    setTimeout(() => {container.classList.add('show'); }, 10);
+    return container;
+}    
 
-    function addContainerUI(location,uiElements){
-        const container = document.createElement('div');
-        document.body.appendChild(container);
-        container.classList.add(location, 'fade-in');
-        uiElements.forEach(element => {
-            container.appendChild(element);
-        });
-        uiContainers.push(container);
-        setTimeout(() => {container.classList.add('show'); }, 10);
-        return container;
-    }    
-
-    function hideUI(){
-        uiContainers.forEach(container => {
-        container.classList.add('fade-out'); 
-        setTimeout(() => { container.classList.add('hide'); }, 10);
-        setTimeout(() => {
+function hideUI(){
+    uiContainers.forEach(container => {
+    container.classList.add('fade-out'); 
+    setTimeout(() => { container.classList.add('hide'); }, 10);
+    setTimeout(() => {
         while (container.firstChild) {
             container.removeChild(container.firstChild);
         }
-        container.parentNode.removeChild(container);
-        }, 1000);
+        container.parentNode.removeChild(container);}, 1000);
         })
-        uiContainers.length = 0;
-    }
+    uiContainers.length = 0;
+}
 
-    let spinningStates = {
-        class: true,
-        ability: true,
-        world: true
-    };
-    
-    function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
-        if (!spinningStates[category])
-        return;
-        const imgContainer = document.createElement('div');
-        imgContainer.style.position = 'relative';
-        imgContainer.style.height = `${150 * scale}px`; 
-        imgContainer.style.width = `${150 * scale}px`; 
-    
-        images = images.concat(images); 
-    
-        images.forEach((src) => {
-            const img = document.createElement('img');
-            img.src = src;
-            img.style.width = `${150 * scale}px`;
-            img.style.height = `${150 * scale}px`;
-            img.style.display = 'block';
-            imgContainer.appendChild(img);
-        });
-    
-        button.innerHTML = ''; 
-        button.appendChild(imgContainer);
-    
-        const totalHeight = images.length * 150 * scale;
-        let currentTop = 0;
-        let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
-        function spin() {
-            if (spinningStates[category]) {
-                currentTop -= speed;
-                if (currentTop <= -totalHeight / 2) {
-                    currentTop = 0;
-                }
-                imgContainer.style.transform = `translateY(${currentTop}px)`;
+let spinningStates = {
+    class: true,
+    ability: true,
+    world: true
+};
+
+function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
+    if (!spinningStates[category])
+    return;
+    const imgContainer = document.createElement('div');
+    imgContainer.style.position = 'relative';
+    imgContainer.style.height = `${150 * scale}px`; 
+    imgContainer.style.width = `${150 * scale}px`; 
+
+    images = images.concat(images); 
+
+    images.forEach((src) => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = `${150 * scale}px`;
+        img.style.height = `${150 * scale}px`;
+        img.style.display = 'block';
+        imgContainer.appendChild(img);
+    });
+
+    button.innerHTML = ''; 
+    button.appendChild(imgContainer);
+
+    const totalHeight = images.length * 150 * scale;
+    let currentTop = 0;
+    let speed = (Math.random() * 0.5 + 0.25) * Math.sign(Math.random() + 0.5);
+    function spin() {
+        if (spinningStates[category]) {
+            currentTop -= speed;
+            if (currentTop <= -totalHeight / 2) {
+                currentTop = 0;
             }
-            requestAnimationFrame(spin); 
+            imgContainer.style.transform = `translateY(${currentTop}px)`;
         }
-        spin();
-        button.parentElement.addEventListener('click', () => {
-            spinningStates[category] = false;
-        });
+        requestAnimationFrame(spin); 
     }
-
+    spin();
+    button.parentElement.addEventListener('click', () => {
+        spinningStates[category] = false;
+    });
+}
 
 /*---------------------------------------------------------------------------
                                 GAME TITLE 
 ---------------------------------------------------------------------------*/
-    async function createGameTitle(){
-        const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
-        const worldTitle = UI.createTitleElement(world.title,"minititle");
-        const miniTitle = UI.createTitleElement('Move to Start!', "minititle");
-        const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
-        web3Title.style.cursor = 'pointer';
-        const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
+async function createGameTitle(){
+    const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
+    const worldTitle = UI.createTitleElement(world.title,"minititle");
+    const miniTitle = UI.createTitleElement('Move to Start!', "minititle");
+    const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
+    web3Title.style.cursor = 'pointer';
+    const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
-        const challengeTitle = UI.createTitleElement(``, "minititle");
+    const challengeTitle = UI.createTitleElement(``, "minititle");
+
+    const miniplayerButton = createButton(player, 0.4);
+    const miniworldButton = createButton(world, 0.4);
+    const miniabilityButton = createButton(ability,0.4);
+    todaysContainer.appendChild(challengeTitle);
+    todaysContainer.appendChild(miniplayerButton);
+    todaysContainer.appendChild(miniabilityButton);
+    todaysContainer.appendChild(miniworldButton);
+
+    const aboutTitle = UI.createTitleElement('\n⚙️\n', "subtitle");
+
+    addContainerUI('top-container', [mainTitle,worldTitle]);
+
+    //  addContainerUI('BR-container', [aboutTitle]);
+    // aboutTitle.style.cursor = 'pointer';
+    // aboutTitle.onclick = () => {
+    //      canMove = false;
+    //     isPaused = true;
+    //     hideUI();
+    //     createSettingsMenu();
+    // }
+
+    // const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
+
+    let remainingBlocks = await getBlocksUntilNextWinner(); 
+    const loadingText = UI.createTitleElement(`Next challenge starts in ${remainingBlocks} blocks`, "minititle");
     
-        const miniplayerButton = createButton(player, 0.4);
-        const miniworldButton = createButton(world, 0.4);
-        const miniabilityButton = createButton(ability,0.4);
-        todaysContainer.appendChild(challengeTitle);
-        todaysContainer.appendChild(miniplayerButton);
-        todaysContainer.appendChild(miniabilityButton);
-        todaysContainer.appendChild(miniworldButton);
-
-        const aboutTitle = UI.createTitleElement('\n⚙️\n', "subtitle");
-
-       addContainerUI('top-container', [mainTitle,worldTitle]);
-
-       //  addContainerUI('BR-container', [aboutTitle]);
-       // aboutTitle.style.cursor = 'pointer';
-       // aboutTitle.onclick = () => {
-       //      canMove = false;
-       //     isPaused = true;
-       //     hideUI();
-       //     createSettingsMenu();
-       // }
-
-      // const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
-
-       let remainingBlocks = await getBlocksUntilNextWinner(); 
-       const loadingText = UI.createTitleElement(`Next challenge starts in ${remainingBlocks} blocks`, "minititle");
-       
-       function updateRemainingBlocks() {
-           if (remainingBlocks > 0) {
-               remainingBlocks--;
-               loadingText.innerText = `New challenge starts in ${remainingBlocks} blocks`;
-            } else {
-               clearInterval(blockCountdownInterval);
-               loadingText.innerText = "Challenge started!";
-           }
-       }
-       const blockCountdownInterval = setInterval(updateRemainingBlocks, 13000);
-       
-        addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
-        todaysContainer.style.cursor = 'pointer';
-        todaysContainer.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            createInfoMenu();
+    function updateRemainingBlocks() {
+        if (remainingBlocks > 0) {
+            remainingBlocks--;
+            loadingText.innerText = `New challenge starts in ${remainingBlocks} blocks`;
+        } else {
+            clearInterval(blockCountdownInterval);
+            loadingText.innerText = "Challenge started!";
         }
+    }
+    const blockCountdownInterval = setInterval(updateRemainingBlocks, 13000);
+    
+    addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
+    todaysContainer.style.cursor = 'pointer';
+    todaysContainer.onclick = () => {
+        canMove = false;
+        isPaused = true;
+        hideUI();
+        createInfoMenu();
+    }
 
-        addContainerUI('TR-container', [web3Title]).onclick = async () => {
-            if (window.ethereum) {
-                await window.ethereum.enable(); 
-                contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-                try {
-                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await web3.eth.getAccounts();
-                    const address = accounts[0];
+    addContainerUI('TR-container', [web3Title]).onclick = async () => {
+        if (window.ethereum) {
+            await window.ethereum.enable(); 
+            contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                const address = accounts[0];
 
-                    localStorage.setItem('metaMaskAddress', address); 
+                localStorage.setItem('metaMaskAddress', address); 
 
-                    let challenges = await getAllChallenges(); 
+                let challenges = await getAllChallenges(); 
 
-                    const userChallenge = challenges.find(challenge => 
-                        challenge.challenger.toLowerCase() === address.toLowerCase()
-                    );
-                    if (userChallenge) {
-                        spinningStates = {
-                            class: false,
-                            ability: false,
-                            world: false
-                        };
-                        userChallenge.parameters = validateParameters(userChallenge.parameters);
-                        selectedPlayer = playerTypes[userChallenge.parameters[0]];
-                        selectedAbility = abilityTypes[userChallenge.parameters[1]];
-                        selectedWorld = worldTypes[userChallenge.parameters[2]];
-                    }
-
-                    hideUI();
-                    setTimeout(() => {
-                        canMove = false;
-                        isPaused = true;
-                        showMainMenu();
-                    }, 1100);
-        
-                } catch (error) {
-                    if (error.code === 4902) {
-                        alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
-                    } else {
-                        console.error('Error:', error);
-                    }
+                const userChallenge = challenges.find(challenge => 
+                    challenge.challenger.toLowerCase() === address.toLowerCase()
+                );
+                if (userChallenge) {
+                    spinningStates = {
+                        class: false,
+                        ability: false,
+                        world: false
+                    };
+                    userChallenge.parameters = validateParameters(userChallenge.parameters);
+                    selectedPlayer = playerTypes[userChallenge.parameters[0]];
+                    selectedAbility = abilityTypes[userChallenge.parameters[1]];
+                    selectedWorld = worldTypes[userChallenge.parameters[2]];
                 }
-            } else {
-                alert('MetaMask is not installed. Please install it to use this feature.');
-            }
-        };
-    };
-    createGameTitle();
-/*---------------------------------------------------------------------------
-                                Challenge Editor
----------------------------------------------------------------------------*/
-let selectedPlayer = playerTypes[0]; // previously Selected Class, LOAD FROM CA
-let selectedAbility = abilityTypes[0]; // previously Selected ability, LOAD FROM CA
-let selectedWorld = worldTypes[0]; // previously Selected world, LOAD FROM CA 
 
-function showToC() {
-        const termsAndConditions = UI.createTitleElement('\nTerms and conditions:\n\n', "title")
-        const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze \nor stop the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events\n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
-        const popUpContainer = UI.createContainer(['choose-menu-container']);;
-        popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-
-        popUpContainer.appendChild(termsAndConditions); 
-        popUpContainer.appendChild(disclaimer); 
-
-        const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks.\n\n -the dev\n\n', "subtitle")
-        popUpContainer.appendChild(support); 
-
-        addContainerUI('center-container', [popUpContainer]);
-        const goBackButton = UI.createTitleContainer('\n - Continue -',  "subtitle");
-        goBackButton.style.cursor = 'pointer';
-        popUpContainer.appendChild(goBackButton);
-            goBackButton.onclick = () => {
-                canMove = true;
                 hideUI();
-                showMainMenu();
-            };
+                setTimeout(() => {
+                    canMove = false;
+                    isPaused = true;
+                    showMainMenu();
+                }, 1100);
+    
+            } catch (error) {
+                if (error.code === 4902) {
+                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                } else {
+                    console.error('Error:', error);
+                }
+            }
+        } else {
+            alert('MetaMask is not installed. Please install it to use this feature.');
+        }
     };
-   // showToC();
+};
+createGameTitle();
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
@@ -2448,10 +2413,31 @@ async function showMainMenu(address) {
     createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
     createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
     createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
-    }
+}
+function showToC() {
+    const termsAndConditions = UI.createTitleElement('\nTerms and conditions:\n\n', "title")
+    const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily freeze \nor stop the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events\n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
+    const popUpContainer = UI.createContainer(['choose-menu-container']);;
+    popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
 
+    popUpContainer.appendChild(termsAndConditions); 
+    popUpContainer.appendChild(disclaimer); 
+
+    const support = UI.createTitleElement('\nYour challenges allow me develop full time! \nthanks.\n\n -the dev\n\n', "subtitle")
+    popUpContainer.appendChild(support); 
+
+    addContainerUI('center-container', [popUpContainer]);
+    const goBackButton = UI.createTitleContainer('\n - Continue -',  "subtitle");
+    goBackButton.style.cursor = 'pointer';
+    popUpContainer.appendChild(goBackButton);
+        goBackButton.onclick = () => {
+            canMove = true;
+            hideUI();
+            showMainMenu();
+        };
+};
 /*---------------------------------------------------------------------------
-                            In Game UI
+                                   In Game UI
 ---------------------------------------------------------------------------*/
 let challengeDisplay = UI.createTitleElement('', "minititle");
 function refreshDisplay() {
@@ -2750,7 +2736,7 @@ addContainerUI('center-container', [popUpContainer]);
     checkbox.addEventListener('change', saveSettings);
     });
 
-    }
+}
 
 async function createInfoMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
@@ -3000,7 +2986,7 @@ function showQueueTutorialMenu() {
     popUpContainer.appendChild(goBackButton);
 }
 /*---------------------------------------------------------------------------
-                                Smart Contract Functions 
+                                Smart Contract Calls Functions 
 ---------------------------------------------------------------------------*/
 
 async function getLatestWinner() {
@@ -3016,14 +3002,11 @@ async function getLatestWinner() {
 async function getLatestChallenges(count = 5) {
     try {
         const allChallenges = await contract.methods.getChallenges().call();
-
         if (allChallenges.length === 0) {
             console.log("No challenges available.");
             return [];
         }
-        
         const latestChallenges = allChallenges.slice(-count);
-
         console.log(`Latest ${count} Challenges:`, latestChallenges);
         return latestChallenges;
     } catch (error) {
@@ -3032,42 +3015,30 @@ async function getLatestChallenges(count = 5) {
     }
 }
 
-    // Example: Call the function and log the latest challenges
-    //getLatestChallenges().then(latestChallenges => {
-    //    latestChallenges.forEach((challenge, index) => {
-    //       console.log(`Challenge #${index + 1}:`);
-    //       console.log(`Challenger: ${challenge.challenger}`);
-    //       console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
-    //       console.log(`Parameters: ${challenge.parameters.join(", ")}`);
-    //   });
-    //});
-
-    async function getAllChallenges() {
-        try {
-            const allChallenges = await contract.methods.getChallenges().call();
-    
-            if (allChallenges.length === 0) {
-                console.log("No challenges available.");
-                return [];
-            }
-            return allChallenges;
-        } catch (error) {
-            console.error("Error fetching challenges:", error);
+async function getAllChallenges() {
+    try {
+        const allChallenges = await contract.methods.getChallenges().call();
+        if (allChallenges.length === 0) {
+            console.log("No challenges available.");
             return [];
         }
+        return allChallenges;
+    } catch (error) {
+        console.error("Error fetching challenges:", error);
+        return [];
     }
+}
 
-    async function getBlocksUntilNextWinner() {
-        try {
-            const blocksRemaining = await contract.methods.blocksUntilNextWinner().call();
-            console.log(`Blocks until next winner: ${blocksRemaining}`);
-            return parseInt(blocksRemaining, 10); // Convert string to integer
-        } catch (error) {
-            console.error("Error fetching blocks until next winner:", error);
-            return 0; // Default to 0 in case of an error
-        }
+async function getBlocksUntilNextWinner() {
+     try {
+        const blocksRemaining = await contract.methods.blocksUntilNextWinner().call();
+        console.log(`Blocks until next winner: ${blocksRemaining}`);
+        return parseInt(blocksRemaining, 10); // Convert string to integer
+    } catch (error) {
+        console.error("Error fetching blocks until next winner:", error);
+        return 0; // Default to 0 in case of an error
     }
-
+}
 /*---------------------------------------------------------------------------
                                  GAME OVER UI
 ---------------------------------------------------------------------------*/
@@ -3077,7 +3048,7 @@ function generateRandomHash() {
         .map(() => Math.floor(Math.random() * 256).toString(16).padStart(2, '0'))
         .join('');
 }
- //triggerGameOver();
+
 function triggerGameOver(notice,message ) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
 
@@ -3217,27 +3188,20 @@ window.addEventListener('load', async () => {
   }  
 
 });
-
-/*---------------------------------------------------------------------------
-                             GAMESTATE CONTROLLER  
----------------------------------------------------------------------------*/
-function resumeGame() {
-    if (isPaused) {
-        isPaused = false;
-    }
-    
-    if(isMainMenu){ 
-    world.resumeGame();
-    isMainMenu = false;
-    hideUI();
-    setTimeout(() => { refreshDisplay() }, 1050);
-    player.addAbility(new Ability(player, { ...ability}));
-    }
-}
-
 /*---------------------------------------------------------------------------
                             Main loop
 ---------------------------------------------------------------------------*/
+function resumeGame() {
+    if (isPaused) isPaused = false;
+
+    if(isMainMenu){ 
+        player.mesh.scale.set(2.5,2.5,2.5);
+        isMainMenu = false;
+        hideUI();
+        setTimeout(() => { refreshDisplay() }, 1050);
+        player.addAbility(new Ability(player, { ...ability}));
+    }
+}
 
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
