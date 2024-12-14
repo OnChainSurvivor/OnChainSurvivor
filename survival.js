@@ -989,7 +989,7 @@ const worldTypes = [
     }
 },
 {title: 'Electric Goldland',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Electric Gold.',
+    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Digital Gold.',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
     challenge:challengeTypes[0],
     material:new THREE.ShaderMaterial({
