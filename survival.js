@@ -1658,6 +1658,7 @@ function updatePlayerMovement() {
                 levels += 1
                 chooseAbility();
             }
+            //Todo: make these different powerups
            // chooseAbility();
            // randomAbility();
         }
