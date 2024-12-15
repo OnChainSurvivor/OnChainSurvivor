@@ -503,6 +503,7 @@ function validateParameters(params) {
     return params; // Return the validated parameters
 }
 
+//todo: Make this work from any chain i guess? 
 async function initweb3(){
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
