@@ -94,7 +94,7 @@ contract ChallengeQueue is Ownable {
     }
 
     function setChallengeRoundBlockInterval(uint256 _interval) public onlyOwner {
-        require(_interval >= 300, "Interval cannot be less than 1 hour");
+        require(_interval >= 50, "Interval cannot be less than 10 minutes");
         emit ChallengeIntervalUpdated(challengeRoundBlockInterval, _interval);
         challengeRoundBlockInterval = _interval;
     }
