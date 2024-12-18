@@ -24,7 +24,7 @@ contract ChallengeQueue is Ownable {
     event ChallengeIntervalUpdated(uint256 previousInterval, uint256 newInterval);
 
     function addChallenge(uint8[3] memory _parameters) public payable {
-        require(msg.value > 0.00035 ether, "Challenge amount must be greater than 0.00035 ether");
+        require(msg.value > 0.001 ether, "Challenge amount must be greater than 0.00035 ether");
 
         if (block.number >= lastWinnerBlock + challengeRoundBlockInterval && challenges.length > 0) {
              declareWinner();
