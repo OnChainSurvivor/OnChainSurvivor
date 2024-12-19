@@ -8,15 +8,5 @@ export const abilityTypes = [
         description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
         thumbnail: 'Media/Worlds/GOLDLAND.jpg',
         effect: [],
-    },
-    {title: "Digital Goldland 2",
-        description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
-        thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-        effect: [],
-    },
-    {title: "Digital Goldland 2",
-        description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) virtual gold.',
-        thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-        effect: [],
-    },
+    }
 ];
