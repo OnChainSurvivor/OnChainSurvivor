@@ -503,7 +503,7 @@ function validateParameters(params) {
     return params; // Return the validated parameters
 }
 
-//todo: Make this work from any chain i guess? 
+//todo: Make this work for any chain 
 async function initweb3(){
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
@@ -527,7 +527,7 @@ async function initweb3(){
     }
 }
 
-//todo: rework this, make it dual shooter
+//todo: rework this, make it dual shooter ( Directional arrows controls) 
 function createOrb(user) {
     const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.6, 16, 6),
