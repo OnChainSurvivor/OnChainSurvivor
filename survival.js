@@ -2056,7 +2056,7 @@ async function createGameTitle(){
     
             } catch (error) {
                 if (error.code === 4902) {
-                    alert('The Ethereum chain is not available in your MetaMask, please add it manually.');
+                    alert('The Ethereum Sepolia chain is not available in your MetaMask, please add it manually.');
                 } else {
                     console.error('Error:', error);
                 }
