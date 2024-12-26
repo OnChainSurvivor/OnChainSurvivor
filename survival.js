@@ -506,9 +506,31 @@ function validateParameters(params) {
 //todo: Make this work for any chain 
 async function initweb3(){
     if (window.ethereum) {
+        await window.ethereum.enable(); 
         web3 = new Web3(window.ethereum);
         contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
         try {
+            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await web3.eth.getAccounts();
+            const address = accounts[0];
+            localStorage.setItem('metaMaskAddress', address); 
+            let challenges = await getAllChallenges(); 
+            const userChallenge = challenges.find(challenge => 
+                challenge.challenger.toLowerCase() === address.toLowerCase()
+            );
+            if (userChallenge) {
+                spinningStates = {
+                    class: false,
+                    ability: false,
+                    world: false
+                };
+                userChallenge.parameters = validateParameters(userChallenge.parameters);
+                selectedPlayer = playerTypes[userChallenge.parameters[0]];
+                selectedAbility = abilityTypes[userChallenge.parameters[1]];
+                selectedWorld = worldTypes[userChallenge.parameters[2]];
+            }
+
             let winners = await getLatestWinner(); 
             let challenger = winners[winners.length - 1];
             challenger.parameters = validateParameters(challenger.parameters);
@@ -517,9 +539,14 @@ async function initweb3(){
             ability = abilityTypes[challenger.parameters[1]];
             player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
         } catch (error) {
+            if (error.code === 4902) {
+                alert('The Ethereum Sepolia chain is not available in your MetaMask, please add it manually.');
+            } else {
                 console.error('Error:', error);
+            }
         }
     } else {
+        alert('MetaMask is not installed. Please install it and load again.');
         world = worldTypes[0];
         world.setup(scene,camera,renderer);
         ability = abilityTypes[0];
@@ -2019,53 +2046,16 @@ async function createGameTitle(){
     }
 
     addContainerUI('TR-container', [web3Title]).onclick = async () => {
-        if (window.ethereum) {
-            await window.ethereum.enable(); 
-            contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                const address = accounts[0];
-
-                localStorage.setItem('metaMaskAddress', address); 
-
-                let challenges = await getAllChallenges(); 
-
-                const userChallenge = challenges.find(challenge => 
-                    challenge.challenger.toLowerCase() === address.toLowerCase()
-                );
-                if (userChallenge) {
-                    spinningStates = {
-                        class: false,
-                        ability: false,
-                        world: false
-                    };
-                    userChallenge.parameters = validateParameters(userChallenge.parameters);
-                    selectedPlayer = playerTypes[userChallenge.parameters[0]];
-                    selectedAbility = abilityTypes[userChallenge.parameters[1]];
-                    selectedWorld = worldTypes[userChallenge.parameters[2]];
-                }
-
-                hideUI();
-                setTimeout(() => {
-                    canMove = false;
-                    isPaused = true;
-                    showMainMenu();
-                }, 1100);
-    
-            } catch (error) {
-                if (error.code === 4902) {
-                    alert('The Ethereum Sepolia chain is not available in your MetaMask, please add it manually.');
-                } else {
-                    console.error('Error:', error);
-                }
-            }
-        } else {
-            alert('MetaMask is not installed. Please install it to use this feature.');
-        }
-    };
+        hideUI();
+        setTimeout(() => {
+            canMove = false;
+            isPaused = true;
+            showMainMenu();
+        }, 1100);
+    }
 };
+
+
 createGameTitle();
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
