@@ -408,6 +408,12 @@ const CONTRACT_ABI = [
   }
 ]
 
+let spinningStates = {
+    class: true,
+    ability: true,
+    world: true
+};
+
 import { keys, initiateJoystick } from './joystick.js';
 initiateJoystick();
 const uiContainers = [];
@@ -546,7 +552,7 @@ async function initweb3(){
             }
         }
     } else {
-        alert('MetaMask is not installed. Please install it and load again.');
+        alert('This is a web3 game, to enjoy the full experience Please install a web3 Wallet and load the game again!');
         world = worldTypes[0];
         world.setup(scene,camera,renderer);
         ability = abilityTypes[0];
@@ -1939,11 +1945,6 @@ function hideUI(){
     uiContainers.length = 0;
 }
 
-let spinningStates = {
-    class: true,
-    ability: true,
-    world: true
-};
 
 function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
     if (!spinningStates[category])
