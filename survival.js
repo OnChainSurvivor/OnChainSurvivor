@@ -502,11 +502,10 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 }
 
 function validateParameters(params) {
-    // Ensure parameters stay within valid bounds
     if (params[0] > 133) params[0] = 133; // Max index for playerTypes
     if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
-    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes (wraps back to default)
-    return params; // Return the validated parameters
+    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes 
+    return params; 
 }
 
 //todo: Make this work for any chain 
