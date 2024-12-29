@@ -508,7 +508,6 @@ function validateParameters(params) {
     return params; 
 }
 
-//todo: Make this work for any chain 
 async function initweb3(){
     if (window.ethereum) {
         await window.ethereum.enable(); 
