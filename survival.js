@@ -550,7 +550,7 @@ async function initweb3(){
             }
         }
     } else {
-        alert('This is a web3 game, to enjoy the full experience Please install a web3 Wallet and load the game again!');
+        alert('This is a web3 game, to enjoy the full experience install a web3 wallet and load the game again!');
         world = worldTypes[0];
         world.setup(scene,camera,renderer);
         ability = abilityTypes[0];
