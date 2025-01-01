@@ -2020,20 +2020,6 @@ async function createGameTitle(){
     // }
 
      const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
-
-   // let remainingBlocks = await getBlocksUntilNextWinner(); 
-    //const loadingText = UI.createTitleElement(`Next challenge starts in ${remainingBlocks} blocks`, "minititle");
-    
-    function updateRemainingBlocks() {
-        if (remainingBlocks > 0) {
-            remainingBlocks--;
-            loadingText.innerText = `New challenge starts in ${remainingBlocks} blocks`;
-        } else {
-            clearInterval(blockCountdownInterval);
-            loadingText.innerText = "Challenge started!";
-        }
-    }
-   // const blockCountdownInterval = setInterval(updateRemainingBlocks, 13000);
     
     addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
     todaysContainer.style.cursor = 'pointer';
