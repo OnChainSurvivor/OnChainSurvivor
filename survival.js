@@ -2025,7 +2025,7 @@ async function createGameTitle(){
     todaysContainer.style.cursor = 'pointer';
     todaysContainer.onclick = () => {
         canMove = false;
-        isPaused = true;
+        isPaused = true; 
         hideUI();
         createInfoMenu();
     }
