@@ -135,7 +135,7 @@ Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, desc
 Follow these steps to set up Onchain Survivor on your local machine:
 
 ### ⏱️Prerequisites⏱️
-- Currently tests should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient.
+- Currently it should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient. 
 
 ### 💿Installation💿
 - Download the client release and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
