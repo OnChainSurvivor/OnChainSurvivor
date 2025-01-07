@@ -162,7 +162,7 @@ This project license is currently [TBD].
 
 -   **Three js**: For the amazing engine ❤️.
 -   **Web3 js**: For simplifying blockchain interactions ❤️.
--   **OpenAI ChatGPT**: For making development great again ❤️.
+-   **OpenAI ChatGPT**: Best AI. For making development great again ❤️.
 -   **Microsoft Copilot**: Best Artist i've ever known ❤️.
 -   **Adobe Mixamo**: Best 3D Animator ❤️.
 -   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License.
