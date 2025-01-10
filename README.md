@@ -130,12 +130,13 @@ Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, desc
     SmartContract ->> Client: Update UI, Results
 ```
 
+### ⏱️Prerequisites⏱️
+- Currently it should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient.
+- a Web3 Wallet 
+
 ## 🚀Getting Started🚀 
 
-Follow these steps to set up Onchain Survivor on your local machine:
-
-### ⏱️Prerequisites⏱️
-- Currently it should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient. 
+Follow these steps to run Onchain Survivor on your browser:
 
 ### 💿Installation💿
 - Download the client, release and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
