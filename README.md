@@ -157,7 +157,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 
 ## 📜License📜 
 
-This project license is currently [TBD]. 
+This project license is  [TBD]. 
 
 ## 🙏 Acknowledgments ❤️
 
