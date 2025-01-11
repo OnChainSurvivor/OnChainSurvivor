@@ -139,7 +139,7 @@ Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, desc
 Follow these steps to run Onchain Survivor on your browser:
 
 ### 💿Installation💿
-- Download the client, release and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
+- Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
 
 I expect In the future the game will not need a server as I will take take to tidy the code.
 
