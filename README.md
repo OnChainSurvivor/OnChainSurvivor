@@ -74,7 +74,7 @@ This system ensures fairness by regularly refreshing the queue, preventing any o
 
 ### Phase 2: Multiple games, all using the same Challenge Queue!
 
-As additional game "templates"  or models are developed and integrated into the main client in the future, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! I figured it would be a very fun experience to set a challenge for my favorite game, and see what kind of challenge gets generated across different other games. However, specific design constraints must be maintained to ensure the games remain coherent with one another trought the challenges.
+As additional game "templates"  or models are developed and integrated into the main client, they will all operate on the same underlying smart contract for the challenge queue. This means setting a challenge for one game will simultaneously apply to multiple games! I figured it would be a very fun experience to set a challenge for my favorite game, and see what kind of challenge gets generated across different other games. However, specific design constraints must be maintained to ensure the games remain coherent with one another trought the challenges.
 
 ### Phase 3: User generated real time experiences, from locally run neural networks. 
 
