@@ -134,11 +134,7 @@ Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, desc
 - Currently it should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient.
 - a Web3 Wallet 
 
-## 🚀Getting Started🚀 
-
-Follow these steps to run Onchain Survivor on your browser:
-
-### 💿Installation💿
+## 🚀Getting Started🚀 & 💿Installation💿
 - Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
 
 I expect In the future the game will not need a server as I will take take to tidy the code.
@@ -157,7 +153,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 
 ## 📜License📜 
 
-This project license is  [TBD]. 
+This project license is [TBD]. 
 
 ## 🙏 Acknowledgments ❤️
 
