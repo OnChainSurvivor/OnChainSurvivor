@@ -4,7 +4,7 @@ Welcome to **OnChain Survivor** Official Repository ! Congratulations on making 
 
  🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
 
-## 🌟About the Project🌟
+## 🌟About Onchain Survivor🌟
 
 Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchains.
 
