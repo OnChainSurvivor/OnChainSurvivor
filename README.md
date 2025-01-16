@@ -80,24 +80,6 @@ As additional game "templates"  or models are developed and integrated into the 
 
 Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. for Onchain survivor, Challengers will be able to choose an style and the general gameplay, then using fast style transfer technology, it will adapt it into the main gameplay loop by re-rendering each frame in real time as it is being executed, allowing Challengers to "modify" the game as they desire using these technologies, and have all the others survivors enjoy it too at the same time. Onchain Survivor plans to eventually (Realistically a couple of years)  implement wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
 
-## 😈👺Onchain Survivor Dynamic Difficulty Scaling👺😈
-
-The *Onchain Survivor Dynamic Difficulty Scaling function* will be satisfying gameplay up until minute 30. We'll assume the difficulty increases exponentially until the end. Depending on several accounting factors related to both the Players $P$ and the blockchain $B$. Let  $D(t)$  be the difficulty at time  $t$.   The final difficulty can be modeled as:
-
-$D(t) = D_0 e^{kt} +α(Pavg​−P(t)+βB(t))$
-
-where:
-
--   $D0$  is the initial difficulty at  $t=0$,
--   $k$  is a constant that determines the rate of difficulty increase.
--   $α$  is a scaling factor for the performance adjustment,
--   $Pavg​$  is the average expected performance,
--   $P(t)$  is the player's performance at time  $t$.
-- $β$  is a scaling factor for the blockchain-derived difficulty,
-- $B(t)$  is the difficulty factor extracted from the latest blockchain block.
-
-Note:  Random difficulty factor $B(t)$ that is extracted from the latest block in the blockchain. The factor $B(t)$ could be based on various metrics from the blockchain, such as transaction volume, block size, or other relevant activities. The term $βB(t)$ allows the difficulty to adapt dynamically based on real-time blockchain data, adding an element of unpredictability and aligning with the decentralized nature of blockchain games. 
-
 ## Art Style 🎨 & Sound Design 🎵
 
 Any kind of submissions are welcomed as long as they are coherent!, theres no dead set art and musical style being planned in the long term, so even if current version is being made in 3D with basic music, with the usage of neural style transfer for rendering in real time and AI generatic music in the future will allow for different styles to be applied. 
@@ -113,8 +95,6 @@ A[Welcome Screen] --> D{Connect Wallet}
 D --> E[Set Challenge in queue]
 D --> G[Write run record]
 ```
-
-Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, descentralized  game that keeps the survivors honest cryptography! 
 
 ```mermaid
    sequenceDiagram
@@ -137,7 +117,7 @@ Overview design of onchain survivor, a peer-to-peer multiplayer, trustless, desc
 ## 🚀Getting Started🚀 & 💿Installation💿
 - Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
 
-I expect In the future the game will not need a server as I will take take to tidy the code.
+In the future ill aim for the game to not need a server nor internet based dependencies as code gets cleaner.
 
 A Web3 Wallet is required to participate in the ranks!
 
@@ -169,6 +149,7 @@ This project license is [TBD].
 
 Have questions? Feel free to reach out!
 
+-   **Telegram**: [@OnChainSurvivor] https://t.me/OnchainSurvivor
 -   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
 
-Thank you for visiting our repository! We hope you enjoy Onchain Survivor as much as we enjoy developing it. Happy surviving! 🌍🎮
+Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 🌍🎮
