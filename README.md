@@ -2,11 +2,11 @@
 
 Welcome to **OnChain Survivor** Official Repository ! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
 
- 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project.
+ 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project!
 
 ## 🌟About Onchain Survivor🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. Enjoy a dynamic and challenging survival experience set within the exciting world of blockchains.
+Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. 
 
 ## The problem & the solution: The Challenger system, Blockchain Integration 🔗 & Game Design 🏟️
 
@@ -20,7 +20,7 @@ flowchart TD
     C -->|Player Three prompt| F[Experience Z]
 ```
 
-Onchain survivors uses the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during a day (around 7200 ethereum blocks). This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This Rank based auction system with periodic reset model, also gives chances for all players who sent challenges in the queue to eventually be able to set the game for a day!
+Onchain survivors uses the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during x blocks. This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This auction based model, also gives chances for all players who sent challenges in the queue to eventually set the game for a day!
 
 ```mermaid
 flowchart LR
@@ -31,11 +31,11 @@ flowchart LR
 ```mermaid
 graph TD
     A[Challengers] -->|Add Challenges to modify the game| B{Challenge Queue}
-    B -->|Sorted by Ξ | C{Daily Ranked List}
+    B -->|Sorted by ether amount | C{Daily Ranked List}
     C --> D1[1st Place Challenge]
     C --> D2[2nd Place]
     C --> D12[3rd...100th... N Challenges]
-    D1 -->| Sets game state for a day | E[Wins,Goes to hall of challengers, others gain a rank]
+    D1 -->| Sets game state for x blocks | E[Wins,Goes to hall of challengers, others gain a rank]
     E -->| Bids to join queue | C
 ```
 
