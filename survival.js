@@ -422,8 +422,8 @@ const uiContainers = [];
 ---------------------------------------------------------------------------*/
 
 const dropItem = (position) => {
-    const expDropSuccess = Math.random() < (1 / 100);
-    if (expDropSuccess) {
+    //const expDropSuccess = Math.random() < (1 / 100);
+    //if (expDropSuccess) {
         const itemMaterial = world.material;
         const item = new THREE.Mesh(itemGeometry, itemMaterial);
         item.position.copy(position);
@@ -433,7 +433,7 @@ const dropItem = (position) => {
         scene.add(item);
         droppedItems.push(item);
         return;
-    }
+   // }
 };
 
 function createParticleEffect(position, color = 'green', particleCount = 50) {
@@ -561,7 +561,7 @@ async function initweb3(){
 //todo: rework this, make it dual shooter ( Directional arrows controls) 
 function createOrb(user) {
     const orb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.6, 16, 6),
+        new THREE.SphereGeometry(0.3, 16, 6),
         new THREE.MeshBasicMaterial({ color: 0xff0000 })
     );
 
@@ -1604,7 +1604,7 @@ await initweb3();
 player.health=  5;
 player.maxhealth= 5;
 player.movementspeed= 0.2;
-player.attackSpeed=  0.25;
+player.attackSpeed=  0.5;
 player.attackLTL=1000;
 player.attackPerSecond=0;
 player.influenceRadius=10;
@@ -2417,6 +2417,7 @@ function showToC() {
                                    In Game UI
 ---------------------------------------------------------------------------*/
 let challengeDisplay = UI.createTitleElement('', "minititle");
+
 function refreshDisplay() {
   let xpLoadingContainer = document.createElement('div');
     xpLoadingContainer.id = 'horizontalBarContainer';
@@ -2434,20 +2435,21 @@ function refreshDisplay() {
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(7, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
     const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, .25 );
+    const playerButton = createButton(player, .45 );
     const worldButton = createButton(world, .25 );
+    barGridContainer.appendChild(playerButton);
     barGridContainer.appendChild(hpBarContainer);
     barGridContainer.appendChild(xpLoadingContainer);
     
-    abilitiesContainer.appendChild(playerButton);
-    abilitiesContainer.appendChild(worldButton);
+   // abilitiesContainer.appendChild(playerButton);
+    //abilitiesContainer.appendChild(worldButton);
     
     player.abilities.forEach(ability => {
         const clonedAbility = { ...ability };
         abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
     });
 
-    addContainerUI('center-container', [barGridContainer]).onclick = () => {
+    addContainerUI('TL-container', [barGridContainer]).onclick = () => {
         canMove = false;
         isPaused = true;
         hideUI();
@@ -2461,6 +2463,7 @@ function refreshDisplay() {
         createPlayerInfoMenu();
     };
     const worldTitle = UI.createTitleElement(world.title, "minititle");
+
     addContainerUI('top-container',[worldTitle,challengeDisplay]).onclick = () => {
     };
     
