@@ -1689,10 +1689,9 @@ function updatePlayerMovement() {
                 player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
                 levels += 1
                 chooseAbility();
+                // randomAbility();
             }
-            //Todo: make these different powerups
-           // chooseAbility();
-           // randomAbility();
+           
         }
     }
         for (let i = 0; i < enemies.length; i++) {
