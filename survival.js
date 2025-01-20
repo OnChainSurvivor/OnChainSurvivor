@@ -1691,7 +1691,6 @@ function updatePlayerMovement() {
                 chooseAbility();
                 // randomAbility();
             }
-           
         }
     }
         for (let i = 0; i < enemies.length; i++) {
