@@ -3145,7 +3145,6 @@ window.addEventListener('load', async () => {
    // if (savedSettings) {
    //  const settings = JSON.parse(savedSettings);
    //   document.documentElement.style.setProperty('--image-filter', settings.theme);
-   //Set volume and other parameters once set  
    // }
 
     //Todo: Add contract loading functionality here, for better user experience
