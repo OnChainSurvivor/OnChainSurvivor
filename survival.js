@@ -1695,16 +1695,16 @@ function updatePlayerMovement() {
     }
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
-            if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
-               createParticleEffect(player.position, 'red', 5);  
-               player.takeDamage(1);  
-               hpBar.style.width = (player.health / player.maxhealth * 100) + '%';
-               if (player.health <= 0){
-                canMove= false;
-                isPaused=true;
-                hideUI();
-                setTimeout(() => { triggerGameOver("Liquidation notice",'Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n'); }, 1000);
-            } 
+                if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
+                createParticleEffect(player.position, 'red', 5);  
+                player.takeDamage(1);  
+                hpBar.style.width = (player.health / player.maxhealth * 100) + '%';
+                if (player.health <= 0){
+                    canMove= false;
+                    isPaused=true;
+                    hideUI();
+                    setTimeout(() => { triggerGameOver("Liquidation notice",'Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n'); }, 1000);
+                } 
             }
             lightObjects.forEach((lightObject) => {
                 if (!lightObject.boundingBox) return;
