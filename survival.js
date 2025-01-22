@@ -139,13 +139,8 @@ class Entity extends THREE.Object3D {
     die() {
         this.returnToPool(); 
         createParticleEffect(this.position);
-
-        //secrets+= 1; when secret enemy defeated
-        //bosses+= 1; when boss defeated
-        //liquidations += 1; when base enemy defeated
-        dropItem(this.position);
+        handleDeath(this.position);
         scene.remove(this);
-
         const index = scene.children.indexOf(this);
         if (index > -1) scene.children.splice(index, 1);
 
@@ -421,9 +416,15 @@ const uiContainers = [];
                               Utility Functions
 ---------------------------------------------------------------------------*/
 
-const dropItem = (position) => {
-    //const expDropSuccess = Math.random() < (1 / 100);
-    //if (expDropSuccess) {
+const handleDeath = (position) => {
+    //secrets+= 1; when secret enemy defeated
+    //bosses+= 1; when boss defeated
+    liquidations += 1; 
+    player.xp+=1;
+    experience += 1;
+    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
+    const expDropSuccess = Math.random() < (1 / 1000);
+    if (expDropSuccess) {
         const itemMaterial = world.material;
         const item = new THREE.Mesh(itemGeometry, itemMaterial);
         item.position.copy(position);
@@ -433,7 +434,7 @@ const dropItem = (position) => {
         scene.add(item);
         droppedItems.push(item);
         return;
-   // }
+    }
 };
 
 function createParticleEffect(position, color = 'green', particleCount = 50) {
@@ -581,7 +582,6 @@ function createOrb(user) {
             scene.remove(orb);
             const index = lightObjects.indexOf(orb);
             if (index > -1) lightObjects.splice(index, 1); 
-
             return;
         }
         orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
@@ -1611,7 +1611,7 @@ player.influenceRadius=10;
 player.xp= 0;
 player.range=15;
 player.evasion=0;
-player.xpToNextLevel=1;
+player.xpToNextLevel=3;
 player.level=0;
 
 const direction = new THREE.Vector3();
@@ -1680,18 +1680,19 @@ function updatePlayerMovement() {
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
             scene.remove(item);  
             droppedItems.splice(i, 1); 
-            player.xp += 1;
+            player.xp += 1000;
             experience += 1;
             xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
             createParticleEffect(player.position, 'gold', 50);  
-            if (player.xp >= player.xpToNextLevel) {
-                player.xp = 0;  
-                player.xpToNextLevel  =  player.xpToNextLevel + player.xpToNextLevel + player.xpToNextLevel ;  
-                levels += 1
-                chooseAbility();
-                // randomAbility();
-            }
         }
+    }
+
+    if (player.xp >= player.xpToNextLevel) {
+        player.xp = 0;  
+        player.xpToNextLevel  =  player.xpToNextLevel + (player.xpToNextLevel*2) ;  
+        levels += 1
+        chooseAbility();
+        // randomAbility();
     }
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
