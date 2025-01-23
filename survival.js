@@ -560,7 +560,7 @@ async function initweb3(){
 }
 
 //todo: rework this, make it dual shooter ( Directional arrows controls) 
-function createOrb(user) {
+function createOrb(user,target) {
     const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.3, 16, 6),
         new THREE.MeshBasicMaterial({ color: 0xff0000 })
@@ -572,7 +572,7 @@ function createOrb(user) {
     lightObjects.push(orb);
     scene.add(orb);
 
-    const shootDirection = new THREE.Vector3().subVectors(closeEnemy, user.position).normalize();
+    const shootDirection = new THREE.Vector3().subVectors(target, user.position).normalize();
     const shootSpeed = player.attackSpeed;
     const orbLifetime = player.attackLTL; 
     const startTime = Date.now();
@@ -633,7 +633,7 @@ const abilityEffects = {
         initialize: (user, ability) => {
             if (ability.veil) scene.remove(ability.veil); 
             const shieldMaterial = world.material;
-            const shieldGeometry = new THREE.SphereGeometry(2);
+            const shieldGeometry = new THREE.SphereGeometry(.1);
             const veil = new THREE.Mesh(shieldGeometry, shieldMaterial);
             veil.position.copy(user.position);
             scene.add(veil);
@@ -857,7 +857,7 @@ const abilityEffects = {
             const bot = ability.bot;
             if (bot.dropUpdateFrame++ % (60/ (1 + player.attackPerSecond)) === 0) { 
                 if (closeEnemy) {
-                    createOrb(bot);
+                    createOrb(bot,closeEnemy);
                 }
             }
         },
@@ -1663,18 +1663,15 @@ function updatePlayerMovement() {
 
     if (dropUpdateFrame++ % (60/ (1 +player.attackPerSecond)) === 0) { 
         if (closeEnemy) {
-            createOrb(player);
+            const shootDirection = new THREE.Vector3();
+            player.getWorldDirection(shootDirection);
+            const target = player.position.clone().add(shootDirection.multiplyScalar(player.range));
+            createOrb(player, target);
         }
     }
 
     for (let i = droppedItems.length - 1; i >= 0; i--) {
         const item = droppedItems[i];
-
-       // const directionToPlayer = new THREE.Vector3().subVectors(player.position, item.position).normalize();
-       // const distanceToPlayer = item.position.distanceTo(player.position);
-      //  const attractionSpeed = 0.15; 
-      //  if(distanceToPlayer<=player.influenceRadius)
-      //  item.position.add(directionToPlayer.multiplyScalar(attractionSpeed));
 
         item.boundingBox.setFromObject(item);
         if (player.boundingBox.intersectsBox(item.boundingBox)) {
@@ -1692,7 +1689,6 @@ function updatePlayerMovement() {
         player.xpToNextLevel  =  player.xpToNextLevel + (player.xpToNextLevel*2) ;  
         levels += 1
         chooseAbility();
-        // randomAbility();
     }
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];
@@ -1751,7 +1747,7 @@ function chooseAbility() {
         upgradeOptions.push(abilityToUpgrade);
         upgradableAbilities.splice(randomIndex, 1);
     }
-    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n Choose one ability.", "Upgrade");
+    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n", "Upgrade");
 }
 
 /*---------------------------------------------------------------------------
@@ -2422,14 +2418,14 @@ function refreshDisplay() {
     xpLoadingContainer.id = 'horizontalBarContainer';
     xpLoadingBar = document.createElement('div');
     xpLoadingBar.id = 'horizontalBar';
-    xpLoadingContainer.appendChild(xpLoadingBar);
+  //  xpLoadingContainer.appendChild(xpLoadingBar);
 
     let hpBarContainer = document.createElement('div');
     hpBarContainer.id = 'hpBarContainer';
     hpBar = document.createElement('div');
     hpBar.id = 'hpBar';
     hpBar.style.width =  (player.health / player.maxhealth * 100) + '%';
-    hpBarContainer.appendChild(hpBar);
+  //  hpBarContainer.appendChild(hpBar);
 
     const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(7, auto)' }); 
     const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
@@ -2437,8 +2433,8 @@ function refreshDisplay() {
     const playerButton = createButton(player, .45 );
     const worldButton = createButton(world, .25 );
     barGridContainer.appendChild(playerButton);
-    barGridContainer.appendChild(hpBarContainer);
-    barGridContainer.appendChild(xpLoadingContainer);
+   // barGridContainer.appendChild(hpBarContainer);
+   // barGridContainer.appendChild(xpLoadingContainer);
     
    //abilitiesContainer.appendChild(playerButton);
     //abilitiesContainer.appendChild(worldButton);
