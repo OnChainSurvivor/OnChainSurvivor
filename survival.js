@@ -559,7 +559,7 @@ async function initweb3(){
     }
 }
 
-//todo: rework this, make it dual shooter ( Directional arrows controls) 
+//todo: rework this, make it dual shooter 
 function createOrb(user,target) {
     const orb = new THREE.Mesh(
         new THREE.SphereGeometry(0.3, 16, 6),
