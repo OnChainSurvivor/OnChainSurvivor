@@ -82,6 +82,12 @@ export const abilityTypes = [
             "Swipe"
         ],
     },
+];
+
+
+/*---------------------------------------------------------------------------
+                              Future Abilities
+
 {
     title: "Code Refactor",
     description: "Rewrites and optimizes the Survivor's abilities, reducing their cooldowns.",
@@ -1350,4 +1356,7 @@ export const abilityTypes = [
     thumbnail: 'Media/Abilities/YELLOWPAPER.png',
     effect: [],
 },
+
+
 ];
+---------------------------------------------------------------------------*/
