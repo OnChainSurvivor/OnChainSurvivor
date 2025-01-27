@@ -1986,7 +1986,7 @@ function createRandomRunEffect(button, images, finalImageIndex, scale, category)
 async function createGameTitle(){
     const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
     const worldTitle = UI.createTitleElement(world.title,"minititle");
-    const miniTitle = UI.createTitleElement('Move to Start!', "minititle");
+    const miniTitle = UI.createTitleElement('0/1000 Cards Collected ', "minititle");
     const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
     web3Title.style.cursor = 'pointer';
     const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
@@ -1997,32 +1997,72 @@ async function createGameTitle(){
     const miniworldButton = createButton(world, 0.4);
     const miniabilityButton = createButton(ability,0.4);
     todaysContainer.appendChild(challengeTitle);
-    todaysContainer.appendChild(miniplayerButton);
-    todaysContainer.appendChild(miniabilityButton);
-    todaysContainer.appendChild(miniworldButton);
+
+    const classImages = playerTypes.map(player => player.thumbnail);
+    const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+    const worldImages = worldTypes.map(world => world.thumbnail);
+
+    const classContainer = document.createElement('div');
+    const classSubTitle = UI.createTitleElement('🏆',  "subtitle")
+    const classButton = createButton(selectedPlayer,  0.65);
+    classContainer.appendChild(classSubTitle);
+    classContainer.appendChild(classButton);
+
+    const abilitiesSubTitle = UI.createTitleElement('⚔️', "subtitle");
+    const abilitiesButton = createButton(selectedAbility,  0.65);
+    const classAbilityContainer = document.createElement('div');
+    classAbilityContainer.appendChild(abilitiesSubTitle);
+    classAbilityContainer.appendChild(abilitiesButton);
+
+    const worldSubTitle = UI.createTitleElement('🔗', "subtitle");
+    const worldButton = createButton(selectedWorld, 0.65);
+    const worldContainer = document.createElement('div');
+    worldContainer.appendChild(worldSubTitle);
+    worldContainer.appendChild(worldButton);
+
+    const menuButtonsContainer =  UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
+    menuButtonsContainer.appendChild(classContainer);
+    menuButtonsContainer.appendChild(classAbilityContainer);
+    menuButtonsContainer.appendChild(worldContainer);
+
+    menuButtonsContainer.childNodes.forEach(button => {
+        button.addEventListener('click', () => {
+            hideUI();
+            canMove=false;
+            if(button === classContainer)  createChooseMenu(playerTypes, "\n Survivor Album 🏆","Survivor");
+            if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nAbility Album ⚔️","Ability");
+            if(button === worldContainer) createChooseMenu(worldTypes, "\nChain Album 🔗","World");
+            });
+    });
+
+    createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
+    createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
+    createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
+
+    todaysContainer.appendChild(menuButtonsContainer);
 
     const aboutTitle = UI.createTitleElement('\n⚙️\n', "subtitle");
 
     addContainerUI('top-container', [mainTitle,worldTitle]);
 
-    //  addContainerUI('BR-container', [aboutTitle]);
-    // aboutTitle.style.cursor = 'pointer';
-    // aboutTitle.onclick = () => {
-    //      canMove = false;
-    //     isPaused = true;
-    //     hideUI();
-    //     createSettingsMenu();
-    // }
+    addContainerUI('BR-container', [aboutTitle]);
+     aboutTitle.style.cursor = 'pointer';
+     aboutTitle.onclick = () => {
+          canMove = false;
+         isPaused = true;
+         hideUI();
+         createSettingsMenu();
+     }
 
-     const loadingText = UI.createTitleElement(`New Challenges everyday!`, "minititle");
+     const loadingText = UI.createTitleElement(`Terms and Conditions`, "minititle");
     
     addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
     todaysContainer.style.cursor = 'pointer';
-    todaysContainer.onclick = () => {
+    loadingText.onclick = () => {
         canMove = false;
         isPaused = true; 
         hideUI();
-        createInfoMenu();
+        showToC();
     }
 
     addContainerUI('TR-container', [web3Title]).onclick = async () => {
@@ -2079,15 +2119,15 @@ function handleEntitySelection(entity, type) {
     } else if (type === "Survivor")  {
         selectedPlayer = entity;
         hideUI();
-        showMainMenu();
+        createGameTitle();//showMainMenu();
     } else if (type === "Ability") {
         selectedAbility = entity;
         hideUI();
-        showMainMenu();
+        createGameTitle();//showMainMenu();
     } else if (type === "World") {
         selectedWorld = entity;
         hideUI();
-        showMainMenu();
+        createGameTitle();//showMainMenu();
     }
 }
 /*---------------------------------------------------------------------------
@@ -2405,7 +2445,7 @@ function showToC() {
         goBackButton.onclick = () => {
             canMove = true;
             hideUI();
-            showMainMenu();
+            createGameTitle();
         };
 };
 /*---------------------------------------------------------------------------
