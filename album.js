@@ -1,161 +1,22 @@
 /*---------------------------------------------------------------------------
                               Classes
 ---------------------------------------------------------------------------*/
-class Ability {
-    constructor(user, config) {
-        Object.assign(this, { user, ...config });
-    }
-
-    update() {
-        this.effect.forEach(effectName => {
-            abilityEffects[effectName].update?.(this.user, this);
-        });
-    }
-
-    activate(){
-        this.effect.forEach(effectName => {
-            abilityEffects[effectName].initialize?.(this.user, this);
-          });
-    }
-
-    terminate(){
-        this.effects.forEach(effectName => {
-            abilityEffects[effectName].terminate?.(this.user, this);
-          });
-    }
-}
-
 class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
         Object.assign(this, config);
         this.position.copy(position);
         this.abilities = [];
-
-        const modelKey = 'SurvivorModel';
-
-        if (objectMap.has(modelKey) && objectPool.length > 0) {
-            this.initEntity(objectPool.pop());
-        } else if (objectMap.has(modelKey)) {
-            this.loadMoreObjects(modelKey, 50, () => this.initEntity(objectPool.pop()));
-        } else {
-            loader.load('Media/Models/Survivor.fbx', (object) => {
-                const serializedObject = object.toJSON();
-                objectMap.set(modelKey, serializedObject);
-                this.loadMoreObjects(modelKey, initialPoolSize, () => this.initEntity(object));
-            });
-        }
-
-        this.initAbilities(config.abilities);
     }
 
-    loadMoreObjects(modelKey, count, callback) {
-        for (let index = 0; index < count; index++) {
-            const newObject = new THREE.ObjectLoader().parse(objectMap.get(modelKey));
-            objectPool.push(newObject);
-        }
-        if (callback) callback();
-    }
 
-    returnToPool() {
-        if (this.mesh) {
-            this.mesh.mixer.stopAllAction();
-            scene.remove(this); 
-            objectPool.push(this.mesh);
-        }
-    }
+  
 
-    initEntity(object) {
-        object.traverse((child) => {
-            if (child.isMesh) {
-                child.material = world.playerMaterial;
-            }
-        });
-        this.mesh = object;
-        this.add(this.mesh);
-        this.mesh.mixer = new THREE.AnimationMixer(this.mesh);
-        this.entityRunAnimation = this.mesh.mixer.clipAction(object.animations[0]);
-        this.entityRunAnimation.play();
-        this.entityRunAnimation.setLoop(THREE.LoopRepeat);
-        this.mesh.scale.set(3, 3, 3);
-        this.updateMatrixWorld(true);
-        this.mesh.updateMatrixWorld(true);
-        this.boundingBox = new THREE.Box3().setFromObject(this.mesh);
-        scene.add(this);
-    }
 
-    updateMesh() {
-        if (this.mesh) {
-            this.mesh.mixer.update(0.01);
-            this.boundingBox.setFromObject(this.mesh);
-        }
-    }
-
-    initAbilities(entityAbilities) {
-        entityAbilities.forEach(entityAbility => {
-            const ability = abilityTypes.find(type => type.title === entityAbility.title);
-            this.addAbility(new Ability(this, { ...ability }));
-        });
-    }
-
-    getUpgradableAbilities() {
-        return abilityTypes.filter(ability => {
-            const isActive = this.abilities.some(pa => pa.title === ability.title);
-            return !isActive;
-        });
-    }
-
-    addAbility(ability) {
-        this.abilities.push(ability);
-        ability.activate();
-    }
-
-    activateAbility(index) {
-        this.abilities[index]?.activate();
-    }
-
-    updateAbilities() {
-        this.abilities.forEach(ability => ability.update());
-    }
-
-    takeDamage(amount) {
-        if (this.evasionCooldown) return;
-        if (this.inmuneCooldown) return;
-
-        const evasionSuccess = Math.random() < (this.evasion / 100);
-        if (evasionSuccess) {
-            this.evasionCooldown = true;
-            setTimeout(() => this.evasionCooldown = false, 1000);
-            return;
-        }
-
-        this.health -= amount;
-        this.inmuneCooldown = true;
-        setTimeout(() => this.inmuneCooldown = false, 500);
-
-        if (this.health <= 0) this.die();
-    }
-
-    die() {
-        this.returnToPool(); 
-        createParticleEffect(this.position);
-        handleDeath(this.position);
-        scene.remove(this);
-        const index = scene.children.indexOf(this);
-        if (index > -1) scene.children.splice(index, 1);
-
-        const enemyIndex = enemies.indexOf(this);
-        if (enemyIndex > -1) enemies.splice(enemyIndex, 1);
-    }
 }
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
 ---------------------------------------------------------------------------*/
-const loader = new THREE.FBXLoader();
-const objectMap = new Map(); 
-const objectPool = [];
-const initialPoolSize = 200;
-
 let player;
 let ability;
 let world;
@@ -179,7 +40,6 @@ let xpLoadingBar, hpBar;
 
 const droppedItems = []; 
 const lightObjects = [];
-const itemGeometry = new THREE.SphereGeometry(0.35, 32, 32);
 
 const enemies = [];
 const playerPositionDifference = new THREE.Vector3();  
@@ -409,34 +269,10 @@ let spinningStates = {
     world: true
 };
 
-import { keys, initiateJoystick } from './joystick.js';
-initiateJoystick();
 const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-
-const handleDeath = (position) => {
-    //secrets+= 1; when secret enemy defeated
-    //bosses+= 1; when boss defeated
-    liquidations += 1; 
-    player.xp+=1;
-    experience += 1;
-    xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-    const expDropSuccess = Math.random() < (1 / 1000);
-    if (expDropSuccess) {
-        const itemMaterial = world.material;
-        const item = new THREE.Mesh(itemGeometry, itemMaterial);
-        item.position.copy(position);
-        item.position.y=1;
-        item.boundingBox = new THREE.Box3().setFromObject(item);
-        createParticleEffect(position, 'gold', 10);  
-        scene.add(item);
-        droppedItems.push(item);
-        return;
-    }
-};
-
 function createParticleEffect(position, color = 'green', particleCount = 50) {
     const particleGeometry = new THREE.BufferGeometry();
     const vertices = new Float32Array(particleCount * 9);
@@ -501,14 +337,6 @@ function createParticleEffect(position, color = 'green', particleCount = 50) {
 
     animateParticles();
 }
-
-function validateParameters(params) {
-    if (params[0] > 133) params[0] = 133; // Max index for playerTypes
-    if (params[1] > 9) params[1] = 9;     // Max index for abilityTypes
-    if (params[2] > 1) params[2] = 0;     // Max index for worldTypes 
-    return params; 
-}
-
 async function initweb3(){
     if (window.ethereum) {
         await window.ethereum.enable(); 
@@ -524,22 +352,10 @@ async function initweb3(){
             const userChallenge = challenges.find(challenge => 
                 challenge.challenger.toLowerCase() === address.toLowerCase()
             );
-            if (userChallenge) {
-                spinningStates = {
-                    class: false,
-                    ability: false,
-                    world: false
-                };
-                userChallenge.parameters = validateParameters(userChallenge.parameters);
-                selectedPlayer = playerTypes[userChallenge.parameters[0]];
-                selectedAbility = abilityTypes[userChallenge.parameters[1]];
-                selectedWorld = worldTypes[userChallenge.parameters[2]];
-            }
 
             let winners = await getLatestWinner(); 
             let challenger = winners[winners.length - 1];
-            challenger.parameters = validateParameters(challenger.parameters);
-            world = worldTypes[challenger.parameters[2]];
+     world = worldTypes[challenger.parameters[2]];
             world.setup(scene,camera,renderer);
             ability = abilityTypes[challenger.parameters[1]];
             player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
@@ -551,7 +367,6 @@ async function initweb3(){
             }
         }
     } else {
-        alert('This is a web3 game, to enjoy the full experience install a web3 wallet and load the game again!');
         world = worldTypes[0];
         world.setup(scene,camera,renderer);
         ability = abilityTypes[0];
@@ -559,311 +374,10 @@ async function initweb3(){
     }
 }
 
-//todo: rework this, make it dual shooter 
-function createOrb(user,target) {
-    const orb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.3, 16, 6),
-        new THREE.MeshBasicMaterial({ color: 0xff0000 })
-    );
-
-    orb.position.copy(user.position); 
-    orb.updateMatrixWorld(true);
-    orb.boundingBox = new THREE.Box3().setFromObject(orb);
-    lightObjects.push(orb);
-    scene.add(orb);
-
-    const shootDirection = new THREE.Vector3().subVectors(target, user.position).normalize();
-    const shootSpeed = player.attackSpeed;
-    const orbLifetime = player.attackLTL; 
-    const startTime = Date.now();
-
-    function updateOrb() {
-        if (Date.now() - startTime > orbLifetime) {
-            scene.remove(orb);
-            const index = lightObjects.indexOf(orb);
-            if (index > -1) lightObjects.splice(index, 1); 
-            return;
-        }
-        orb.position.add(shootDirection.clone().multiplyScalar(shootSpeed));
-        requestAnimationFrame(updateOrb);
-        orb.boundingBox.setFromObject(orb);
-    }
-    updateOrb();
-}
 /*---------------------------------------------------------------------------
                                Ability Blueprints
 ---------------------------------------------------------------------------*/
 import { abilityTypes } from './abilityTypes.js';
-
-const abilityEffects = {
-"Create Bot": {
-    initialize: (user, ability) => {
-        const bot = new THREE.Mesh(
-            new THREE.SphereGeometry(0.6, 16, 6),
-            world.material
-        );
-        bot.position.copy(user.position);
-        bot.updateMatrixWorld(true);
-        bot.boundingBox = new THREE.Box3().setFromObject(bot);
-        lightObjects.push(bot);
-        scene.add(bot);
-        bot.target = null;
-        bot.orbitRadius = 2;
-        bot.orbitSpeed = 0.01;
-        bot.homingSpeed = 0.5;
-        bot.maxDistance= 20;
-        bot.offsetAmount= 5;
-        bot.followSpeed= 0.1;
-        ability.bot = bot;
-        ability.lastHitTime = 0;
-    },
-    update: (user, ability) => {
-        ability.bot.updateMatrixWorld(true);
-    },
-    terminate: (user, ability) => {
-        scene.remove(ability.bot);
-        const index = lightObjects.indexOf(ability.bot);
-        if (index > -1) {
-            lightObjects.splice(index, 1);
-        }
-        delete ability.bot;
-    },
-},
-"Create Veil": {
-        initialize: (user, ability) => {
-            if (ability.veil) scene.remove(ability.veil); 
-            const shieldMaterial = world.material;
-            const shieldGeometry = new THREE.SphereGeometry(.1);
-            const veil = new THREE.Mesh(shieldGeometry, shieldMaterial);
-            veil.position.copy(user.position);
-            scene.add(veil);
-            ability.veil = veil; 
-        },
-        update: (user, ability) => {
-            if (ability.veil) {
-                ability.veil.position.set(user.position.x, user.position.y + 2, user.position.z);
-            }
-        },
-        terminate: (user, ability) => {
-            if (ability.veil) {
-                scene.remove(ability.veil);
-                delete ability.veil;
-            }
-        }
-},
-"Create Trail Step": {  
-        initialize: (user, ability) => {
-            const trailStep = new THREE.Mesh(new THREE.BoxGeometry(1, .5, 1), world.material);
-            trailStep.position.copy(user.position);
-
-            scene.add(trailStep);
-            trailStep.boundingBox = new THREE.Box3().setFromObject(trailStep);
-
-            if (!ability.trailBullets) {
-                ability.trailBullets = [];
-            }
-             ability.trailBullets.push(trailStep);
-             lightObjects.push(trailStep);
-        },
-},
-"Manage Trail": { 
-        initialize: (user, ability) => {
-            ability.lastTrailTime = 0;
-            ability.maxTrailLength = 7;
-        },
-
-        update: (user, ability) => {
-            if ((Date.now() - ability.lastTrailTime > 400)) {
-                ability.lastTrailTime = Date.now();
-                abilityEffects["Create Trail Step"].initialize(user, ability); 
-                if (ability.trailBullets.length > ability.maxTrailLength) {
-                    const oldestBullet = ability.trailBullets.shift();
-                    scene.remove(oldestBullet);
-                    const index = lightObjects.indexOf(oldestBullet);
-                    if (index > -1) lightObjects.splice(index, 1);
-                }
-            }
-
-        },
-        terminate: (user, ability) => {
-            ability.trailBullets.forEach(trailStep => {
-                scene.remove(trailStep);
-                const index = lightObjects.indexOf(trailStep);
-                if (index > -1) lightObjects.splice(index, 1);
-            });
-            delete ability.trailBullets;
-        }
-},
-"Scalp": {
-    update: (user, ability) => {
-        const bot = ability.bot;
-        if (!bot) return;
-        if (closeEnemy) {
-            bot.target = closeEnemy;
-            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize();
-            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
-            bot.boundingBox.setFromObject(bot);
-        } else {
-            bot.target = null;
-        }
-    },
-},
-"Swipe": {
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            time = Date.now() * bot.orbitSpeed;
-            bot.position.set(
-                user.position.x + Math.cos(time) * bot.orbitRadius,
-                user.position.y+1.5,
-                //user.position.z + Math.sin(time) * bot.orbitRadius
-            );
-            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize();
-            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
-            bot.boundingBox.setFromObject(bot);
-        },
-},
-"Swarm": {
-    update: (user, ability) => {
-        const bot = ability.bot;
-        if (!bot) return;
-        time = Date.now();
-        const forwardOffset = Math.sin(time * 0.001) * bot.offsetAmount; 
-        const targetX = user.position.x + forwardOffset;  
-        const targetZ = user.position.z; 
-        const distanceFromPlayer = Math.sqrt(
-            Math.pow(targetX + bot.position.x, 2) + 
-            Math.pow(targetZ + bot.position.z, 2)
-        );
-        if (distanceFromPlayer > bot.maxDistance) {
-            const direction = new THREE.Vector3(
-                targetX - bot.position.x,
-                0, 
-                targetZ - bot.position.z
-            ).normalize();
-        
-            bot.position.add(direction.multiplyScalar(bot.followSpeed * distanceFromPlayer));
-        } else {
-            bot.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), bot.followSpeed);
-        }
-        bot.boundingBox.setFromObject(bot);
-    },
-},
-"EvasionUP": {
-        initialize: (user, ability) => {
-            user.evasion += 50; 
-            ability.initialEvasion = user.evasion;  
-        },
-        terminate: (user, ability) => {
-            if (ability.initialEvasion !== undefined) { 
-                user.evasion = ability.initialEvasion - 50; 
-                delete ability.initialEvasion; 
-            }
-
-        }
-},
-"Orbit": {
-        // should be orbitRadius= 10;
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            const time = Date.now() * bot.orbitSpeed; 
-            bot.position.set(
-                user.position.x + Math.cos(time) * bot.orbitRadius,
-                user.position.y + 1.5,
-                user.position.z + Math.sin(time) * bot.orbitRadius 
-            );
-            const direction = new THREE.Vector3().subVectors(closeEnemy, bot.position).normalize(); 
-            bot.position.add(direction.multiplyScalar(bot.homingSpeed));
-            bot.boundingBox.setFromObject(bot);
-        },
-},
-"Follow Close": {
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            const time = Date.now();
-            const forwardOffset = Math.sin(time * 0.001) * bot.offsetAmount;
-            const targetX = user.position.x + forwardOffset;
-            const targetZ = user.position.z;
-            bot.position.lerp(new THREE.Vector3(targetX, user.position.y + 2, targetZ), bot.followSpeed);
-            bot.boundingBox.setFromObject(bot);
-        },
-},
-"Follow Far": {
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            const distanceX = bot.position.x - user.position.x;
-            const distanceZ = bot.position.z - user.position.z;
-            const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
-            if (distance > bot.maxDistance) {
-                const scale = bot.maxDistance / distance;  
-                bot.position.x = user.position.x + distanceX * scale;
-                bot.position.z = user.position.z + distanceZ * scale;
-            } else {
-                bot.position.set(
-                    user.position.x + distanceX,
-                    user.position.y + 2, 
-                    user.position.z + distanceZ
-                );
-            }
-            bot.boundingBox.setFromObject(bot);
-        },
-},
-"Frontrun": {
-        initialize: (user, ability) => {
-            ability.previousPosition = new THREE.Vector3().copy(user.position);
-        },
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            const currentPosition = new THREE.Vector3().copy(user.position);
-            const playerDirection = new THREE.Vector3().subVectors(currentPosition, ability.previousPosition).normalize();
-            const newOrbPosition = new THREE.Vector3(
-                user.position.x + playerDirection.x * user.range,
-                user.position.y + 2,
-                user.position.z + playerDirection.z * user.range
-            );
-            bot.position.lerp(newOrbPosition, 0.1);  
-            bot.boundingBox.setFromObject(bot);
-            ability.previousPosition.copy(currentPosition);
-        },
-
-},
-"Elevate":{
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot) return;
-            bot.position.y = user.position.y + 15;
-        }
-},
-"Point Laser": {
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (!bot && !closeEnemy) return;  
-            scene.remove(bot.beam);
-            const testBeamGeometry = new THREE.BufferGeometry().setFromPoints([bot.position.clone(), closeEnemy]);
-            bot.beam = new THREE.Line(testBeamGeometry, new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 }),);
-            bot.beam.boundingBox = new THREE.Box3().setFromObject(bot.beam);
-            scene.add(bot.beam);
-        },
-},
-"Shoot Closest Enemy": {
-        initialize: (user, ability) => {
-          ability.bot.dropUpdateFrame = 0;  
-        },
-        update: (user, ability) => {
-            const bot = ability.bot;
-            if (bot.dropUpdateFrame++ % (60/ (1 + player.attackPerSecond)) === 0) { 
-                if (closeEnemy) {
-                    createOrb(bot,closeEnemy);
-                }
-            }
-        },
-},
-}
-
 /*---------------------------------------------------------------------------
                               Survivors Blueprint
 ---------------------------------------------------------------------------*/
@@ -880,53 +394,7 @@ const enemyTypes = [{
     abilities: [],
 }
 ];
-/*---------------------------------------------------------------------------
-                              Challenges Blueprints
----------------------------------------------------------------------------*/
-const challengeTypes = [{
-    title:"Timer",
-    target: 300,
-    status: null,
-    initialize(){
-    this.countdown = this.target * 60;
-    },
-    update(){
-        this.countdown--;
-        time++
-        if(this.countdown<=0){
-            isPaused=true;  
-            canMove= false;
-            hideUI();
-            setTimeout(() => { triggerGameOver("Survivor Notice","Dear Survivor, we proudly inform that you beat \n the challenge and this run is completed.\n\n "); }, 1000);
-            return;
-        }
-        const seconds = Math.floor(this.countdown / 60);
-        const mseconds = this.countdown % 60;
-        challengeDisplay.innerText = `${seconds}:${mseconds < 10 ? '0' : ''}${mseconds}`;
-        
-    },
-},
-{
-    title:"Eliminate",
-    target: null,
-},
-{
-    title:"Collect",
-    target:null,
-},
-{
-    title:"Find",
-    target:null,
-},
-{
-    title:"Collect",
-    target:null,
-},
-{
-    title:"Level",
-    target:null,
-},
-];
+
 /*---------------------------------------------------------------------------
                               Worlds Blueprints
 ---------------------------------------------------------------------------*/
@@ -934,7 +402,6 @@ const worldTypes = [
 {title: 'The Dark Forest',
     description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
-    challenge:challengeTypes[0],
     material:new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0.0 }
@@ -1003,7 +470,6 @@ const worldTypes = [
     texturePath:'Media/Textures/ENVTEXTURE.png' ,
     components: ["BloomEnvironment","Octahedron", "MiniOctahedron","NeonGrid"],
     setup: function(scene, camera, renderer) {
-        this.challenge.initialize();
         document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
         this.components.forEach(componentName => {
             worldComponents[componentName].initialize?.(this, scene, camera, renderer);
@@ -1023,7 +489,6 @@ const worldTypes = [
 {title: 'Electric Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Digital Gold.',
     thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    challenge:challengeTypes[0],
     material:new THREE.ShaderMaterial({
         uniforms: {
             time: { value: 0.0 }
@@ -1092,7 +557,6 @@ const worldTypes = [
     texturePath:'Media/Textures/ENVTEXTURE.png' ,
     components: ["BloomEnvironment","Sphere","GoldenGrid"],
     setup: function(scene, camera, renderer) {
-        this.challenge.initialize();
         document.documentElement.style.setProperty('--image-filter', 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)');
         this.components.forEach(componentName => {
             worldComponents[componentName].initialize?.(this, scene, camera, renderer);
@@ -1986,16 +1450,13 @@ function createRandomRunEffect(button, images, finalImageIndex, scale, category)
 async function createGameTitle(){
     const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
     const worldTitle = UI.createTitleElement(world.title,"minititle");
-    const miniTitle = UI.createTitleElement('0/1000 Cards Collected ', "minititle");
+    const miniTitle = UI.createTitleElement('0 cards collected ', "minititle");
     const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
     web3Title.style.cursor = 'pointer';
     const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
     const challengeTitle = UI.createTitleElement(``, "minititle");
 
-    const miniplayerButton = createButton(player, 0.4);
-    const miniworldButton = createButton(world, 0.4);
-    const miniabilityButton = createButton(ability,0.4);
     todaysContainer.appendChild(challengeTitle);
 
     const classImages = playerTypes.map(player => player.thumbnail);
@@ -2003,18 +1464,18 @@ async function createGameTitle(){
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
-    const classSubTitle = UI.createTitleElement('🏆',  "subtitle")
+    const classSubTitle = UI.createTitleElement('Album 🏆',  "subtitle")
     const classButton = createButton(selectedPlayer,  0.65);
     classContainer.appendChild(classSubTitle);
     classContainer.appendChild(classButton);
 
-    const abilitiesSubTitle = UI.createTitleElement('⚔️', "subtitle");
+    const abilitiesSubTitle = UI.createTitleElement('Rules ⚔️', "subtitle");
     const abilitiesButton = createButton(selectedAbility,  0.65);
     const classAbilityContainer = document.createElement('div');
     classAbilityContainer.appendChild(abilitiesSubTitle);
     classAbilityContainer.appendChild(abilitiesButton);
 
-    const worldSubTitle = UI.createTitleElement('🔗', "subtitle");
+    const worldSubTitle = UI.createTitleElement(' 🔗', "subtitle");
     const worldButton = createButton(selectedWorld, 0.65);
     const worldContainer = document.createElement('div');
     worldContainer.appendChild(worldSubTitle);
@@ -2054,7 +1515,7 @@ async function createGameTitle(){
          createSettingsMenu();
      }
 
-     const loadingText = UI.createTitleElement(`Terms and Conditions`, "minititle");
+     const loadingText = UI.createTitleElement(`2025 - Terms and Conditions`, "minititle");
     
     addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
     todaysContainer.style.cursor = 'pointer';
@@ -2075,22 +1536,10 @@ async function createGameTitle(){
     }
 };
 
-
 createGameTitle();
 /*---------------------------------------------------------------------------
                         Generic Choose Menu
 ---------------------------------------------------------------------------*/
-function createInput(type, attributes = {}) {
-    const input = document.createElement('input');
-    input.type = type; 
-
-    for (const [key, value] of Object.entries(attributes)) {
-        input.setAttribute(key, value);
-    }
-    input.classList.add('rainbow-input'); 
-    input.classList.add('subtitle'); 
-    return input;
-}
 
 function createChooseMenu(entityList, text, type) {
     const popUpContainer = UI.createContainer(['choose-menu-container']);;
@@ -2133,299 +1582,7 @@ function handleEntitySelection(entity, type) {
 /*---------------------------------------------------------------------------
                                     WEB3 Options  Menu
 ---------------------------------------------------------------------------*/
-async function showMainMenu(address) {
-    canMove=false;
-    let challenges = await getAllChallenges(); 
 
-    const subTitleLogout = UI.createTitleElement('♢\nLog Out\n♢', "subtitle");
-    subTitleLogout.style.cursor = 'pointer';
-    subTitleLogout.onclick = () => {
-        canMove=true;
-        localStorage.removeItem('metaMaskAddress');
-        hideUI();
-        createGameTitle();
-    };
-
-    const checkRanks = UI.createTitleElement('\nTop 5 \nChallengers',  "title")
-    const loadingContainer = document.createElement('div');
-    loadingContainer.classList.add('loading-container'); 
-    const loadingBar = document.createElement('div');
-    loadingBar.classList.add('loading-bar');
-    const loadingText =  UI.createTitleElement('', "subtitle");
-    loadingText.style.cursor = 'pointer';
-        loadingText.onclick = () => {
-           canMove = false;
-           isPaused = true;
-           hideUI();
-           showQueueTutorialMenu();
-        };
-        loadingContainer.appendChild(loadingBar);
-        function updateLoadingBar(currentAmount) {
-           const goal = 7200; 
-           const percentage = ((goal - currentAmount) / goal) * 100;
-           loadingBar.style.width = percentage + '%';
-           loadingText.innerText = `\n Next Challenge starts in ${currentAmount} blocks! ⓘ`;
-           loadingText.classList.add('rainbow-text'); 
-        }
-        async function simulateLoading() {
-           try {
-               const realBlocksRemaining = await getBlocksUntilNextWinner();
-               const goal = 7200;
-       
-               let displayedAmount = goal; 
-               const decrement = 111;
-       
-               const loadingInterval = setInterval(() => {
-                   if (displayedAmount <= realBlocksRemaining) {
-                       displayedAmount = realBlocksRemaining; 
-                       clearInterval(loadingInterval);
-                   } else {
-                       displayedAmount -= decrement; 
-                       if (displayedAmount < realBlocksRemaining) {
-                           displayedAmount = realBlocksRemaining; 
-                       }
-                       updateLoadingBar(displayedAmount);
-                   }
-               }, 50);
-           } catch (error) {
-               console.error("Error in simulateLoading:", error);
-           }
-        }
-
-        const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
-        topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',"subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',"subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',"subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ', "subtitle"));
-        topChallengerContainer.appendChild(UI.createTitleElement('\nΞ\nEther ', "subtitle"));
-
-        getLatestChallenges().then(latestChallenges => {
-            let buttonSize= 0.6
-            latestChallenges.forEach((challenge, index) => {
-                let parameters = challenge.parameters;
-                parameters = validateParameters(parameters);
-                topChallengerContainer.appendChild(UI.createTitleElement(`${index + 1}°`,   "subtitle"));
-                topChallengerContainer.appendChild(createButton(playerTypes[parameters[0]], buttonSize));
-                topChallengerContainer.appendChild(createButton(abilityTypes[parameters[1]], buttonSize ));
-                topChallengerContainer.appendChild(createButton(worldTypes[parameters[2]], buttonSize ));
-                topChallengerContainer.appendChild(UI.createTitleElement(`${web3.utils.fromWei(challenge.amount, "ether")}`,   "subtitle"));
-               
-                console.log(`Challenger: ${challenge.challenger}`);
-                console.log(`Amount: ${web3.utils.fromWei(challenge.amount, "ether")} ETH`);
-                buttonSize-=0.1;
-           });
-        });
-
-        const buttons = topChallengerContainer.querySelectorAll('button');
-        buttons.forEach(button => {
-          button.style.cursor = 'default';
-        });
-
-        const yourChallenge = UI.createTitleElement('\nYour challenge\n\n', "title")
-
-        const disclaimer = UI.createTitleElement('\nBy sending a challenge, you agree \nour Terms and Conditions ⓘ\n \n', "subtitle")
-        disclaimer.style.cursor = 'pointer';
-        disclaimer.onclick = () => {
-            canMove = false;
-            isPaused = true;
-            hideUI();
-            showToC();
-        };
-
-    const hallreportContainer = UI.createContainer(['abilities-grid']); 
-
-    const hallOfChallengersButton = createButton({
-        title: "Hall of Challengers ",
-        description: "Allows you to verify previous official Challengers.",
-        thumbnail: 'Media/Abilities/CHALLENGERS.png',
-        effect(user) { 
-            this.update = () => {} 
-        },
-    }, 1);
-
-    hallOfChallengersButton.onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        showQueueTutorialMenu();
-    };
-     const hallOfSurvivorsButton = createButton({
-         title: "Hall of Survivors",
-         description: "Allows you to verify previous official Survivors. ",
-         thumbnail: 'Media/Abilities/HALL.png',
-         effect(user) { 
-             this.update = () => {} 
-         },
-     }, 1);
-
-     hallOfSurvivorsButton.onclick = () => {
-         hideUI();
-         showQueueTutorialMenu();
-     };
-
-     const transparencyReportButton = createButton({
-         title: "Transparency Report",
-         description: "Fun. Decentralization and transparency. View the transparency report in real time.",
-         thumbnail: 'Media/Abilities/LAW.png',
-         effect(user) { 
-             this.update = () => {} 
-         },
-     }, 1);
-     transparencyReportButton.onclick = () => {
-         hideUI();
-         showTransparencyReport();
-     };
-
-     const challengeQueueButton = createButton({
-        title: "Challenge Queue",
-        description: "Allows you to check the full Challenge Queue.",
-        thumbnail: 'Media/Abilities/CHALLENGEQUEUE.png',
-        effect(user) { 
-            this.update = () => {} 
-        },
-    }, 1);
-    challengeQueueButton.onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        showQueueTutorialMenu();
-    };
-
-        const madeInButton = UI.createTitleContainer('\n Made in 2024 ❤️Ξ', "subtitle");
-
-        const popUpContainer = UI.createContainer(['choose-menu-container']);;
-        popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-
-         const classImages = playerTypes.map(player => player.thumbnail);
-         const abilityImages = abilityTypes.map(ability => ability.thumbnail);
-         const worldImages = worldTypes.map(world => world.thumbnail);
-     
-         const classContainer = document.createElement('div');
-         const classSubTitle = UI.createTitleElement('🏆',  "subtitle")
-         const classButton = createButton(selectedPlayer,  0.65);
-         classContainer.appendChild(classSubTitle);
-         classContainer.appendChild(classButton);
-
-         const abilitiesSubTitle = UI.createTitleElement('⚔️', "subtitle");
-         const abilitiesButton = createButton(selectedAbility,  0.65);
-         const classAbilityContainer = document.createElement('div');
-         classAbilityContainer.appendChild(abilitiesSubTitle);
-         classAbilityContainer.appendChild(abilitiesButton);
-
-         const worldSubTitle = UI.createTitleElement('🔗', "subtitle");
-         const worldButton = createButton(selectedWorld, 0.65);
-         const worldContainer = document.createElement('div');
-         worldContainer.appendChild(worldSubTitle);
-         worldContainer.appendChild(worldButton);
-
-         const menuButtonsContainer =  UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
-         menuButtonsContainer.appendChild(classContainer);
-         menuButtonsContainer.appendChild(classAbilityContainer);
-         menuButtonsContainer.appendChild(worldContainer);
-
-         menuButtonsContainer.childNodes.forEach(button => {
-             button.addEventListener('click', () => {
-                 hideUI();
-                 canMove=false;
-                 if(button === classContainer)  createChooseMenu(playerTypes, "\nChoose a Survivor 🏆","Survivor");
-                 if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nChoose an Ability ⚔️","Ability");
-                 if(button === worldContainer) createChooseMenu(worldTypes, "\nChoose a Chain 🔗","World");
-                 });
-         });
-
-
-         const inputContainer = document.createElement('div');
-         const amountInput = createInput('number', { 
-            placeholder: 'Add min. 0.001Ξ', 
-            id: 'amountInput', 
-            step: '0.001', 
-            min: '0'      
-        });
-        inputContainer.appendChild(amountInput);
-        const etherRank = UI.createTitleElement('Loading...', "subtitle");
-        const submitButton = document.createElement('button'); 
-        submitButton.classList.add('rainbow-button'); 
-        submitButton.classList.add('subtitle'); 
-        submitButton.innerText = 'Agree & Send';
-
-    let recordedRank = null; 
-
-    async function updateEtherRank() {
-        const sponsorValue = amountInput.value || '0.00'; 
-        const sponsorWei = web3.utils.toWei(sponsorValue, "ether"); 
-        const accounts = await web3.eth.getAccounts();
-        const userAddress = accounts[0]; 
-        const userChallenge = challenges.find(challenge => 
-            challenge.challenger.toLowerCase() === userAddress.toLowerCase()
-        );
-        let totalWei = BigInt(sponsorWei); 
-        if (userChallenge) totalWei += BigInt(userChallenge.amount); 
-
-        let newRankPosition = challenges.findIndex(challenge => BigInt(challenge.amount) <= totalWei) + 1;
-        if (newRankPosition === 0) newRankPosition = challenges.length + 1;
-        if (recordedRank === null) recordedRank = newRankPosition;
-        const rankedUp = newRankPosition < recordedRank;
-    
-        if (userChallenge) {
-            const userChallengeEther = web3.utils.fromWei(userChallenge.amount, "ether");
-            etherRank.innerText = `Total: ${(parseFloat(userChallengeEther) + parseFloat(sponsorValue)).toFixed(3)}Ξ, Rank: ${newRankPosition} ${rankedUp ? '▲' : ''}`;
-        } else {
-            etherRank.innerText = `${parseFloat(sponsorValue).toFixed(3)}Ξ, Rank: ${newRankPosition} ${rankedUp ? '▲' : ''}`;
-        }
-        recordedRank = newRankPosition;
-    };
-    updateEtherRank();
-    amountInput.addEventListener('input', updateEtherRank);
-
-    submitButton.addEventListener("click", async () => {
-        const parameters = [playerTypes.indexOf(selectedPlayer),abilityTypes.indexOf(selectedAbility), worldTypes.indexOf(selectedWorld)]; 
-        const etherAmount = amountInput.value || "0.001"; 
-        const value = Web3.utils.toWei(etherAmount, "ether"); 
-            try {
-                etherRank.innerText = 'Waiting tx...'
-                const accounts = await web3.eth.getAccounts();
-                const sender = accounts[0]; 
-                await contract.methods.addChallenge(parameters).send({
-                    from: sender,
-                    value: value,
-                });
-                hideUI();
-                showMainMenu();
-            } catch (error) {
-                etherRank.innerText = 'Error sending challenge. Try Again'
-                console.error("Error sending challenge:", error);
-                alert("Failed to send challenge. Try again.");
-            }
-    });
-
-    popUpContainer.appendChild(yourChallenge);
-    popUpContainer.appendChild(menuButtonsContainer); 
-    popUpContainer.appendChild(etherRank);
-    popUpContainer.appendChild(disclaimer);
-    popUpContainer.appendChild(inputContainer); 
-    popUpContainer.appendChild(submitButton); 
-
-    popUpContainer.appendChild(checkRanks);
-    popUpContainer.appendChild(loadingText);
-    popUpContainer.appendChild(loadingContainer);
-    popUpContainer.appendChild(topChallengerContainer);
-
-    popUpContainer.appendChild(madeInButton);
-
-   // hallreportContainer.appendChild(hallOfChallengersButton);
-   // hallreportContainer.appendChild(hallOfSurvivorsButton);
-   // hallreportContainer.appendChild(transparencyReportButton);
-   // hallreportContainer.appendChild(challengeQueueButton);
-    popUpContainer.appendChild(hallreportContainer);
-
-    addContainerUI('center-container', [popUpContainer]);
-    addContainerUI('TR-container', [subTitleLogout]);
-    simulateLoading(); 
-
-    createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
-    createRandomRunEffect(abilitiesButton, abilityImages, 0,  0.6 , "ability");
-    createRandomRunEffect(worldButton, worldImages, 0,  0.6, "world");
-}
 function showToC() {
     const termsAndConditions = UI.createTitleElement('\nTerms and conditions:\n\n', "title")
     const disclaimer = UI.createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily over-ride \n the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events, \n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
@@ -2869,312 +2026,8 @@ addContainerUI('center-container', [popUpContainer]);
     popUpContainer.appendChild(goBackButton);
 }
 
-function showQueueTutorialMenu() {
-    const popUpContainer = UI.createContainer(['choose-menu-container']);;
-
-    const titleButton = UI.createTitleContainer('\nWelcome\n Challenger!', "subtitle");
-    popUpContainer.appendChild(titleButton);
-
-    const aboutButton = UI.createTitleElement(' \nEvery day (7152 Ξ blocks) the game morphs \n  according to the #1 rank Challenger in the queue, \n Setting the Character, Ability &  Chain for a day! \n\n Queue Example:',   "subtitle");
-    popUpContainer.appendChild(aboutButton);
-
-    const topChallengerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-    topChallengerContainer.appendChild(UI.createTitleElement('\n#\nRank',  "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n🏆\nClass',  "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n⚔️\nSkill ',  "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('\n🔗\nChain ',  "subtitle"));
-    topChallengerContainer.appendChild(UI.createTitleElement('1°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[1], .6));
-    topChallengerContainer.appendChild(createButton(abilityTypes[3], .6 ));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .6 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('2°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[1], .5));
-    topChallengerContainer.appendChild(createButton(abilityTypes[6], .5 ));
-    topChallengerContainer.appendChild(createButton(worldTypes[1], .5 ));
-    topChallengerContainer.appendChild(UI.createTitleElement('3°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[3], .4));
-    topChallengerContainer.appendChild(createButton(abilityTypes[9], .4));
-    topChallengerContainer.appendChild(createButton(worldTypes[1], .4));
-    topChallengerContainer.appendChild(UI.createTitleElement('4°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[3], .3));
-    topChallengerContainer.appendChild(createButton(abilityTypes[4], .3));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .3));
-    topChallengerContainer.appendChild(UI.createTitleElement('5°',   "subtitle"));
-    topChallengerContainer.appendChild(createButton(playerTypes[0], .2));
-    topChallengerContainer.appendChild(createButton(abilityTypes[5], .2));
-    topChallengerContainer.appendChild(createButton(worldTypes[0], .2));
-
-    popUpContainer.appendChild(topChallengerContainer);
-
-    const rankingText = UI.createTitleElement('\n The #1 rank Challenger gets recorded in the \n Hall of Challengers, and all the others   rank up \n as queue clears, eventually ranking #1!\n\n Queue Progress (Example):\n\n',   "subtitle");
-    popUpContainer.appendChild(rankingText);
-
-    const topbidContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(5, auto)' });
-    topbidContainer.appendChild(UI.createTitleElement('# Address',   "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('🏆',   "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('⚔️',   "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('🔗',   "subtitle"));
-    topbidContainer.appendChild(UI.createTitleElement('Next day',   "subtitle"));
-
-    topbidContainer.appendChild(UI.createTitleElement('#1 0x...e2',   "subtitle"));
-    topbidContainer.appendChild(createButton(playerTypes[0], .33));
-    topbidContainer.appendChild(createButton(abilityTypes[3], .33 ));
-    topbidContainer.appendChild(createButton(worldTypes[0], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('Morphs\nthe game',   "subtitle"));
-
-    topbidContainer.appendChild(UI.createTitleElement('#2 0x...2a',   "subtitle"));
-    topbidContainer.appendChild(createButton(playerTypes[1], .33));
-    topbidContainer.appendChild(createButton(abilityTypes[6], .33 ));
-    topbidContainer.appendChild(createButton(worldTypes[1], .33 ));
-    topbidContainer.appendChild(UI.createTitleElement('to #1▲',   "subtitle"));
-
-    topbidContainer.appendChild(UI.createTitleElement('#3 0x...3d',   "subtitle"));
-    topbidContainer.appendChild(createButton(playerTypes[0], .33));
-    topbidContainer.appendChild(createButton(abilityTypes[9], .33));
-    topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('to #2▲',   "subtitle"));
-
-    topbidContainer.appendChild(UI.createTitleElement('#4 0x...21',   "subtitle"));
-    topbidContainer.appendChild(createButton(playerTypes[0], .33));
-    topbidContainer.appendChild(createButton(abilityTypes[9], .33));
-    topbidContainer.appendChild(createButton(worldTypes[1], .33));
-    topbidContainer.appendChild(UI.createTitleElement('to #3▲',   "subtitle"));
-    popUpContainer.appendChild(topbidContainer);
-
-    const sponsorText = UI.createTitleElement('\nChallengers can add any Ξ amount to \n accumulate until they get the first rank,\nKeep in mind challenges cannot be cancelled! \n\n Setting a Challenge (Example)',   "subtitle");
-    popUpContainer.appendChild(sponsorText);
- 
-    const classContainer = document.createElement('div');
-    const classSubTitle = UI.createTitleElement('\n🏆 ',  "subtitle");
-    const classButton = createButton(player,  0.6 );
-    classContainer.appendChild(classSubTitle);
-    classContainer.appendChild(classButton);
-
-    const abilitiesSubTitle = UI.createTitleElement('\n⚔️',  "subtitle");
-    const abilitiesButton = createButton(ability,  0.6 );
-    const classAbilityContainer = document.createElement('div');
-    classAbilityContainer.appendChild(abilitiesSubTitle);
-    classAbilityContainer.appendChild(abilitiesButton);
-
-    const worldSubTitle = UI.createTitleElement('\n🔗',  "subtitle");
-    const worldButton = createButton(world,  0.6 );
-    const worldContainer = document.createElement('div');
-    worldContainer.appendChild(worldSubTitle);
-    worldContainer.appendChild(worldButton);
-
-    const galleryButtonsContainer = UI.createContainer([], { display: 'flex',justifyContent: 'center' });
-    galleryButtonsContainer.appendChild(classContainer);
-    galleryButtonsContainer.appendChild(classAbilityContainer);
-    galleryButtonsContainer.appendChild(worldContainer);
-
-    popUpContainer.appendChild(galleryButtonsContainer);
-
-    const inputContainer = document.createElement('div');
-    const amountInput = createInput('number', { placeholder: '0.01Ξ, Rank: 8', id: 'amountInput' });
-    const submitButton = document.createElement('button'); 
-    submitButton.classList.add('rainbow-button'); 
-    submitButton.classList.add('subtitle'); 
-    submitButton.innerText = 'Added';
-    amountInput.disabled = true;
-    inputContainer.appendChild(amountInput);
-    inputContainer.appendChild(submitButton); 
-
-    popUpContainer.appendChild(inputContainer);
-
-    const disclaimerText = UI.createTitleElement('\n To set your own challenge, select a Survivor,\nAbility, Chain and send any amount of Ξ.\nYour challenge will be added in the Queue!\n\n    -the dev (@onchainsurvivor)',   "subtitle");
-    popUpContainer.appendChild(disclaimerText);
-
-    const buttons = popUpContainer.querySelectorAll('button');
-    buttons.forEach(button => {
-      button.style.cursor = 'default';
-    });
-    const goBackButton = UI.createTitleContainer('\n- Continue -', "subtitle");
-    goBackButton.style.cursor = 'pointer';
-
-    addContainerUI('center-container', [popUpContainer]);
-    goBackButton.onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        showMainMenu();
-    };
-    popUpContainer.appendChild(goBackButton);
-}
 /*---------------------------------------------------------------------------
-                                Smart Contract Calls Functions 
----------------------------------------------------------------------------*/
-
-async function getLatestWinner() {
-    try {
-        const pastWinners = await contract.methods.getPastWinners().call();
-        return pastWinners;
-    } catch (error) {
-        console.error("Error fetching the latest winner:", error);
-        return null;
-    }
-}
-
-async function getLatestChallenges(count = 5) {
-    try {
-        const allChallenges = await contract.methods.getChallenges().call();
-        if (allChallenges.length === 0) {
-            console.log("No challenges available.");
-            return [];
-        }
-        const latestChallenges = allChallenges.slice(-count);
-        console.log(`Latest ${count} Challenges:`, latestChallenges);
-        return latestChallenges;
-    } catch (error) {
-        console.error("Error fetching challenges:", error);
-        return [];
-    }
-}
-
-async function getAllChallenges() {
-    try {
-        const allChallenges = await contract.methods.getChallenges().call();
-        if (allChallenges.length === 0) {
-            console.log("No challenges available.");
-            return [];
-        }
-        return allChallenges;
-    } catch (error) {
-        console.error("Error fetching challenges:", error);
-        return [];
-    }
-}
-
-async function getBlocksUntilNextWinner() {
-     try {
-        const blocksRemaining = await contract.methods.blocksUntilNextWinner().call();
-        console.log(`Blocks until next winner: ${blocksRemaining}`);
-        return parseInt(blocksRemaining, 10); // Convert string to integer
-    } catch (error) {
-        console.error("Error fetching blocks until next winner:", error);
-        return 0; // Default to 0 in case of an error
-    }
-}
-/*---------------------------------------------------------------------------
-                                 GAME OVER UI
----------------------------------------------------------------------------*/
-//Dummy hash until I decide on scoring!
-function generateRandomHash() {
-    return [...Array(16)] 
-        .map(() => Math.floor(Math.random() * 256).toString(16).padStart(2, '0'))
-        .join('');
-}
-
-function triggerGameOver(notice,message ) {
-    const popUpContainer = UI.createContainer(['choose-menu-container']);
-
-    const titleContainer = UI.createTitleContainer('\n[Onchain Survivor]\n'+ notice );
-    popUpContainer.appendChild(titleContainer);
-
-    const imgContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const img = document.createElement('img');
-    img.src = 'Media/Abilities/DEAR.png';
-    img.style.width = '360px';
-    img.style.height = '180px';
-    img.classList.add('filter');
-    imgContainer.appendChild(img);
-    popUpContainer.appendChild(imgContainer);
-    const liquidatedTitle = UI.createTitleElement(message,"subtitle");
-    popUpContainer.appendChild(liquidatedTitle);
-
-    const optionsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
-    const inscribeButton = createButton({
-        title: "Inscribe Records (SOON)",
-        description: 'In the future, you will be able to Save your final score in the Hall of Survivors.',
-        thumbnail: 'Media/Abilities/RECORD.png',
-        effect(user) { 
-            this.update = () => {} 
-        },
-    },1);
-    inscribeButton.onclick = () => {
-      //  location.reload(true);
-    };
-    const tryAgainButton = createButton({
-        title: "Try Again",
-        description: 'Survivors never give up. Run it back turbo.',
-        thumbnail: 'Media/Abilities/TRYAGAIN.png',
-        effect(user) { 
-            this.update = () => {} 
-        },
-    },1);
-    tryAgainButton.onclick = () => {
-        location.reload(true);
-    };
-
-    optionsContainer.appendChild(inscribeButton)
-    optionsContainer.appendChild(tryAgainButton)
-    popUpContainer.appendChild(optionsContainer);
-
-    const randomHash = generateRandomHash();
-
-    const scoreTitle = UI.createTitleElement('\n Run Score\n\n',"title");
-    popUpContainer.appendChild(scoreTitle);
-
-    const recordsContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' }); 
-    const playerButton = createButton(player, .5 );
-    const worldButton = createButton(world, .5 );
-    recordsContainer.appendChild(playerButton);
-    recordsContainer.appendChild(worldButton);
-    player.abilities.forEach(ability => {
-        const clonedAbility = { ...ability };
-        const  abilButton = createButton(clonedAbility, .5 );
-        recordsContainer.appendChild(abilButton);
-    });
-
-    popUpContainer.appendChild(recordsContainer);
-
-    const recordsTextContainer = UI.createContainer(['abilities-grid']);
-    const timeScoreTitle = UI.createTitleElement('\nTime',"subtitle");
-    const timeScore = UI.createTitleElement("\n"+time,"subtitle");
-    recordsTextContainer.appendChild(timeScoreTitle);
-    recordsTextContainer.appendChild(timeScore);
-
-    const liquidationScoreTitle = UI.createTitleElement('Liquidations',"subtitle");
-    const liquidationScore = UI.createTitleElement(liquidations,"subtitle");
-    recordsTextContainer.appendChild(liquidationScoreTitle);
-    recordsTextContainer.appendChild(liquidationScore);
-
-    const expScoreTitle = UI.createTitleElement('Experience',"subtitle");
-    const expScore = UI.createTitleElement(experience,"subtitle");
-    recordsTextContainer.appendChild(expScoreTitle);
-    recordsTextContainer.appendChild(expScore);
-
-    const distanceScoreTitle = UI.createTitleElement('Distance',"subtitle");
-    const distanceScore = UI.createTitleElement(distance,"subtitle");
-    recordsTextContainer.appendChild(distanceScoreTitle);
-    recordsTextContainer.appendChild(distanceScore);
-
-    const levelScoreTitle = UI.createTitleElement('Lvls',"subtitle");
-    const levelScore = UI.createTitleElement(levels,"subtitle");
-    recordsTextContainer.appendChild(levelScoreTitle);
-    recordsTextContainer.appendChild(levelScore);
-
-    const secretsScoreTitle = UI.createTitleElement('Secrets',"subtitle");
-    const secretsScore = UI.createTitleElement(secrets,"subtitle");
-    recordsTextContainer.appendChild(secretsScoreTitle);
-    recordsTextContainer.appendChild(secretsScore);
-
-    const bossesScoreTitle = UI.createTitleElement('Bosses\n',"subtitle");
-    const bossesScore = UI.createTitleElement(bosses,"subtitle");
-    recordsTextContainer.appendChild(bossesScoreTitle);
-    recordsTextContainer.appendChild(bossesScore);
-
-    popUpContainer.appendChild(recordsTextContainer);
-
-    const secretContainer = UI.createTitleElement('\n Results Hash\n'+randomHash+'\n',"minititle");
-    popUpContainer.appendChild(secretContainer);
-
-    const reminderTitle = UI.createTitleElement('\nⓘ Reminder: \n Onchain survivor is a highly addicting endeavor!\n\n\n',"minititle");
-    popUpContainer.appendChild(reminderTitle);
-
-    addContainerUI('center-container', [popUpContainer]);
-}
-/*---------------------------------------------------------------------------
-                        Load Settings for Offline Play  
+                        Load Settings 
 ---------------------------------------------------------------------------*/
 window.addEventListener('load', async () => {
    // document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
