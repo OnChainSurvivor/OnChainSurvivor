@@ -8,11 +8,6 @@ class Entity extends THREE.Object3D {
         this.position.copy(position);
         this.abilities = [];
     }
-
-
-  
-
-
 }
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
@@ -20,7 +15,6 @@ class Entity extends THREE.Object3D {
 let player;
 let ability;
 let world;
-let time = 0,liquidations = 0, experience = 0, distance = 0, levels = 0,secrets = 0,bosses = 0;
 
 let isPaused = true;
 let isMainMenu = true;
@@ -357,7 +351,7 @@ async function initweb3(){
             let challenger = winners[winners.length - 1];
      world = worldTypes[challenger.parameters[2]];
             world.setup(scene,camera,renderer);
-            ability = abilityTypes[challenger.parameters[1]];
+            ability = playerTypes[0];
             player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
         } catch (error) {
             if (error.code === 4902) {
@@ -369,19 +363,15 @@ async function initweb3(){
     } else {
         world = worldTypes[0];
         world.setup(scene,camera,renderer);
-        ability = abilityTypes[0];
+        ability = playerTypes[0];
         player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
     }
 }
 
 /*---------------------------------------------------------------------------
-                               Ability Blueprints
----------------------------------------------------------------------------*/
-import { abilityTypes } from './abilityTypes.js';
-/*---------------------------------------------------------------------------
                               Survivors Blueprint
 ---------------------------------------------------------------------------*/
-import { playerTypes } from './playerTypes.js';
+import { playerTypes } from './darkForestCards.js';
 /*---------------------------------------------------------------------------
                               Enemies Blueprints
 ---------------------------------------------------------------------------*/
@@ -1031,7 +1021,7 @@ const worldComponents = {
                               Scene Initialization
 ---------------------------------------------------------------------------*/
 let selectedPlayer = playerTypes[0]; 
-let selectedAbility = abilityTypes[0];
+let selectedAbility = playerTypes[0];
 let selectedWorld = worldTypes[0]; 
 
 const scene = new THREE.Scene();
@@ -1085,134 +1075,6 @@ const rotationAxis = new THREE.Vector3(0, 1, 0);
 const rotationSpeed = 0.1;
 let dropUpdateFrame = 0; 
 
-function updatePlayerMovement() {
-    if (!canMove) return;
-    direction.set(0, 0, 0);
-
-    if (keys.s) direction.z -= 1;
-    if (keys.w) direction.z += 1;
-    if (keys.a) direction.x += 1;
-    if (keys.d) direction.x -= 1;
-
-    if (direction.lengthSq() > 0) { 
-        isPaused = false;
-        direction.normalize();
-        camera.getWorldDirection(cameraDirection);
-        cameraDirection.y = 0;
-        cameraDirection.normalize();
-        moveDirection.copy(direction).applyAxisAngle(rotationAxis, Math.atan2(cameraDirection.x, cameraDirection.z));
-        player.position.add(moveDirection.multiplyScalar(player.movementspeed));
-        const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-
-        const angleDifference = targetRotation - player.rotation.y;
-        const adjustedAngle = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
-        player.rotation.y += Math.sign(adjustedAngle) * Math.min(rotationSpeed, Math.abs(adjustedAngle));
-        player.updateMesh();
-        distance++;
-    }
-
-    const cosAngle = Math.cos(cameraAngle); 
-    const sinAngle = Math.sin(cameraAngle);
-    camera.position.set(
-        player.position.x + cameraRadius * cosAngle,
-        cameraHeight,
-        player.position.z + cameraRadius * sinAngle
-    );
-    camera.lookAt(player.position);
-
-    if(cameraHeight <= 30)
-    cameraHeight+=0.25;
-
-    player.updateAbilities();
-
-    if (dropUpdateFrame++ % (60/ (1 +player.attackPerSecond)) === 0) { 
-        if (closeEnemy) {
-            const shootDirection = new THREE.Vector3();
-            player.getWorldDirection(shootDirection);
-            const target = player.position.clone().add(shootDirection.multiplyScalar(player.range));
-            createOrb(player, target);
-        }
-    }
-
-    for (let i = droppedItems.length - 1; i >= 0; i--) {
-        const item = droppedItems[i];
-
-        item.boundingBox.setFromObject(item);
-        if (player.boundingBox.intersectsBox(item.boundingBox)) {
-            scene.remove(item);  
-            droppedItems.splice(i, 1); 
-            player.xp += 1000;
-            experience += 1;
-            xpLoadingBar.style.width = ((player.xp / player.xpToNextLevel) * 100) + '%';
-            createParticleEffect(player.position, 'gold', 50);  
-        }
-    }
-
-    if (player.xp >= player.xpToNextLevel) {
-        player.xp = 0;  
-        player.xpToNextLevel  =  player.xpToNextLevel + (player.xpToNextLevel*2) ;  
-        levels += 1
-        chooseAbility();
-    }
-        for (let i = 0; i < enemies.length; i++) {
-            const enemy = enemies[i];
-                if (player.boundingBox.intersectsBox(enemy.boundingBox)) {
-                createParticleEffect(player.position, 'red', 5);  
-                player.takeDamage(1);  
-                hpBar.style.width = (player.health / player.maxhealth * 100) + '%';
-                if (player.health <= 0){
-                    canMove= false;
-                    isPaused=true;
-                    hideUI();
-                    setTimeout(() => { triggerGameOver("Liquidation notice",'Dear survivor, we regret to inform that your HP \n dropped to 0 and this run has been terminated.\n\n'); }, 1000);
-                } 
-            }
-            lightObjects.forEach((lightObject) => {
-                if (!lightObject.boundingBox) return;
-                if (lightObject.boundingBox.intersectsBox(enemy.boundingBox)) {
-                  enemy.takeDamage(1);  
-                }
-              }); 
-                
-        }    
-}
-
-function randomAbility() {
-    const upgradableAbilities = player.getUpgradableAbilities();
-    if (upgradableAbilities.length === 0) {
-        canMove = true;
-        isPaused = false;
-        return;
-    }
-
-    const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
-    const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
-    player.addAbility(new Ability(player, { ...abilityToUpgrade}));
-    hideUI();
-    refreshDisplay();
-}
-function chooseAbility() {
-    canMove = false;
-    isPaused = true;
-    hideUI();
-
-    const upgradableAbilities = player.getUpgradableAbilities();
-
-    if (upgradableAbilities.length === 0) {
-        canMove = true;
-        isPaused = false;
-        return;
-    }
-
-    const upgradeOptions = [];
-    for (let i = 0; i < 2 && upgradableAbilities.length > 0; i++) {
-        const randomIndex = Math.floor(Math.random() * upgradableAbilities.length);
-        const abilityToUpgrade = { ...upgradableAbilities[randomIndex] };
-        upgradeOptions.push(abilityToUpgrade);
-        upgradableAbilities.splice(randomIndex, 1);
-    }
-    createChooseMenu(upgradeOptions, "\nLevel Up! 🔱\n", "Upgrade");
-}
 
 /*---------------------------------------------------------------------------
                               Enemies Controller
@@ -1402,7 +1264,6 @@ function hideUI(){
     uiContainers.length = 0;
 }
 
-
 function createRandomRunEffect(button, images, finalImageIndex, scale, category) {
     if (!spinningStates[category])
     return;
@@ -1440,7 +1301,7 @@ function createRandomRunEffect(button, images, finalImageIndex, scale, category)
     }
     spin();
     button.parentElement.addEventListener('click', () => {
-        spinningStates[category] = false;
+     //   spinningStates[category] = false;
     });
 }
 
@@ -1450,7 +1311,7 @@ function createRandomRunEffect(button, images, finalImageIndex, scale, category)
 async function createGameTitle(){
     const mainTitle = UI.createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
     const worldTitle = UI.createTitleElement(world.title,"minititle");
-    const miniTitle = UI.createTitleElement('0 cards collected ', "minititle");
+    const miniTitle = UI.createTitleElement('New cards everyday! ', "minititle");
     const web3Title = UI.createTitleElement('♦️\nWeb3\n♦️',"subtitle");
     web3Title.style.cursor = 'pointer';
     const todaysContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
@@ -1460,7 +1321,7 @@ async function createGameTitle(){
     todaysContainer.appendChild(challengeTitle);
 
     const classImages = playerTypes.map(player => player.thumbnail);
-    const abilityImages = abilityTypes.map(ability => ability.thumbnail);
+    const abilityImages = playerTypes.map(player => player.thumbnail);
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
@@ -1490,9 +1351,7 @@ async function createGameTitle(){
         button.addEventListener('click', () => {
             hideUI();
             canMove=false;
-            if(button === classContainer)  createChooseMenu(playerTypes, "\n Survivor Album 🏆","Survivor");
-            if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nAbility Album ⚔️","Ability");
-            if(button === worldContainer) createChooseMenu(worldTypes, "\nChain Album 🔗","World");
+            if(button === classContainer)  createChooseMenu(playerTypes, "\n Your Album 🏆","Survivor");
             });
     });
 
@@ -1556,16 +1415,7 @@ function createChooseMenu(entityList, text, type) {
 }
 
 function handleEntitySelection(entity, type) {
-    if (type === "Upgrade") {
-        keys.w = keys.a = keys.s = keys.d = false;
-        direction.set(0, 0, 0);
-        player.addAbility(new Ability(player, { ...entity}));
-        hideUI();
-        refreshDisplay();
-        canMove=true;
-    } else if (entity.isLocked) {
-        return;
-    } else if (type === "Survivor")  {
+    if (type === "Survivor")  {
         selectedPlayer = entity;
         hideUI();
         createGameTitle();//showMainMenu();
@@ -1608,135 +1458,7 @@ function showToC() {
 /*---------------------------------------------------------------------------
                                    In Game UI
 ---------------------------------------------------------------------------*/
-let challengeDisplay = UI.createTitleElement('', "minititle");
 
-function refreshDisplay() {
-  let xpLoadingContainer = document.createElement('div');
-    xpLoadingContainer.id = 'horizontalBarContainer';
-    xpLoadingBar = document.createElement('div');
-    xpLoadingBar.id = 'horizontalBar';
-  //  xpLoadingContainer.appendChild(xpLoadingBar);
-
-    let hpBarContainer = document.createElement('div');
-    hpBarContainer.id = 'hpBarContainer';
-    hpBar = document.createElement('div');
-    hpBar.id = 'hpBar';
-    hpBar.style.width =  (player.health / player.maxhealth * 100) + '%';
-  //  hpBarContainer.appendChild(hpBar);
-
-    const abilitiesContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(7, auto)' }); 
-    const playerContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(3, auto)' });
-    const barGridContainer = UI.createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(1, auto)' });
-    const playerButton = createButton(player, .45 );
-    const worldButton = createButton(world, .25 );
-    barGridContainer.appendChild(playerButton);
-   // barGridContainer.appendChild(hpBarContainer);
-   // barGridContainer.appendChild(xpLoadingContainer);
-    
-   //abilitiesContainer.appendChild(playerButton);
-    //abilitiesContainer.appendChild(worldButton);
-    
-    player.abilities.forEach(ability => {
-        const clonedAbility = { ...ability };
-        abilitiesContainer.appendChild(createButton(clonedAbility, .25 ));
-    });
-
-    addContainerUI('TL-container', [barGridContainer]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createPlayerInfoMenu();
-    };
-
-    addContainerUI('bottom-container',[abilitiesContainer]).onclick = () => {
-        canMove = false;
-        isPaused = true;
-        hideUI();
-        createPlayerInfoMenu();
-    };
-    const worldTitle = UI.createTitleElement(world.title, "minititle");
-
-    addContainerUI('top-container',[worldTitle,challengeDisplay]).onclick = () => {
-    };
-    
-}
-
-function createPlayerInfoMenu() {
-    const popUpContainer = UI.createContainer(['choose-menu-container']); 
-    const statusButton = UI.createTitleContainer('\nChallenge\nStatus', "subtitle");
-    popUpContainer.appendChild(statusButton);
-
-    const oneOnlyContainer = UI.createContainer(['abilities-grid']); 
-    const worldButton = createButton(world, 1);
-    oneOnlyContainer.appendChild(worldButton);
-    worldButton.style.cursor = 'default';
-    popUpContainer.appendChild(oneOnlyContainer);
-  
-    const recordsTextContainer = UI.createContainer(['abilities-grid']);
-    const timeScoreTitle = UI.createTitleElement('\nTime',"subtitle");
-    const timeScore = UI.createTitleElement('\n'+time,"subtitle");
-    recordsTextContainer.appendChild(timeScoreTitle);
-    recordsTextContainer.appendChild(timeScore);
-
-    const liquidationScoreTitle = UI.createTitleElement('Liquidations',"subtitle");
-    const liquidationScore = UI.createTitleElement(liquidations,"subtitle");
-    recordsTextContainer.appendChild(liquidationScoreTitle);
-    recordsTextContainer.appendChild(liquidationScore);
-
-    const expScoreTitle = UI.createTitleElement('Experience',"subtitle");
-    const expScore = UI.createTitleElement(experience,"subtitle");
-    recordsTextContainer.appendChild(expScoreTitle);
-    recordsTextContainer.appendChild(expScore);
-
-    const distanceScoreTitle = UI.createTitleElement('Distance',"subtitle");
-    const distanceScore = UI.createTitleElement(distance,"subtitle");
-    recordsTextContainer.appendChild(distanceScoreTitle);
-    recordsTextContainer.appendChild(distanceScore);
-
-    const levelScoreTitle = UI.createTitleElement('Lvls',"subtitle");
-    const levelScore = UI.createTitleElement(levels,"subtitle");
-    recordsTextContainer.appendChild(levelScoreTitle);
-    recordsTextContainer.appendChild(levelScore);
-
-    const secretsScoreTitle = UI.createTitleElement('Secrets',"subtitle");
-    const secretsScore = UI.createTitleElement(secrets,"subtitle");
-    recordsTextContainer.appendChild(secretsScoreTitle);
-    recordsTextContainer.appendChild(secretsScore);
-
-    const bossesScoreTitle = UI.createTitleElement('Bosses\n',"subtitle");
-    const bossesScore = UI.createTitleElement(bosses,"subtitle");
-    recordsTextContainer.appendChild(bossesScoreTitle);
-    recordsTextContainer.appendChild(bossesScore);
-
-    popUpContainer.appendChild(recordsTextContainer);
-
-    const randomHash = generateRandomHash();
-    const secretContainer = UI.createTitleElement('\n Gamestate Hash\n'+randomHash+'\n',"minititle");
-    popUpContainer.appendChild(secretContainer);
-
-    const playerClassContainer = UI.createContainer(['abilities-grid']); 
-    const classButton = createButton(player, 1);
-    playerClassContainer.appendChild(classButton);
-    classButton.style.cursor = 'default';
-  
-    player.abilities.forEach(ability => {
-      const clonedAbility = { ...ability };
-      const abilityButton = createButton(clonedAbility, 1);
-      playerClassContainer.appendChild(abilityButton);
-      abilityButton.style.cursor = 'default';
-    });
-
-    popUpContainer.appendChild(playerClassContainer);
-    const goBackButton = UI.createTitleContainer('\n - Continue -',  "subtitle");
-    goBackButton.style.cursor = 'pointer';
-    popUpContainer.appendChild(goBackButton);
-    addContainerUI('center-container', [popUpContainer]);
-        goBackButton.onclick = () => {
-            canMove = true;
-            hideUI();
-            refreshDisplay();
-        };
-}
 function createSettingsMenu() {
     const popUpContainer = UI.createContainer(['choose-menu-container']);
     const statusButton = UI.createTitleContainer('\n Settings',  "subtitle");
@@ -2062,11 +1784,8 @@ function resumeGame() {
     if (isPaused) isPaused = false;
 
     if(isMainMenu){ 
-        player.mesh.scale.set(2.5,2.5,2.5);
         isMainMenu = false;
         hideUI();
-        setTimeout(() => { refreshDisplay() }, 1050);
-        player.addAbility(new Ability(player, { ...ability}));
     }
 }
 
