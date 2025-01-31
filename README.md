@@ -153,3 +153,31 @@ Have questions? Feel free to reach out!
 -   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
 
 Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 🌍🎮
+
+## 📬 Contact
+
+My public addresses, in case a kind soul wants to make a donation! 
+
+BTC:
+bc1p5qg2972ksyk2uc29nky4kapkm9tr6nmqjes9caxgs4esdtzk0frs0ul527
+
+ETH(EVM):
+0xBC321C9EcBd7FC3A5867DE8db50f38AEe9011415
+
+Solana:
+8YDRKsVQxe3wmVifX39rM2qv7qqJwUaTEh7TXiu4tFg1
+
+Dogecoin:
+DJExfzzy6KacVuHHodj7FgQaRPtxnMqR2Y
+
+Cardano Address:
+addr1q9qqjsumzss320vhuqgfdmx9kc7gwxhukqf9qcmzd2cy9pytkv39w340zrmvp6erg5fyqegxt3qfvvuaeccfj98taryq0ezutk
+
+XRP:
+rJjSrrdJt6qjAsyShjnUCJ6PULUUBivRpb
+
+Tron:
+TUCo6gDtMssHmNpo9qDCAdJkT15QDFyBUh
+
+Litecoin:
+ltc1qt9zsxdur80ava2hp0y53s9l6kf63u2w0r8jc97
