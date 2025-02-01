@@ -161,7 +161,7 @@ My public addresses, in case a kind soul wants to make a donation!
 BTC:
 bc1p5qg2972ksyk2uc29nky4kapkm9tr6nmqjes9caxgs4esdtzk0frs0ul527
 
-ETH(EVM):
+ETH - Base, Arbitrum, Optimism, Linea and so on:
 0xBC321C9EcBd7FC3A5867DE8db50f38AEe9011415
 
 Solana:
