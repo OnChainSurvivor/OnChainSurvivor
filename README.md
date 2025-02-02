@@ -154,7 +154,7 @@ Have questions? Feel free to reach out!
 
 Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 🌍🎮
 
-## 📬 Contact
+## 📬 Donations
 
 My public addresses, in case a kind soul wants to make a donation! 
 
