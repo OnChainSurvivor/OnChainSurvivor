@@ -151,7 +151,7 @@ function createSettingsMenu() {
  * The main menu includes:
  * - Top container: Game title.
  * - Bottom container: "Move to start".
- * - Left container: Web3 LogIn.
+ * - Top right container: Web3 LogIn.
  * - Bottom Right: Settings icon.
  * And separately, an Exit button in the Top Right.
  */
