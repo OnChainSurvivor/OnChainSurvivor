@@ -25,7 +25,7 @@ Onchain survivors uses the "Challenger System", in which a user sends a challeng
 ```mermaid
 flowchart LR
     X[Player sends Challenge] --> Y{Challenge Climbs the rank}
-    Y --> Z[Challenge Wins, Becomes the game for a day]
+    Y --> Z[Challenge Wins, Becomes the prompt for a day]
 ```
 
 ```mermaid
