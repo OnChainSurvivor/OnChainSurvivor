@@ -1,8 +1,6 @@
 // NeuralStyleTransfer.js - Responsible for applying style transfer to rendered frames using TensorFlow.js
 
 import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.6.0/dist/tf.min.js';
-// Removed the <script> tags since TensorFlow.js is properly imported using ES module syntax at the top:
-// import * as tf from '@tensorflow/tfjs';
 
 // Placeholder: load your pre-trained neural style transfer model
 let model = null;
