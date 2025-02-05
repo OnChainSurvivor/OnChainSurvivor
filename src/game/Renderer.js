@@ -37,4 +37,17 @@ export function getCamera() {
 
 export function getRenderer() {
     return renderer;
+}
+
+export function renderScene() {
+    renderer.render(scene, camera);
+
+    // Assuming 'canvas' is the WebGL canvas from which you want to extract the current frame
+    if (styleTransferEnabled) {
+        // Get the frame from the canvas, pass it to the style transfer module asynchronously
+        applyStyleTransfer(canvas).then((styledFrame) => {
+            // Draw the styled frame to an on-screen canvas or update the visible canvas with the processed image.
+            // The strategy here can vary: you might use an offscreen canvas or replace the WebGL canvas content.
+        });
+    }
 } 

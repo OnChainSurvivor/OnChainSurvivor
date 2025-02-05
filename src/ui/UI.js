@@ -4,6 +4,9 @@
 let mainMenuUI;
 let exitButton;
 
+// Import the setCanMove function from the joystick module
+import { setCanMove } from '../input/Joystick.js';
+
 /**
  * Creates and returns a title element.
  * @param {string} text - The text content of the title.
@@ -139,6 +142,7 @@ function createSettingsMenu() {
   closeButton.style.marginTop = "10px";
   closeButton.addEventListener("click", function() {
     settingsContainer.style.display = "none";
+    setCanMove(true); // Re-enable joystick input when settings menu is closed
   });
   innerMenu.appendChild(closeButton);
 
@@ -199,6 +203,7 @@ export function setupUI() {
   mainMenuUI.appendChild(settingsMenu);
   settingsTrigger.addEventListener("click", function() {
     settingsMenu.style.display = "flex";
+    setCanMove(false); // Disable joystick input when settings menu is opened
   });
   mainMenuUI.appendChild(settingsTrigger);
 
