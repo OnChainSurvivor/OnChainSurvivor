@@ -36,11 +36,12 @@ export class GameManager {
     // Define a paused flag (default: false)
     this.isPaused = false;
 
-    // Create enemy counter in the corner
+    // Create enemy counter and FPS counter in the corner
     this.createUI();
   }
 
   createUI() {
+    // Create enemy counter element
     this.enemyCounterElement = document.createElement("div");
     this.enemyCounterElement.style.position = "fixed";
     this.enemyCounterElement.style.top = "10px";
@@ -51,6 +52,18 @@ export class GameManager {
     this.enemyCounterElement.style.fontFamily = "Arial, sans-serif";
     this.enemyCounterElement.style.zIndex = "1000";
     document.body.appendChild(this.enemyCounterElement);
+
+    // Create FPS counter element, positioned just below the enemy counter
+    this.fpsCounterElement = document.createElement("div");
+    this.fpsCounterElement.style.position = "fixed";
+    this.fpsCounterElement.style.top = "40px";
+    this.fpsCounterElement.style.left = "10px";
+    this.fpsCounterElement.style.color = "#ffffff";
+    this.fpsCounterElement.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    this.fpsCounterElement.style.padding = "5px";
+    this.fpsCounterElement.style.fontFamily = "Arial, sans-serif";
+    this.fpsCounterElement.style.zIndex = "1000";
+    document.body.appendChild(this.fpsCounterElement);
   }
 
   initScene() {
@@ -275,6 +288,9 @@ export class GameManager {
     
     // Update enemy counter UI
     this.enemyCounterElement.innerText = `Enemies: ${this.enemies.length}`;
+
+    // Update FPS counter UI (FPS computed as the rounded value of 1/delta)
+    this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
 
     this.renderer.render(this.scene, this.camera);
   }
