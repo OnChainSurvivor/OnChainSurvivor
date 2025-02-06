@@ -1,6 +1,7 @@
 import { GameManager } from './game/GameManager.js';
 import { initRenderer } from './game/Renderer.js';
 import { initiateJoystick } from './input/Joystick.js';
+import { initiateShootingJoystick } from './input/ShootingJoystick.js';
 import { 
   setupUI, 
   fadeOutMainMenu, 
@@ -14,8 +15,9 @@ import {
 // Initialize Three.js renderer, scene, and camera
 initRenderer();
 
-// Initialize input (joystick setup) and UI elements (menu, overlays, etc.)
+// Initialize input (movement and shooting joysticks) and UI elements
 initiateJoystick();
+initiateShootingJoystick();
 setupUI();
 
 // Instantiate and start the game immediately so the cube is visible.
@@ -39,7 +41,7 @@ function startGame() {
   }
 }
 
-// Listen for WASD keys.
+// Listen for WASD keys to start the game.
 document.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
   if (!gameStarted && ["w", "a", "s", "d"].includes(key)) {
@@ -47,8 +49,15 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// Listen for joystick movement.
+// Listen for movement joystick events.
 document.addEventListener("joystickMoveInitiated", () => {
+  if (!gameStarted) {
+    startGame();
+  }
+});
+
+// Listen for shooting joystick events (if needed, you could also start the game here)
+document.addEventListener("shootJoystickMoveInitiated", () => {
   if (!gameStarted) {
     startGame();
   }
