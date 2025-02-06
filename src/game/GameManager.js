@@ -3,6 +3,63 @@ import { getScene, getCamera, getRenderer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { Enemy } from './Enemy.js';
 
+class Octree {
+  constructor(boundary, capacity = 8) {
+    this.boundary = boundary.clone();
+    this.capacity = capacity;
+    this.points = []; // Each element is { point: THREE.Vector3, data: any }
+    this.divided = false;
+    this.children = [];
+  }
+
+  subdivide() {
+    const { min, max } = this.boundary;
+    const mid = new THREE.Vector3().addVectors(min, max).multiplyScalar(0.5);
+    const boxes = [
+      new THREE.Box3(new THREE.Vector3(min.x, min.y, min.z), new THREE.Vector3(mid.x, mid.y, mid.z)),
+      new THREE.Box3(new THREE.Vector3(mid.x, min.y, min.z), new THREE.Vector3(max.x, mid.y, mid.z)),
+      new THREE.Box3(new THREE.Vector3(min.x, mid.y, min.z), new THREE.Vector3(mid.x, max.y, mid.z)),
+      new THREE.Box3(new THREE.Vector3(mid.x, mid.y, min.z), new THREE.Vector3(max.x, max.y, mid.z)),
+      new THREE.Box3(new THREE.Vector3(min.x, min.y, mid.z), new THREE.Vector3(mid.x, mid.y, max.z)),
+      new THREE.Box3(new THREE.Vector3(mid.x, min.y, mid.z), new THREE.Vector3(max.x, mid.y, max.z)),
+      new THREE.Box3(new THREE.Vector3(min.x, mid.y, mid.z), new THREE.Vector3(mid.x, max.y, max.z)),
+      new THREE.Box3(new THREE.Vector3(mid.x, mid.y, mid.z), new THREE.Vector3(max.x, max.y, max.z))
+    ];
+    for (let i = 0; i < 8; i++) {
+      this.children[i] = new Octree(boxes[i], this.capacity);
+    }
+    this.divided = true;
+  }
+
+  insert(point, data) {
+    if (!this.boundary.containsPoint(point)) return false;
+    if (this.points.length < this.capacity) {
+      this.points.push({ point: point.clone(), data });
+      return true;
+    }
+    if (!this.divided) this.subdivide();
+    for (let child of this.children) {
+      if (child.insert(point, data)) return true;
+    }
+    return false;
+  }
+
+  query(range, found = []) {
+    if (!this.boundary.intersectsBox(range)) return found;
+    for (let p of this.points) {
+      if (range.containsPoint(p.point)) {
+        found.push(p.data);
+      }
+    }
+    if (this.divided) {
+      for (let child of this.children) {
+        child.query(range, found);
+      }
+    }
+    return found;
+  }
+}
+
 export class GameManager {
   constructor() {
     this.scene = getScene();
@@ -10,8 +67,8 @@ export class GameManager {
     this.renderer = getRenderer();
     this.clock = new THREE.Clock();
     this.cube = null;
-    // Player movement speed has been increased (from 2 to 6 already)
-    this.moveSpeed = 6;
+    // Increase player movement speed by 2: original value 6 is now 8.
+    this.moveSpeed = 10;
     // Bullet properties
     this.bulletSpeed = 10;
     this.shootCooldown = 0;
@@ -37,6 +94,14 @@ export class GameManager {
 
     // Create enemy counter and FPS counter in the corner
     this.createUI();
+
+    // Define a broad boundary containing your game area
+    const gameBounds = new THREE.Box3(
+      new THREE.Vector3(-1000, -1000, -1000),
+      new THREE.Vector3(1000, 1000, 1000)
+    );
+    // Instantiate Octree directly using the integrated class.
+    this.octree = new Octree(gameBounds);
   }
 
   createUI() {
@@ -70,6 +135,19 @@ export class GameManager {
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     this.cube = new THREE.Mesh(geometry, material);
     this.scene.add(this.cube);
+
+    // Create an instanced mesh for enemies. Define the enemy geometry and material.
+    const enemyGeometry = new THREE.BoxGeometry(1, 1, 1); // Replace with your enemy geometry
+    const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    // For example, support up to 10000 enemies
+    this.enemyInstancedMesh = new THREE.InstancedMesh(enemyGeometry, enemyMaterial, 10000);
+    // Mark the matrix as dynamic so we can update it each frame.
+    this.enemyInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.scene.add(this.enemyInstancedMesh);
+
+    // Instead of using individual enemy objects containing meshes,
+    // maintain a data array for enemy properties.
+    this.enemiesData = []; // Each enemy: { position, rotation, movementspeed, active }
   }
 
   shootBullet(direction) {
@@ -138,6 +216,8 @@ export class GameManager {
       this.scene.add(enemy.mesh);
     }
     this.enemies.push(enemy);
+    // Insert each enemy's position into the octree. (Assuming each enemy is stored in this.enemies with a .mesh.position.)
+    this.octree.insert(enemy.mesh.position, enemy);
   }
 
   restartGame() {
@@ -167,13 +247,13 @@ export class GameManager {
   }
 
   startEnemySpawner() {
-    // Spawn an enemy every 100ms, up to a maximum of 10000 enemies
+    // Spawn an enemy every 50ms, up to a maximum of 10000 enemies
     if (this.enemySpawner) clearInterval(this.enemySpawner);
     this.enemySpawner = setInterval(() => {
       if (this.enemies.length < 10000 && !this.isPaused) {
         this.spawnEnemy();
       }
-    }, 100);
+    }, 50);
   }
 
   start() {
@@ -189,7 +269,7 @@ export class GameManager {
     this.animationFrameId = requestAnimationFrame(() => this.animate());
     const delta = this.clock.getDelta();
 
-    // Update player (cube) movement via keys (WASD)
+    // Update player movement via keys (WASD)
     if (keys.w) {
       this.cube.position.y += this.moveSpeed * delta;
     }
@@ -203,7 +283,14 @@ export class GameManager {
       this.cube.position.x += this.moveSpeed * delta;
     }
 
-    // Auto shooting: find the closest enemy and shoot toward it automatically
+    // Update enemy movement for each active enemy
+    this.enemies.forEach(enemy => {
+      if (enemy.active) {
+        enemy.update(delta, this.cube.position);
+      }
+    });
+
+    // Auto-shoot at the closest enemy
     if (this.enemies.length > 0 && this.shootCooldown <= 0) {
       let closestEnemy = null;
       let closestDistanceSq = Infinity;
@@ -224,38 +311,55 @@ export class GameManager {
       this.shootCooldown -= delta;
     }
 
-    // Update all bullets
     this.updateBullets(delta);
 
-    // Update enemies and check for collisions
-    const enemyCollisionThresholdSq = 1;
-    for (let i = this.enemies.length - 1; i >= 0; i--) {
-      const enemy = this.enemies[i];
-      if (!enemy.active) continue;
-      // Move enemy toward the player
-      const direction = new THREE.Vector3().subVectors(this.cube.position, enemy.mesh.position).normalize();
-      const enemySpeed = enemy.movementspeed || 1.5;
-      enemy.mesh.position.addScaledVector(direction, enemySpeed * delta);
-      enemy.mesh.rotation.y = Math.atan2(direction.x, direction.z);
-      // Collision: enemy with player
-      if (enemy.mesh.position.distanceToSquared(this.cube.position) < enemyCollisionThresholdSq) {
-        console.log("Enemy collided with player!");
-        this.restartGame();
-        return;
-      }
-      // Collision: enemy with bullet
-      for (let j = this.bullets.length - 1; j >= 0; j--) {
-        const bullet = this.bullets[j];
-        if (enemy.mesh.position.distanceToSquared(bullet.position) < 0.25) {
-          // Recycle both enemy and bullet when a collision is detected
+    // Rebuild a dynamic octree based on updated enemy positions
+    const gameBounds = new THREE.Box3(
+      new THREE.Vector3(-1000, -1000, -1000),
+      new THREE.Vector3(1000, 1000, 1000)
+    );
+    const dynamicOctree = new Octree(gameBounds);
+    this.enemies.forEach(enemy => {
+      dynamicOctree.insert(enemy.mesh.position, enemy);
+    });
+
+    // Collision detection for player vs. enemy
+    const querySize = 2;
+    const playerRange = new THREE.Box3().setFromCenterAndSize(this.cube.position, new THREE.Vector3(querySize, querySize, querySize));
+    const collidingEnemies = dynamicOctree.query(playerRange);
+    if (collidingEnemies.length > 0) {
+      collidingEnemies.forEach(enemy => {
+        if (enemy.mesh.position.distanceToSquared(this.cube.position) < 1) {
+          console.log("Enemy collided with player!");
+          this.restartGame();
+          return;
+        }
+      });
+    }
+
+    // Bullet vs. enemy collision detection
+    const bulletCollisionThreshold = 0.5; // Adjust as needed (collision radius)
+    // Iterate in reverse order for safe removal
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const bullet = this.bullets[i];
+      const bulletRange = new THREE.Box3().setFromCenterAndSize(bullet.position, new THREE.Vector3(bulletCollisionThreshold, bulletCollisionThreshold, bulletCollisionThreshold));
+      const enemiesHit = dynamicOctree.query(bulletRange);
+      for (let enemy of enemiesHit) {
+        if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) { // 0.25 is the squared collision threshold
+          console.log("Bullet collided with enemy!");
+          // Remove or recycle enemy
           this.scene.remove(enemy.mesh);
-          this.scene.remove(bullet);
           enemy.active = false;
+          const enemyIndex = this.enemies.indexOf(enemy);
+          if (enemyIndex !== -1) {
+            this.enemies.splice(enemyIndex, 1);
+          }
           this.enemyPool.push(enemy);
-          this.enemies.splice(i, 1);
-          this.bullets.splice(j, 1);
+          // Remove or recycle bullet
+          this.scene.remove(bullet);
+          this.bullets.splice(i, 1);
           this.bulletPool.push(bullet);
-          break;
+          break; // Break out of bullet loop if collision handled
         }
       }
     }
@@ -273,6 +377,7 @@ export class GameManager {
       this.trailPieces.push(trailPiece);
       this.trailTimer = 0;
     }
+
     // Remove trail pieces older than 2 seconds
     const trailLifetime = 2;
     for (let i = this.trailPieces.length - 1; i >= 0; i--) {
@@ -283,18 +388,33 @@ export class GameManager {
       }
     }
 
-    // Update camera position to follow the player with a larger offset (zoomed out more)
+    // Update camera (smooth follow)
     const offset = new THREE.Vector3(0, 15, 50);
     const targetPosition = this.cube.position.clone().add(offset);
     this.camera.position.lerp(targetPosition, 0.1);
     this.camera.lookAt(this.cube.position);
-    
-    // Update enemy counter UI
+
+    // Update UI counters
     this.enemyCounterElement.innerText = `Enemies: ${this.enemies.length}`;
-
-    // Update FPS counter UI (FPS computed as the rounded value of 1/delta)
     this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
-
     this.renderer.render(this.scene, this.camera);
+  }
+
+  updateEnemiesInstanced(delta) {
+    // Update each enemy in our data array.
+    for (let i = 0; i < this.enemiesData.length; i++) {
+      let enemy = this.enemiesData[i];
+      // Simple movement toward the player:
+      const direction = new THREE.Vector3().subVectors(this.cube.position, enemy.position).normalize();
+      enemy.position.addScaledVector(direction, enemy.movementspeed * delta);
+      enemy.rotation.y = Math.atan2(direction.x, direction.z);
+
+      // Build an instance matrix from the enemy data.
+      const quaternion = new THREE.Quaternion().setFromEuler(enemy.rotation);
+      const matrix = new THREE.Matrix4();
+      matrix.compose(enemy.position, quaternion, new THREE.Vector3(1, 1, 1));
+      this.enemyInstancedMesh.setMatrixAt(i, matrix);
+    }
+    this.enemyInstancedMesh.instanceMatrix.needsUpdate = true;
   }
 }
