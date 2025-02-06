@@ -1,7 +1,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.module.js';
 import { getScene, getCamera, getRenderer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
-import { shootingKeys } from '../input/ShootingJoystick.js';
 import { Enemy } from './Enemy.js';
 
 export class GameManager {
@@ -204,18 +203,22 @@ export class GameManager {
       this.cube.position.x += this.moveSpeed * delta;
     }
 
-    // Handle shooting input (increased firing frequency)
-    let shootX = 0;
-    let shootY = 0;
-    if (shootingKeys.i) shootY += 1;
-    if (shootingKeys.k) shootY -= 1;
-    if (shootingKeys.j) shootX -= 1;
-    if (shootingKeys.l) shootX += 1;
-    const shootDirection = new THREE.Vector3(shootX, shootY, 0);
-    if (shootDirection.length() > 0 && this.shootCooldown <= 0) {
-      shootDirection.normalize();
-      this.shootBullet(shootDirection);
-      this.shootCooldown = 0.1;
+    // Auto shooting: find the closest enemy and shoot toward it automatically
+    if (this.enemies.length > 0 && this.shootCooldown <= 0) {
+      let closestEnemy = null;
+      let closestDistanceSq = Infinity;
+      this.enemies.forEach(enemy => {
+        const dSq = enemy.mesh.position.distanceToSquared(this.cube.position);
+        if (dSq < closestDistanceSq) {
+          closestDistanceSq = dSq;
+          closestEnemy = enemy;
+        }
+      });
+      if (closestEnemy) {
+        const autoShootDirection = new THREE.Vector3().subVectors(closestEnemy.mesh.position, this.cube.position).normalize();
+        this.shootBullet(autoShootDirection);
+        this.shootCooldown = 0.1;
+      }
     }
     if (this.shootCooldown > 0) {
       this.shootCooldown -= delta;

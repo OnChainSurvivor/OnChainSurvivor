@@ -51,7 +51,6 @@ function setupEventListeners() {
     if (keys.hasOwnProperty(event.key)) {
       keys[event.key] = true;
     }
-    // Only use WASD and arrow keys for movement
   });
   document.addEventListener('keyup', (event) => {
     if (keys.hasOwnProperty(event.key)) {
@@ -95,15 +94,14 @@ function updateJoystickDirection(normalizedX, normalizedY) {
 
 function handleMouseDown(e) {
   if (!canMove) return;
-  // Only activate if the click is on the left half of the screen.
-  if (e.clientX >= window.innerWidth / 2) return;
+  // Activate joystick on any mouse down event across the full screen.
   activateJoystick(e.clientX, e.clientY);
 }
 
 function handleTouchStart(e) {
   if (!canMove) return;
   const touch = e.touches[0];
-  if (touch.clientX >= window.innerWidth / 2) return;
+  // Activate joystick on any touch start event across the full screen.
   activateJoystick(touch.clientX, touch.clientY);
 }
 
@@ -138,7 +136,6 @@ function updateJoystickPosition(x, y) {
   const normalizedY = joystickY / maxDistance;
   updateJoystickDirection(normalizedX, -normalizedY);
 
-  // Dispatch joystick move initiated event on first movement
   if (!joystickStarted && (keys.w || keys.a || keys.s || keys.d)) {
     joystickStarted = true;
     document.dispatchEvent(new CustomEvent("joystickMoveInitiated"));

@@ -1,7 +1,6 @@
 import { GameManager } from './game/GameManager.js';
 import { initRenderer } from './game/Renderer.js';
 import { initiateJoystick } from './input/Joystick.js';
-import { initiateShootingJoystick } from './input/ShootingJoystick.js';
 import { 
   setupUI, 
   fadeOutMainMenu, 
@@ -17,7 +16,6 @@ initRenderer();
 
 // Initialize input (movement and shooting joysticks) and UI elements
 initiateJoystick();
-initiateShootingJoystick();
 setupUI();
 
 // Instantiate and start the game immediately so the cube is visible.
@@ -50,21 +48,19 @@ document.addEventListener("keydown", (event) => {
 });
 
 // Listen for movement joystick events.
+// When the left joystick is activated, change the start prompt to "Move to play" and start the game.
 document.addEventListener("joystickMoveInitiated", () => {
   if (!gameStarted) {
+    // If you have a start prompt element, update its text.
+    const startPrompt = document.getElementById("startPrompt");
+    if (startPrompt) {
+      startPrompt.innerText = "Move to play";
+    }
     startGame();
   }
 });
 
-// Listen for shooting joystick events (if needed, you could also start the game here)
-document.addEventListener("shootJoystickMoveInitiated", () => {
-  if (!gameStarted) {
-    startGame();
-  }
-});
-
-// Add handler to the Exit button that brings the UI back to the main menu.
-// Note: We no longer stop the game so that the cube remains visible.
+// Exit button handler remains unchanged.
 getExitButton().addEventListener("click", function() {
   if (gameStarted) {
     hideExitButton();
