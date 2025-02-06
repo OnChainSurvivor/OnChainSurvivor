@@ -1,6 +1,7 @@
 const shootingKeys = { i: false, j: false, k: false, l: false };
 
 let joystickShootingActive = false;
+let joystickShootingTouchId = null;
 let joystickShootingStartX, joystickShootingStartY;
 let joystickShootingContainer, joystickShooting;
 let joystickShootingStarted = false;
@@ -31,12 +32,16 @@ function initiateShootingJoystick() {
 }
 
 function setupShootingEventListeners() {
-  document.addEventListener('mousedown', handleShootingMouseDown);
-  document.addEventListener('touchstart', handleShootingTouchStart);
-  document.addEventListener('mousemove', handleShootingMouseMove);
-  document.addEventListener('touchmove', handleShootingTouchMove);
-  document.addEventListener('mouseup', handleShootingMouseUp);
-  document.addEventListener('touchend', handleShootingMouseUp);
+  // Touch events for mobile
+  document.addEventListener('touchstart', handleShootingTouchStart, false);
+  document.addEventListener('touchmove', handleShootingTouchMove, false);
+  document.addEventListener('touchend', handleShootingTouchEnd, false);
+  document.addEventListener('touchcancel', handleShootingTouchEnd, false);
+
+  // Mouse events for desktop
+  document.addEventListener('mousedown', handleShootingMouseDown, false);
+  document.addEventListener('mousemove', handleShootingMouseMove, false);
+  document.addEventListener('mouseup', handleShootingMouseUp, false);
 
   // Add keyboard event listeners for I, J, K, L keys
   document.addEventListener('keydown', (event) => {
@@ -59,15 +64,76 @@ function setupShootingEventListeners() {
   });
 }
 
+function handleShootingTouchStart(e) {
+  // Loop through the changed touches to find one in the right half
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    if (touch.clientX >= window.innerWidth / 2 && !joystickShootingActive) {
+      joystickShootingActive = true;
+      joystickShootingTouchId = touch.identifier;
+      joystickShootingStartX = touch.clientX;
+      joystickShootingStartY = touch.clientY;
+      activateShootingJoystick(touch.clientX, touch.clientY);
+      break;
+    }
+  }
+}
+
+function handleShootingTouchMove(e) {
+  if (!joystickShootingActive) return;
+  // Look for the touch with our active identifier
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    if (touch.identifier === joystickShootingTouchId) {
+      updateShootingJoystickPosition(touch.clientX, touch.clientY);
+      break;
+    }
+  }
+}
+
+function handleShootingTouchEnd(e) {
+  // Look for the touch that ended which belongs to our joystick
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.changedTouches[i];
+    if (touch.identifier === joystickShootingTouchId) {
+      deactivateShootingJoystick();
+      joystickShootingTouchId = null;
+      joystickShootingActive = false;
+      break;
+    }
+  }
+}
+
+function handleShootingMouseDown(e) {
+  // Only use the shooting joystick if on the right half of the screen
+  if (e.clientX < window.innerWidth / 2) return;
+  if (!joystickShootingActive) {
+    joystickShootingActive = true;
+    joystickShootingStartX = e.clientX;
+    joystickShootingStartY = e.clientY;
+    activateShootingJoystick(e.clientX, e.clientY);
+  }
+}
+
+function handleShootingMouseMove(e) {
+  if (!joystickShootingActive) return;
+  updateShootingJoystickPosition(e.clientX, e.clientY);
+}
+
+function handleShootingMouseUp(e) {
+  if (joystickShootingActive) {
+    deactivateShootingJoystick();
+    joystickShootingActive = false;
+  }
+}
+
 function activateShootingJoystick(x, y) {
-  joystickShootingContainer.style.left = `${x - joystickShootingContainer.clientWidth / 2}px`;
-  joystickShootingContainer.style.top = `${y - joystickShootingContainer.clientHeight / 2}px`;
   joystickShootingContainer.style.pointerEvents = 'auto';
   joystickShootingContainer.style.visibility = 'visible';
-  joystickShootingStartX = x;
-  joystickShootingStartY = y;
-  joystickShootingActive = true;
-  joystickShootingStarted = false;
+  // Position the container so that the joystick is centered at the touch point
+  joystickShootingContainer.style.left = (x - 50) + 'px';
+  joystickShootingContainer.style.top = (y - 50) + 'px';
+  joystickShooting.style.transform = 'translate(-50%, -50%)';
 }
 
 function deactivateShootingJoystick() {
@@ -79,51 +145,11 @@ function deactivateShootingJoystick() {
   joystickShootingStarted = false;
 }
 
-function updateShootingJoystickDirection(normalizedX, normalizedY) {
-  shootingKeys.i = shootingKeys.j = shootingKeys.k = shootingKeys.l = false;
-
-  const sensitivity = 40;
-  const adjustedX = normalizedX * sensitivity;
-  const adjustedY = normalizedY * sensitivity;
-
-  if (adjustedY > 0.5) shootingKeys.i = true;
-  if (adjustedY < -0.5) shootingKeys.k = true;
-  if (adjustedX < -0.5) shootingKeys.j = true;
-  if (adjustedX > 0.5) shootingKeys.l = true;
-}
-
-function handleShootingMouseDown(e) {
-  // Only use shooting joystick if click is on the right half of the screen.
-  if (e.clientX < window.innerWidth / 2) return;
-  activateShootingJoystick(e.clientX, e.clientY);
-}
-
-function handleShootingTouchStart(e) {
-  const touch = e.touches[0];
-  if (touch.clientX < window.innerWidth / 2) return;
-  activateShootingJoystick(touch.clientX, touch.clientY);
-}
-
-function handleShootingMouseMove(e) {
-  if (!joystickShootingActive) return;
-  updateShootingJoystickPosition(e.clientX, e.clientY);
-}
-
-function handleShootingTouchMove(e) {
-  if (!joystickShootingActive) return;
-  const touch = e.touches[0];
-  updateShootingJoystickPosition(touch.clientX, touch.clientY);
-}
-
-function handleShootingMouseUp() {
-  deactivateShootingJoystick();
-}
-
 function updateShootingJoystickPosition(x, y) {
   const deltaX = x - joystickShootingStartX;
   const deltaY = y - joystickShootingStartY;
   const maxDistance = joystickShootingContainer.clientWidth / 2;
-  const distance = Math.min(maxDistance, Math.sqrt(deltaX ** 2 + deltaY ** 2));
+  const distance = Math.min(maxDistance, Math.hypot(deltaX, deltaY));
   const angle = Math.atan2(deltaY, deltaX);
   const joystickX = distance * Math.cos(angle);
   const joystickY = distance * Math.sin(angle);
@@ -133,6 +159,18 @@ function updateShootingJoystickPosition(x, y) {
   const normalizedX = joystickX / maxDistance;
   const normalizedY = joystickY / maxDistance;
   updateShootingJoystickDirection(normalizedX, -normalizedY);
+}
+
+function updateShootingJoystickDirection(normalizedX, normalizedY) {
+  shootingKeys.i = shootingKeys.j = shootingKeys.k = shootingKeys.l = false;
+  const sensitivity = 40;
+  const adjustedX = normalizedX * sensitivity;
+  const adjustedY = normalizedY * sensitivity;
+
+  if (adjustedY > 0.5) shootingKeys.i = true;
+  if (adjustedY < -0.5) shootingKeys.k = true;
+  if (adjustedX < -0.5) shootingKeys.j = true;
+  if (adjustedX > 0.5) shootingKeys.l = true;
 }
 
 export { shootingKeys, initiateShootingJoystick }; 
