@@ -88,6 +88,7 @@ export class GameManager {
     // Object pools for recycling (optimization)
     this.bulletPool = [];
     this.enemyPool = [];
+    this.droppedItems = []; // New array for tracking dropped blue spheres
 
     // Define a paused flag (default: false)
     this.isPaused = false;
@@ -221,28 +222,31 @@ export class GameManager {
   }
 
   restartGame() {
-    // Clear enemy spawner if applicable
-    if (this.enemySpawner) {
-      clearInterval(this.enemySpawner);
-      this.enemySpawner = null;
-    }
-    // Remove all enemies and bullets from the scene and recycle them
+    // Remove enemy meshes and recycle them.
     this.enemies.forEach(enemy => {
       this.scene.remove(enemy.mesh);
       enemy.active = false;
       this.enemyPool.push(enemy);
     });
     this.enemies = [];
+
+    // Remove bullets and recycle them.
     this.bullets.forEach(bullet => {
       this.scene.remove(bullet);
       this.bulletPool.push(bullet);
     });
     this.bullets = [];
-    // Reset player position
+
+    // **New code: Remove any dropped blue spheres**  
+    this.droppedItems.forEach(drop => {
+      this.scene.remove(drop);
+    });
+    this.droppedItems = [];
+
+    // Reset additional game state as needed
     this.cube.position.set(0, 0, 0);
     this.shootCooldown = 0;
     console.log("Game restarted!");
-    // Restart enemy spawner
     this.startEnemySpawner();
   }
 
@@ -313,7 +317,7 @@ export class GameManager {
 
     this.updateBullets(delta);
 
-    // Rebuild a dynamic octree based on updated enemy positions
+    // Build a dynamic octree based on current enemy positions
     const gameBounds = new THREE.Box3(
       new THREE.Vector3(-1000, -1000, -1000),
       new THREE.Vector3(1000, 1000, 1000)
@@ -323,31 +327,28 @@ export class GameManager {
       dynamicOctree.insert(enemy.mesh.position, enemy);
     });
 
-    // Collision detection for player vs. enemy
+    // Collision detection: Player vs. Enemy
     const querySize = 2;
     const playerRange = new THREE.Box3().setFromCenterAndSize(this.cube.position, new THREE.Vector3(querySize, querySize, querySize));
     const collidingEnemies = dynamicOctree.query(playerRange);
-    if (collidingEnemies.length > 0) {
-      collidingEnemies.forEach(enemy => {
-        if (enemy.mesh.position.distanceToSquared(this.cube.position) < 1) {
-          console.log("Enemy collided with player!");
-          this.restartGame();
-          return;
-        }
-      });
-    }
+    collidingEnemies.forEach(enemy => {
+      if (enemy.mesh.position.distanceToSquared(this.cube.position) < 1) {
+        console.log("Enemy collided with player!");
+        this.restartGame();
+        return;
+      }
+    });
 
-    // Bullet vs. enemy collision detection
-    const bulletCollisionThreshold = 0.5; // Adjust as needed (collision radius)
-    // Iterate in reverse order for safe removal
+    // Collision detection: Bullet vs. Enemy
+    const bulletCollisionThreshold = 0.5; // Use squared comparisons for speed.
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const bullet = this.bullets[i];
       const bulletRange = new THREE.Box3().setFromCenterAndSize(bullet.position, new THREE.Vector3(bulletCollisionThreshold, bulletCollisionThreshold, bulletCollisionThreshold));
       const enemiesHit = dynamicOctree.query(bulletRange);
       for (let enemy of enemiesHit) {
-        if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) { // 0.25 is the squared collision threshold
+        if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) { // squared collision threshold
           console.log("Bullet collided with enemy!");
-          // Remove or recycle enemy
+          // Remove enemy and add a blue drop
           this.scene.remove(enemy.mesh);
           enemy.active = false;
           const enemyIndex = this.enemies.indexOf(enemy);
@@ -355,12 +356,32 @@ export class GameManager {
             this.enemies.splice(enemyIndex, 1);
           }
           this.enemyPool.push(enemy);
-          // Remove or recycle bullet
+
+          // Create blue sphere drop (small bonus)
+          const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+          const dropMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+          const drop = new THREE.Mesh(dropGeometry, dropMaterial);
+          drop.position.copy(enemy.mesh.position);
+          this.scene.add(drop);
+          this.droppedItems.push(drop);
+
+          // Remove/recycle bullet
           this.scene.remove(bullet);
           this.bullets.splice(i, 1);
           this.bulletPool.push(bullet);
-          break; // Break out of bullet loop if collision handled
+          break;
         }
+      }
+    }
+
+    // Check collision: Player vs. Blue Sphere Drops
+    for (let i = this.droppedItems.length - 1; i >= 0; i--) {
+      const drop = this.droppedItems[i];
+      if (drop.position.distanceToSquared(this.cube.position) < 1) { 
+        console.log("Player picked up a drop!");
+        this.scene.remove(drop);
+        this.droppedItems.splice(i, 1);
+        // (Optionally, grant a bonus to the player here.)
       }
     }
 
