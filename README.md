@@ -1,16 +1,14 @@
 # Congratulations, 🔗 Survivor 🏆 !
 
-Welcome to **OnChain Survivor** Official Repository ! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥
-
- 🌐🎮 The usage of AI in the development of this game is not just encouraged but considered mandatory. Fun, simplicity, decentralization, and openness are the foundational pillars of the project!
+Welcome to **OnChain Survivor** Official Repository ! Congratulations on making it this far, You survived every hack, every rug, every fork and every twist in the crypto journey. 🚀💪 Keep pushing forward! 🌟🔥  Fun, simplicity, decentralization, and openness are the foundational pillars of the project!
 
 ## 🌟About Onchain Survivor🌟
 
-Onchain Survivor is a web-based top-down survival game that utilizes AI in tanden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. 
+Onchain Survivor is a web-based top-down survival game that utilizes AI in tamden with Web3 technologies to enable a new kind of browser gaming experience. Players will navigate an AI generated environment to do what they do best... Survive! Onchain Survivor aims to combine the addictive gameplay of roguelite games with the innovative potential of generative AI and blockchain technology, creating a unique and engaging experience. 
 
-## The problem & the solution: The Challenger system, Blockchain Integration 🔗 & Game Design 🏟️
+## The problem & the solution: The Challenger system, Integrations 🔗 & Game Design 🏟️
 
-In the near future, players will be capable to create with all kinds of experiences with just one prompt using GenAI technology, being able to totally inmerse in virtual worlds beyond human imagination. this brings the problem of such beautiful generated experiences being "isolated" from the rest of their communities or peers, and this a problem blockchains actually can solve.
+In the near future, players will be capable to create with all kinds of experiences with just one prompt using GenAI technology, being able to totally immerse in virtual worlds beyond human imagination. this brings the problem of such beautiful generated experiences being "isolated" from the rest of their communities or peers, and this a problem blockchains actually can solve.
 
 ```mermaid
 flowchart TD
@@ -20,7 +18,7 @@ flowchart TD
     C -->|Player Three prompt| F[Experience Z]
 ```
 
-Onchain survivors uses the "Challenger System", in which a user sends a challenge into a queue of user generated challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during x blocks. This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This auction based model, also gives chances for all players who sent challenges in the queue to eventually set the game for a day!
+Onchain survivors uses the "Challenger System", in which a user sends a challenge into a queue of players challenges, utilizing blockchain technology to keep track of current and previous records. These challenges are essentially the main gameplay loop that will be executed during x blocks. This means that all players will enjoy the same challenge! resulting in a more shared and consensus based generative experience. This auction based model, also gives chances for all players who sent challenges in the queue to eventually set the game for a day!
 
 ```mermaid
 flowchart LR
@@ -78,11 +76,11 @@ As additional game "templates"  or models are developed and integrated into the 
 
 ### Phase 3: User generated real time experiences, from locally run neural networks. 
 
-Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. for Onchain survivor, Challengers will be able to choose an style and the general gameplay, then using fast style transfer technology, it will adapt it into the main gameplay loop by re-rendering each frame in real time as it is being executed, allowing Challengers to "modify" the game as they desire using these technologies, and have all the others survivors enjoy it too at the same time. Onchain Survivor plans to eventually (Realistically a couple of years)  implement wathever open-source, real-time technology becomes the most qualified for this job to enable this experience.
+Currently, GenAI videos rendered on top of completed games offer a glimpse into the future of gaming and the styles of challenges in the game is done using typical computer graphics technologies, like custom shaders and materials. for Onchain survivor, Challengers will be able to choose an style and the general gameplay, then using fast style transfer technology, it will adapt it into the main gameplay loop by re-rendering each frame in real time as it is being executed, allowing Challengers to "modify" the game as they desire using these technologies, and have all the others survivors enjoy it too at the same time. Onchain Survivor plans to eventually (Realistically a couple of years)  implement whatever open-source, real-time technology becomes the most qualified for this job to enable this experience.
 
 ## Art Style 🎨 & Sound Design 🎵
 
-Any kind of submissions are welcomed as long as they are coherent!, theres no dead set art and musical style being planned in the long term, so even if current version is being made in 3D with basic music, with the usage of neural style transfer for rendering in real time and AI generatic music in the future will allow for different styles to be applied. 
+Any kind of submissions are welcomed as long as they are coherent!, theres no predefined art and musical style being planned in the long term, so even if current version is being made in 3D with basic music, with the usage of neural style transfer for rendering in real time and AI generatic music in the future will allow for different styles to be applied. 
 
 ##  📚  Interaction Models 🕹️
 
