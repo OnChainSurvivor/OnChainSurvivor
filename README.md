@@ -128,7 +128,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 
 This project license is [TBD]. 
 
-## 🙏 Acknowledgments ❤️
+## 🙏Acknowledgments ❤
 
 -   **Three js**: For the amazing engine ❤️.
 -   **Web3 js**: For simplifying blockchain interactions ❤️.
@@ -138,7 +138,7 @@ This project license is [TBD].
 -   **Meshy.ai**: Best 3D Modeler ever ❤️, under the https://creativecommons.org/licenses/by/4.0/ License.
 -   **Tensor Flow**:Best Neural Style transfer tool ❤️
 
-## 📬 Contact
+## Contact
 
 Have questions? Feel free to reach out!
 
