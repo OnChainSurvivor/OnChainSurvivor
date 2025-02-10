@@ -145,7 +145,7 @@ Have questions? Feel free to reach out!
 -   **Telegram**: [@OnChainSurvivor] https://t.me/OnchainSurvivor
 -   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
 
-Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 🌍🎮
+Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 
 
 ## Donations
 
