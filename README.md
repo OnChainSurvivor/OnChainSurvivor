@@ -34,7 +34,6 @@ graph TD
     E -->|Can submit a new bid to re-enter the queue| C
 ```
 
-
 ## Development Roadmap: Towards Locally Generated AI Worlds
 
 OnChain Survivor aims to evolve into a fully local AI-driven gaming experience, where game environments and content are generated in real time based on player inputs. In the short term, the project will combine human creativity with AI-assisted asset production, laying the foundation for a gradual transition toward fully interactive, real-time worlds.
@@ -108,7 +107,7 @@ D --> G[Write run record]
 
 ### Prerequisites
 - Currently it should run in 4 years old hardware. Optimization is always an ongoing process, so please be patient.
-- A Web3 Wallet for the ranks 
+- A Web3 Wallet to participate in the ranks 
 
 ## Getting Started & Installation
 - Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
