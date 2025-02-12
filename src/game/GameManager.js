@@ -219,19 +219,17 @@ export class GameManager {
     const angle = Math.random() * Math.PI * 2;
     const distance = spawnRadius * (0.8 + 0.4 * Math.random());
     const spawnX = this.cube.position.x + Math.cos(angle) * distance;
-    const spawnY = this.cube.position.y + Math.sin(angle) * distance;
-    const spawnPosition = new THREE.Vector3(spawnX, spawnY, this.cube.position.z);
+    const spawnZ = this.cube.position.z + Math.sin(angle) * distance;
+    const spawnPosition = new THREE.Vector3(spawnX, this.cube.position.y, spawnZ);
     let enemy;
     if (this.enemyPool.length > 0) {
       enemy = this.enemyPool.pop();
-      // Make sure the recycled enemy has a mesh; if not, recreate it.
       if (!enemy.mesh) {
         enemy = new Enemy(spawnPosition);
       } else {
         enemy.mesh.position.copy(spawnPosition);
       }
       enemy.active = true;
-      // Always add the enemy's mesh back to the scene.
       if (!this.scene.children.includes(enemy.mesh)) {
         this.scene.add(enemy.mesh);
       }
@@ -241,7 +239,6 @@ export class GameManager {
       this.scene.add(enemy.mesh);
     }
     this.enemies.push(enemy);
-    // Insert each enemy's position into the octree. (Assuming each enemy is stored in this.enemies with a .mesh.position.)
     this.octree.insert(enemy.mesh.position, enemy);
   }
 
