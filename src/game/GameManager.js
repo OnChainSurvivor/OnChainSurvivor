@@ -1,4 +1,3 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.module.js';
 import { getScene, getCamera, getRenderer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { Enemy } from './Enemy.js';
@@ -132,10 +131,35 @@ export class GameManager {
   }
 
   initScene() {
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    this.cube = new THREE.Mesh(geometry, material);
-    this.scene.add(this.cube);
+    // ===== Load the Survivor.fbx model for the main character =====
+    const loader = new THREE.FBXLoader();
+    loader.load(
+      'Media/Models/Survivor.fbx',
+      (object) => {
+        // Optionally traverse to apply a simple material to each mesh
+        object.traverse((child) => {
+          if (child.isMesh) {
+            // Replace or augment this material as needed
+            child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+          }
+        });
+        this.cube = object;
+        // Adjust scale and initial position as desired
+        this.cube.scale.set(2.5, 2.5, 2.5);
+        this.cube.position.set(0, 0, 0);
+        // Setup the AnimationMixer for playing the model's default animation
+        this.cube.mixer = new THREE.AnimationMixer(this.cube);
+        if (object.animations && object.animations.length > 0) {
+          this.cube.animationAction = this.cube.mixer.clipAction(object.animations[0]);
+          this.cube.animationAction.play();
+        }
+        this.scene.add(this.cube);
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading Survivor.fbx model:', error);
+      }
+    );
 
     // Create an instanced mesh for enemies. Define the enemy geometry and material.
     const enemyGeometry = new THREE.BoxGeometry(1, 1, 1); // Replace with your enemy geometry
@@ -273,24 +297,53 @@ export class GameManager {
     this.animationFrameId = requestAnimationFrame(() => this.animate());
     const delta = this.clock.getDelta();
 
-    // Update player movement via keys (WASD)
-    if (keys.w) {
-      this.cube.position.y += this.moveSpeed * delta;
-    }
-    if (keys.s) {
-      this.cube.position.y -= this.moveSpeed * delta;
-    }
-    if (keys.a) {
-      this.cube.position.x -= this.moveSpeed * delta;
-    }
-    if (keys.d) {
-      this.cube.position.x += this.moveSpeed * delta;
+    // Update animations
+    if (this.cube && this.cube.mixer) {
+      this.cube.mixer.update(delta);
     }
 
-    // Update enemy movement for each active enemy
+    // Calculate movement direction (movement along the XZ plane)
+    const moveDirection = new THREE.Vector3(0, 0, 0);
+    if (keys.w) moveDirection.z -= 1;
+    if (keys.s) moveDirection.z += 1;
+    if (keys.d) moveDirection.x += 1;
+    if (keys.a) moveDirection.x -= 1;
+
+    if (moveDirection.lengthSq() > 0) {
+      moveDirection.normalize();
+
+      // Update position on the XZ plane rather than Y axis:
+      this.cube.position.x += moveDirection.x * this.moveSpeed * delta;
+      this.cube.position.z += moveDirection.z * this.moveSpeed * delta;
+
+      // Calculate rotation based on X and Z components.
+      // Using Math.atan2(moveDirection.x, moveDirection.z) aligns the rotation correctly.
+      const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+
+      // Smoothly interpolate the current rotation towards the target rotation.
+      const rotationSpeed = 10;
+      const currentRotation = this.cube.rotation.y;
+      let deltaRotation = targetRotation - currentRotation;
+      if (deltaRotation > Math.PI) deltaRotation -= 2 * Math.PI;
+      if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
+      this.cube.rotation.y += deltaRotation * rotationSpeed * delta;
+
+      // Ensure the animation is playing, if available.
+      if (this.cube.animationAction && !this.cube.animationAction.isRunning()) {
+        this.cube.animationAction.play();
+      }
+    }
+
+    // Update enemies octree and handle collisions
+    const gameBounds = new THREE.Box3(
+      new THREE.Vector3(-1000, -1000, -1000),
+      new THREE.Vector3(1000, 1000, 1000)
+    );
+    const dynamicOctree = new Octree(gameBounds);
     this.enemies.forEach(enemy => {
       if (enemy.active) {
         enemy.update(delta, this.cube.position);
+        dynamicOctree.insert(enemy.mesh.position, enemy);
       }
     });
 
@@ -316,16 +369,6 @@ export class GameManager {
     }
 
     this.updateBullets(delta);
-
-    // Build a dynamic octree based on current enemy positions
-    const gameBounds = new THREE.Box3(
-      new THREE.Vector3(-1000, -1000, -1000),
-      new THREE.Vector3(1000, 1000, 1000)
-    );
-    const dynamicOctree = new Octree(gameBounds);
-    this.enemies.forEach(enemy => {
-      dynamicOctree.insert(enemy.mesh.position, enemy);
-    });
 
     // Collision detection: Player vs. Enemy
     const querySize = 2;
@@ -410,7 +453,7 @@ export class GameManager {
     }
 
     // Update camera (smooth follow)
-    const offset = new THREE.Vector3(0, 15, 50);
+    const offset = new THREE.Vector3(0, 10, 15);
     const targetPosition = this.cube.position.clone().add(offset);
     this.camera.position.lerp(targetPosition, 0.1);
     this.camera.lookAt(this.cube.position);
