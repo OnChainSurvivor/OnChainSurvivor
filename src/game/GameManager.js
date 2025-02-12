@@ -131,29 +131,46 @@ export class GameManager {
   }
 
   initScene() {
-    // ===== Load the Survivor.fbx model for the main character =====
     const loader = new THREE.FBXLoader();
     loader.load(
       'Media/Models/Survivor.fbx',
       (object) => {
-        // Optionally traverse to apply a simple material to each mesh
+        // Set up the main character.
         object.traverse((child) => {
           if (child.isMesh) {
-            // Replace or augment this material as needed
             child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
           }
         });
         this.cube = object;
-        // Adjust scale and initial position as desired
-        this.cube.scale.set(2.5, 2.5, 2.5);
+        this.cube.scale.set(1,1,1);
         this.cube.position.set(0, 0, 0);
-        // Setup the AnimationMixer for playing the model's default animation
         this.cube.mixer = new THREE.AnimationMixer(this.cube);
         if (object.animations && object.animations.length > 0) {
           this.cube.animationAction = this.cube.mixer.clipAction(object.animations[0]);
           this.cube.animationAction.play();
+          // Store the enemy animation clip for later use.
+          this.enemyFBXAnimationClip = object.animations[0];
         }
         this.scene.add(this.cube);
+
+        // Set up the FBX geometry and material for enemies.
+        let enemyGeometry = null;
+        let enemyMaterial = null;
+        object.traverse((child) => {
+          if (child.isMesh && !enemyGeometry) {
+            enemyGeometry = child.geometry.clone();
+            enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xffFFff });
+          }
+        });
+        if (enemyGeometry) {
+          this.enemyInstancedMesh = new THREE.InstancedMesh(enemyGeometry, enemyMaterial, 10000);
+          this.enemyInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+          this.scene.add(this.enemyInstancedMesh);
+          this.enemyFBXGeometry = enemyGeometry;
+          this.enemyFBXMaterial = enemyMaterial;
+        } else {
+          console.error("Enemy instanced mesh creation failed: no mesh found in the FBX model.");
+        }
       },
       undefined,
       (error) => {
@@ -161,18 +178,7 @@ export class GameManager {
       }
     );
 
-    // Create an instanced mesh for enemies. Define the enemy geometry and material.
-    const enemyGeometry = new THREE.BoxGeometry(1, 1, 1); // Replace with your enemy geometry
-    const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    // For example, support up to 10000 enemies
-    this.enemyInstancedMesh = new THREE.InstancedMesh(enemyGeometry, enemyMaterial, 10000);
-    // Mark the matrix as dynamic so we can update it each frame.
-    this.enemyInstancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    this.scene.add(this.enemyInstancedMesh);
-
-    // Instead of using individual enemy objects containing meshes,
-    // maintain a data array for enemy properties.
-    this.enemiesData = []; // Each enemy: { position, rotation, movementspeed, active }
+    this.enemiesData = [];
   }
 
   shootBullet(direction) {
@@ -225,7 +231,7 @@ export class GameManager {
     if (this.enemyPool.length > 0) {
       enemy = this.enemyPool.pop();
       if (!enemy.mesh) {
-        enemy = new Enemy(spawnPosition);
+        enemy = new Enemy(spawnPosition, this.enemyFBXGeometry, this.enemyFBXMaterial, this.enemyFBXAnimationClip);
       } else {
         enemy.mesh.position.copy(spawnPosition);
       }
@@ -234,7 +240,7 @@ export class GameManager {
         this.scene.add(enemy.mesh);
       }
     } else {
-      enemy = new Enemy(spawnPosition);
+      enemy = new Enemy(spawnPosition, this.enemyFBXGeometry, this.enemyFBXMaterial, this.enemyFBXAnimationClip);
       enemy.active = true;
       this.scene.add(enemy.mesh);
     }
@@ -308,16 +314,13 @@ export class GameManager {
 
     if (moveDirection.lengthSq() > 0) {
       moveDirection.normalize();
-
-      // Update position on the XZ plane rather than Y axis:
+      
+      // Update the player's position on the XZ plane
       this.cube.position.x += moveDirection.x * this.moveSpeed * delta;
       this.cube.position.z += moveDirection.z * this.moveSpeed * delta;
 
-      // Calculate rotation based on X and Z components.
-      // Using Math.atan2(moveDirection.x, moveDirection.z) aligns the rotation correctly.
+      // Calculate target rotation and smoothly interpolate toward it
       const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-
-      // Smoothly interpolate the current rotation towards the target rotation.
       const rotationSpeed = 10;
       const currentRotation = this.cube.rotation.y;
       let deltaRotation = targetRotation - currentRotation;
@@ -325,9 +328,17 @@ export class GameManager {
       if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
       this.cube.rotation.y += deltaRotation * rotationSpeed * delta;
 
-      // Ensure the animation is playing, if available.
-      if (this.cube.animationAction && !this.cube.animationAction.isRunning()) {
-        this.cube.animationAction.play();
+      // Unpause and ensure animation is playing when moving
+      if (this.cube.animationAction) {
+        this.cube.animationAction.paused = false;
+        if (!this.cube.animationAction.isRunning()) {
+          this.cube.animationAction.play();
+        }
+      }
+    } else {
+      // If not moving, pause the animation so the player stops animating.
+      if (this.cube.animationAction) {
+        this.cube.animationAction.paused = true;
       }
     }
 
@@ -386,7 +397,7 @@ export class GameManager {
       const bulletRange = new THREE.Box3().setFromCenterAndSize(bullet.position, new THREE.Vector3(bulletCollisionThreshold, bulletCollisionThreshold, bulletCollisionThreshold));
       const enemiesHit = dynamicOctree.query(bulletRange);
       for (let enemy of enemiesHit) {
-        if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) { // squared collision threshold
+        if (enemy.mesh && bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) { // squared collision threshold
           console.log("Bullet collided with enemy!");
           // Remove enemy and add a blue drop
           this.scene.remove(enemy.mesh);
@@ -450,7 +461,7 @@ export class GameManager {
     }
 
     // Update camera (smooth follow)
-    const offset = new THREE.Vector3(0, 10, 15);
+    const offset = new THREE.Vector3(0, 10, 10);
     const targetPosition = this.cube.position.clone().add(offset);
     this.camera.position.lerp(targetPosition, 0.1);
     this.camera.lookAt(this.cube.position);
@@ -465,6 +476,11 @@ export class GameManager {
     // Update each enemy in our data array.
     for (let i = 0; i < this.enemiesData.length; i++) {
       let enemy = this.enemiesData[i];
+      enemy.animationAction = this.cube.mixer.clipAction(this.enemyFBXAnimationClip);
+      if (enemy.animationAction && !enemy.animationAction.isRunning()) {
+        enemy.animationAction.play();
+        enemy.mesh.mixer.update(delta);
+      }
       // Simple movement toward the player:
       const direction = new THREE.Vector3().subVectors(this.cube.position, enemy.position).normalize();
       enemy.position.addScaledVector(direction, enemy.movementspeed * delta);
