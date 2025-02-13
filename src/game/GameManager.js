@@ -68,10 +68,10 @@ export class GameManager {
     this.clock = new THREE.Clock();
     this.cube = null;
     // Increase player movement speed by 2: original value 6 is now 8.
-    this.moveSpeed = 10;
+    this.moveSpeed = 8;
     // Bullet properties
-    this.bulletSpeed = 10;
-    this.shootCooldown = 0;
+    this.bulletSpeed = 8;
+    this.shootCooldown = 0.5;
     // Set a higher target for camera z-offset
     this.targetCameraZ = 50;
     this.running = false;
