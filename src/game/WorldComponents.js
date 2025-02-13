@@ -15,34 +15,31 @@ export const worldComponents = {
     Octahedron: {
       initialize(mainScreen, scene, camera, renderer) {
         console.log("Initializing Octahedron");
-        // Create an octahedron using the main screen's enemyMaterial (or a fallback material)
         const geometry = new THREE.OctahedronGeometry(1);
-        geometry.scale(  3.75,5.25,5.6);
-        const material = mainScreen.enemyMaterial || new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+        geometry.scale(3.75, 5.25, 5.6);
+        const material = this.createShaderMaterial();
         const mesh = new THREE.Mesh(geometry, material);
         const mesh2 = new THREE.Mesh(geometry, material);
         mesh.position.set(0, 0, 0);
         mesh2.position.set(0, 0, 0);
         scene.add(mesh);
         scene.add(mesh2);
-        // Save a reference so we can update it.
         mainScreen.octahedronMesh1 = mesh;
         mainScreen.octahedronMesh2 = mesh2;
       },
       update(mainScreen, scene, camera, renderer, delta) {
         if (mainScreen.octahedronMesh1 && mainScreen.octahedronMesh2) {
-          // Rotate the octahedrons normally.
+          mainScreen.octahedronMesh1.material.uniforms.time.value += delta;
+          mainScreen.octahedronMesh2.material.uniforms.time.value += delta;
+          
           mainScreen.octahedronMesh1.rotation.x += delta * 0.5;
           mainScreen.octahedronMesh2.rotation.x -= delta * 0.5;
           
-          // When the player moves, quickly minimize their size.
           if (mainScreen.hasPlayerMoved) {
-            // Use a lerp factor that brings the scale down quickly.
             const targetScale = new THREE.Vector3(0.01, 0.01, 0.01);
             mainScreen.octahedronMesh1.scale.lerp(targetScale, 0.05);
             mainScreen.octahedronMesh2.scale.lerp(targetScale, 0.05);
             
-            // Once the scale is small enough, remove the meshes.
             if (mainScreen.octahedronMesh1.scale.x < 0.05) {
               scene.remove(mainScreen.octahedronMesh1);
               scene.remove(mainScreen.octahedronMesh2);
@@ -51,6 +48,39 @@ export const worldComponents = {
             }
           }
         }
+      },
+      createShaderMaterial() {
+        return new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0.0 }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+
+            vec3 rainbowColor(float t) {
+              return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+              );
+            }
+
+            void main() {
+              float t = vUv.y + time * 0.2;
+              gl_FragColor = vec4(rainbowColor(t), 1.0);
+            }
+          `,
+          side: THREE.DoubleSide,
+          wireframe: true,
+        });
       }
     },
     MiniOctahedron: {
@@ -59,7 +89,7 @@ export const worldComponents = {
         
         const miniOctahedronGeometry = new THREE.OctahedronGeometry(0.25);
         miniOctahedronGeometry.scale(0.5, 0.75, 0.5);
-        const miniOctahedronMaterial = mainScreen.enemyMaterial || new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const miniOctahedronMaterial = this.createShaderMaterial();
         const numCrystals = 750;
         const goldenAngle = Math.PI * (3 - Math.sqrt(5));
         
@@ -109,6 +139,11 @@ export const worldComponents = {
       update(mainScreen, scene, camera, renderer, delta) {
         const timeNow = Date.now() * 0.001;
         
+        if (mainScreen.miniOctahedrons.length > 0) {
+          // All mini octahedrons share the same material instance.
+          mainScreen.miniOctahedrons[0].material.uniforms.time.value += delta;
+        }
+        
         if (mainScreen.miniOctahedrons.length > 0 && mainScreen.octahedronMesh1) {
           mainScreen.miniOctahedrons.forEach((miniOctahedron, index) => {
             miniOctahedron.rotation.x += mainScreen.miniRotationIncrement;
@@ -144,6 +179,39 @@ export const worldComponents = {
             }
           });
         }
+      },
+      createShaderMaterial() {
+        return new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0.0 }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+
+            vec3 rainbowColor(float t) {
+              return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+              );
+            }
+
+            void main() {
+              float t = vUv.y + time * 0.2;
+              gl_FragColor = vec4(rainbowColor(t), 1.0);
+            }
+          `,
+
+          wireframe: true,
+        });
       }
     },
     NeonGrid: {

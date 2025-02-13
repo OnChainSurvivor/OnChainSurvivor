@@ -259,32 +259,9 @@ export class GameManager {
   }
 
   restartGame() {
-    // Remove enemy meshes and recycle them.
-    this.enemies.forEach(enemy => {
-      this.scene.remove(enemy.mesh);
-      enemy.active = false;
-      this.enemyPool.push(enemy);
-    });
-    this.enemies = [];
-
-    // Remove bullets and recycle them.
-    this.bullets.forEach(bullet => {
-      this.scene.remove(bullet);
-      this.bulletPool.push(bullet);
-    });
-    this.bullets = [];
-
-    // **New code: Remove any dropped blue spheres**  
-    this.droppedItems.forEach(drop => {
-      this.scene.remove(drop);
-    });
-    this.droppedItems = [];
-
-    // Reset additional game state as needed
-    this.cube.position.set(0, 0, 0);
-    this.shootCooldown = 0;
-    console.log("Game restarted!");
-    this.startEnemySpawner();
+    // Trigger a full page reload using the cached version.
+    // This will effectively reset the game.
+    window.location.reload(false);
   }
 
   startEnemySpawner() {
