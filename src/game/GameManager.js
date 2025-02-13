@@ -1,6 +1,7 @@
 import { getScene, getCamera, getRenderer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { Enemy } from './Enemy.js';
+import { MainScreen } from './MainScreen.js';
 
 class Octree {
   constructor(boundary, capacity = 8) {
@@ -102,6 +103,13 @@ export class GameManager {
     );
     // Instantiate Octree directly using the integrated class.
     this.octree = new Octree(gameBounds);
+
+    // Initialize the main screen from THE DARK FOREST blueprint
+    MainScreen.setup(this.scene, this.camera, this.renderer);
+
+    // NEW: Introduce a flag to track if the player has started moving.
+    this.hasPlayerMoved = false;
+    this.currentCameraOffset = new THREE.Vector3(0, 0, 15);
   }
 
   createUI() {
@@ -152,6 +160,8 @@ export class GameManager {
           this.enemyFBXAnimationClip = object.animations[0];
         }
         this.scene.add(this.cube);
+        // Hide the player model until the game officially starts.
+        this.cube.visible = false;
 
         // Set up the FBX geometry and material for enemies.
         let enemyGeometry = null;
@@ -281,7 +291,8 @@ export class GameManager {
     // Spawn an enemy every 50ms, up to a maximum of 10000 enemies
     if (this.enemySpawner) clearInterval(this.enemySpawner);
     this.enemySpawner = setInterval(() => {
-      if (this.enemies.length < 10000 && !this.isPaused) {
+      // Only spawn enemies after the player has moved
+      if (this.hasPlayerMoved && this.enemies.length < 10000 && !this.isPaused) {
         this.spawnEnemy();
       }
     }, 50);
@@ -315,11 +326,21 @@ export class GameManager {
     if (moveDirection.lengthSq() > 0) {
       moveDirection.normalize();
       
-      // Update the player's position on the XZ plane
+      // Mark that the player has started moving.
+      this.hasPlayerMoved = true;
+      // Propagate this flag to MainScreen so that it's available in update methods.
+      MainScreen.hasPlayerMoved = true;
+
+      // Reveal the player model if it is still hidden.
+      if (!this.cube.visible) {
+        this.cube.visible = true;
+      }
+
+      // Update the player's position on the XZ plane.
       this.cube.position.x += moveDirection.x * this.moveSpeed * delta;
       this.cube.position.z += moveDirection.z * this.moveSpeed * delta;
 
-      // Calculate target rotation and smoothly interpolate toward it
+      // Calculate target rotation and smoothly interpolate toward it.
       const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
       const rotationSpeed = 10;
       const currentRotation = this.cube.rotation.y;
@@ -328,7 +349,7 @@ export class GameManager {
       if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
       this.cube.rotation.y += deltaRotation * rotationSpeed * delta;
 
-      // Unpause and ensure animation is playing when moving
+      // Unpause the player animation.
       if (this.cube.animationAction) {
         this.cube.animationAction.paused = false;
         if (!this.cube.animationAction.isRunning()) {
@@ -336,7 +357,7 @@ export class GameManager {
         }
       }
     } else {
-      // If not moving, pause the animation so the player stops animating.
+      // If no movement, pause the animation.
       if (this.cube.animationAction) {
         this.cube.animationAction.paused = true;
       }
@@ -460,15 +481,28 @@ export class GameManager {
       }
     }
 
-    // Update camera (smooth follow)
-    const offset = new THREE.Vector3(0, 10, 10);
-    const targetPosition = this.cube.position.clone().add(offset);
+    // Update camera offset based on player movement
+    let desiredOffset;
+    if (this.hasPlayerMoved) {
+      desiredOffset = new THREE.Vector3(0, 10, 10);
+    } else {
+      desiredOffset = new THREE.Vector3(0, 0, 15);
+    }
+    // Smoothly interpolate the current camera offset toward the desired offset
+    this.currentCameraOffset.lerp(desiredOffset, 0.01); // Adjust the lerp factor for a slower/faster transition
+
+    // Update the camera position based on the player's position plus the current camera offset
+    const targetPosition = this.cube.position.clone().add(this.currentCameraOffset);
     this.camera.position.lerp(targetPosition, 0.1);
     this.camera.lookAt(this.cube.position);
 
     // Update UI counters
     this.enemyCounterElement.innerText = `Enemies: ${this.enemies.length}`;
     this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
+
+    // Update your main screen components
+    MainScreen.update(this.scene, this.camera, this.renderer, delta);
+
     this.renderer.render(this.scene, this.camera);
   }
 
