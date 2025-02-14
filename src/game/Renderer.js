@@ -1,6 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.module.js';
-
-let scene, camera, renderer;
+let scene, camera, renderer, composer;
 
 export function initRenderer() {
     // Create Scene
@@ -16,15 +14,38 @@ export function initRenderer() {
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
+    // Create a render target
+    const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        encoding: THREE.sRGBEncoding,
+    });
+    
+    // Create the composer and add passes
+    composer = new THREE.EffectComposer(renderer, renderTarget);
+    const renderPass = new THREE.RenderPass(scene, camera);
+    const bloomPass = new THREE.UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.5,    // increased strength for a brighter bloom
+        0.5,    
+        0.0     // lowered threshold to capture more bright areas
+    );
+    composer.addPass(renderPass);
+    composer.addPass(bloomPass);
+
     // Listen for window resize events to keep the scene updated
     window.addEventListener('resize', onWindowResize, false);
 }
 
 function onWindowResize() {
-    const canvas = document.getElementById('survivorCanvas');
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    // If you have a composer, update its size as well:
+    if(composer) {
+        composer.setSize(window.innerWidth, window.innerHeight);
+    }
 }
 
 export function getScene() {
@@ -39,15 +60,19 @@ export function getRenderer() {
     return renderer;
 }
 
-export function renderScene() {
-    renderer.render(scene, camera);
+export function getComposer() {
+    return composer;
+}
 
-    // Assuming 'canvas' is the WebGL canvas from which you want to extract the current frame
+export function renderScene() {
+    // Use the composer so that the bloom/neon passes are applied
+    composer.render(scene, camera);
+
+    // (Optional) If you have other post-processing steps, call them here.
     if (styleTransferEnabled) {
         // Get the frame from the canvas, pass it to the style transfer module asynchronously
         applyStyleTransfer(canvas).then((styledFrame) => {
-            // Draw the styled frame to an on-screen canvas or update the visible canvas with the processed image.
-            // The strategy here can vary: you might use an offscreen canvas or replace the WebGL canvas content.
+            // Draw or update the displayed frame as needed.
         });
     }
 } 

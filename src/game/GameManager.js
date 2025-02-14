@@ -1,4 +1,4 @@
-import { getScene, getCamera, getRenderer } from './Renderer.js';
+import { getScene, getCamera, getRenderer, getComposer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { Enemy } from './Enemy.js';
 import { MainScreen } from './MainScreen.js';
@@ -65,6 +65,7 @@ export class GameManager {
     this.scene = getScene();
     this.camera = getCamera();
     this.renderer = getRenderer();
+    this.composer = getComposer();
     this.clock = new THREE.Clock();
     this.cube = null;
     // Increase player movement speed by 2: original value 6 is now 8.
@@ -438,10 +439,26 @@ export class GameManager {
     this.trailTimer += delta;
     const trailInterval = 0.2;
     if (this.trailTimer >= trailInterval) {
-      const trailGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-      const trailMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-      const trailPiece = new THREE.Mesh(trailGeometry, trailMaterial);
+      const footSize = { width: 0.15, length: 0.4 };
+      const footGeometry = new THREE.Shape();
+      footGeometry.moveTo(-footSize.width, -footSize.length/2);
+      footGeometry.lineTo(-footSize.width, footSize.length/2);
+      footGeometry.quadraticCurveTo(0, footSize.length/2 + 0.1, footSize.width, footSize.length/2);
+      footGeometry.lineTo(footSize.width, -footSize.length/2);
+      footGeometry.quadraticCurveTo(0, -footSize.length/2 - 0.1, -footSize.width, -footSize.length/2);
+
+      const footShape = new THREE.ShapeGeometry(footGeometry);
+      const trailMaterial = new THREE.MeshBasicMaterial({ 
+          color: 0xffff00,
+          transparent: true,
+          opacity: 0.6
+      });
+
+      const trailPiece = new THREE.Mesh(footShape, trailMaterial);
       trailPiece.position.copy(this.cube.position);
+      trailPiece.rotation.x = -Math.PI/2; // Lay flat on the ground
+      trailPiece.rotation.z = this.cube.rotation.y + (this.trailPieces.length % 2 ? Math.PI/6 : -Math.PI/6); // Alternate left/right feet
+      trailPiece.position.y += 0.01; // Slightly above ground to prevent z-fighting
       trailPiece.birth = this.clock.elapsedTime;
       this.scene.add(trailPiece);
       this.trailPieces.push(trailPiece);
@@ -452,9 +469,13 @@ export class GameManager {
     const trailLifetime = 2;
     for (let i = this.trailPieces.length - 1; i >= 0; i--) {
       const piece = this.trailPieces[i];
-      if (this.clock.elapsedTime - piece.birth > trailLifetime) {
+      const age = this.clock.elapsedTime - piece.birth;
+      if (age > trailLifetime) {
         this.scene.remove(piece);
         this.trailPieces.splice(i, 1);
+      } else {
+        // Fade out the footprint
+        piece.material.opacity = 0.6 * (1 - age / trailLifetime);
       }
     }
 
@@ -480,7 +501,8 @@ export class GameManager {
     // Update your main screen components
     MainScreen.update(this.scene, this.camera, this.renderer, delta);
 
-    this.renderer.render(this.scene, this.camera);
+    // Use composer instead of direct renderer
+    this.composer.render();
   }
 
   updateEnemiesInstanced(delta) {

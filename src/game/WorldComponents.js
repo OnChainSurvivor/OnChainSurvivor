@@ -217,19 +217,91 @@ export const worldComponents = {
     NeonGrid: {
       initialize(mainScreen, scene, camera, renderer) {
         console.log("Initializing NeonGrid");
-        // Create a grid helper with neon-inspired colors.
-        const size = 1000;
-        const divisions = 500;
+
+        // Use configurable grid size and divisions if they exist, otherwise default.
+        const size = mainScreen.gridSize !== undefined ? mainScreen.gridSize : 100;
+        const divisions = mainScreen.gridDivisions !== undefined ? mainScreen.gridDivisions : 10;
+
         const gridHelper = new THREE.GridHelper(size, divisions, 0x00ffff, 0x00ffff);
         gridHelper.material.opacity = 0.5;
         gridHelper.material.transparent = true;
         scene.add(gridHelper);
         mainScreen.neonGrid = gridHelper;
+
+        // Calculate cell size from grid parameters.
+        const cellSize = size / divisions;
+        const halfSize = size / 2;
+
+        mainScreen.gridLabels = [];
+
+        // For each cell, create a sprite displaying its coordinate (1-based indexing).
+        for (let i = 0; i < divisions; i++) {
+          for (let j = 0; j < divisions; j++) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            ctx.font = '16px Arial';
+            ctx.fillStyle = 'cyan';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const labelText = `[${i + 1},${j + 1}]`;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillText(labelText, canvas.width / 2, canvas.height / 2);
+
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+
+            const spriteMaterial = new THREE.SpriteMaterial({
+              map: texture,
+              transparent: true,
+              opacity: 0.8
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+
+            // Place the label at the center of its cell (grid on the XZ plane).
+            const x = (j + 0.5) * cellSize - halfSize;
+            const z = (i + 0.5) * cellSize - halfSize;
+            sprite.position.set(x, 0.2, z);
+            sprite.scale.set(3, 1.5, 1);
+
+            // Save cell indices (0-indexed) for later comparison.
+            sprite.userData.cell = { row: i, col: j };
+
+            scene.add(sprite);
+            mainScreen.gridLabels.push(sprite);
+          }
+        }
       },
+
       update(mainScreen, scene, camera, renderer, delta) {
-        if (mainScreen.neonGrid) {
-          // Optional: rotate the grid for a dynamic effect.
-          // mainScreen.neonGrid.rotation.y += delta * 0.2;
+        if (mainScreen.neonGrid && mainScreen.gridLabels) {
+          // Use player's cube if available, otherwise fallback to the camera's position.
+          const playerPos = (mainScreen.cube && mainScreen.cube.position)
+            ? mainScreen.cube.position
+            : camera.position;
+
+          // Retrieve configurable grid parameters.
+          const size = mainScreen.gridSize !== undefined ? mainScreen.gridSize : 100;
+          const divisions = mainScreen.gridDivisions !== undefined ? mainScreen.gridDivisions : 10;
+          const cellSize = size / divisions;
+          const halfSize = size / 2;
+          
+          // Determine grid cell based on the player's position.
+          const col = Math.floor((playerPos.x + halfSize) / cellSize);
+          // Shift the row upward by one so that the cell above is selected.
+          const row = Math.floor((playerPos.z + halfSize) / cellSize) - 1;
+          
+          const clampedRow = Math.max(0, Math.min(row, divisions - 1));
+          const clampedCol = Math.max(0, Math.min(col, divisions - 1));
+
+          // Only the label of the cell that matches the computed indices will be visible.
+          mainScreen.gridLabels.forEach(sprite => {
+            const cell = sprite.userData.cell;
+            sprite.visible = (cell && cell.row === clampedRow && cell.col === clampedCol);
+            sprite.quaternion.copy(camera.quaternion);
+          });
         }
       }
     }
