@@ -2,7 +2,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.m
 
 export class Enemy {
   constructor(position) {
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const geometry = new THREE.BoxGeometry(.5, 1.5, .51);
     const material = new THREE.MeshBasicMaterial({ color: 0xff00ff });
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.copy(position);

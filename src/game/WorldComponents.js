@@ -218,90 +218,273 @@ export const worldComponents = {
       initialize(mainScreen, scene, camera, renderer) {
         console.log("Initializing NeonGrid");
 
-        // Use configurable grid size and divisions if they exist, otherwise default.
         const size = mainScreen.gridSize !== undefined ? mainScreen.gridSize : 100;
         const divisions = mainScreen.gridDivisions !== undefined ? mainScreen.gridDivisions : 10;
+        const cellSize = size / divisions;
+        const halfSize = size / 2;
 
+        // Create the grid helper.
         const gridHelper = new THREE.GridHelper(size, divisions, 0x00ffff, 0x00ffff);
         gridHelper.material.opacity = 0.5;
         gridHelper.material.transparent = true;
         scene.add(gridHelper);
         mainScreen.neonGrid = gridHelper;
 
-        // Calculate cell size from grid parameters.
-        const cellSize = size / divisions;
-        const halfSize = size / 2;
+        // (The cell number labels have been removed.)
+        mainScreen.gridLabels = []; // Left empty or removed entirely if not needed.
 
-        mainScreen.gridLabels = [];
+        // Create textured cube with improved material settings
+        const cubeGeometry = new THREE.BoxGeometry(cellSize * 0.4, cellSize * 0.4, cellSize * 0.00004);
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Create an improved material with better rendering properties
+        const cubeMaterial = new THREE.MeshPhysicalMaterial({ 
+          color: 0xffffff,
+          metalness: 0.0,    // Reduced metalness for better texture visibility
+          roughness: 0,    // Smoother surface
+          clearcoat: 1,    // Add clearcoat for shine
+          clearcoatRoughness: 1,
+          transparent: true,
+          alphaTest: 0,    // Help with transparency
+          side: THREE.DoubleSide
+        });
 
-        // For each cell, create a sprite displaying its coordinate (1-based indexing).
-        for (let i = 0; i < divisions; i++) {
-          for (let j = 0; j < divisions; j++) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64;
-            canvas.height = 32;
-            const ctx = canvas.getContext('2d');
-            ctx.font = '16px Arial';
-            ctx.fillStyle = 'cyan';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
-            const labelText = `[${i + 1},${j + 1}]`;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillText(labelText, canvas.width / 2, canvas.height / 2);
+        // Position cube (same as before)
+        const cubeCellRow = 2;
+        const cubeCellCol = 5;
+        const cubeX = (cubeCellCol + 0.5) * cellSize - halfSize;
+        const cubeZ = (cubeCellRow + 0.5) * cellSize - halfSize;
+    
+        // Add a point light near the cube for better visibility
+        const pointLight = new THREE.PointLight(0xffffff, 1, 10);
+        pointLight.position.set(cubeX, 3, cubeZ);
+        scene.add(pointLight);
+        mainScreen.cubeLight = pointLight;
 
-            const texture = new THREE.Texture(canvas);
-            texture.needsUpdate = true;
+        // --- Add card-like slab next to the cube (without white slab) ---
 
-            const spriteMaterial = new THREE.SpriteMaterial({
-              map: texture,
-              transparent: true,
-              opacity: 0.8
-            });
-            const sprite = new THREE.Sprite(spriteMaterial);
+        // Compute the position for the Auditor card (same cell previously occupied by the white slab)
+        const cardX = cubeX + cellSize * 0.8; // to the right of the cube
+        const cardY = 2;
+        const cardZ = cubeZ;
 
-            // Place the label at the center of its cell (grid on the XZ plane).
-            const x = (j + 0.5) * cellSize - halfSize;
-            const z = (i + 0.5) * cellSize - halfSize;
-            sprite.position.set(x, 0.2, z);
-            sprite.scale.set(3, 1.5, 1);
+        // Create a group for the auditor card components and position it accordingly
+        const cardGroup = new THREE.Group();
+        cardGroup.position.set(cardX, cardY, cardZ);
 
-            // Save cell indices (0-indexed) for later comparison.
-            sprite.userData.cell = { row: i, col: j };
+        // Create the card's title area (top portion) with a black background
+        const titleGeometry = new THREE.PlaneGeometry(cellSize * 0.55, cellSize * 0.15);
+        const titleMaterial = new THREE.MeshBasicMaterial({
+          color: 0x000000,  // Black background
+          side: THREE.DoubleSide
+        });
+        const titleArea = new THREE.Mesh(titleGeometry, titleMaterial);
+        titleArea.position.set(0, cellSize * 0.3, 0.051);
 
-            scene.add(sprite);
-            mainScreen.gridLabels.push(sprite);
+        // Create the image area (middle portion)
+        const imageMaterial = new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          metalness: 0.0,
+          roughness: 0,
+          clearcoat: 1,
+          clearcoatRoughness: 1,
+          transparent: true,
+          alphaTest: 0,
+          side: THREE.DoubleSide
+        });
+        const imageArea = new THREE.Mesh(new THREE.PlaneGeometry(cellSize * 0.55, cellSize * 0.4), imageMaterial);
+        imageArea.position.set(0, 0, 0.051);
+
+        // Create the effect text area (bottom portion) with a rainbow shader
+        const textGeometry = new THREE.PlaneGeometry(cellSize * 0.55, cellSize * 0.2);
+        const textMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0.0 }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+
+            vec3 rainbowColor(float t) {
+              return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+              );
+            }
+            void main() {
+              float t = vUv.y + time * 0.2;
+              gl_FragColor = vec4(rainbowColor(t), 1.0);
+            }
+          `,
+          side: THREE.DoubleSide
+        });
+        const textArea = new THREE.Mesh(textGeometry, textMaterial);
+        textArea.position.set(0, -cellSize * 0.25, 0.051);
+
+        // Add the auditor card components (without the white slab background) to the group
+        cardGroup.add(titleArea);
+        cardGroup.add(imageArea);
+        //cardGroup.add(textArea);
+
+        // Add the card group to the scene and store it on mainScreen
+        scene.add(cardGroup);
+        mainScreen.cardGroup = cardGroup;
+
+        // Load the texture for the image area
+        textureLoader.load(
+          '../Media/Classes/Auditor/FAUDITOR.png',
+          (texture) => {
+            texture.encoding = THREE.sRGBEncoding;
+            texture.generateMipmaps = true;
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            
+            imageArea.material.map = texture;
+            imageArea.material.needsUpdate = true;
+          },
+          undefined,
+          (error) => {
+            console.error('Error loading card texture:', error);
           }
-        }
+        );
+
+        // Add the text using 3D text geometry and the same rainbow shader material
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+          // Get the title area width and height
+          const titleAreaWidth = cellSize * 0.55;  // From the titleGeometry definition
+          const titleAreaHeight = cellSize * 0.15;
+          
+          // Create text geometry with a temporary size of 1
+          const textGeo = new THREE.TextGeometry('Onchain Survivor', {
+            font: font,
+            size: 1,  // Start with size 1 for scaling calculations
+            height: 0.1,
+            curveSegments: 12,
+            bevelEnabled: false
+          });
+
+          // Compute initial bounding box
+          textGeo.computeBoundingBox();
+          const textWidth = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+          const textHeight = textGeo.boundingBox.max.y - textGeo.boundingBox.min.y;
+
+          // Calculate scale factors for width and height
+          // Use 80% of the title area to leave some padding
+          const scaleX = (titleAreaWidth * 0.8) / textWidth;
+          const scaleY = (titleAreaHeight * 0.8) / textHeight;
+
+          // Use the smaller scale to maintain aspect ratio
+          const scale = Math.min(scaleX, scaleY);
+
+          // Apply the scale to the geometry
+          textGeo.scale(scale, scale, 1);
+
+          // Recompute bounding box after scaling
+          textGeo.computeBoundingBox();
+          const scaledWidth = textGeo.boundingBox.max.x - textGeo.boundingBox.min.x;
+          const scaledHeight = textGeo.boundingBox.max.y - textGeo.boundingBox.min.y;
+
+          // Center the text
+          textGeo.translate(-scaledWidth / 2, -scaledHeight / 2, 0);
+
+          const textMesh = new THREE.Mesh(textGeo, textMaterial);
+          textMesh.position.set(0, cellSize * 0.29, 0.052);
+          cardGroup.add(textMesh);
+
+          // Store the text mesh in mainScreen for animation updates
+          mainScreen.titleText = textMesh;
+        });
+
+        // --- Create a rainbow border for the auditor card ---
+
+        // Calculate half dimensions based on the card configuration
+        const halfWidth = cellSize * 0.55 / 2; // width of the card is cellSize * 0.55
+        const topY = cellSize * 0.375;         // top: titleArea center (cellSize*0.3) + half of its height (cellSize*0.15/2)
+        const bottomY = -cellSize * 0.35;        // bottom: textArea center (-cellSize*0.25) - half of its height (cellSize*0.2/2)
+
+        // Create vertices for the border (a closed loop)
+        const borderVertices = new Float32Array([
+          -halfWidth,  topY,    0.052,
+           halfWidth,  topY,    0.052,
+           halfWidth,  bottomY, 0.052,
+          -halfWidth,  bottomY, 0.052,
+          -halfWidth,  topY,    0.052  // Close the loop
+        ]);
+
+        // Assign UV coordinates for the border so the shader can vary the color along the edge.
+        const borderUvs = new Float32Array([
+          0, 1,
+          1, 1,
+          1, 0,
+          0, 0,
+          0, 1
+        ]);
+
+        const borderGeometry = new THREE.BufferGeometry();
+        borderGeometry.setAttribute('position', new THREE.BufferAttribute(borderVertices, 3));
+        borderGeometry.setAttribute('uv', new THREE.BufferAttribute(borderUvs, 2));
+
+        const borderMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0.0 }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+              vUv = uv;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float time;
+            varying vec2 vUv;
+            vec3 rainbowColor(float t) {
+              return vec3(
+                0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
+                0.5 + 0.5 * cos(6.28318 * (t + 0.66))
+              );
+            }
+            void main() {
+              float t = vUv.x + time * 0.2;
+              gl_FragColor = vec4(rainbowColor(t), 1.0);
+            }
+          `,
+          transparent: true,
+        });
+
+        // Create a Line mesh (a line loop) using the border geometry and material, and add it to the card group
+        const borderLine = new THREE.Line(borderGeometry, borderMaterial);
+        cardGroup.add(borderLine);
+        mainScreen.cardBorder = borderLine;
       },
 
       update(mainScreen, scene, camera, renderer, delta) {
-        if (mainScreen.neonGrid && mainScreen.gridLabels) {
-          // Use player's cube if available, otherwise fallback to the camera's position.
-          const playerPos = (mainScreen.cube && mainScreen.cube.position)
-            ? mainScreen.cube.position
-            : camera.position;
 
-          // Retrieve configurable grid parameters.
-          const size = mainScreen.gridSize !== undefined ? mainScreen.gridSize : 100;
-          const divisions = mainScreen.gridDivisions !== undefined ? mainScreen.gridDivisions : 10;
-          const cellSize = size / divisions;
-          const halfSize = size / 2;
-          
-          // Determine grid cell based on the player's position.
-          const col = Math.floor((playerPos.x + halfSize) / cellSize);
-          // Shift the row upward by one so that the cell above is selected.
-          const row = Math.floor((playerPos.z + halfSize) / cellSize) - 1;
-          
-          const clampedRow = Math.max(0, Math.min(row, divisions - 1));
-          const clampedCol = Math.max(0, Math.min(col, divisions - 1));
+        // Add to the NeonGrid update method
+        if (mainScreen.cardGroup) {
+          mainScreen.cardGroup.rotation.y = Math.sin(Date.now() * 0.01 * 0.5) * 0.15;
+        }
 
-          // Only the label of the cell that matches the computed indices will be visible.
-          mainScreen.gridLabels.forEach(sprite => {
-            const cell = sprite.userData.cell;
-            sprite.visible = (cell && cell.row === clampedRow && cell.col === clampedCol);
-            sprite.quaternion.copy(camera.quaternion);
-          });
+        // Add inside the update method, within the if (mainScreen.cardGroup) block (around line 457-459):
+        if (mainScreen.titleText) {
+            mainScreen.titleText.material.uniforms.time.value += delta;
+        }
+
+        if (mainScreen.cardBorder) {
+          mainScreen.cardBorder.material.uniforms.time.value += delta;
         }
       }
     }
