@@ -85,7 +85,7 @@ function createSettingsMenu() {
     left: "0",
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 1)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -173,7 +173,7 @@ export function setupUI() {
     opacity: "1",
     transition: "opacity 500ms ease",
     pointerEvents: "auto",
-    backgroundColor: "rgba(0, 0, 0, 0.5)" // Semi-transparent background so the cube remains visible.
+    backgroundColor: "rgba(0, 0, 0, 0)" // Semi-transparent background so the cube remains visible.
   });
 
   // Top container: Game title ("Onchain Survivor")
@@ -189,7 +189,7 @@ export function setupUI() {
   // Left container: Web3 LogIn
   const TopRightContainer = createContainer(['TR-container'], { });
   TopRightContainer.appendChild(createTitleElement("Web3\nLogIn", "h2"));
-  mainMenuUI.appendChild(TopRightContainer);
+ // mainMenuUI.appendChild(TopRightContainer);
 
   // Bottom Right container: Settings icon and settings menu overlay
   const settingsTrigger = createContainer(['BR-container'], {
@@ -291,5 +291,5 @@ export function hideExitButton() {
 }
 
 function createGameTitle() {
-  return createTitleElement("Onchain Survivor");
+  return createTitleElement("🏆⚔️🔗\nOnchain Survivor");
 }
