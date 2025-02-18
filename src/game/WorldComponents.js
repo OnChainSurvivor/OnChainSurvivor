@@ -367,7 +367,7 @@ export const worldComponents = {
           const titleAreaHeight = cellSize * 0.15;
           
           // Create text geometry with a temporary size of 1
-          const textGeo = new THREE.TextGeometry('Mint!', {
+          const textGeo = new THREE.TextGeometry('GET!', {
             font: font,
             size: 1,  // Start with size 1 for scaling calculations
             height: 0.1,

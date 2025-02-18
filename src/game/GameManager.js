@@ -368,7 +368,7 @@ export class GameManager {
       if (closestEnemy) {
         const autoShootDirection = new THREE.Vector3().subVectors(closestEnemy.mesh.position, this.cube.position).normalize();
         this.shootBullet(autoShootDirection);
-        this.shootCooldown = 0.1;
+        this.shootCooldown = 2;
       }
     }
     if (this.shootCooldown > 0) {
