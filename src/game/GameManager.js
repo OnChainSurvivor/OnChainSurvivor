@@ -71,8 +71,8 @@ export class GameManager {
     // Increase player movement speed by 2: original value 6 is now 8.
     this.moveSpeed = 8;
     // Bullet properties
-    this.bulletSpeed = 8;
-    this.shootCooldown = 0.5;
+    this.bulletSpeed = 10;
+    this.shootCooldown = 1;
     // Set a higher target for camera z-offset
     this.targetCameraZ = 50;
     this.running = false;
@@ -136,7 +136,7 @@ export class GameManager {
     this.fpsCounterElement.style.padding = "5px";
     this.fpsCounterElement.style.fontFamily = "Arial, sans-serif";
     this.fpsCounterElement.style.zIndex = "1000";
-    document.body.appendChild(this.fpsCounterElement);
+   // document.body.appendChild(this.fpsCounterElement);
   }
 
   initScene() {
@@ -273,7 +273,7 @@ export class GameManager {
       if (this.hasPlayerMoved && this.enemies.length < 10000 && !this.isPaused) {
         this.spawnEnemy();
       }
-    }, 50);
+    }, 100);
   }
 
   start() {

@@ -85,7 +85,7 @@ function createSettingsMenu() {
     left: "0",
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 1)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
