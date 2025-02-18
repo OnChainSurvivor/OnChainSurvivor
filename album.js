@@ -5,8 +5,6 @@ class Entity extends THREE.Object3D {
     constructor(config, position) {
         super();
         Object.assign(this, config);
-        this.position.copy(position);
-        this.abilities = [];
     }
 }
 /*---------------------------------------------------------------------------
@@ -26,236 +24,14 @@ let accumulatedTime = 0;
 
 let cameraAngle = 0;
 let cameraRadius = 15;
-let cameraHeight = 0;
 
-let canMove = true;
 
-let xpLoadingBar, hpBar;
-
-const droppedItems = []; 
 const lightObjects = [];
 
 const enemies = [];
-const playerPositionDifference = new THREE.Vector3();  
-const enemydirection = new THREE.Vector3();    
 
-const closeEnemy = new THREE.Vector3();    
-const farEnemy = new THREE.Vector3();    
-const centerEnemy = new THREE.Vector3();
 
 let web3;
-let contract;
-
-const CONTRACT_ADDRESS = "0x776e2b52d1D7273B06F88EA18cb6FFaCf6E3908F";
-const CONTRACT_ABI = [
-  {
-    "type": "constructor",
-    "inputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "error",
-    "name": "OwnableInvalidOwner",
-    "inputs": [
-      { "internalType": "address", "name": "owner", "type": "address" }
-    ]
-  },
-  {
-    "type": "error",
-    "name": "OwnableUnauthorizedAccount",
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ChallengeAdded",
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "challenger", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ChallengeIntervalUpdated",
-    "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "previousInterval", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "newInterval", "type": "uint256" }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "ChallengeWalletUpdated",
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "previousWallet", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "newWallet", "type": "address" }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
-    ]
-  },
-  {
-    "type": "event",
-    "name": "WinnerDeclared",
-    "inputs": [
-      { "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "indexed": false, "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" },
-      { "indexed": false, "internalType": "uint256", "name": "winningBlock", "type": "uint256" }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "addChallenge",
-    "inputs": [
-      { "internalType": "uint8[3]", "name": "_parameters", "type": "uint8[3]" }
-    ],
-    "outputs": [],
-    "stateMutability": "payable"
-  },
-  {
-    "type": "function",
-    "name": "blocksUntilNextWinner",
-    "inputs": [],
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "challengeRoundBlockInterval",
-    "inputs": [],
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "challengeWallet",
-    "inputs": [],
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "challenges",
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "outputs": [
-      { "internalType": "address", "name": "challenger", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "declareWinner",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "getChallenges",
-    "inputs": [],
-    "outputs": [
-      {
-        "components": [
-          { "internalType": "address", "name": "challenger", "type": "address" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-        ],
-        "internalType": "struct ChallengeQueue.Challenge[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getPastWinners",
-    "inputs": [],
-    "outputs": [
-      {
-        "components": [
-          { "internalType": "address", "name": "challenger", "type": "address" },
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
-          { "internalType": "uint8[3]", "name": "parameters", "type": "uint8[3]" }
-        ],
-        "internalType": "struct ChallengeQueue.Challenge[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "lastWinnerBlock",
-    "inputs": [],
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "pastRoundWinners",
-    "inputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "outputs": [
-      { "internalType": "address", "name": "challenger", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setChallengeRoundBlockInterval",
-    "inputs": [
-      { "internalType": "uint256", "name": "_interval", "type": "uint256" }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "setChallengeWallet",
-    "inputs": [
-      { "internalType": "address", "name": "_newWallet", "type": "address" }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "transferOwnership",
-    "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  }
-]
 
 let spinningStates = {
     class: true,
@@ -267,123 +43,11 @@ const uiContainers = [];
 /*---------------------------------------------------------------------------
                               Utility Functions
 ---------------------------------------------------------------------------*/
-function createParticleEffect(position, color = 'green', particleCount = 50) {
-    const particleGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array(particleCount * 9);
-    const directions = new Float32Array(particleCount * 3); 
-    const spread = 3; 
-
-    for (let i = 0; i < particleCount; i++) {
-        const baseIndex = i * 9;
-        for (let j = 0; j < 9; j += 3) {
-            vertices[baseIndex + j] = position.x + (Math.random() - 0.5) * spread;
-            vertices[baseIndex + j + 1] = position.y + (Math.random() - 0.5) * spread;
-            vertices[baseIndex + j + 2] = position.z + (Math.random() - 0.5) * spread;
-        }
-        const dirX = vertices[baseIndex] - position.x;
-        const dirY = vertices[baseIndex + 1] - position.y;
-        const dirZ = vertices[baseIndex + 2] - position.z;
-        const length = Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
-        directions[i * 3] = dirX / length;
-        directions[i * 3 + 1] = dirY / length;
-        directions[i * 3 + 2] = dirZ / length;
-    }
-
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-
-    const particleMaterial = new THREE.MeshBasicMaterial({
-        color: color,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending,
-    });
-
-    const particleMesh = new THREE.Mesh(particleGeometry, particleMaterial);
-    scene.add(particleMesh);
-    const duration = 0.15;
-    const expansionSpeed = 5;
-    const startTime = performance.now();
-
-    function animateParticles() {
-        const elapsedTime = (performance.now() - startTime) / 1000;
-
-        for (let i = 0; i < particleCount; i++) {
-            const baseIndex = i * 9;
-            for (let j = 0; j < 9; j += 3) {
-                vertices[baseIndex + j] += directions[i * 3] * expansionSpeed * elapsedTime;
-                vertices[baseIndex + j + 1] += directions[i * 3 + 1] * expansionSpeed * elapsedTime;
-                vertices[baseIndex + j + 2] += directions[i * 3 + 2] * expansionSpeed * elapsedTime;
-            }
-        }
-
-        particleGeometry.attributes.position.needsUpdate = true;
-        particleMaterial.opacity = Math.max(0, 0.8 * (1 - elapsedTime / duration)); 
-
-        if (elapsedTime < duration) {
-            requestAnimationFrame(animateParticles);
-        } else {
-            scene.remove(particleMesh);
-            particleGeometry.dispose();
-            particleMaterial.dispose();
-        }
-    }
-
-    animateParticles();
-}
-async function initweb3(){
-    if (window.ethereum) {
-        await window.ethereum.enable(); 
-        web3 = new Web3(window.ethereum);
-        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        try {
-            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] });
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const accounts = await web3.eth.getAccounts();
-            const address = accounts[0];
-            localStorage.setItem('metaMaskAddress', address); 
-            let challenges = await getAllChallenges(); 
-            const userChallenge = challenges.find(challenge => 
-                challenge.challenger.toLowerCase() === address.toLowerCase()
-            );
-
-            let winners = await getLatestWinner(); 
-            let challenger = winners[winners.length - 1];
-     world = worldTypes[challenger.parameters[2]];
-            world.setup(scene,camera,renderer);
-            ability = playerTypes[0];
-            player = new Entity(playerTypes[challenger.parameters[0]], new THREE.Vector3(0, 0, 0));
-        } catch (error) {
-            if (error.code === 4902) {
-                alert('The Ethereum Sepolia chain is not available in your MetaMask, please add it manually.');
-            } else {
-                console.error('Error:', error);
-            }
-        }
-    } else {
-        world = worldTypes[0];
-        world.setup(scene,camera,renderer);
-        ability = playerTypes[0];
-        player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
-    }
-}
 
 /*---------------------------------------------------------------------------
                               Survivors Blueprint
 ---------------------------------------------------------------------------*/
 import { playerTypes } from './DFcharacterCards.js';
-/*---------------------------------------------------------------------------
-                              Enemies Blueprints
----------------------------------------------------------------------------*/
-const enemyTypes = [{
-    class: 'Enemy',
-    title: 'Basic',
-    health: 1,
-    movementspeed:0.2,
-    evasion: 0,
-    abilities: [],
-}
-];
 
 /*---------------------------------------------------------------------------
                               Worlds Blueprints
@@ -473,7 +137,6 @@ const worldTypes = [
         this.components.forEach(componentName => {
             worldComponents[componentName].update?.(this, scene, camera, renderer);
         });
-        if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
     }
 },
 {title: 'Electric Goldland',
@@ -560,10 +223,10 @@ const worldTypes = [
         this.components.forEach(componentName => {
             worldComponents[componentName].update?.(this, scene, camera, renderer);
         });
-        if (isMainMenu) if (player.mesh) player.mesh.scale.set(0, 0, 0);
     } 
 },
 ];
+
 
 const worldComponents = {
     "NeonGrid": {
@@ -668,9 +331,6 @@ const worldComponents = {
         
             const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
 
-            world.radiusTarget = 100;
-            world.radiusDirection = 1;
-            world.radiusSpeed = 0.50;
             world.gridRotationSpeed = 0.002;
             world.gridGeometry.setAttribute('offset', offsetAttribute); 
             world.gridGeometry.rotateX(-Math.PI / 2);
@@ -695,20 +355,6 @@ const worldComponents = {
             const illuminatingPositions = [];
             illuminatingPositions.push(player.position); 
 
-            const addLightSource = (obj) => {
-                if (obj.visible && world.lightSourceIndex < world.lightSourceTextureSize * world.lightSourceTextureSize) {
-                    world.lightSourceTextureData.set([obj.position.x, obj.position.y, obj.position.z], world.lightSourceIndex * 4);
-                    world.lightSourceIndex++;
-                    illuminatingPositions.push(obj.position);
-                }
-            };
-            droppedItems.forEach(item => {
-                addLightSource(item); 
-            });
-            lightObjects.forEach(item => {
-                addLightSource(item); 
-            });
-
             for (let i = 0; i < enemies.length; i++) {
                 const enemy = enemies[i];
                 let isVisible = false;
@@ -721,27 +367,6 @@ const worldComponents = {
                     }
                 }
                 enemy.visible = isVisible; 
-            }
-
-            world.lightSourceTexture.needsUpdate = true;
-            world.gridMaterial.uniforms.lightSourceCount.value = world.lightSourceIndex;
-    
-            if (!isMainMenu) {
-                const influenceRadius = world.gridMaterial.uniforms.playerInfluenceRadius.value;
-                if (world.radiusDirection === 1 && influenceRadius < world.radiusTarget) {
-                    world.gridGeometry.rotateY(world.gridRotationSpeed);
-                    world.gridMaterial.uniforms.playerInfluenceRadius.value += world.radiusSpeed;
-                } else if (world.radiusDirection === -1 && influenceRadius > player.influenceRadius) {
-                    world.gridGeometry.rotateY(world.gridRotationSpeed);
-                    world.gridMaterial.uniforms.playerInfluenceRadius.value -= world.radiusSpeed;
-                } else {
-                    if (world.radiusDirection === 1) {
-                        world.radiusDirection = -1;
-                        world.radiusTarget = player.influenceRadius;
-                    } else {
-                        world.radiusDirection = 0;
-                    }
-                }
             }
         }
     },
@@ -1050,108 +675,12 @@ updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
 window.addEventListener('load', updateRendererSize);
 
-await initweb3();
 
-/*---------------------------------------------------------------------------
-                             Player Controller
----------------------------------------------------------------------------*/
-player.health=  5;
-player.maxhealth= 5;
-player.movementspeed= 0.2;
-player.attackSpeed=  0.5;
-player.attackLTL=1000;
-player.attackPerSecond=0;
-player.influenceRadius=10;
-player.xp= 0;
-player.range=15;
-player.evasion=0;
-player.xpToNextLevel=3;
-player.level=0;
+world = worldTypes[0];
+world.setup(scene,camera,renderer);
+ability = playerTypes[0];
+player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
 
-const direction = new THREE.Vector3();
-const cameraDirection = new THREE.Vector3();
-const moveDirection = new THREE.Vector3();
-const rotationAxis = new THREE.Vector3(0, 1, 0);  
-const rotationSpeed = 0.1;
-let dropUpdateFrame = 0; 
-
-
-/*---------------------------------------------------------------------------
-                              Enemies Controller
----------------------------------------------------------------------------*/
-function updateEnemies() {
-    let closestDistance = Infinity;
-    let farthestDistance = 0;
-    let sumPosition = new THREE.Vector3(); 
-
-    playerPositionDifference.copy(player.position);
-
-    for (let i = 0; i < enemies.length; i++) {
-        const enemy = enemies[i];
-        enemydirection.copy(playerPositionDifference).sub(enemy.position).normalize();
-        const distanceToPlayer = enemy.position.distanceTo(player.position);
-    
-        if (distanceToPlayer < closestDistance) {
-            closestDistance = distanceToPlayer;
-            closeEnemy.copy(enemy.position); 
-        }
-        if (distanceToPlayer > farthestDistance) {
-            farthestDistance = distanceToPlayer;
-            farEnemy.copy(enemy.position); 
-        }
-
-        sumPosition.add(enemy.position);
-
-        for (let j = 0; j < enemies.length; j++) {
-            if (i !== j) { 
-                const otherEnemy = enemies[j];
-                const distance = enemy.position.distanceTo(otherEnemy.position);
-                const separationDistance = 5; 
-                if (distance < separationDistance) {
-                    const separationForce = enemy.position.clone().sub(otherEnemy.position).normalize();
-                    enemydirection.addScaledVector(separationForce, (separationDistance - distance) * 0.5); 
-                }
-            }
-        }
-
-        enemy.position.addScaledVector(enemydirection, enemy.movementspeed / 2);
-        enemy.rotation.y = Math.atan2(enemydirection.x, enemydirection.z);
-        enemy.updateMesh();
-    }
-
-    if (enemies.length > 0) {
-        centerEnemy.copy(sumPosition.divideScalar(enemies.length));
-    }
-}
-
-function startSpawningEnemies(player, spawnInterval = 500, spawnRadius = 50, numberOfEnemies =3) {
-    const spawnEnemy = () => {
-        if(isPaused) return;
-        if(enemies.length >100) return;
-        for (let i = 0; i < numberOfEnemies; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const offsetX = Math.cos(angle) * spawnRadius;
-            const offsetZ = Math.sin(angle) * spawnRadius;
-
-            const spawnPosition = new THREE.Vector3(
-                player.position.x + offsetX,
-                player.position.y,
-                player.position.z + offsetZ
-            );
-            
-            const enemyConfig = enemyTypes.find(type => type.class === 'Enemy'); 
-            const enemy = new Entity(enemyConfig,new THREE.Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z));
-            enemy.mesh.traverse((child) => {
-                if (child.isMesh) {
-                    child.material = world.enemyMaterial;
-                }
-            });
-            enemies.push(enemy);
-        }
-    };
-    setInterval(spawnEnemy, spawnInterval);
-}
-startSpawningEnemies(player);
 /*---------------------------------------------------------------------------
                                 UI UTILITIES 
 ---------------------------------------------------------------------------*/
@@ -1323,7 +852,7 @@ async function createGameTitle(){
     todaysContainer.appendChild(challengeTitle);
 
     const classImages = playerTypes.map(player => player.thumbnail);
-    const abilityImages = playerTypes.map(player => player.thumbnail);
+    const abilityImages = abilityTypes.map(player => player.thumbnail);
     const worldImages = worldTypes.map(world => world.thumbnail);
 
     const classContainer = document.createElement('div');
@@ -1352,7 +881,7 @@ async function createGameTitle(){
     menuButtonsContainer.childNodes.forEach(button => {
         button.addEventListener('click', () => {
             hideUI();
-            canMove=false;
+
             if(button === classContainer)  createChooseMenu(playerTypes, "\n Survivor Album 🏆","Survivor");
             if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nAbility Album ⚔️","Ability");
            });
@@ -1371,7 +900,6 @@ async function createGameTitle(){
     addContainerUI('BR-container', [aboutTitle]);
      aboutTitle.style.cursor = 'pointer';
      aboutTitle.onclick = () => {
-          canMove = false;
          isPaused = true;
          hideUI();
          createSettingsMenu();
@@ -1382,7 +910,6 @@ async function createGameTitle(){
     addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
     todaysContainer.style.cursor = 'pointer';
     loadingText.onclick = () => {
-        canMove = false;
         isPaused = true; 
         hideUI();
         showToC();
@@ -1391,7 +918,6 @@ async function createGameTitle(){
     addContainerUI('TR-container', [web3Title]).onclick = async () => {
         hideUI();
         setTimeout(() => {
-            canMove = false;
             isPaused = true;
             showMainMenu();
         }, 1100);
@@ -1453,7 +979,6 @@ function showToC() {
     goBackButton.style.cursor = 'pointer';
     popUpContainer.appendChild(goBackButton);
         goBackButton.onclick = () => {
-            canMove = true;
             hideUI();
             createGameTitle();
         };
@@ -1592,7 +1117,6 @@ function createSettingsMenu() {
   
 addContainerUI('center-container', [popUpContainer]);
   goBackButton.onclick = () => {
-    canMove = true;
     hideUI();
     createGameTitle();
   };
@@ -1676,7 +1200,6 @@ async function createInfoMenu() {
     
     addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
-        canMove = true;
         isPaused = true;
         hideUI();
         createGameTitle();
@@ -1743,7 +1266,6 @@ function showTransparencyReport() {
     
 addContainerUI('center-container', [popUpContainer]);
     goBackButton.onclick = () => {
-        canMove = false;
         isPaused = true;
         hideUI();
         showMainMenu();
@@ -1765,7 +1287,6 @@ window.addEventListener('load', async () => {
     //Todo: Add contract loading functionality here, for better user experience
     //const storedAddress = localStorage.getItem('metaMaskAddress');
     //if (storedAddress) {
-    //    canMove = false;
     //    isPaused = true;
     //    hideUI();
     //    showQueueTutorialMenu();
@@ -1783,27 +1304,10 @@ window.addEventListener('load', async () => {
 /*---------------------------------------------------------------------------
                             Main loop
 ---------------------------------------------------------------------------*/
-function resumeGame() {
-    if (isPaused) isPaused = false;
-
-    if(isMainMenu){ 
-        isMainMenu = false;
-        hideUI();
-    }
-}
 
 function animate() {
     animationFrameId = requestAnimationFrame(animate);
     accumulatedTime += clock.getDelta();
-    while (accumulatedTime >= fixedTimeStep) {
-        if (!isPaused) {
-            updatePlayerMovement();
-            updateEnemies();
-            world.challenge.update();
-        }// else if((canMove) && (keys.w ||keys.a || keys.s || keys.d)) resumeGame();
-        accumulatedTime -= fixedTimeStep;
-    }
-    
     world.update(scene,camera,renderer);
     composer.render();
 }
