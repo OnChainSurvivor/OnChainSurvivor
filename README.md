@@ -1,5 +1,5 @@
 ## Congratulations, Survivor!
-Welcome to the official OnChain Survivor repository! Congratulations on making it this far—you’ve navigated every challenge along the crypto journey. Keep pushing forward! Our project is built on the principles of fun, simplicity, decentralization, and openness.
+Welcome to the official OnChain Survivor repository! Congratulations on making it this far, you’ve navigated every challenge along your crypto journey. Keep pushing forward! Our project is built on the principles of fun, simplicity, decentralization, and openness.
 
 ## About OnChain Survivor
 OnChain Survivor is a browser-based, top-down survival game that leverages artificial intelligence in tandem with Web3 technologies to deliver a fresh gaming experience. Players navigate dynamically generated environments where the main goal is simple: survive. We combine engaging roguelite gameplay with the creative potential of AI and the security of blockchain technology to create a unique and immersive experience.
