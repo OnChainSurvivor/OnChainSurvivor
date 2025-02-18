@@ -266,9 +266,9 @@ export const worldComponents = {
         // --- Add card-like slab next to the cube (without white slab) ---
 
         // Compute the position for the Auditor card (same cell previously occupied by the white slab)
-        const cardX = cubeX + cellSize * 0.8; // to the right of the cube
-        const cardY = 2;
-        const cardZ = cubeZ;
+        const cardX = cubeX + cellSize * -0.5; // to the right of the cube
+        const cardY = 3.6;
+        const cardZ = -50;
 
         // Create a group for the auditor card components and position it accordingly
         const cardGroup = new THREE.Group();
@@ -367,7 +367,7 @@ export const worldComponents = {
           const titleAreaHeight = cellSize * 0.15;
           
           // Create text geometry with a temporary size of 1
-          const textGeo = new THREE.TextGeometry('Onchain Survivor', {
+          const textGeo = new THREE.TextGeometry('Mint here!', {
             font: font,
             size: 1,  // Start with size 1 for scaling calculations
             height: 0.1,
@@ -469,12 +469,13 @@ export const worldComponents = {
         const borderLine = new THREE.Line(borderGeometry, borderMaterial);
         cardGroup.add(borderLine);
         mainScreen.cardBorder = borderLine;
+        mainScreen.cardGroup.rotation.y = 99;
       },
 
       update(mainScreen, scene, camera, renderer, delta) {
 
         // Add to the NeonGrid update method
-        if (mainScreen.cardGroup) {
+        if (mainScreen.cardGroup && mainScreen.hasPlayerMoved) {
           mainScreen.cardGroup.rotation.y = Math.sin(Date.now() * 0.01 * 0.5) * 0.15;
         }
 

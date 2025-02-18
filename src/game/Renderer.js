@@ -27,8 +27,8 @@ export function initRenderer() {
     const renderPass = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
-        1.5,    // increased strength for a brighter bloom
-        0.5,    
+        1,    // increased strength for a brighter bloom
+        0,    
         0.0     // lowered threshold to capture more bright areas
     );
     composer.addPass(renderPass);

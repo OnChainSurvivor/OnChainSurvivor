@@ -207,7 +207,7 @@ export class GameManager {
     } else {
       // Create a new bullet if none exist in the pool
       const geometry = new THREE.SphereGeometry(0.1, 8, 8);
-      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
       bullet = new THREE.Mesh(geometry, material);
       bullet.position.copy(this.cube.position);
       bullet.velocity = direction.clone().multiplyScalar(this.bulletSpeed);
@@ -338,7 +338,7 @@ export class GameManager {
       // If no movement, pause the animation.
       if (this.cube.animationAction) {
         this.cube.animationAction.paused = true;
-      }
+     }
     }
 
     // Update enemies octree and handle collisions
@@ -409,7 +409,7 @@ export class GameManager {
 
           // Create blue sphere drop (small bonus)
           const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-          const dropMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+          const dropMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
           const drop = new THREE.Mesh(dropGeometry, dropMaterial);
           drop.position.copy(enemy.mesh.position);
           this.scene.add(drop);
@@ -449,7 +449,7 @@ export class GameManager {
 
       const footShape = new THREE.ShapeGeometry(footGeometry);
       const trailMaterial = new THREE.MeshBasicMaterial({ 
-          color: 0xffff00,
+          color: 0x00ff00,
           transparent: true,
           opacity: 0.6
       });
@@ -495,7 +495,7 @@ export class GameManager {
     this.camera.lookAt(this.cube.position);
 
     // Update UI counters
-    this.enemyCounterElement.innerText = `Enemies: ${this.enemies.length}`;
+    this.enemyCounterElement.innerText = `❤️ Enemies: ${this.enemies.length}`;
     this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
 
     // Update your main screen components
