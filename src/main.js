@@ -7,7 +7,8 @@ import {
   fadeInMainMenu, 
   getExitButton,
   showExitButton,
-  hideExitButton
+  hideExitButton,
+  hideUI
 } from './ui/UI.js';
 //import { initWeb3 } from './web3/contract.js';
 
@@ -32,7 +33,7 @@ let gameStarted = false;
 function startGame() {
   if (!gameStarted) {
     // Fade out the main menu UI over 500ms, then show the Exit button.
-    fadeOutMainMenu(500).then(() => {
+    hideUI(500).then(() => {
       showExitButton();
     });
     gameStarted = true;

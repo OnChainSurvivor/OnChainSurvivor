@@ -13,7 +13,8 @@ export function initRenderer() {
     // Create Renderer
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-
+    // renderer.setPixelRatio(window.devicePixelRatio || 1);
+    
     // Create a render target
     const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
         minFilter: THREE.LinearFilter,
@@ -41,12 +42,14 @@ export function initRenderer() {
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     // If you have a composer, update its size as well:
     if(composer) {
         composer.setSize(window.innerWidth, window.innerHeight);
     }
 }
+
 
 export function getScene() {
     return scene;
