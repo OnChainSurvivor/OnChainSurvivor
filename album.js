@@ -1,12 +1,5 @@
-/*---------------------------------------------------------------------------
-                              Classes
----------------------------------------------------------------------------*/
-class Entity extends THREE.Object3D {
-    constructor(config, position) {
-        super();
-        Object.assign(this, config);
-    }
-}
+
+
 /*---------------------------------------------------------------------------
                               Global Variables & Constants
 ---------------------------------------------------------------------------*/
@@ -14,23 +7,13 @@ let player;
 let ability;
 let world;
 
-let isPaused = true;
 let isMainMenu = true;
 
 let animationFrameId;
 const clock = new THREE.Clock();
-const fixedTimeStep = 1 / 60;
 let accumulatedTime = 0;
-
 let cameraAngle = 0;
 let cameraRadius = 15;
-
-
-const lightObjects = [];
-
-const enemies = [];
-
-
 let web3;
 
 let spinningStates = {
@@ -40,9 +23,6 @@ let spinningStates = {
 };
 
 const uiContainers = [];
-/*---------------------------------------------------------------------------
-                              Utility Functions
----------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------
                               Survivors Blueprint
@@ -138,323 +118,14 @@ const worldTypes = [
             worldComponents[componentName].update?.(this, scene, camera, renderer);
         });
     }
-},
-{title: 'Electric Goldland',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Digital Gold.',
-    thumbnail: 'Media/Worlds/GOLDLAND.jpg',
-    material:new THREE.ShaderMaterial({
-        uniforms: {
-            time: { value: 0.0 }
-        },
-        vertexShader: `
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `,
-        fragmentShader: `
-        uniform float time;
-        varying vec2 vUv;
-    
-        vec3 goldColor(float t) {
-            return vec3(
-                1.0, // Bright gold
-                0.843, // Deep yellow
-                0.0
-            );
-        }
-    
-        void main() {
-            float t = vUv.y + time * 0.2;
-            gl_FragColor = vec4(goldColor(t), 1.0);
-        }
-    `,
-        side: THREE.DoubleSide,
-        wireframe:true,
-    }),
-    playerMaterial:new THREE.MeshPhysicalMaterial({
-        envMap: null, 
-        reflectivity: 1,
-        roughness: 0.2,
-        metalness: 1,
-        clearcoat: 0.25,
-        clearcoatRoughness: 0.1,
-        transmission: 0.85,
-        ior: 1.5, 
-        thickness: 5,
-        sheen: 0.8,
-        color: new THREE.Color(0xFFD700),
-        wireframe : false,
-        emissive: 0xFFD700, 
-        emissiveIntensity: 0.8
-    }),
-    enemyMaterial:new THREE.MeshPhysicalMaterial({
-        envMap: null, 
-        reflectivity: 1,
-        roughness: 0.3,
-        metalness: 1,
-        clearcoat: 0.25,
-        clearcoatRoughness: 0.1,
-        transmission: 0.85,
-        ior: 1.5, 
-        thickness: 5,
-        sheen: 0.8,
-        color: new THREE.Color(0xFFCC33),
-        wireframe : false,
-        emissive: 0xFFCC33, 
-        emissiveIntensity: 1.2 
-    }),
-    gridMaterial:null,
-    backgroundColor:new THREE.Color(0x000000),
-    texturePath:'Media/Textures/ENVTEXTURE.png' ,
-    components: ["BloomEnvironment","Sphere","GoldenGrid"],
-    setup: function(scene, camera, renderer) {
-        document.documentElement.style.setProperty('--image-filter', 'brightness(130%) sepia(100%) hue-rotate(15deg) saturate(180%)');
-        this.components.forEach(componentName => {
-            worldComponents[componentName].initialize?.(this, scene, camera, renderer);
-        });
-            const cameraX = 0+ cameraRadius * Math.cos(cameraAngle);
-            const cameraZ = 0+ cameraRadius * Math.sin(cameraAngle);
-            camera.position.set(cameraX, 0, cameraZ);
-            camera.lookAt(0,0,0);
-    },
-    update: function(scene, camera, renderer) {
-        this.components.forEach(componentName => {
-            worldComponents[componentName].update?.(this, scene, camera, renderer);
-        });
-    } 
-},
+}
 ];
-
 
 const worldComponents = {
     "NeonGrid": {
         initialize: function(world, scene, camera, renderer) {
-            world.gridSize = 5; 
-            world.divisions = 1; 
-            world.numTiles = 25; 
-            world.gridGeometry = new THREE.PlaneGeometry( world.gridSize,  world.gridSize,  world.divisions,  world.divisions);
-            world.lightSourceTextureSize = 256; 
-            world.lightSourceTextureData = new Float32Array( world.lightSourceTextureSize *  world.lightSourceTextureSize * 4);
-            world.lightSourceTexture = new THREE.DataTexture( world.lightSourceTextureData,  world.lightSourceTextureSize,  world.lightSourceTextureSize, THREE.RGBAFormat, THREE.FloatType);
-            world.lightSourceTexture.needsUpdate = true;
-
-            world.gridMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    playerInfluenceRadius: { value: 75 } ,
-                    time: { value: 0 },
-                    playerPosition: { value: new THREE.Vector3() },
-                    lightSourceTexture: { value: world.lightSourceTexture },
-                    lightSourceCount: { value: 0 },
-                    lightSourceTextureSize: { value: world.lightSourceTextureSize },
-                },
-                vertexShader: `
-                    uniform vec3 playerPosition;
-                    uniform sampler2D lightSourceTexture;
-                    uniform int lightSourceCount;
-                    uniform float time;
-            
-                    attribute vec2 offset;
-            
-                    varying vec3 vWorldPos;
-                    varying vec2 vUv; 
-            
-                    void main() {
-                        vec3 pos = position;
-                        pos.x += offset.x;
-                        pos.z += offset.y;
-                        vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 playerPosition;
-                    uniform sampler2D lightSourceTexture;
-                    uniform int lightSourceCount;
-                    uniform int lightSourceTextureSize;
-                    uniform float time;
-                    uniform float playerInfluenceRadius;
-            
-                    varying vec3 vWorldPos;
-                    varying vec2 vUv;
-            
-                    vec3 hsv2rgb(vec3 c) {
-                        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-                        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-                        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-                    }
-            
-                    vec3 rainbowColor(float t) {
-                        return vec3(
-                            0.5 + 0.5 * cos(6.28318 * (t + 0.0)),
-                            0.5 + 0.5 * cos(6.28318 * (t + 0.33)),
-                            0.5 + 0.5 * cos(6.28318 * (t + 0.66))
-                        );
-                    }
-            
-                    void main() {
-                        float distanceToPlayer = distance(vWorldPos.xz, playerPosition.xz);
-                        float lightSourceInfluence = 0.0;
-            
-                        for (int i = 0; i < lightSourceCount; i++) {
-                            int x = i % lightSourceTextureSize;
-                            int y = i / lightSourceTextureSize;
-                            vec2 uv = vec2(float(x) / float(lightSourceTextureSize), float(y) / float(lightSourceTextureSize));
-                            vec3 lightPos = texture(lightSourceTexture, uv).xyz;
-                            float dist = distance(vWorldPos.xz, lightPos.xz);
-                            lightSourceInfluence += smoothstep(8.0, 1.0, dist);
-                        }
-            
-                        vec2 cellCoord = floor(vUv);
-                        float hue = mod((cellCoord.x + cellCoord.y) * 0.1 + time * 0.1, 1.0);
-                        float brightness = max(smoothstep(playerInfluenceRadius, 0.0, distanceToPlayer), lightSourceInfluence);
-                        
-                       
-                        vec3 color = rainbowColor(hue + time * 0.1) * brightness;
-            
-                        gl_FragColor = vec4(color, 1.0); 
-                    }
-                `,
-                wireframe: true
-            });
-            
-            const offsets = [];
-            const halfTiles = Math.floor( world.numTiles / 2);
-        
-            for (let x = -halfTiles; x <= halfTiles; x++) {
-                for (let z = -halfTiles; z <= halfTiles; z++) {
-                    offsets.push(x *  world.gridSize, z *  world.gridSize);  
-                }
-            }
-        
-            const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
-
-            world.gridRotationSpeed = 0.002;
-            world.gridGeometry.setAttribute('offset', offsetAttribute); 
-            world.gridGeometry.rotateX(-Math.PI / 2);
-            world.gridMesh = new THREE.InstancedMesh( world.gridGeometry,  world.gridMaterial, offsets.length / 2);
-            scene.add(world.gridMesh);
         },
         update: function(world) {
-            world.material.uniforms.time.value += 0.01;
-            world.gridMaterial.uniforms.time.value += 0.01;
-            world.gridMaterial.uniforms.playerPosition.value.copy(player.position);
-
-            const playerGridX = Math.floor(player.position.x / world.gridSize) * world.gridSize;
-            const playerGridZ = Math.floor(player.position.z / world.gridSize) * world.gridSize;
-
-            world.gridMesh.position.set(playerGridX, 0, playerGridZ);
-
-            if (isMainMenu) world.gridMesh.position.set(playerGridX, world.axisY, playerGridZ);
-            world.gridGeometry.rotateY(-Math.PI / 2 + 0.002); 
-
-
-            world.lightSourceIndex = 0;
-            const illuminatingPositions = [];
-            illuminatingPositions.push(player.position); 
-
-            for (let i = 0; i < enemies.length; i++) {
-                const enemy = enemies[i];
-                let isVisible = false;
-                for (let j = 0; j < illuminatingPositions.length; j++) {
-                    const lightPos = illuminatingPositions[j];
-                    const distanceToLight = enemy.position.distanceTo(lightPos);
-                    if (distanceToLight <= (player.influenceRadius-1)) { 
-                        isVisible = true;
-                        break; 
-                    }
-                }
-                enemy.visible = isVisible; 
-            }
-        }
-    },
-    "GoldenGrid": {
-        initialize: function(world, scene, camera, renderer) {
-            world.gridSize = 50; 
-            world.divisions = 20; 
-            world.numTiles = 10; 
-            world.gridGeometry = new THREE.CircleGeometry( world.gridSize,  world.gridSize,  world.divisions,  world.divisions);
-
-            world.gridMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    time: { value: 0 },
-                    playerPosition: { value: new THREE.Vector3() },
-                },
-                vertexShader: `
-                    uniform vec3 playerPosition;
-                    uniform float time;
-                    attribute vec2 offset;
-                    varying vec3 vWorldPos;
-                    varying vec2 vUv; 
-                    void main() {
-                        vec3 pos = position;
-                        pos.x += offset.x;
-                        pos.z += offset.y;
-                        vWorldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 playerPosition;
-                    uniform float time;
-                    varying vec3 vWorldPos;
-                    varying vec2 vUv;
-
-                    float wave(vec2 coord, vec2 origin, float time) {
-                        float dist = distance(coord, origin);
-                        return sin(dist * 10.0 - time * 5.0) * exp(-dist * 5.0);
-                    }
-
-                    vec3 liquidGold(float waveEffect) {
-                        vec3 baseColor = vec3(1.0, 0.84, 0.0); // Gold RGB
-                        vec3 highlight = vec3(1.5, 1.2, 0.8) * waveEffect; // Amplified highlight
-                        return baseColor + highlight;
-                    }
-
-                    void main() {
-                        vec2 uv = vUv * 10.0;
-                        vec2 playerUV = vec2(playerPosition.x, playerPosition.z) * 0.1;
-                        float waveEffect = wave(uv, playerUV, time);
-
-                        float shadow = 0.5 + 0.5 * waveEffect; // Balanced shadow range
-
-                        vec3 color = liquidGold(waveEffect) * shadow;
-                        gl_FragColor = vec4(color, 1.0);
-                    }
-                `,
-            wireframe:true,
-            });
-
-            const offsets = [];
-            const halfTiles = Math.floor(world.numTiles / 2);
-        
-            for (let x = -halfTiles; x <= halfTiles; x++) {
-                for (let z = -halfTiles; z <= halfTiles; z++) {
-                    offsets.push(x *  world.gridSize, z *  world.gridSize);  
-                }
-            }
-        
-            const offsetAttribute = new THREE.InstancedBufferAttribute(new Float32Array(offsets), 2);
-
-            world.gridRotationSpeed = 0.0002;
-            world.gridGeometry.setAttribute('offset', offsetAttribute); 
-            world.gridGeometry.rotateX(-Math.PI / 2);
-            world.gridMesh = new THREE.InstancedMesh( world.gridGeometry,  world.gridMaterial, offsets.length / 2);
-            scene.add(world.gridMesh);
-        },
-        update: function(world) {
-            world.gridGeometry.rotateY(-Math.PI / 2 + 0.0002); 
-            world.material.uniforms.time.value += 0.1;
-            world.gridMaterial.uniforms.time.value += 0.1;
-            world.gridMaterial.uniforms.playerPosition.value.copy(player.position);
-            const playerGridX = Math.floor(player.position.x / world.gridSize) * world.gridSize;
-            const playerGridZ = Math.floor(player.position.z / world.gridSize) * world.gridSize;
-            world.gridMesh.position.set(playerGridX, 0, playerGridZ);
-
-            if (isMainMenu) world.gridMesh.position.set(playerGridX, world.axisY, playerGridZ);
         }
     },
     "Octahedron": {
@@ -479,32 +150,6 @@ const worldComponents = {
                 world.octahedronMesh.scale.multiplyScalar(world.scaleDecayFactor);
                 world.octahedronMesh2.scale.multiplyScalar(world.scaleDecayFactor);
         
-                if (world.octahedronMesh.scale.x <= world.meshScaleThreshold) {
-                    scene.remove(world.octahedronMesh, world.octahedronMesh2);
-                }
-            }
-        }
-    },
-    "Sphere": {
-        initialize: function(world, scene) {
-            world.rotationIncrement = 0.005;
-            world.scaleDecayFactor = 0.95;
-            world.meshScaleThreshold = 0.1;
-
-            world.octahedronGeometry = new THREE.SphereGeometry(1,1,50);
-            world.octahedronGeometry.scale(5.6, 5, 3.75);
-            world.octahedronMesh = new THREE.Mesh(world.octahedronGeometry, world.playerMaterial);
-            scene.add(world.octahedronMesh);
-            world.octahedronMesh2 = new THREE.Mesh(world.octahedronGeometry, world.playerMaterial);
-            scene.add(world.octahedronMesh2);
-        },
-        update: function(world, scene) {
-            if (isMainMenu) {
-                world.octahedronMesh.rotation.z -= world.rotationIncrement;
-                world.octahedronMesh2.rotation.z -= world.rotationIncrement;
-            } else if (world.octahedronMesh){
-                world.octahedronMesh.scale.multiplyScalar(world.scaleDecayFactor);
-                world.octahedronMesh2.scale.multiplyScalar(world.scaleDecayFactor);
                 if (world.octahedronMesh.scale.x <= world.meshScaleThreshold) {
                     scene.remove(world.octahedronMesh, world.octahedronMesh2);
                 }
@@ -622,25 +267,6 @@ const worldComponents = {
         update: function(world) {
         },
     },
-    "BrightEnvironment": {
-        initialize: function(world, scene, camera, renderer) {
-            scene.background = world.backgroundColor;
-            world.renderScene = new THREE.RenderPass(scene, camera);
-            world.bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), .05, .05, 0.001);
-            composer.addPass(world.renderScene);
-            composer.addPass(world.bloomPass);
-            world.pmremGenerator = new THREE.PMREMGenerator(renderer);
-            world.pmremGenerator.compileEquirectangularShader();
-
-            new THREE.TextureLoader().load(world.texturePath, texture => {
-                world.envMap = world.pmremGenerator.fromEquirectangular(texture).texture;
-                world.pmremGenerator.dispose();
-                scene.environment = world.envMap;
-            });
-        },
-        update: function(world) {
-        },
-    },
 };
 /*---------------------------------------------------------------------------
                               Scene Initialization
@@ -675,11 +301,10 @@ updateRendererSize();
 window.addEventListener('resize', updateRendererSize);
 window.addEventListener('load', updateRendererSize);
 
-
 world = worldTypes[0];
 world.setup(scene,camera,renderer);
 ability = playerTypes[0];
-player = new Entity(playerTypes.find(type => type.title === 'Onchain Survivor'), new THREE.Vector3(0, 0, 0));
+player = playerTypes[0];
 
 /*---------------------------------------------------------------------------
                                 UI UTILITIES 
