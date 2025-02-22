@@ -350,9 +350,9 @@ export class GameManager {
       }
     } else {
       // If no movement, pause the animation.
-     // if (this.cube.animationAction) {
-      //  this.cube.animationAction.paused = true;
-    // }
+      if (this.cube.animationAction) {
+        this.cube.animationAction.paused = true;
+     }
     }
 
     // Update enemies octree and handle collisions
