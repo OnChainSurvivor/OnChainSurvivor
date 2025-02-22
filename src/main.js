@@ -1,15 +1,7 @@
 import { GameManager } from './game/GameManager.js';
 import { initRenderer } from './game/Renderer.js';
 import { initiateJoystick } from './input/Joystick.js';
-import { 
-  setupUI, 
-  fadeOutMainMenu, 
-  fadeInMainMenu, 
-  getExitButton,
-  showExitButton,
-  hideExitButton,
-  hideUI
-} from './ui/UI.js';
+import { setupUI,  hideUI } from './ui/UI.js';
 //import { initWeb3 } from './web3/contract.js';
 
 // Initialize Three.js renderer, scene, and camera
@@ -33,9 +25,7 @@ let gameStarted = false;
 function startGame() {
   if (!gameStarted) {
     // Fade out the main menu UI over 500ms, then show the Exit button.
-    hideUI(500).then(() => {
-      showExitButton();
-    });
+    hideUI();
     gameStarted = true;
   }
 }
@@ -60,12 +50,3 @@ document.addEventListener("joystickMoveInitiated", () => {
     startGame();
   }
 });
-
-// Exit button handler remains unchanged.
-//getExitButton().addEventListener("click", function() {
-// if (gameStarted) {
-//   hideExitButton();
-//   fadeInMainMenu(500);
-//   gameStarted = false;
-//  }
-//});

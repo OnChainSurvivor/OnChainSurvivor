@@ -502,7 +502,6 @@ export function setupUI() {
 
 }
 
-
 export function showToC() {
   const termsAndConditions = createTitleElement('\nTerms and conditions:\n\n', "title")
   const disclaimer = createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily over-ride \n the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events, \n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
@@ -637,8 +636,6 @@ addContainerUI('center-container', [popUpContainer]);
   };
   popUpContainer.appendChild(goBackButton);
 }
-
-
 
 window.addEventListener('load', async () => {
   // document.documentElement.style.setProperty('--image-filter', 'brightness(130%)');
