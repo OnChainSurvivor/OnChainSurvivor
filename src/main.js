@@ -62,10 +62,10 @@ document.addEventListener("joystickMoveInitiated", () => {
 });
 
 // Exit button handler remains unchanged.
-getExitButton().addEventListener("click", function() {
-  if (gameStarted) {
-    hideExitButton();
-    fadeInMainMenu(500);
-    gameStarted = false;
-  }
-});
+//getExitButton().addEventListener("click", function() {
+// if (gameStarted) {
+//   hideExitButton();
+//   fadeInMainMenu(500);
+//   gameStarted = false;
+//  }
+//});
