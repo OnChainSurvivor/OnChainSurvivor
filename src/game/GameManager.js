@@ -306,7 +306,6 @@ export class GameManager {
       
       // Mark that the player has started moving.
       this.hasPlayerMoved = true;
-      // Propagate this flag to MainScreen so that it's available in update methods.
       MainScreen.hasPlayerMoved = true;
 
       // Reveal the player model if it is still hidden.
@@ -315,8 +314,23 @@ export class GameManager {
       }
 
       // Update the player's position on the XZ plane.
-      this.cube.position.x += moveDirection.x * this.moveSpeed * delta;
-      this.cube.position.z += moveDirection.z * this.moveSpeed * delta;
+      const newPosition = this.cube.position.clone();
+      newPosition.x += moveDirection.x * this.moveSpeed * delta;
+      newPosition.z += moveDirection.z * this.moveSpeed * delta;
+
+      // Define grid boundaries, make this dynamic later on 
+      const gridBoundary = {
+        minX: -50,
+        maxX: 50,
+        minZ: -50,
+        maxZ: 50
+      };
+
+      // Clamp the position within the grid boundaries
+      newPosition.x = Math.max(gridBoundary.minX, Math.min(gridBoundary.maxX, newPosition.x));
+      newPosition.z = Math.max(gridBoundary.minZ, Math.min(gridBoundary.maxZ, newPosition.z));
+
+      this.cube.position.copy(newPosition);
 
       // Calculate target rotation and smoothly interpolate toward it.
       const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
