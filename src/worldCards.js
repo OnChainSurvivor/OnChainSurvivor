@@ -6,4 +6,8 @@ export const worldTypes = [
 {title: 'Digital Goldland',
     description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Digital Gold.',
     thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
-}];
+},
+{  title: "Monad-land (Testnet)",
+    description: "Survive in Monad Testnet, an extremelly fast purple landscape where 10.000 entities move per second!",
+    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    }];

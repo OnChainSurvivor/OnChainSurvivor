@@ -1,7 +1,7 @@
 import { getScene, getCamera, getRenderer, getComposer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { Enemy } from './Enemy.js';
-import { MainScreen } from './MainScreen.js';
+import { Worlds } from './Worlds.js';
 
 class Octree {
   constructor(boundary, capacity = 8) {
@@ -91,9 +91,6 @@ export class GameManager {
     this.enemyPool = [];
     this.droppedItems = []; // New array for tracking dropped blue spheres
 
-    // Define a paused flag (default: false)
-    this.isPaused = false;
-
     // Create enemy counter and FPS counter in the corner
     this.createUI();
 
@@ -106,7 +103,7 @@ export class GameManager {
     this.octree = new Octree(gameBounds);
 
     // Initialize the main screen from THE DARK FOREST blueprint
-    MainScreen.setup(this.scene, this.camera, this.renderer);
+    Worlds[1].setup(this.scene, this.camera, this.renderer);
 
     // NEW: Introduce a flag to track if the player has started moving.
     this.hasPlayerMoved = false;
@@ -270,7 +267,7 @@ export class GameManager {
     if (this.enemySpawner) clearInterval(this.enemySpawner);
     this.enemySpawner = setInterval(() => {
       // Only spawn enemies after the player has moved
-      if (this.hasPlayerMoved && this.enemies.length < 10000 && !this.isPaused) {
+      if (this.enemies.length < 125) {
         this.spawnEnemy();
       }
     }, 100);
@@ -278,10 +275,19 @@ export class GameManager {
 
   start() {
     this.running = true;
-    this.startEnemySpawner();
     // Ensure bullets array is cleared initially
     this.bullets = [];
     this.animationFrameId = requestAnimationFrame(() => this.animate());
+  }
+
+  run(){
+    this.startEnemySpawner();
+    this.hasPlayerMoved = true;
+    Worlds[1].hasPlayerMoved = true;
+    // Reveal the player model if it is still hidden.
+    if (!this.cube.visible) {
+      this.cube.visible = true;
+    }
   }
 
   animate() {
@@ -296,22 +302,15 @@ export class GameManager {
 
     // Calculate movement direction (movement along the XZ plane)
     const moveDirection = new THREE.Vector3(0, 0, 0);
+
     if (keys.w) moveDirection.z -= 1;
     if (keys.s) moveDirection.z += 1;
     if (keys.d) moveDirection.x += 1;
     if (keys.a) moveDirection.x -= 1;
 
+
     if (moveDirection.lengthSq() > 0) {
       moveDirection.normalize();
-      
-      // Mark that the player has started moving.
-      this.hasPlayerMoved = true;
-      MainScreen.hasPlayerMoved = true;
-
-      // Reveal the player model if it is still hidden.
-      if (!this.cube.visible) {
-        this.cube.visible = true;
-      }
 
       // Update the player's position on the XZ plane.
       const newPosition = this.cube.position.clone();
@@ -453,7 +452,7 @@ export class GameManager {
     this.trailTimer += delta;
     const trailInterval = 0.2;
     if (this.trailTimer >= trailInterval) {
-      const footSize = { width: 0.15, length: 0.4 };
+      const footSize = { width: 0.05, length: 0.34 };
       const footGeometry = new THREE.Shape();
       footGeometry.moveTo(-footSize.width, -footSize.length/2);
       footGeometry.lineTo(-footSize.width, footSize.length/2);
@@ -513,7 +512,7 @@ export class GameManager {
     this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
 
     // Update your main screen components
-    MainScreen.update(this.scene, this.camera, this.renderer, delta);
+    Worlds[1].update(this.scene, this.camera, this.renderer, delta);
 
     // Use composer instead of direct renderer
     this.composer.render();

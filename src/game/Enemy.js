@@ -19,7 +19,7 @@ export class Enemy {
     const material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide });
 
     this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.scale.set(0.05, 0.05, 0.05);
+    this.mesh.scale.set(0.06, 0.06, 0.06);
 
     this.mesh.rotation.x = Math.PI / 2;
     this.mesh.position.copy(position);

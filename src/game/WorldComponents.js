@@ -1,11 +1,7 @@
 export const worldComponents = {
     BloomEnvironment: {
       initialize(mainScreen, scene, camera, renderer) {
-        console.log("Initializing Bloom Environment for:", mainScreen.title);
-        // For example purposes, add an ambient light to simulate a blooming effect.
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        
+
         // (Optionally, add UnrealBloomPass postprocessing in your renderer setup.)
       },
       update(mainScreen, scene, camera, renderer, delta) {
@@ -224,7 +220,7 @@ export const worldComponents = {
         const halfSize = size / 2;
 
         // Create the grid helper.
-        const gridHelper = new THREE.GridHelper(size, divisions, 0x00ffff, 0x00ffff);
+        const gridHelper = new THREE.GridHelper(size, divisions,mainScreen.gridColor, mainScreen.gridColor);
         gridHelper.material.opacity = 0.5;
         gridHelper.material.transparent = true;
         scene.add(gridHelper);
@@ -488,5 +484,5 @@ export const worldComponents = {
           mainScreen.cardBorder.material.uniforms.time.value += delta;
         }
       }
-    }
+    },
   };

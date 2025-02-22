@@ -26,15 +26,16 @@ export function initRenderer() {
     // Create the composer and add passes
     composer = new THREE.EffectComposer(renderer, renderTarget);
     const renderPass = new THREE.RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
     const bloomPass = new THREE.UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
         1,    // increased strength for a brighter bloom
         0,    
         0.0     // lowered threshold to capture more bright areas
     );
-    composer.addPass(renderPass);
     composer.addPass(bloomPass);
-
+    
     // Listen for window resize events to keep the scene updated
     window.addEventListener('resize', onWindowResize, false);
 }

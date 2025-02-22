@@ -24,9 +24,8 @@ let gameStarted = false;
  */
 function startGame() {
   if (!gameStarted) {
-    // Fade out the main menu UI over 500ms, then show the Exit button.
     hideUI();
-    gameStarted = true;
+    game.run();
   }
 }
 
@@ -42,11 +41,6 @@ document.addEventListener("keydown", (event) => {
 // When the left joystick is activated, change the start prompt to "Move to play" and start the game.
 document.addEventListener("joystickMoveInitiated", () => {
   if (!gameStarted) {
-    // If you have a start prompt element, update its text.
-    const startPrompt = document.getElementById("startPrompt");
-    if (startPrompt) {
-      startPrompt.innerText = "Move to play";
-    }
     startGame();
   }
 });

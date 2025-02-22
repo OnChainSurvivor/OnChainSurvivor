@@ -61,6 +61,7 @@ export function createContainer (classNames = [], styles = {}) {
  * @returns {HTMLElement}
  */
 export function createChooseMenu(entityList, text, type) {
+  setCanMove(false);
   const popUpContainer = createContainer(['choose-menu-container']);;
   const titleContainer = createTitleElement(text,"title");
   const gridContainer = createContainer(['choose-menu-grid']); 
@@ -76,16 +77,19 @@ export function createChooseMenu(entityList, text, type) {
 
 function handleEntitySelection(entity, type) {
   if (type === "Survivor")  {
-
       hideUI();
+      //Logic to swap Survivor
       setupUI();
   } else if (type === "Ability") {
       hideUI();
+      //Logic to swap Ability
       setupUI();
-  } else if (type === "World") {
+  } else if (type === "Chain") {
       hideUI();
+      //Logic to swap Chain 
       setupUI();
   }
+  setCanMove(true);
 }
 
 
@@ -413,7 +417,7 @@ function saveSettings() {
     });
 }
 
-world = worldTypes[0];
+world = worldTypes[2];
 ability = playerTypes[0];
 player = playerTypes[0];
 
@@ -445,7 +449,7 @@ export function setupUI() {
   classAbilityContainer.appendChild(abilitiesSubTitle);
   classAbilityContainer.appendChild(abilitiesButton);
 
-  const worldSubTitle = createTitleElement('🔗\nPlay', "subtitle");
+  const worldSubTitle = createTitleElement('🔗\nChain', "subtitle");
   const worldButton = createButton(world, 0.65);
   const worldContainer = document.createElement('div');
   worldContainer.appendChild(worldSubTitle);
@@ -461,7 +465,8 @@ export function setupUI() {
           hideUI();
           if(button === classContainer)  createChooseMenu(playerTypes, "\n Survivor Album 🏆","Survivor");
           if(button === classAbilityContainer) createChooseMenu(abilityTypes, "\nAbility Album ⚔️","Ability");
-         });
+          if(button === worldContainer) createChooseMenu(worldTypes, "\nSelect Chain 🔗","Chain");
+        });
   });
 
   createRandomRunEffect(classButton, classImages, 110,  0.6 , "class"); 
