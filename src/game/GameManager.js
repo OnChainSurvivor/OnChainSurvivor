@@ -1,6 +1,6 @@
 import { getScene, getCamera, getRenderer, getComposer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
-import { Enemy } from './Enemy.js';
+import { EnemyCubeManager } from './EnemyCube.js';
 import { worlds } from './worldsConfig.js';
 
 class Octree {
@@ -121,6 +121,18 @@ export class GameManager {
     this.bulletRange = new THREE.Box3();
     this.playerRange = new THREE.Box3();
     this.dropRange = new THREE.Box3();
+
+    // Replace enemies array with EnemyCubeManager
+    this.enemyManager = new EnemyCubeManager(100);
+    this.scene.add(this.enemyManager.instancedMesh);
+
+    // Define grid boundaries
+    this.gridBoundary = {
+        minX: -50,
+        maxX: 50,
+        minZ: -50,
+        maxZ: 50
+    };
   }
 
   createUI() {
@@ -231,44 +243,25 @@ export class GameManager {
     const distance = spawnRadius * (0.8 + 0.4 * Math.random());
     const spawnX = this.player.position.x + Math.cos(angle) * distance;
     const spawnZ = this.player.position.z + Math.sin(angle) * distance;
-   
-       // Current spawn logic: compute a random offset around the player.
-       const offsetX = (Math.random() - 0.5) * 20; // random value between -10 and 10
-       const offsetZ = (Math.random() - 0.5) * 20;
-       let spawnPos = new THREE.Vector3(
-        spawnX,
-        this.player.position.y,
-        spawnZ
-       );
-   
-       // Determine grid boundary. Use gridSize defined on the world if available, else default to 100.
-       const gridSize = this.world.gridSize !== undefined ? this.world.gridSize : 100;
-       const halfSize = gridSize / 2;
-   
-       // Clamp the spawn position so enemies never spawn outside the grid.
-       spawnPos.x = Math.max(Math.min(spawnPos.x, halfSize), -halfSize);
-       spawnPos.z = Math.max(Math.min(spawnPos.z, halfSize), -halfSize);
-   
-    const spawnPosition = new THREE.Vector3(spawnPos.x, this.player.position.y, spawnPos.z);
-    let enemy;
-    if (this.enemyPool.length > 0) {
-      enemy = this.enemyPool.pop();
-      if (!enemy.mesh) {
-        enemy = new Enemy(spawnPosition,  this.world.sceneConfig.enemyColor);
-      } else {
-        enemy.mesh.position.copy(spawnPosition);
-      }
-      enemy.active = true;
-      if (!this.scene.children.includes(enemy.mesh)) {
-        this.scene.add(enemy.mesh);
-      }
+
+    const spawnPos = new THREE.Vector3(
+        Math.max(Math.min(spawnX, this.gridBoundary.maxX), this.gridBoundary.minX),
+        0,
+        Math.max(Math.min(spawnZ, this.gridBoundary.maxZ), this.gridBoundary.minZ)
+    );
+
+    if (this.enemyManager.activeEnemies.size >= 100) {
+        // Get and remove the oldest enemy
+        const oldestEnemy = this.enemyManager.getOldestEnemy();
+        if (oldestEnemy) {
+            this.enemyManager.removeEnemy(oldestEnemy);
+        }
+        // Add new enemy at the spawn position
+        this.enemyManager.addEnemy(spawnPos);
     } else {
-      enemy = new Enemy(spawnPosition, this.world.sceneConfig.enemyColor);
-      enemy.active = true;
-      this.scene.add(enemy.mesh);
+        // Add new enemy
+        this.enemyManager.addEnemy(spawnPos);
     }
-    this.enemies.push(enemy);
-    this.dynamicOctree.insert(enemy.mesh.position, enemy);
   }
 
   restartGame() {
@@ -280,44 +273,8 @@ export class GameManager {
   startEnemySpawner() {
     if (this.enemySpawner) clearInterval(this.enemySpawner);
     this.enemySpawner = setInterval(() => {
-      if (this.enemies.length < 100) {
-        this.spawnEnemy();
-      } else {
-        this.respawnOldestEnemy();
-      }
+            this.spawnEnemy();
     }, 100);
-  }
-
-  respawnOldestEnemy() {
-    // Remove the oldest enemy from the array.
-    const enemy = this.enemies.shift();
-
-    // Calculate a new spawn position (using similar logic as in spawnEnemy)
-    const spawnRadius = 20;
-    const angle = Math.random() * Math.PI * 2;
-    const distance = spawnRadius * (0.8 + 0.4 * Math.random());
-    const spawnX = this.player.position.x + Math.cos(angle) * distance;
-    const spawnZ = this.player.position.z + Math.sin(angle) * distance;
-    let spawnPos = new THREE.Vector3(spawnX, this.player.position.y, spawnZ);
-
-    // Clamp the spawn position to the grid boundaries
-    const gridSize = this.world.gridSize !== undefined ? this.world.gridSize : 100;
-    const halfSize = gridSize / 2;
-    spawnPos.x = Math.max(Math.min(spawnPos.x, halfSize), -halfSize);
-    spawnPos.z = Math.max(Math.min(spawnPos.z, halfSize), -halfSize);
-
-    // Update the enemy's position and state
-    enemy.mesh.position.copy(spawnPos);
-    enemy.active = true;
-    if (!this.scene.children.includes(enemy.mesh)) {
-      this.scene.add(enemy.mesh);
-    }
-
-    // Update the octree with the enemy's new position
-    this.dynamicOctree.insert(enemy.mesh.position, enemy);
-
-    // Push the enemy back to the end to keep the order updated
-    this.enemies.push(enemy);
   }
 
   start() {
@@ -419,14 +376,15 @@ export class GameManager {
     let closestEnemy = null;
     let closestDistanceSq = Infinity;
 
-    for (const enemy of this.enemies) {
-        if (!enemy.active) continue;
+    // Update enemy instances through EnemyManager
+    this.enemyManager.update(delta, this.player.position);
+
+    // Get all active enemies for octree and closest enemy detection
+    const activeEnemies = this.enemyManager.getActiveEnemies();
+    for (const enemy of activeEnemies) {
+        this.dynamicOctree.insert(enemy.position, enemy);
         
-        enemy.update(delta, this.player.position);
-        this.dynamicOctree.insert(enemy.mesh.position, enemy);
-        
-        // Find closest enemy while we're iterating
-        const dSq = enemy.mesh.position.distanceToSquared(this.player.position);
+        const dSq = enemy.position.distanceToSquared(this.player.position);
         if (dSq < closestDistanceSq) {
             closestDistanceSq = dSq;
             closestEnemy = enemy;
@@ -435,7 +393,7 @@ export class GameManager {
 
     // Auto-shoot logic
     if (closestEnemy && this.shootCooldown <= 0) {
-        this.tempVector.subVectors(closestEnemy.mesh.position, this.player.position).normalize();
+        this.tempVector.subVectors(closestEnemy.position, this.player.position).normalize();
         this.shootBullet(this.tempVector);
         this.shootCooldown = 2;
     }
@@ -451,7 +409,9 @@ export class GameManager {
     
     const collidingEnemies = this.dynamicOctree.query(this.playerRange);
     for (const enemy of collidingEnemies) {
-        if (enemy.mesh.position.distanceToSquared(this.player.position) < 1) {
+        if (!enemy.active) continue;
+        
+        if (enemy.position.distanceToSquared(this.player.position) < 1) {
             console.log("Enemy collided with player!");
             this.restartGame();
             return;
@@ -469,9 +429,9 @@ export class GameManager {
         
         const enemiesHit = this.dynamicOctree.query(this.bulletRange);
         for (const enemy of enemiesHit) {
-            if (!enemy.mesh || !enemy.active) continue;
+            if (!enemy.active) continue;
             
-            if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) {
+            if (bullet.position.distanceToSquared(enemy.position) < 0.25) {
                 this.handleEnemyDeath(enemy, bullet, i);
                 break;
             }
@@ -569,20 +529,15 @@ export class GameManager {
   // New helper method to handle enemy death
   handleEnemyDeath(enemy, bullet, bulletIndex) {
     console.log("Bullet collided with enemy!");
-    this.scene.remove(enemy.mesh);
-    enemy.active = false;
     
-    const enemyIndex = this.enemies.indexOf(enemy);
-    if (enemyIndex !== -1) {
-        this.enemies.splice(enemyIndex, 1);
-    }
-    this.enemyPool.push(enemy);
-
+    // Remove enemy using the manager
+    this.enemyManager.removeEnemy(enemy);
+    
     // Create drop
     const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
     const dropMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
     const drop = new THREE.Mesh(dropGeometry, dropMaterial);
-    drop.position.copy(enemy.mesh.position);
+    drop.position.copy(enemy.position);
     this.scene.add(drop);
     this.droppedItems.push(drop);
 
