@@ -34,7 +34,7 @@ export function initRenderer() {
         0,    
         0.0     // lowered threshold to capture more bright areas
     );
-    composer.addPass(bloomPass);
+    //composer.addPass(bloomPass);
     
     // Listen for window resize events to keep the scene updated
     window.addEventListener('resize', onWindowResize, false);
