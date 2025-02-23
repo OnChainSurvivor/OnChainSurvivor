@@ -1,5 +1,7 @@
 // UI.js - Provides helper functions to create and manage UI elements
 
+import { worlds } from '../game/worldsConfig.js';
+
 // Module-scoped variables for the main menu root, exit button, card types and ui Containers.
 let mainMenuUI;
 let exitButton;
@@ -86,8 +88,21 @@ function handleEntitySelection(entity, type) {
       setupUI();
   } else if (type === "Chain") {
       hideUI();
-      //Logic to swap Chain 
-      setupUI();
+      
+      // Find the matching world config from worlds array based on title
+      const selectedWorld = worlds.find(w => w.title === entity.title);
+      
+      if (selectedWorld) {
+        // Save the selected world's configuration into localStorage.
+        localStorage.setItem('selectedWorld', JSON.stringify(selectedWorld));
+        console.log('Switching to new world:', entity.title);
+        
+        // Force a full reload of the page
+        window.location.reload();
+      } else {
+        console.error('Selected world not found for:', entity.title);
+        setupUI();
+      }
   }
   setCanMove(true);
 }
@@ -417,13 +432,24 @@ function saveSettings() {
     });
 }
 
-world = worldTypes[2];
+world = worldTypes[0];
 ability = playerTypes[0];
 player = playerTypes[0];
 
+export function getCurrentWorld() {
+  // Try to get the saved world from localStorage
+  const savedWorld = localStorage.getItem('selectedWorld');
+  if (savedWorld) {
+    return JSON.parse(savedWorld);
+  }
+  // Fallback: return a default world (for example, the first one)
+  return worldTypes[0];
+}
+
 export function setupUI() {
-  const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor','title');
-  const worldTitle = createTitleElement(world.title,"minititle");
+  const currentWorld = getCurrentWorld();
+  const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'title');
+  const worldTitle = createTitleElement(currentWorld.title, 'minititle');
   const miniTitle = createTitleElement('Move To Start! ', "minititle");
   const web3Title = createTitleElement('♦️\nWeb3\n♦️',"subtitle");
   web3Title.style.cursor = 'pointer';
@@ -667,66 +693,3 @@ window.addEventListener('load', async () => {
  }  
 
 });
-
-
-/**
- * Returns a Promise that fades out the main menu UI (over the given duration) and then hides it.
- * @param {number} [duration=500] - Duration in milliseconds.
- * @returns {Promise}
- */
-export function fadeOutMainMenu(duration = 500) {
-  return new Promise(resolve => {
-    if (mainMenuUI) {
-      mainMenuUI.style.opacity = "0";
-      setTimeout(() => {
-        mainMenuUI.style.display = "none";
-        resolve();
-      }, duration);
-    } else {
-      resolve();
-    }
-  });
-}
-
-/**
- * Fades in the main menu UI (over the given duration).
- * @param {number} [duration=500] - Duration in milliseconds.
- */
-export function fadeInMainMenu(duration = 500) {
-  if (mainMenuUI) {
-    mainMenuUI.style.display = "block";
-    // Force a reflow so the transition works.
-    void mainMenuUI.offsetWidth;
-    mainMenuUI.style.opacity = "1";
-  }
-}
-
-/**
- * Returns the Exit button element.
- * @returns {HTMLElement}
- */
-export function getExitButton() {
-  return exitButton;
-}
-
-/**
- * Fades in the Exit button (by fading in its parent container).
- */
-export function showExitButton() {
-  const exitContainer = getExitButton().parentElement;
-  exitContainer.style.display = "block";
-  // Force reflow so transition applies.
-  void exitContainer.offsetWidth;
-  exitContainer.style.opacity = "1";
-}
-
-/**
- * Fades out the Exit button (by fading out its parent container).
- */
-export function hideExitButton() {
-  const exitContainer = getExitButton().parentElement;
-  exitContainer.style.opacity = "0";
-  setTimeout(() => {
-    exitContainer.style.display = "none";
-  }, 500); // Wait for the transition to complete.
-}

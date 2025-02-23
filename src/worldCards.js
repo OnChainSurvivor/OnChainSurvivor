@@ -1,13 +1,7 @@
-export const worldTypes = [  
-{title: 'The Dark Forest',
-    description:'Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of whats lurking in the dark!',
-    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
-},
-{title: 'Digital Goldland',
-    description:'Outlast 1000 Survivors in the Bitcoin world, where everything gleams in easily gained (and lost) Digital Gold.',
-    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
-},
-{  title: "Monad-land (Testnet)",
-    description: "Survive in Monad Testnet, an extremelly fast purple landscape where 10.000 entities move per second!",
-    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
-    }];
+import { worlds } from './game/worldsConfig.js';
+
+export const worldTypes = worlds.map(world => ({
+  title: world.title,
+  description: world.description,
+  thumbnail: world.thumbnail
+}));

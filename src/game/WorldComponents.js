@@ -219,8 +219,13 @@ export const worldComponents = {
         const cellSize = size / divisions;
         const halfSize = size / 2;
 
-        // Create the grid helper.
-        const gridHelper = new THREE.GridHelper(size, divisions,mainScreen.gridColor, mainScreen.gridColor);
+        // Create the grid helper with the sceneConfig color
+        const gridHelper = new THREE.GridHelper(
+          size, 
+          divisions,
+          mainScreen.sceneConfig.gridColor, // Primary color
+          mainScreen.sceneConfig.gridColor  // Secondary color
+        );
         gridHelper.material.opacity = 0.5;
         gridHelper.material.transparent = true;
         scene.add(gridHelper);
