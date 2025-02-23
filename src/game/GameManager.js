@@ -58,6 +58,12 @@ class Octree {
     }
     return found;
   }
+
+  clear() {
+    this.points = [];
+    this.divided = false;
+    this.children = [];
+  }
 }
 
 export class GameManager {
@@ -95,12 +101,12 @@ export class GameManager {
     this.createUI();
 
     // Define a broad boundary containing your game area
-    const gameBounds = new THREE.Box3(
-      new THREE.Vector3(-1000, -1000, -1000),
-      new THREE.Vector3(1000, 1000, 1000)
+    this.gameBounds = new THREE.Box3(
+      new THREE.Vector3(-100, -100, -100),
+      new THREE.Vector3(100, 100, 100)
     );
     // Instantiate Octree directly using the integrated class.
-    this.octree = new Octree(gameBounds);
+    this.dynamicOctree = new Octree(this.gameBounds);
 
     // Use the provided default world if available, else fallback
     this.world = defaultWorld || worlds[0];
@@ -109,6 +115,12 @@ export class GameManager {
     // NEW: Introduce a flag to track if the player has started moving.
     this.hasPlayerMoved = false;
     this.currentCameraOffset = new THREE.Vector3(0, 0, 15);
+
+    // Pre-allocate reusable vectors and boxes
+    this.tempVector = new THREE.Vector3();
+    this.bulletRange = new THREE.Box3();
+    this.playerRange = new THREE.Box3();
+    this.dropRange = new THREE.Box3();
   }
 
   createUI() {
@@ -256,7 +268,7 @@ export class GameManager {
       this.scene.add(enemy.mesh);
     }
     this.enemies.push(enemy);
-    this.octree.insert(enemy.mesh.position, enemy);
+    this.dynamicOctree.insert(enemy.mesh.position, enemy);
   }
 
   restartGame() {
@@ -302,7 +314,7 @@ export class GameManager {
     }
 
     // Update the octree with the enemy's new position
-    this.octree.insert(enemy.mesh.position, enemy);
+    this.dynamicOctree.insert(enemy.mesh.position, enemy);
 
     // Push the enemy back to the end to keep the order updated
     this.enemies.push(enemy);
@@ -329,14 +341,25 @@ export class GameManager {
     if (!this.running) return;
     this.animationFrameId = requestAnimationFrame(() => this.animate());
     const delta = this.clock.getDelta();
+    
+    // Cache player and scene references
+    const player = this.player;
+    const scene = this.scene;
 
-    // Update animations
-    if (this.player && this.player.mixer) {
-      this.player.mixer.update(delta);
+    // Update animations only if player exists and has mixer
+    if (player?.mixer) {
+        player.mixer.update(delta);
     }
 
-    // Calculate movement direction (movement along the XZ plane)
-    const moveDirection = new THREE.Vector3(0, 0, 0);
+    // Pre-calculate player position for multiple uses
+    const playerPosition = player.position;
+    
+    // Cache movement direction vector to avoid recreation
+    if (!this.moveDirection) {
+        this.moveDirection = new THREE.Vector3(0, 0, 0);
+    }
+    const moveDirection = this.moveDirection;
+    moveDirection.set(0, 0, 0);
 
     if (keys.w) moveDirection.z -= 1;
     if (keys.s) moveDirection.z += 1;
@@ -344,142 +367,134 @@ export class GameManager {
     if (keys.a) moveDirection.x -= 1;
 
     if (moveDirection.lengthSq() > 0) {
-      moveDirection.normalize();
-
-      // Update the player's position on the XZ plane.
-      const newPosition = this.player.position.clone();
-      newPosition.x += moveDirection.x * this.moveSpeed * delta;
-      newPosition.z += moveDirection.z * this.moveSpeed * delta;
-
-      // Define grid boundaries
-      const gridBoundary = {
-        minX: -50,
-        maxX: 50,
-        minZ: -50,
-        maxZ: 50
-      };
-
-      // Clamp the position within the grid boundaries
-      newPosition.x = Math.max(gridBoundary.minX, Math.min(gridBoundary.maxX, newPosition.x));
-      newPosition.z = Math.max(gridBoundary.minZ, Math.min(gridBoundary.maxZ, newPosition.z));
-
-      this.player.position.copy(newPosition);
-
-      // Calculate target rotation and smoothly interpolate toward it.
-      const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
-      const rotationSpeed = 10;
-      const currentRotation = this.player.rotation.y;
-      let deltaRotation = targetRotation - currentRotation;
-      if (deltaRotation > Math.PI) deltaRotation -= 2 * Math.PI;
-      if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
-      this.player.rotation.y += deltaRotation * rotationSpeed * delta;
-
-      // Unpause the player animation.
-      if (this.player.animationAction) {
-        this.player.animationAction.paused = false;
-        if (!this.player.animationAction.isRunning()) {
-          this.player.animationAction.play();
+        moveDirection.normalize();
+        
+        // Cache new position calculation
+        if (!this.newPosition) {
+            this.newPosition = new THREE.Vector3();
         }
-      }
-    } else {
-      // If no movement, pause the animation.
-      if (this.player.animationAction) {
-        this.player.animationAction.paused = true;
-      }
+        const newPosition = this.newPosition;
+        newPosition.copy(playerPosition);
+        newPosition.x += moveDirection.x * this.moveSpeed * delta;
+        newPosition.z += moveDirection.z * this.moveSpeed * delta;
+
+        // Apply grid boundaries
+        const gridBoundary = {
+            minX: -50,
+            maxX: 50,
+            minZ: -50,
+            maxZ: 50
+        };
+
+        newPosition.x = Math.max(gridBoundary.minX, Math.min(gridBoundary.maxX, newPosition.x));
+        newPosition.z = Math.max(gridBoundary.minZ, Math.min(gridBoundary.maxZ, newPosition.z));
+
+        player.position.copy(newPosition);
+
+        // Optimize rotation calculation
+        const targetRotation = Math.atan2(moveDirection.x, moveDirection.z);
+        const currentRotation = player.rotation.y;
+        let deltaRotation = targetRotation - currentRotation;
+        
+        // Normalize rotation delta
+        if (deltaRotation > Math.PI) deltaRotation -= 2 * Math.PI;
+        if (deltaRotation < -Math.PI) deltaRotation += 2 * Math.PI;
+        
+        player.rotation.y += deltaRotation * 10 * delta;
+
+        // Handle animation state
+        const animationAction = player.animationAction;
+        if (animationAction?.paused) {
+            animationAction.paused = false;
+            if (!animationAction.isRunning()) {
+                animationAction.play();
+            }
+        }
+    } else if (player.animationAction) {
+        player.animationAction.paused = true;
     }
 
-    // Update enemies octree and handle collisions
-    const gameBounds = new THREE.Box3(
-      new THREE.Vector3(-1000, -1000, -1000),
-      new THREE.Vector3(1000, 1000, 1000)
-    );
-    const dynamicOctree = new Octree(gameBounds);
-    this.enemies.forEach(enemy => {
-      if (enemy.active) {
-        enemy.update(delta, this.player.position);
-        dynamicOctree.insert(enemy.mesh.position, enemy);
-      }
-    });
+    // Update enemies and octree
+    this.dynamicOctree.clear(); // Clear the octree for this frame
+    let closestEnemy = null;
+    let closestDistanceSq = Infinity;
 
-    // Auto-shoot at the closest enemy
-    if (this.enemies.length > 0 && this.shootCooldown <= 0) {
-      let closestEnemy = null;
-      let closestDistanceSq = Infinity;
-      this.enemies.forEach(enemy => {
+    for (const enemy of this.enemies) {
+        if (!enemy.active) continue;
+        
+        enemy.update(delta, this.player.position);
+        this.dynamicOctree.insert(enemy.mesh.position, enemy);
+        
+        // Find closest enemy while we're iterating
         const dSq = enemy.mesh.position.distanceToSquared(this.player.position);
         if (dSq < closestDistanceSq) {
-          closestDistanceSq = dSq;
-          closestEnemy = enemy;
+            closestDistanceSq = dSq;
+            closestEnemy = enemy;
         }
-      });
-      if (closestEnemy) {
-        const autoShootDirection = new THREE.Vector3().subVectors(closestEnemy.mesh.position, this.player.position).normalize();
-        this.shootBullet(autoShootDirection);
+    }
+
+    // Auto-shoot logic
+    if (closestEnemy && this.shootCooldown <= 0) {
+        this.tempVector.subVectors(closestEnemy.mesh.position, this.player.position).normalize();
+        this.shootBullet(this.tempVector);
         this.shootCooldown = 2;
-      }
     }
-    if (this.shootCooldown > 0) {
-      this.shootCooldown -= delta;
-    }
+    this.shootCooldown = Math.max(0, this.shootCooldown - delta);
 
     this.updateBullets(delta);
 
     // Collision detection: Player vs. Enemy
-    const querySize = 2;
-    const playerRange = new THREE.Box3().setFromCenterAndSize(this.player.position, new THREE.Vector3(querySize, querySize, querySize));
-    const collidingEnemies = dynamicOctree.query(playerRange);
-    collidingEnemies.forEach(enemy => {
-      if (enemy.mesh.position.distanceToSquared(this.player.position) < 1) {
-        console.log("Enemy collided with player!");
-        this.restartGame();
-        return;
-      }
-    });
+    this.playerRange.setFromCenterAndSize(
+        this.player.position,
+        new THREE.Vector3(1, 1, 1)
+    );
+    
+    const collidingEnemies = this.dynamicOctree.query(this.playerRange);
+    for (const enemy of collidingEnemies) {
+        if (enemy.mesh.position.distanceToSquared(this.player.position) < 1) {
+            console.log("Enemy collided with player!");
+            this.restartGame();
+            return;
+        }
+    }
 
     // Collision detection: Bullet vs. Enemy
     const bulletCollisionThreshold = 0.5;
     for (let i = this.bullets.length - 1; i >= 0; i--) {
-      const bullet = this.bullets[i];
-      const bulletRange = new THREE.Box3().setFromCenterAndSize(bullet.position, new THREE.Vector3(bulletCollisionThreshold, bulletCollisionThreshold, bulletCollisionThreshold));
-      const enemiesHit = dynamicOctree.query(bulletRange);
-      for (let enemy of enemiesHit) {
-        if (enemy.mesh && bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) {
-          console.log("Bullet collided with enemy!");
-          // Remove enemy and add a blue drop
-          this.scene.remove(enemy.mesh);
-          enemy.active = false;
-          const enemyIndex = this.enemies.indexOf(enemy);
-          if (enemyIndex !== -1) {
-            this.enemies.splice(enemyIndex, 1);
-          }
-          this.enemyPool.push(enemy);
-
-          // Create blue sphere drop (small bonus)
-          const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-          const dropMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
-          const drop = new THREE.Mesh(dropGeometry, dropMaterial);
-          drop.position.copy(enemy.mesh.position);
-          this.scene.add(drop);
-          this.droppedItems.push(drop);
-
-          // Remove/recycle bullet
-          this.scene.remove(bullet);
-          this.bullets.splice(i, 1);
-          this.bulletPool.push(bullet);
-          break;
+        const bullet = this.bullets[i];
+        this.bulletRange.setFromCenterAndSize(
+            bullet.position,
+            new THREE.Vector3(bulletCollisionThreshold, bulletCollisionThreshold, bulletCollisionThreshold)
+        );
+        
+        const enemiesHit = this.dynamicOctree.query(this.bulletRange);
+        for (const enemy of enemiesHit) {
+            if (!enemy.mesh || !enemy.active) continue;
+            
+            if (bullet.position.distanceToSquared(enemy.mesh.position) < 0.25) {
+                this.handleEnemyDeath(enemy, bullet, i);
+                break;
+            }
         }
-      }
     }
 
-    // Check collision: Player vs. Blue Sphere Drops
-    for (let i = this.droppedItems.length - 1; i >= 0; i--) {
-      const drop = this.droppedItems[i];
-      if (drop.position.distanceToSquared(this.player.position) < 1) { 
+    // Handle dropped items using the same octree approach
+    const dropOctree = new Octree(this.gameBounds);
+    this.droppedItems.forEach(drop => dropOctree.insert(drop.position, drop));
+    
+    this.dropRange.setFromCenterAndSize(
+        this.player.position,
+        new THREE.Vector3(1, 1, 1)
+    );
+    
+    const dropsCollected = dropOctree.query(this.dropRange);
+    for (const drop of dropsCollected) {
         console.log("Player picked up a drop!");
         this.scene.remove(drop);
-        this.droppedItems.splice(i, 1);
-        // (Optionally, grant a bonus to the player here.)
-      }
+        const index = this.droppedItems.indexOf(drop);
+        if (index !== -1) {
+            this.droppedItems.splice(index, 1);
+        }
     }
 
     // Create a trail piece for the player every 0.2 seconds
@@ -541,8 +556,8 @@ export class GameManager {
     this.camera.lookAt(this.player.position);
 
     // Update UI counters
-    this.enemyCounterElement.innerText = `❤️ Enemies: ${this.enemies.length}`;
-    this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
+    // this.enemyCounterElement.innerText = `❤️ Enemies: ${this.enemies.length}`;
+    //this.fpsCounterElement.innerText = `FPS: ${Math.round(1 / delta)}`;
 
     // Update your main screen components
     this.world.update(this.scene, this.camera, this.renderer, delta);
@@ -551,68 +566,29 @@ export class GameManager {
     this.composer.render();
   }
 
-  updateEnemiesInstanced(delta) {
-    // Update each enemy in our data array.
-    for (let i = 0; i < this.enemiesData.length; i++) {
-      let enemy = this.enemiesData[i];
-      enemy.animationAction = this.player.mixer.clipAction(this.enemyFBXAnimationClip);
-      if (enemy.animationAction && !enemy.animationAction.isRunning()) {
-        enemy.animationAction.play();
-        enemy.mesh.mixer.update(delta);
-      }
-      // Simple movement toward the player:
-      const direction = new THREE.Vector3().subVectors(this.player.position, enemy.position).normalize();
-      enemy.position.addScaledVector(direction, enemy.movementspeed * delta);
-      enemy.rotation.y = Math.atan2(direction.x, direction.z);
-
-      // Build an instance matrix from the enemy data.
-      const quaternion = new THREE.Quaternion().setFromEuler(enemy.rotation);
-      const matrix = new THREE.Matrix4();
-      matrix.compose(enemy.position, quaternion, new THREE.Vector3(1, 1, 1));
-      this.enemyInstancedMesh.setMatrixAt(i, matrix);
+  // New helper method to handle enemy death
+  handleEnemyDeath(enemy, bullet, bulletIndex) {
+    console.log("Bullet collided with enemy!");
+    this.scene.remove(enemy.mesh);
+    enemy.active = false;
+    
+    const enemyIndex = this.enemies.indexOf(enemy);
+    if (enemyIndex !== -1) {
+        this.enemies.splice(enemyIndex, 1);
     }
-    this.enemyInstancedMesh.instanceMatrix.needsUpdate = true;
-  }
+    this.enemyPool.push(enemy);
 
-  swapWorld(newWorldConfig) {
-    // Create a fresh copy of the world config to avoid stale state
-    const freshWorldConfig = {
-        ...baseWorldConfig,  // Include the base world methods
-        ...newWorldConfig,
-        sceneConfig: { ...newWorldConfig.sceneConfig },
-        components: [...newWorldConfig.components]
-    };
+    // Create drop
+    const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+    const dropMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
+    const drop = new THREE.Mesh(dropGeometry, dropMaterial);
+    drop.position.copy(enemy.mesh.position);
+    this.scene.add(drop);
+    this.droppedItems.push(drop);
 
-    this.world = freshWorldConfig;
-    
-    // Clear the existing scene.
-    while (this.scene.children.length > 0) {
-        this.scene.remove(this.scene.children[0]);
-    }
-    
-    // Reset game state arrays and pools.
-    this.enemies = [];
-    this.bullets = [];
-    this.bulletPool = [];
-    this.enemyPool = [];
-    this.droppedItems = [];
-    this.trailPieces = [];
-    
-    // Set up the new world which will initialize all components.
-    this.world.setup(this.scene, this.camera, this.renderer);
-    
-    // Reinitialize scene (e.g., to reload the player model)
-    this.initScene();
-    
-    // Reposition the camera.
-    this.camera.position.set(15, 10, 15);
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-    
-    // Finally, force a render update.
-    if (this.composer) {
-        this.composer.render();
-    } else {
-        this.renderer.render(this.scene, this.camera);
-    }
+    // Recycle bullet
+    this.scene.remove(bullet);
+    this.bullets.splice(bulletIndex, 1);
+    this.bulletPool.push(bullet);
   }
 }
