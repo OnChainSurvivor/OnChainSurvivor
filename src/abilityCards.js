@@ -6,7 +6,10 @@ export const abilityTypes = [
             "Create Bot",
             "Frontrun"
         ],
-    },
+    }]
+    
+    /*
+    ,
     {title: "Scalping Bot",
         description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
         thumbnail: 'Media/Abilities/SCALPINGBOT.png',
@@ -1353,3 +1356,5 @@ export const abilityTypes = [
 
 
 ];
+
+*/

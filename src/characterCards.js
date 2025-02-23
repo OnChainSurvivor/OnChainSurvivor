@@ -8,7 +8,10 @@ export const playerTypes = [{
     description: 'This Character Bio has not been discovered',    
     thumbnail: 'Media/Classes/Onchain Survivor/FSURVIVOR.png',
     abilities: [],
-},{    
+},
+]
+/*
+{    
     title: 'Miner',
     description:  'This Character Bio has not been discovered',
     thumbnail: 'Media/Classes/Miner/MMINER.png',
@@ -745,3 +748,5 @@ export const playerTypes = [{
     thumbnail: 'Media/Classes/Seedless/FSEEDLESS.png',
     abilities: [],
 },];
+
+*/
