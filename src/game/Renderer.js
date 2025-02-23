@@ -34,7 +34,7 @@ export function initRenderer() {
         0,    
         0.0     // lowered threshold to capture more bright areas
     );
-    //composer.addPass(bloomPass);
+    composer.addPass(bloomPass);
     
     // Listen for window resize events to keep the scene updated
     window.addEventListener('resize', onWindowResize, false);
@@ -69,14 +69,5 @@ export function getComposer() {
 }
 
 export function renderScene() {
-    // Use the composer so that the bloom/neon passes are applied
     composer.render(scene, camera);
-
-    // (Optional) If you have other post-processing steps, call them here.
-    if (styleTransferEnabled) {
-        // Get the frame from the canvas, pass it to the style transfer module asynchronously
-        applyStyleTransfer(canvas).then((styledFrame) => {
-            // Draw or update the displayed frame as needed.
-        });
-    }
 } 
