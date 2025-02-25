@@ -48,7 +48,7 @@ const worlds = [
     ...baseWorldConfig,
     title: "Monad-land (Testnet Version)",
     description: "Survive in Monad Testnet, an extremely fast purple landscape where 10.000 entities move per second!",
-    thumbnail: 'src/Media/Worlds/ETHEREUMVERSE.png',
+    thumbnail: 'src/Media/Worlds/MONADLAND.jpg',
     sceneConfig: {
       backgroundColor: new THREE.Color(0x000000),
       texturePath: 'src/Media/Textures/ENVTEXTURE.png',

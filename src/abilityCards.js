@@ -1,4 +1,9 @@
 export const abilityTypes = [
+    { title: 'Onchain Trail',
+    description: 'Your onchain movements leave a trail behind, damaging pursuers',
+    thumbnail: 'src/Media/Abilities/ONCHAINTRAIL.png',
+    effect: [ ],
+    },
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
         thumbnail: 'src/Media/Abilities/FRONTRUNNINGBOT.png',
@@ -51,14 +56,6 @@ export const abilityTypes = [
         effect: [
             "Create Bot",
             "Orbit"
-        ],
-    },
-    { title: 'Onchain Trail',
-        description: 'Your onchain movements leave a trail behind, damaging pursuers',
-        thumbnail: 'src/Media/Abilities/ONCHAINTRAIL.png',
-        effect: [
-            "Create Trail Step",
-            "Manage Trail",
         ],
     },
     {title: "Veil of Decentralization",
