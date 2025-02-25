@@ -135,11 +135,11 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 -   **Microsoft Copilot**: Best Artist i've ever known ❤.
 -   **Adobe Mixamo**: Best 3D Animator ❤.
 -   **Meshy.ai**: Best 3D Modeler ever ❤, under the https://creativecommons.org/licenses/by/4.0/ License.
--   **Tensor Flow**:Best Neural Style transfer tool ❤
+-   **Tensor Flow**:Best Neural Style transfer tool ❤ 
 
 ## Contact
 
-Have questions? Feel free to reach out!
+ Feel free to reach out!
 
 -   **Telegram**: [@OnChainSurvivor] https://t.me/OnchainSurvivor
 -   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
