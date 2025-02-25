@@ -3,7 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.m
 export class EnemyCubeManager {
     constructor(maxEnemies = 100) {
         // Create a simple cube geometry
-        this.geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        this.geometry = new THREE.BoxGeometry(0.5, 1, 0.5);
         this.instancedMesh = new THREE.InstancedMesh(
             this.geometry,
             new THREE.MeshBasicMaterial({ color: 0xff0000 }),

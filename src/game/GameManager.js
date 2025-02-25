@@ -165,7 +165,7 @@ export class GameManager {
     const loader = new THREE.FBXLoader();
     const self = this;
     loader.load(
-      'Media/Models/Survivor.fbx',
+      'src/Media/Models/Survivor.fbx',
       function (object) {
         const playerColor = self.world.sceneConfig.playerColor;
         object.traverse(function (child) {
@@ -455,6 +455,7 @@ export class GameManager {
         if (index !== -1) {
             this.droppedItems.splice(index, 1);
         }
+        mainScreen.dropsCollected = (mainScreen.dropsCollected || 0) + 1;
     }
 
     // Create a trail piece for the player every 0.2 seconds
@@ -524,6 +525,12 @@ export class GameManager {
 
     // Use composer instead of direct renderer
     this.composer.render();
+
+    // At the end of your animate loop (after updating other objects):
+    this.droppedItems.forEach(drop => {
+      // Increase the Y rotation based on the spin speed and delta time
+      drop.rotation.y += drop.userData.spinSpeed * delta;
+    });
   }
 
   // New helper method to handle enemy death
@@ -533,11 +540,36 @@ export class GameManager {
     // Remove enemy using the manager
     this.enemyManager.removeEnemy(enemy);
     
-    // Create drop
-    const dropGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+    // New drop looks like a card using a modified box geometry.
+    const cardWidth = 0.5;
+    const cardHeight = 0.75;
+    const cardDepth = 0.05;
+
+    // Create the box geometry. By default the geometry is centered at (0,0,0).
+    const dropGeometry = new THREE.BoxGeometry(cardWidth, cardHeight, cardDepth);
+
+    // Translate the geometry so that its bottom (left-front) corner is at (0,0,0).
+    // The default bottom corner is at (-cardWidth/2, -cardHeight/2, -cardDepth/2).
+    // We translate by (cardWidth/2, cardHeight/2, cardDepth/2) so that corner moves to the origin.
+    dropGeometry.translate(cardWidth / 2, cardHeight / 2, cardDepth / 2);
+
+    // Create a basic material for the drop.
     const dropMaterial = new THREE.MeshBasicMaterial({ color: "yellow" });
+
+    // Create the mesh.
     const drop = new THREE.Mesh(dropGeometry, dropMaterial);
+
+    // Rotate the drop so that the pivot (the bottom corner) is the part touching the ground.
+    drop.rotation.z = Math.PI / 4;
+    drop.rotation.x = -Math.PI / 10;
+
+    // Position the drop at the enemy's last location.
     drop.position.copy(enemy.position);
+
+    // Assign a spin speed (adjust the value as needed).
+    drop.userData.spinSpeed = 1.0; 
+
+    // Add the drop to the scene and track it.
     this.scene.add(drop);
     this.droppedItems.push(drop);
 

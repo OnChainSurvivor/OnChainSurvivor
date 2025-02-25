@@ -1,4 +1,3 @@
-
 import { worldComponents } from './WorldComponents.js';
 
 // A common prototype for every world.
@@ -34,10 +33,10 @@ const worlds = [
     ...baseWorldConfig,
     title: "The Dark Forest (Testnet Version)",
     description: "Survive in Ethereum, an open, futuristic landscape where data flows freely. Be aware of what's lurking in the dark!",
-    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    thumbnail: 'src/Media/Worlds/ETHEREUMVERSE.png',
     sceneConfig: {
       backgroundColor: new THREE.Color(0x000000),
-      texturePath: 'Media/Textures/ENVTEXTURE.png',
+      texturePath: 'src/Media/Textures/ENVTEXTURE.png',
       playerColor: new THREE.Color(0x00ff00),
       bulletColor: new THREE.Color(0x00ff00),
       enemyColor: new THREE.Color(0xff0000),
@@ -47,18 +46,18 @@ const worlds = [
   },
   {
     ...baseWorldConfig,
-    title: "Monad-land (Testnet Version))",
+    title: "Monad-land (Testnet Version)",
     description: "Survive in Monad Testnet, an extremely fast purple landscape where 10.000 entities move per second!",
-    thumbnail: 'Media/Worlds/ETHEREUMVERSE.png',
+    thumbnail: 'src/Media/Worlds/ETHEREUMVERSE.png',
     sceneConfig: {
       backgroundColor: new THREE.Color(0x000000),
-      texturePath: 'Media/Textures/ENVTEXTURE.png',
+      texturePath: 'src/Media/Textures/ENVTEXTURE.png',
       playerColor: new THREE.Color(0xff00ff),
       bulletColor: new THREE.Color(0xff00ff),
       enemyColor: new THREE.Color(0x00ff00),
       gridColor: new THREE.Color(0xff00ff),
     },
-    components: ["Octahedron", "MiniOctahedron", "NeonGrid"]
+    components: ["Monad", "NeonGrid"]
   },
 ];
 

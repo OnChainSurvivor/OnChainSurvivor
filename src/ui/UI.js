@@ -464,18 +464,18 @@ export function setupUI() {
   const worldImages = worldTypes.map(world => world.thumbnail);
 
   const classContainer = document.createElement('div');
-  const classSubTitle = createTitleElement('🏆\nSurvivors',  "subtitle")
+  const classSubTitle = createTitleElement('Survivors',  "subtitle")
   const classButton = createButton(player,  0.65);
   classContainer.appendChild(classSubTitle);
   classContainer.appendChild(classButton);
 
-  const abilitiesSubTitle = createTitleElement('⚔️\nSkills', "subtitle");
+  const abilitiesSubTitle = createTitleElement('Skills', "subtitle");
   const abilitiesButton = createButton(ability,  0.65);
   const classAbilityContainer = document.createElement('div');
   classAbilityContainer.appendChild(abilitiesSubTitle);
   classAbilityContainer.appendChild(abilitiesButton);
 
-  const worldSubTitle = createTitleElement('🔗\nChain', "subtitle");
+  const worldSubTitle = createTitleElement('Chain', "subtitle");
   const worldButton = createButton(world, 0.65);
   const worldContainer = document.createElement('div');
   worldContainer.appendChild(worldSubTitle);
