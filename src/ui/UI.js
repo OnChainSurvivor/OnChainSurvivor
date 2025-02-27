@@ -62,16 +62,27 @@ export function createContainer (classNames = [], styles = {}) {
  * @param {Object} text - Object of inline CSS styles.
  * @returns {HTMLElement}
  */
-export function createChooseMenu(entityList, text, type) {
+export function createChooseMenu(entityList, text, type, layout, onSolved) {
   setCanMove(false);
-  const popUpContainer = createContainer(['choose-menu-container']);;
-  const titleContainer = createTitleElement(text,"title");
-  const gridContainer = createContainer(['choose-menu-grid']); 
+  const popUpContainer = createContainer(['choose-menu-container']);
+  if(layout === 'compact') {
+    popUpContainer.style.height = '45vh';
+  }
+  const titleContainer = createTitleElement(text, "title");
+  const gridContainer = createContainer(['choose-menu-grid']);
+  if(layout === 'compact') {
+    gridContainer.style.gridTemplateColumns = 'repeat(2, auto)';
+  }
   addContainerUI('center-container', [popUpContainer]);
   entityList.forEach(entity => {
       const itemButton = createButton(entity, 1);
       gridContainer.appendChild(itemButton);
-      itemButton.onclick = () => handleEntitySelection(entity, type);
+      itemButton.onclick = () => {
+          handleEntitySelection(entity, type);
+          if(onSolved) {
+            onSolved();
+          }
+      };
   });
   popUpContainer.appendChild(titleContainer);
   popUpContainer.appendChild(gridContainer);
@@ -84,9 +95,12 @@ function handleEntitySelection(entity, type) {
       setupUI();
   } else if (type === "Ability") {
       hideUI();
-      //Logic to swap Ability
       setupUI();
-  } else if (type === "Chain") {
+  } else if (type === "levelUp") {
+    hideUI();
+
+} 
+   else if (type === "Chain") {
       hideUI();
       
       // Find the matching world config from worlds array based on title
@@ -469,7 +483,7 @@ export function setupUI() {
   classContainer.appendChild(classSubTitle);
   classContainer.appendChild(classButton);
 
-  const abilitiesSubTitle = createTitleElement('Skills', "subtitle");
+  const abilitiesSubTitle = createTitleElement('Skill List', "subtitle");
   const abilitiesButton = createButton(ability,  0.65);
   const classAbilityContainer = document.createElement('div');
   classAbilityContainer.appendChild(abilitiesSubTitle);

@@ -11,77 +11,84 @@ export const abilityTypes = [
             "Create Bot",
             "Frontrun"
         ],
-    }]
-    
-    /*
-    ,
-    {title: "Scalping Bot",
-        description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
-        thumbnail: 'src/Media/Abilities/SCALPINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Scalp"
-        ],
     },
-    {title: "Sniping Bot",
-        description: "Fast trading bot that liquidates opposing survivors.",
-        thumbnail: 'src/Media/Abilities/SNIPEBOT.png',
-        effect: [
-            "Create Bot",
-            "Elevate",
-            "Frontrun",
-            "Point Laser",
-            "Shoot Closest Enemy", 
-        ],
-    }, 
-    {title: "Blockchain Backup",
-        description: "The survivor keeps a backup of everything always in handy.",
-        thumbnail: 'src/Media/Abilities/BLOCKCHAINBACKUP.png',
-        effect: [
-            "Create Bot",
-            "Follow Close"
-        ],
-    }, 
-    {title: "Data Blob",
-        description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
-        thumbnail: 'src/Media/Abilities/BLOB.png',
-        effect: [
-            "Create Bot",
-            "Follow Far"
-        ],
+    {
+        title: "Debt Drown",
+        description: "Provides a temporary boost to defense and health regeneration.",
+        thumbnail: 'src/Media/Abilities/DEBTDROWN.png',
+        effect: [],
     },
-    {title: "Exploit Finder",
-        description: "Scans the blockchain for harmful elements and neutralizes them.",
-        thumbnail: "src/Media/Abilities/EXPLOITFINDER.png",
-        effect: [
-            "Create Bot",
-            "Orbit"
-        ],
-    },
-    {title: "Veil of Decentralization",
-        description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
-        thumbnail: 'src/Media/Abilities/VEILOFDECENTRALIZATION.png',
-        effect: [
-            "Create Veil",
-            "EvasionUP"
-        ],
-    },
-    {title: "Bot Swarm",
-        description: "Summons additional bots to assist in battle.",
-        thumbnail: 'src/Media/Abilities/SWARM.png',
-        effect: [
-            "Create Bot",
-            "Swarm"
-        ],
-    },
-    {title: "Anti-Rug Bot",
-        description: "Detects and disables rug traps.",
-        thumbnail: 'src/Media/Abilities/RUGBOT.png',
-        effect: [
-            "Create Bot",
-            "Swipe"
-        ],
-    },
+];
+
+/*
+,
+{title: "Scalping Bot",
+    description: 'Abusing the market volatility, The Scalping bot Executes incredibly fast attacks.',
+    thumbnail: 'src/Media/Abilities/SCALPINGBOT.png',
+    effect: [
+        "Create Bot",
+        "Scalp"
+    ],
+},
+{title: "Sniping Bot",
+    description: "Fast trading bot that liquidates opposing survivors.",
+    thumbnail: 'src/Media/Abilities/SNIPEBOT.png',
+    effect: [
+        "Create Bot",
+        "Elevate",
+        "Frontrun",
+        "Point Laser",
+        "Shoot Closest Enemy", 
+    ],
+}, 
+{title: "Blockchain Backup",
+    description: "The survivor keeps a backup of everything always in handy.",
+    thumbnail: 'src/Media/Abilities/BLOCKCHAINBACKUP.png',
+    effect: [
+        "Create Bot",
+        "Follow Close"
+    ],
+}, 
+{title: "Data Blob",
+    description: "the survivor heavily brings along a big blob of data holding a piece of the blockchain",
+    thumbnail: 'src/Media/Abilities/BLOB.png',
+    effect: [
+        "Create Bot",
+        "Follow Far"
+    ],
+},
+{title: "Exploit Finder",
+    description: "Scans the blockchain for harmful elements and neutralizes them.",
+    thumbnail: "src/Media/Abilities/EXPLOITFINDER.png",
+    effect: [
+        "Create Bot",
+        "Orbit"
+    ],
+},
+{title: "Veil of Decentralization",
+    description: "The Survivor shrouds in decentralization, becoming greatly elusive.",
+    thumbnail: 'src/Media/Abilities/VEILOFDECENTRALIZATION.png',
+    effect: [
+        "Create Veil",
+        "EvasionUP"
+    ],
+},
+{title: "Bot Swarm",
+    description: "Summons additional bots to assist in battle.",
+    thumbnail: 'src/Media/Abilities/SWARM.png',
+    effect: [
+        "Create Bot",
+        "Swarm"
+    ],
+},
+{title: "Anti-Rug Bot",
+    description: "Detects and disables rug traps.",
+    thumbnail: 'src/Media/Abilities/RUGBOT.png',
+    effect: [
+        "Create Bot",
+        "Swipe"
+    ],
+},
 {
     title: "Code Refactor",
     description: "Rewrites and optimizes the Survivor's abilities, reducing their cooldowns.",
@@ -1074,13 +1081,6 @@ export const abilityTypes = [
     title: "NFT Enhancer",
     description: "Boosts the effects of your NFTs.",
     thumbnail: 'src/Media/Abilities/NFTREWORK.png',
-    effect: [],
-},
-
-{
-    title: "Debt Drown ",
-    description: "Provides a temporary boost to defense and health regeneration.",
-    thumbnail: 'src/Media/Abilities/DEBTDROWN.png',
     effect: [],
 },
 {

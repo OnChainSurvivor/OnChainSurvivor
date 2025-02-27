@@ -2,6 +2,9 @@ import { getScene, getCamera, getRenderer, getComposer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { EnemyCubeManager } from './EnemyCube.js';
 import { worlds } from './worldsConfig.js';
+import { createChooseMenu } from "../ui/UI.js";
+import { abilityTypes } from "../abilityCards.js";
+import { AbilityManager } from './abilityComponents.js';
 
 class Octree {
   constructor(boundary, capacity = 8) {
@@ -82,6 +85,8 @@ export class GameManager {
     // Set a higher target for camera z-offset
     this.targetCameraZ = 50;
     this.running = false;
+    // Add a flag to control enemy updates
+    this.updateEnemies = true;
     this.animationFrameId = null;
     this.initScene();
 
@@ -133,6 +138,15 @@ export class GameManager {
         minZ: -50,
         maxZ: 50
     };
+    
+    // Initialize the ability manager
+    this.abilityManager = new AbilityManager(this);
+    
+    // Flag to track if we're using a custom trail from abilities
+    this.hasCustomTrail = false;
+    
+    // Array to track particles for visual effects
+    this.particles = [];
   }
 
   createUI() {
@@ -171,7 +185,7 @@ export class GameManager {
         object.traverse(function (child) {
           if (child.isMesh) {
             child.material = new THREE.MeshBasicMaterial({ 
-              color: playerColor 
+              color: playerColor ,
             });
           }
         });
@@ -295,13 +309,69 @@ export class GameManager {
   }
 
   animate() {
-    if (!this.running) return;
+    // CRITICAL: First check if the game is paused and return immediately
+    if (this.isPaused === true) {
+      console.log("Animation frame called while game is paused - ignoring");
+      return;
+    }
+    
+    // Don't run any game logic if the game is not running
+    if (!this.running) {
+      return;
+    }
+    
+    // Schedule the next animation frame
     this.animationFrameId = requestAnimationFrame(() => this.animate());
+    
+    // Get the time delta
     const delta = this.clock.getDelta();
     
     // Cache player and scene references
     const player = this.player;
     const scene = this.scene;
+    
+    // Make sure keys are accessible to the ability manager
+    this.keys = keys;
+    
+    // Debug: Check if we have the OnchainTrail ability active
+    this.debugTrailStatus();
+    
+    // Update the ability manager
+    if (this.abilityManager) {
+      this.abilityManager.update(delta);
+    }
+    
+    // Update any particles for visual effects
+    if (this.particles && this.particles.length > 0) {
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        const particle = this.particles[i];
+        
+        // Call custom update function if it exists
+        if (particle.update) {
+          particle.update(delta);
+        } else {
+          // Default update behavior
+          // Update position based on velocity
+          if (particle.velocity) {
+            particle.position.addScaledVector(particle.velocity, delta);
+          }
+          
+          // Update lifetime
+          particle.life -= delta;
+          
+          // Update opacity based on remaining life
+          if (particle.material && particle.material.opacity) {
+            particle.material.opacity = Math.min(1, particle.life * 2);
+          }
+        }
+        
+        // Remove dead particles
+        if (particle.life <= 0) {
+          scene.remove(particle);
+          this.particles.splice(i, 1);
+        }
+      }
+    }
 
     // Update animations only if player exists and has mixer
     if (player?.mixer) {
@@ -376,8 +446,10 @@ export class GameManager {
     let closestEnemy = null;
     let closestDistanceSq = Infinity;
 
-    // Update enemy instances through EnemyManager
-    this.enemyManager.update(delta, this.player.position);
+    // Update enemy instances through EnemyManager only if updateEnemies is true
+    if (this.updateEnemies) {
+      this.enemyManager.update(delta, this.player.position);
+    }
 
     // Get all active enemies for octree and closest enemy detection
     const activeEnemies = this.enemyManager.getActiveEnemies();
@@ -450,56 +522,22 @@ export class GameManager {
     const dropsCollected = dropOctree.query(this.dropRange);
     for (const drop of dropsCollected) {
         console.log("Player picked up a drop!");
+        
+        // Remove the drop from the scene
         this.scene.remove(drop);
         const index = this.droppedItems.indexOf(drop);
         if (index !== -1) {
             this.droppedItems.splice(index, 1);
         }
-        mainScreen.dropsCollected = (mainScreen.dropsCollected || 0) + 1;
-    }
-
-    // Create a trail piece for the player every 0.2 seconds
-    this.trailTimer += delta;
-    const trailInterval = 0.2;
-    if (this.trailTimer >= trailInterval) {
-      const footSize = { width: 0.05, length: 0.34 };
-      const footGeometry = new THREE.Shape();
-      footGeometry.moveTo(-footSize.width, -footSize.length / 2);
-      footGeometry.lineTo(-footSize.width, footSize.length / 2);
-      footGeometry.quadraticCurveTo(0, footSize.length / 2 + 0.1, footSize.width, footSize.length / 2);
-      footGeometry.lineTo(footSize.width, -footSize.length / 2);
-      footGeometry.quadraticCurveTo(0, -footSize.length / 2 - 0.1, -footSize.width, -footSize.length / 2);
-
-      const footShape = new THREE.ShapeGeometry(footGeometry);
-      // Use the world's playerColor for the trail color
-      const trailMaterial = new THREE.MeshBasicMaterial({
-        color: this.world.sceneConfig.playerColor,
-        transparent: true,
-        opacity: 0.6
-      });
-
-      const trailPiece = new THREE.Mesh(footShape, trailMaterial);
-      trailPiece.position.copy(this.player.position);
-      trailPiece.rotation.x = -Math.PI / 2;
-      trailPiece.rotation.z = this.player.rotation.y + (this.trailPieces.length % 2 ? Math.PI / 6 : -Math.PI / 6);
-      trailPiece.position.y += 0.01;
-      trailPiece.birth = this.clock.elapsedTime;
-      this.scene.add(trailPiece);
-      this.trailPieces.push(trailPiece);
-      this.trailTimer = 0;
-    }
-
-    // Remove trail pieces older than 2 seconds
-    const trailLifetime = 2;
-    for (let i = this.trailPieces.length - 1; i >= 0; i--) {
-      const piece = this.trailPieces[i];
-      const age = this.clock.elapsedTime - piece.birth;
-      if (age > trailLifetime) {
-        this.scene.remove(piece);
-        this.trailPieces.splice(i, 1);
-      } else {
-        piece.material.opacity = 0.6 * (1 - age / trailLifetime);
-      }
+        
+        // Add a random ability to the player
+        this.addRandomAbility();
+        
+        // Create a visual effect for the pickup
+        this.createPickupEffect(this.player.position);
+        
+        // Break after one drop to avoid multiple pickups at once
+        break;
     }
 
     // Update camera offset based on player movement
@@ -577,5 +615,162 @@ export class GameManager {
     this.scene.remove(bullet);
     this.bullets.splice(bulletIndex, 1);
     this.bulletPool.push(bullet);
+  }
+
+  // Add a random ability to the player
+  addRandomAbility() {
+    // Get a random ability from the abilityTypes array
+    const randomIndex = Math.floor(Math.random() * abilityTypes.length);
+    const randomAbility = abilityTypes[randomIndex];
+    
+    console.log(`Adding random ability: ${randomAbility.title}`);
+    
+    // Convert the ability title to a key format that matches the abilityComponents keys
+    let abilityKey;
+    
+    // Map the ability title to the corresponding key in abilityComponents
+    switch(randomAbility.title) {
+      case "Onchain Trail":
+        abilityKey = "OnchainTrail";
+        break;
+      case "Frontrunning Bot":
+        abilityKey = "FrontrunningBot";
+        break;
+      case "Debt Drown":
+        abilityKey = "DebtDrown";
+        break;
+      default:
+        // Fallback to a simple conversion if no direct mapping exists
+        abilityKey = randomAbility.title.replace(/[^a-zA-Z0-9]/g, '');
+    }
+    
+    console.log(`Mapped ability key: ${abilityKey}`);
+    
+    // Add the ability using the ability manager
+    this.abilityManager.addAbility(abilityKey);
+    
+    // Show a notification about the new ability
+    this.showAbilityNotification(randomAbility);
+  }
+  
+  // Create a visual effect for ability pickup
+  createPickupEffect(position) {
+    // Create a burst of particles
+    const particleCount = 20;
+    const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+    const particleMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffff00, // Yellow for ability pickup
+      transparent: true,
+      opacity: 0.8
+    });
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+      particle.position.copy(position);
+      
+      // Random velocity in all directions
+      particle.velocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 3,
+        Math.random() * 3,
+        (Math.random() - 0.5) * 3
+      );
+      
+      particle.life = 1.0; // Longer lifetime for pickup effect
+      particle.birth = this.clock.elapsedTime;
+      
+      this.scene.add(particle);
+      
+      // Add to particles array for updating
+      if (!this.particles) this.particles = [];
+      this.particles.push(particle);
+    }
+    
+    // Add a flash effect
+    const flashGeometry = new THREE.SphereGeometry(2, 16, 16);
+    const flashMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.5
+    });
+    
+    const flash = new THREE.Mesh(flashGeometry, flashMaterial);
+    flash.position.copy(position);
+    flash.scale.set(0.1, 0.1, 0.1);
+    flash.life = 0.5;
+    flash.birth = this.clock.elapsedTime;
+    
+    this.scene.add(flash);
+    this.particles.push(flash);
+    
+    // Add a scaling animation to the flash
+    flash.update = (delta) => {
+      flash.scale.multiplyScalar(1.1);
+      flash.material.opacity -= delta * 2;
+    };
+  }
+  
+  // Show a notification about the new ability
+  showAbilityNotification(ability) {
+    // Create a notification element
+    const notification = document.createElement('div');
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    notification.style.color = '#fff';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '5px';
+    notification.style.fontFamily = 'Arial, sans-serif';
+    notification.style.zIndex = '1000';
+    notification.style.textAlign = 'center';
+    notification.style.transition = 'opacity 0.5s';
+    
+    // Add ability info including the image
+    notification.innerHTML = `
+      <div style="font-weight: bold; color: #ffcc00; margin-bottom: 5px;">New Ability Acquired!</div>
+      <img src="${ability.thumbnail}" alt="${ability.title}" style="width: 100px; height: auto; margin-bottom: 5px;">
+      <div style="font-size: 18px; margin-bottom: 5px;">${ability.title}</div>
+      <div style="font-size: 14px;">${ability.description}</div>
+    `;
+    
+    // Add to the document
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 3000);
+  }
+
+  // Debug method to check if the trail is working
+  debugTrailStatus() {
+    // Only run this check occasionally to avoid console spam
+    if (!this._lastTrailDebug || (this.clock.elapsedTime - this._lastTrailDebug > 5)) {
+      this._lastTrailDebug = this.clock.elapsedTime;
+      
+      console.log("Trail status check:");
+      console.log("- hasCustomTrail flag:", this.hasCustomTrail);
+      
+      if (this.abilityManager) {
+        console.log("- Active abilities:", this.abilityManager.getActiveAbilityNames());
+        
+        if (this.abilityManager.hasAbility("OnchainTrail")) {
+          const trailAbility = this.abilityManager.activeAbilities.get("OnchainTrail");
+          console.log("- OnchainTrail active with", trailAbility.trailPieces.length, "trail pieces");
+        }
+      }
+      
+      // Check if keys are being detected
+      console.log("- Movement keys:", 
+        (this.keys.w ? "W " : "") + 
+        (this.keys.a ? "A " : "") + 
+        (this.keys.s ? "S " : "") + 
+        (this.keys.d ? "D " : "") || "None pressed"
+      );
+    }
   }
 }

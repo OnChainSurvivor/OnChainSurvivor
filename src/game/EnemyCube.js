@@ -1,5 +1,3 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.module.js';
-
 export class EnemyCubeManager {
     constructor(maxEnemies = 100) {
         // Create a simple cube geometry
