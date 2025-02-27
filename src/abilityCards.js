@@ -7,10 +7,7 @@ export const abilityTypes = [
     {title: "Frontrunning Bot",
         description: "A fast bot that outpaces you and your enemy movements.",
         thumbnail: 'src/Media/Abilities/FRONTRUNNINGBOT.png',
-        effect: [
-            "Create Bot",
-            "Frontrun"
-        ],
+        effect: [],
     },
     {
         title: "Debt Drown",
