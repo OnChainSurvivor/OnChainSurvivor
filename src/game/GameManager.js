@@ -2,7 +2,7 @@ import { getScene, getCamera, getRenderer, getComposer } from './Renderer.js';
 import { keys } from '../input/Joystick.js';
 import { EnemyCubeManager } from './EnemyCube.js';
 import { worlds } from './worldsConfig.js';
-import { createChooseMenu } from "../ui/UI.js";
+import { createChooseMenu, setupUI, showAbilityNotification,mintUI } from "../ui/UI.js";
 import { abilityTypes } from "../abilityCards.js";
 import { AbilityManager } from './abilityComponents.js';
 
@@ -66,6 +66,47 @@ class Octree {
     this.points = [];
     this.divided = false;
     this.children = [];
+  }
+}
+
+class WinCondition {
+  constructor() {
+    this.isMet = false;
+  }
+
+  check() {
+    // To be implemented by subclasses
+  }
+
+  reset() {
+    this.isMet = false;
+  }
+}
+
+class TimerWinCondition extends WinCondition {
+  constructor(duration) {
+    super();
+    this.duration = duration;
+    this.elapsedTime = 0;
+  }
+
+  start() {
+    this.elapsedTime = 0;
+    this.isMet = false;
+  }
+
+  check(delta) {
+    if (!this.isMet) {
+      this.elapsedTime += delta;
+      console.log(`Elapsed Time: ${this.elapsedTime}`); // Debugging output
+      const remainingTime = Math.max(0, this.duration - Math.floor(this.elapsedTime));
+      if (remainingTime <= 0) {
+        this.isMet = true;
+        console.log('You win! Timer condition met.');
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -147,6 +188,23 @@ export class GameManager {
     
     // Array to track particles for visual effects
     this.particles = [];
+
+    this.acquiredAbilities = new Set(); // Track acquired abilities
+    this.timerDuration = 60; // Set timer duration to 60 seconds
+    this.elapsedTime = 0; // Initialize elapsed time
+    this.timerStarted = false; // Flag to track if the timer has started
+    this.timerElement = document.createElement('div'); // Create timer UI element
+    this.timerElement.style.position = 'fixed';
+    this.timerElement.style.top = '70px';
+    this.timerElement.style.left = '10px';
+    this.timerElement.style.color = '#ffffff';
+    this.timerElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    this.timerElement.style.padding = '5px';
+    this.timerElement.style.fontFamily = 'Arial, sans-serif';
+    this.timerElement.style.zIndex = '1000';
+    document.body.appendChild(this.timerElement);
+
+    this.winConditions = [new TimerWinCondition(this.timerDuration)]; // Add timer win condition
   }
 
   createUI() {
@@ -302,6 +360,11 @@ export class GameManager {
     this.startEnemySpawner();
     this.hasPlayerMoved = true;
     this.world.hasPlayerMoved = true;
+    // Start the timer when the player moves for the first time
+    if (!this.timerStarted) {
+      this.timerStarted = true;
+      this.winConditions.forEach(condition => condition.start()); // Start all win conditions
+    }
     // Reveal the player model if it is still hidden.
     if (!this.player.visible) {
       this.player.visible = true;
@@ -309,12 +372,6 @@ export class GameManager {
   }
 
   animate() {
-    // CRITICAL: First check if the game is paused and return immediately
-    if (this.isPaused === true) {
-      console.log("Animation frame called while game is paused - ignoring");
-      return;
-    }
-    
     // Don't run any game logic if the game is not running
     if (!this.running) {
       return;
@@ -332,10 +389,7 @@ export class GameManager {
     
     // Make sure keys are accessible to the ability manager
     this.keys = keys;
-    
-    // Debug: Check if we have the OnchainTrail ability active
-    this.debugTrailStatus();
-    
+
     // Update the ability manager
     if (this.abilityManager) {
       this.abilityManager.update(delta);
@@ -569,6 +623,28 @@ export class GameManager {
       // Increase the Y rotation based on the spin speed and delta time
       drop.rotation.y += drop.userData.spinSpeed * delta;
     });
+
+    if (this.timerStarted) { // Only update the timer if it has started
+      this.elapsedTime += delta; // Update elapsed time
+      const remainingTime = Math.max(0, this.timerDuration - Math.floor(this.elapsedTime));
+      this.timerElement.innerText = `⏳ Time Remaining: ${remainingTime} seconds`;
+
+      if (remainingTime <= 0) {
+        console.log('You win!');
+        this.timerElement.innerText = ``;
+
+        this.running = false;
+        mintUI();
+        return;
+      }
+    }
+
+    this.winConditions.forEach(condition => {
+      if (condition.check(delta)) {
+        // Handle win condition met
+        this.restartGame();
+      }
+    });
   }
 
   // New helper method to handle enemy death
@@ -619,38 +695,25 @@ export class GameManager {
 
   // Add a random ability to the player
   addRandomAbility() {
-    // Get a random ability from the abilityTypes array
-    const randomIndex = Math.floor(Math.random() * abilityTypes.length);
-    const randomAbility = abilityTypes[randomIndex];
-    
-    console.log(`Adding random ability: ${randomAbility.title}`);
-    
-    // Convert the ability title to a key format that matches the abilityComponents keys
-    let abilityKey;
-    
-    // Map the ability title to the corresponding key in abilityComponents
-    switch(randomAbility.title) {
-      case "Onchain Trail":
-        abilityKey = "OnchainTrail";
-        break;
-      case "Frontrunning Bot":
-        abilityKey = "FrontrunningBot";
-        break;
-      case "Debt Drown":
-        abilityKey = "DebtDrown";
-        break;
-      default:
-        // Fallback to a simple conversion if no direct mapping exists
-        abilityKey = randomAbility.title.replace(/[^a-zA-Z0-9]/g, '');
+    // Check if all abilities have been acquired
+    if (this.acquiredAbilities.size === abilityTypes.length) {
+        console.log('All abilities have been acquired. No new ability can be added.');
+        showAbilityNotification(null, true); // Show notification from UI.js
+        return; // Exit if no more abilities are available
     }
-    
+
+    let randomAbility;
+    do {
+        const randomIndex = Math.floor(Math.random() * abilityTypes.length);
+        randomAbility = abilityTypes[randomIndex];
+    } while (this.acquiredAbilities.has(randomAbility.key)); // Ensure ability is not already acquired
+
+    console.log(`Adding random ability: ${randomAbility.title}`);
+    const abilityKey = randomAbility.key;
+    this.acquiredAbilities.add(abilityKey); // Mark ability as acquired
     console.log(`Mapped ability key: ${abilityKey}`);
-    
-    // Add the ability using the ability manager
     this.abilityManager.addAbility(abilityKey);
-    
-    // Show a notification about the new ability
-    this.showAbilityNotification(randomAbility);
+    showAbilityNotification(randomAbility); // Show notification from UI.js
   }
   
   // Create a visual effect for ability pickup
@@ -709,68 +772,6 @@ export class GameManager {
     };
   }
   
-  // Show a notification about the new ability
-  showAbilityNotification(ability) {
-    // Create a notification element
-    const notification = document.createElement('div');
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.left = '50%';
-    notification.style.transform = 'translateX(-50%)';
-    notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    notification.style.color = '#fff';
-    notification.style.padding = '10px 20px';
-    notification.style.borderRadius = '5px';
-    notification.style.fontFamily = 'Arial, sans-serif';
-    notification.style.zIndex = '1000';
-    notification.style.textAlign = 'center';
-    notification.style.transition = 'opacity 0.5s';
-    
-    // Add ability info including the image
-    notification.innerHTML = `
-      <div style="font-weight: bold; color: #ffcc00; margin-bottom: 5px;">New Ability Acquired!</div>
-      <img src="${ability.thumbnail}" alt="${ability.title}" style="width: 100px; height: auto; margin-bottom: 5px;">
-      <div style="font-size: 18px; margin-bottom: 5px;">${ability.title}</div>
-      <div style="font-size: 14px;">${ability.description}</div>
-    `;
-    
-    // Add to the document
-    document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 500);
-    }, 3000);
-  }
-
   // Debug method to check if the trail is working
-  debugTrailStatus() {
-    // Only run this check occasionally to avoid console spam
-    if (!this._lastTrailDebug || (this.clock.elapsedTime - this._lastTrailDebug > 5)) {
-      this._lastTrailDebug = this.clock.elapsedTime;
-      
-      console.log("Trail status check:");
-      console.log("- hasCustomTrail flag:", this.hasCustomTrail);
-      
-      if (this.abilityManager) {
-        console.log("- Active abilities:", this.abilityManager.getActiveAbilityNames());
-        
-        if (this.abilityManager.hasAbility("OnchainTrail")) {
-          const trailAbility = this.abilityManager.activeAbilities.get("OnchainTrail");
-          console.log("- OnchainTrail active with", trailAbility.trailPieces.length, "trail pieces");
-        }
-      }
-      
-      // Check if keys are being detected
-      console.log("- Movement keys:", 
-        (this.keys.w ? "W " : "") + 
-        (this.keys.a ? "A " : "") + 
-        (this.keys.s ? "S " : "") + 
-        (this.keys.d ? "D " : "") || "None pressed"
-      );
-    }
-  }
+
 }

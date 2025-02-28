@@ -382,7 +382,7 @@ export const worldComponents = {
           const titleAreaHeight = cellSize * 0.15;
           
           // Create text geometry with a temporary size of 1
-          const textGeo = new THREE.TextGeometry(`Survive ${mainScreen.dropCounter}`, {
+          const textGeo = new THREE.TextGeometry(`Today's Prize`, {
             font: font,
             size: 1,
             height: 0.1,
@@ -487,7 +487,7 @@ export const worldComponents = {
         mainScreen.cardGroup.rotation.y = 99;
 
         // Add this near the beginning of the initialize method
-        mainScreen.dropCounter = 100;
+        mainScreen.objective = 100;
       },
 
       update(mainScreen, scene, camera, renderer, delta) {

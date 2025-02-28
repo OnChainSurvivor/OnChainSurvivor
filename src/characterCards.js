@@ -3,14 +3,14 @@ export const playerTypes = [{
     description:'The jack of all traders, after losing it all in the 2018 bear market he decided to stay around and keep trying.',
     thumbnail: 'src/Media/Classes/Onchain Survivor/MSURVIVOR.png',
     abilities:[],
-},{
+},
+]
+/*{
     title: 'Onchain Survivor',
     description: 'This Character Bio has not been discovered',    
     thumbnail: 'src/Media/Classes/Onchain Survivor/FSURVIVOR.png',
     abilities: [],
-},
-]
-/*
+},,
 {    
     title: 'Miner',
     description:  'This Character Bio has not been discovered',

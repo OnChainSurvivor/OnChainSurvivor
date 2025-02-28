@@ -569,10 +569,13 @@ export const abilityComponents = {
       this.spawnInterval = 0.05; // Spawn particles frequently
       this.hairLength = 1.5; // Length of the hair strands
       this.hairColors = [
-        new THREE.Color(0x00ccff), // Golden blonde
-        new THREE.Color(0x0088ff), // Orange
-        new THREE.Color(0x0055ff), // Reddish
-        new THREE.Color(0xffddff)  // Light blonde
+        new THREE.Color(0xff0000), // Red
+        new THREE.Color(0xff7f00), // Orange
+        new THREE.Color(0xffff00), // Yellow
+        new THREE.Color(0x00ff00), // Green
+        new THREE.Color(0x0000ff), // Blue
+        new THREE.Color(0x4b0082), // Indigo
+        new THREE.Color(0x9400d3)  // Violet
       ];
       
       // Create the initial batch of particles
@@ -585,6 +588,22 @@ export const abilityComponents = {
       const gameManager = this.gameManager;
       const player = gameManager.player;
       
+      // Define the slow down range and factor
+      const slowDownRange = 5.0; // Range within which enemies are slowed
+      const slowDownFactor = 0.5; // Factor by which to slow down enemies
+      const minSpeed = 0.5; // Minimum speed threshold to prevent stopping completely
+
+      // Check for enemies in range
+      const enemiesInRange = gameManager.dynamicOctree.query(new THREE.Box3().setFromCenterAndSize(player.position, new THREE.Vector3(slowDownRange, slowDownRange, slowDownRange)));
+
+      // Slow down enemies that are close
+      for (const enemy of enemiesInRange) {
+        if (enemy.speed) { // Assuming enemies have a speed property
+          enemy.speed = Math.max(enemy.speed * slowDownFactor, minSpeed); // Gradually reduce speed but not below minSpeed
+          console.log(`Slowing down enemy: ${enemy.id}, new speed: ${enemy.speed}`);
+        }
+      }
+
       // Spawn new particles at regular intervals
       this.spawnTimer += delta;
       if (this.spawnTimer >= this.spawnInterval) {

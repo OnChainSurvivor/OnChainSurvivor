@@ -91,10 +91,11 @@ export function createChooseMenu(entityList, text, type, layout, onSolved) {
 function handleEntitySelection(entity, type) {
   if (type === "Survivor")  {
       hideUI();
-      //Logic to swap Survivor
+      //Logic to swap survivor
       setupUI();
   } else if (type === "Ability") {
       hideUI();
+      //Logic to swap initial skill 
       setupUI();
   } else if (type === "levelUp") {
     hideUI();
@@ -102,7 +103,6 @@ function handleEntitySelection(entity, type) {
 } 
    else if (type === "Chain") {
       hideUI();
-      
       // Find the matching world config from worlds array based on title
       const selectedWorld = worlds.find(w => w.title === entity.title);
       
@@ -224,6 +224,7 @@ export function hideUI(){
  * @returns {HTMLElement}
  */
 function createSettingsMenu() {
+  setCanMove(false);
   const popUpContainer = createContainer(['choose-menu-container']);
   const statusButton = createTitleElement('\n Settings\n\n',  "title");
   popUpContainer.appendChild(statusButton);
@@ -353,6 +354,7 @@ goBackButton.style.cursor = 'pointer';
 
 addContainerUI('center-container', [popUpContainer]);
 goBackButton.onclick = () => {
+  setCanMove(true);
   hideUI();
   setupUI();
 };
@@ -392,7 +394,6 @@ function saveSettings() {
   checkboxes.forEach(checkbox => {
   checkbox.addEventListener('change', saveSettings);
   });
-
 }
 
 /**
@@ -447,7 +448,7 @@ function saveSettings() {
 }
 
 world = worldTypes[0];
-ability = playerTypes[0];
+ability = abilityTypes[0];
 player = playerTypes[0];
 
 export function getCurrentWorld() {
@@ -465,7 +466,7 @@ export function setupUI() {
   const mainTitle = createTitleElement('🏆⚔️🔗\nOnchain Survivor', 'title');
   const worldTitle = createTitleElement(currentWorld.title, 'minititle');
   const miniTitle = createTitleElement('Move To Start! ', "minititle");
-  const web3Title = createTitleElement('♦️\nWeb3\n♦️',"subtitle");
+  const web3Title = createTitleElement('♦️\nabout\n♦️',"subtitle");
   web3Title.style.cursor = 'pointer';
   const todaysContainer = createContainer(['abilities-grid'], { gridTemplateColumns: 'repeat(4, auto)' });
 
@@ -515,14 +516,13 @@ export function setupUI() {
 
   todaysContainer.appendChild(menuButtonsContainer);
 
-  const aboutTitle = createTitleElement('\n⚙️\n', "subtitle");
+  const configTitle = createTitleElement('\n⚙️\n', "subtitle");
 
   addContainerUI('top-container', [mainTitle,worldTitle]);
 
-  addContainerUI('BR-container', [aboutTitle]);
-   aboutTitle.style.cursor = 'pointer';
-   aboutTitle.onclick = () => {
-   
+  addContainerUI('BR-container', [configTitle]);
+   configTitle.style.cursor = 'pointer';
+   configTitle.onclick = () => {
        hideUI();
        createSettingsMenu();
    }
@@ -532,22 +532,19 @@ export function setupUI() {
   addContainerUI('bottom-container', [miniTitle,todaysContainer,loadingText]);
   todaysContainer.style.cursor = 'pointer';
   loadingText.onclick = () => {
-  
       hideUI();
       showToC();
   }
 
-  addContainerUI('TR-container', [web3Title]).onclick = async () => {
+  addContainerUI('TR-container', [web3Title]);
+  web3Title.onclick = () => {
       hideUI();
-      setTimeout(() => {
-
-          showMainMenu();
-      }, 1100);
+      createInfoMenu()
   }
-
 }
 
 export function showToC() {
+  setCanMove(false);
   const termsAndConditions = createTitleElement('\nTerms and conditions:\n\n', "title")
   const disclaimer = createTitleElement('Participating in OnChain Survivor as a challenger or survivor\nand interacting with the smart contracts\n is NOT an investment opportunity\n\n   The game is solely for entertainment and experimental purposes\n and participants should not expect financial returns.\n\n By sending any transaction to the smart contract\n you confirm that you are not subject to any country-specific restrictions\n regulatory limitations, or classified as a sanctioned entity.\n\n Special game events may occur that could temporarily over-ride \n the Challenge Queue during which the 7,150 block rule may not apply.\n\n Additionally, game updates might increase or decrease the duration of daily challenges\n to accommodate potential downtimes or inconveniences of the player base.\n\n The rules are subject to modification based on special events, \n updates and unforeseen circumstances\n always in favour of the players. Any changes in timing will be publicl\n communicated in official channels. \n\n Challenges can be edited as many times as desired (fees apply)\n as long as the challenge is still in the queue\n\n Transactions sent into the challenge queue are irreversible\n please doublecheck before sending your challenge. \n\n', "smalltitle")
   const popUpContainer = createContainer(['choose-menu-container']);;
@@ -564,16 +561,20 @@ export function showToC() {
   goBackButton.style.cursor = 'pointer';
   popUpContainer.appendChild(goBackButton);
       goBackButton.onclick = () => {
+          setCanMove(true);
           hideUI();
           setupUI();
       };
-};
+    };
 
-export  function createInfoMenu() {
-  const popUpContainer = createContainer(['choose-menu-container']);
+export function createInfoMenu() {
+  setCanMove(false);
+ const popUpContainer = createContainer(['choose-menu-container']);;
+  popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
 
-  const newChallengesButton = createTitleElement('\n New Challenges \neveryday!', "subtitle");
+  const newChallengesButton = createTitleElement('\n New Challenges \neveryday!\n\n', "subtitle");
   popUpContainer.appendChild(newChallengesButton);
+
 
   const aboutButton = createTitleElement('Welcome to Onchain Survivor. \n a free to play global  challenge game\n powered by decentralized blockchains!\n\n Today`s Challenge:', "subtitle");
   popUpContainer.appendChild(aboutButton);
@@ -587,7 +588,8 @@ export  function createInfoMenu() {
   const objectiveText = createTitleElement('\nEach day brings a new Challenge, and \nafter you complete it, inscribe your records \nto the hall of survivors for all of eternity. \n\n Today`s Character Class:', "subtitle");
   popUpContainer.appendChild(objectiveText);
 
-  const todaysPlayerContainer = UI.createContainer(['abilities-grid']); 
+
+  const todaysPlayerContainer = createContainer(['abilities-grid']); 
   const classButton = createButton(player, 1);
   classButton.style.cursor = 'default';
   todaysPlayerContainer.appendChild(classButton);
@@ -602,21 +604,66 @@ export  function createInfoMenu() {
   todaysAbilityContainer.appendChild(abilButton);
   popUpContainer.appendChild(todaysAbilityContainer);
 
-  const abilText = UI.createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities combine well.  Good luck!\n\n    -the dev (@onchainsurvivor)',  "subtitle");
+  const abilText = createTitleElement('\n Install many abilities during your run. Let \nyour creativity and intuition guide you, \n some abilities combine well.  Good luck!\n\n    -the dev (@onchainsurvivor)',  "subtitle");
   popUpContainer.appendChild(abilText);
 
-  const goBackButton = UI.createTitleElement('\n- Go back -\n\n', "title");
-  goBackButton.style.cursor = 'pointer';
-  
   addContainerUI('center-container', [popUpContainer]);
-  goBackButton.onclick = () => {
-
-      hideUI();
-      setupUI();
-  };
+  const goBackButton = createTitleElement('\n - Continue -\n\n',  "title");
+  goBackButton.style.cursor = 'pointer';
   popUpContainer.appendChild(goBackButton);
+      goBackButton.onclick = () => {
+        setCanMove(true);
+          hideUI();
+          setupUI();
+      };
+};
 
-}
+export function mintUI() {
+  setCanMove(false);
+ const popUpContainer = createContainer(['choose-menu-container']);;
+  popUpContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+
+  const newChallengesButton = createTitleElement('\nChallenge\nBeaten!\n\n', "title");
+  popUpContainer.appendChild(newChallengesButton);
+
+  const aboutButton = createTitleElement('Congratulations Survivor, \n for beating the daily challenge\n you can now mint your reward!\n\n Today`s Collectible:', "subtitle");
+  popUpContainer.appendChild(aboutButton);
+
+  const worldContainer = createContainer(['abilities-grid']); 
+  const worldButton = createButton(player, 1);
+  worldButton.style.cursor = 'default';
+  worldContainer.appendChild(worldButton);
+  popUpContainer.appendChild(worldContainer);
+
+
+  const submitButton = document.createElement('button'); 
+  submitButton.classList.add('rainbow-button'); 
+  submitButton.classList.add('subtitle'); 
+  submitButton.innerText = 'Mint (1.99$)';
+  popUpContainer.appendChild(submitButton);
+
+  const objectiveText = createTitleElement('\nEach day brings a new Challenge, and \na new collectible card \n will become available for surivors \n\n Tomorrow`s Collectible:', "subtitle");
+  popUpContainer.appendChild(objectiveText);
+
+  const todaysPlayerContainer = createContainer(['abilities-grid']); 
+  const classButton = createButton(ability, 1);
+  classButton.style.cursor = 'default';
+  todaysPlayerContainer.appendChild(classButton);
+  popUpContainer.appendChild(todaysPlayerContainer);
+
+  const abilText = createTitleElement('\n The Collectibles you mint \n help me develop the game full time \n thanks for your support!\n\n    -the dev (@onchainsurvivor)',  "subtitle");
+  popUpContainer.appendChild(abilText);
+
+  addContainerUI('center-container', [popUpContainer]);
+  const goBackButton = createTitleElement('\n - Exit -\n\n',  "title");
+  goBackButton.style.cursor = 'pointer';
+  popUpContainer.appendChild(goBackButton);
+      goBackButton.onclick = () => {
+    // Trigger a full page reload using the cached version.
+    // This will effectively reset the game.
+    window.location.reload(false);
+      };
+};
 
 export function showTransparencyReport() {
   const popUpContainer = createContainer(['choose-menu-container']);;
@@ -680,6 +727,62 @@ addContainerUI('center-container', [popUpContainer]);
        setupUI;
   };
   popUpContainer.appendChild(goBackButton);
+}
+
+export function showAbilityNotification(ability, allObtained = false) {
+    // Remove existing notification if it exists
+    const existingNotification = document.querySelector('.ability-notification');
+    if (existingNotification) {
+        document.body.removeChild(existingNotification);
+    }
+
+    // Create a notification container
+    const notificationContainer = document.createElement('div');
+    notificationContainer.className = 'ability-notification'; // Add a class for easy selection
+    notificationContainer.style.position = 'fixed';
+    notificationContainer.style.bottom = '20px';
+    notificationContainer.style.left = '50%';
+    notificationContainer.style.transform = 'translateX(-50%)';
+    notificationContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+    notificationContainer.style.color = '#fff';
+    notificationContainer.style.padding = '10px 20px';
+    notificationContainer.style.borderRadius = '5px';
+    notificationContainer.style.fontFamily = 'Arial, sans-serif';
+    notificationContainer.style.zIndex = '1000';
+    notificationContainer.style.textAlign = 'center';
+    notificationContainer.style.transition = 'opacity 0.5s';
+
+    // Create the button for the notification
+    const button = createButton({
+        title: allObtained ? "All abilities obtained!" : `${ability.title}`,
+        description: allObtained ? "" : `${ability.description}`,
+        thumbnail: allObtained ? "src/Media/Abilities/ALLOBTAINED.png" : ability.thumbnail,
+        effect(user) { 
+            this.update = () => {} 
+        },
+    }, .76);
+
+    // Add click event to remove notification
+    button.onclick = () => {
+        notificationContainer.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notificationContainer);
+        }, 500);
+    };
+
+    // Append button to the notification container
+    notificationContainer.appendChild(button);
+    document.body.appendChild(notificationContainer);
+
+    // Automatically remove after 2 seconds
+    setTimeout(() => {
+        if (document.body.contains(notificationContainer)) {
+            notificationContainer.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(notificationContainer);
+            }, 500);
+        }
+    }, 2000);
 }
 
 window.addEventListener('load', async () => {
