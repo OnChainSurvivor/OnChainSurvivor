@@ -110,7 +110,7 @@ D --> G[Write run record]
 - A Web3 Wallet to participate in the ranks 
 
 ## Getting Started & Installation
-- Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev.
+- Download the client and open index.html in your local server, or visit https://onchainsurvivor.pages.dev
 - A Web3 Wallet is required to participate in the ranks!
 
 ## Contributing
