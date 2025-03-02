@@ -38,7 +38,7 @@ graph TD
 
 OnChain Survivor aims to evolve into a fully local AI-driven gaming experience, where game environments and content are generated in real time based on player inputs. In the short term, the project will combine human creativity with AI-assisted asset production, laying the foundation for a gradual transition toward fully interactive, real-time worlds.
 
-The evolution will begin by incorporating semi-automated tools—such as neural style transfer and procedural asset generation—and will progressively integrate more advanced AI systems capable of managing gameplay dynamics, visual design, audio, and narrative concurrently. Blockchain technology will be used to record and synchronize these experiences, ensuring that all players share a consistent, verifiable narrative.
+The evolution will begin by incorporating semi-automated tools, such as neural style transfer and procedural asset generation—and will progressively integrate more advanced AI systems capable of managing gameplay dynamics, visual design, audio, and narrative concurrently. Blockchain technology will be used to record and synchronize these experiences, ensuring that all players share a consistent, verifiable narrative.
 
 ```mermaid
 flowchart LR
