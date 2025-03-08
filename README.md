@@ -143,7 +143,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 
 -   **Twitter**:  [@OnChainSurvivor](https://twitter.com/onchainsurvivor)
 
-Thank you for visiting our repository! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 
+Thank you for visiting! I hope you enjoy Onchain Survivor as much as I enjoy developing it. Happy surviving! 
 
 ## Donations
 
