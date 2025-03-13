@@ -135,7 +135,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 -   **Microsoft Copilot**:  art ❤.
 -   **Adobe Mixamo**: 3d animator ❤.
 -   **Meshy.ai**: low poly 3d modeler ❤, under the https://creativecommons.org/licenses/by/4.0/ License.
--   **Tensor Flow**: neural style transfer tool ❤ 
+-   **Tensor Flow**: neural style transfer ❤ 
 
 ## Contact
 
