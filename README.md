@@ -15,7 +15,7 @@ flowchart TD
     C -->|Player Three prompt| F[Generated Experience Z]
 ```
 
-OnChain Survivor employs a "Challenger System" where players submit challenges into a shared queue. Blockchain technology is used to record both current and past challenges, ensuring transparency and integrity. The challenge at the top of the queue becomes the gameplay prompt for a fixed period (measured in blockchain blocks), meaning all players engage with the same challenge and share a unified experience. This mechanism works like an auction: as challenges are submitted, they are ranked, giving every participant the opportunity to have their challenge selected as the daily prompt.
+OnChain Survivor employs a Challenger System where players submit challenges into a shared queue. Blockchain technology is used to record both current and past challenges, ensuring transparency and integrity. The challenge at the top of the queue becomes the gameplay prompt for a fixed period (measured in blockchain blocks), meaning all players engage with the same challenge and share a unified experience. This mechanism works like an auction: as challenges are submitted, they are ranked, giving every participant the opportunity to have their challenge selected as the daily prompt.
 
 ```mermaid
 flowchart LR
