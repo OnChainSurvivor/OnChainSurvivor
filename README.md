@@ -147,7 +147,7 @@ Thank you for visiting! I hope you enjoy Onchain Survivor as much as I enjoy dev
 
 ## Donations
 
-My public addresses, in case a kind soul wants to make a donation! 
+My public addresses, in case a soul wants to make a donation! 
 
 BTC:
 bc1p5qg2972ksyk2uc29nky4kapkm9tr6nmqjes9caxgs4esdtzk0frs0ul527
