@@ -117,12 +117,6 @@ D --> G[Write run record]
 
 Contributions from everyone are welcomed! You can contact me directly, make a proposal directly in github. I am really focusing adding content into the game, but you can ping me on twitter to notify me about your contribution. 
 
-1.  **Fork the Repository**
-2.  **Create a New Branch**
-3.  **Commit Your Changes**
-4.  **Push to the Branch**
-5.  **Open a Pull Request**
-
 ## License
 
 [TBD]. 
