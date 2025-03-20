@@ -1,16 +1,22 @@
 const abilityTypes = [
-{title: "Debt Drown",
-         key: "DebtDrown",
-         description: "Drown in debt, slowing everyone nearby.",
-        thumbnail: 'src/Media/Abilities/DEBTDROWN.png'},
-        { title: 'Onchain Trail',
-            key: 'OnchainTrail',
-             description: 'Onchain movements leave a damaging trail behind.', 
-             thumbnail: 'src/Media/Abilities/ONCHAINTRAIL.png' },
-       {title: "Frontrunning Bot", 
-           key: "FrontrunningBot", 
-           description: "Fast bot that outpaces you and your enemy movements.", 
-           thumbnail: 'src/Media/Abilities/FRONTRUNNINGBOT.png' },
+{
+    title: "Debt Drown",
+    key: "DebtDrown",
+    description: "Drown in debt, slowing everyone nearby.",
+    thumbnail: 'src/Media/Abilities/DEBTDROWN.png'
+},
+{
+    title: 'Onchain Trail',
+    key: 'OnchainTrail',
+    description: 'Onchain movements leave a damaging trail behind.', 
+    thumbnail: 'src/Media/Abilities/ONCHAINTRAIL.png'
+},
+{
+    title: "Frontrunning Bot", 
+    key: "FrontrunningBot", 
+    description: "Fast bot that outpaces you and your enemy movements.", 
+    thumbnail: 'src/Media/Abilities/FRONTRUNNINGBOT.png'
+},
 ];
 
 export { abilityTypes };

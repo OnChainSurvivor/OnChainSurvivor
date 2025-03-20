@@ -1,13 +1,4 @@
 export const worldComponents = {
-    BloomEnvironment: {
-      initialize(mainScreen, scene, camera, renderer) {
-
-        // (Optionally, add UnrealBloomPass postprocessing in your renderer setup.)
-      },
-      update(mainScreen, scene, camera, renderer, delta) {
-        // No dynamic updates needed for this static bloom effect.
-      }
-    },
     Octahedron: {
       initialize(mainScreen, scene, camera, renderer) {
         console.log("Initializing Octahedron");

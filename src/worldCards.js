@@ -5,3 +5,4 @@ export const worldTypes = worlds.map(world => ({
   description: world.description,
   thumbnail: world.thumbnail
 }));
+
