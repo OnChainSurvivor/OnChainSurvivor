@@ -1,11 +1,12 @@
 ## Congratulations, Survivor!
 
-Welcome to the Onchain Survivor repository! Congratulations on making it this far, you’ve navigated every challenge along your crypto journey. Keep pushing forward! Our project is built on the principles of fun, simplicity, decentralization, and openness.
+Welcome to the Onchain Survivor repository! Our project is built on the principles of fun, simplicity, decentralization, and openness.
 
-OnChain Survivor is a browser top-down survival game, that leverages artificial intelligence in tandem with Web3 technologies to deliver a fresh gaming experience. Players navigate dynamically generated environments where the main goal is simple: survive. We combine engaging roguelite gameplay with the potential of AI and the security of blockchains to create a unique and immersive experience.
+Onchain Survivor is a browser top-down survival game, that leverages artificial intelligence in tandem with Web3 technologies to deliver a fresh gaming experience. Players navigate dynamically generated environments where the main goal is simple: survive. We combine the potential of AI and the security of blockchains to create a unique and immersive experience.
 
-## The Problem & The Solution: The daily challenger, Integrations, & Game Design
-Soon, players will be able to generate diverse gaming experiences with a single prompt. While this capability can unlock incredibly immersive virtual worlds, it also risks isolating these creations from broader communities. By incorporating blockchains as a ledger, we aim to connect and share these experiences, ensuring they become part of a larger, interactive ecosystem.
+## The daily challenge, Integrations, & Game Design
+
+Thanks to genAI, the gaming world will change, with players being able to generate diverse gaming experiences with a single prompt. While this capability can unlock incredibly immersive virtual worlds, it also risks isolating these creations from broader communities. By incorporating blockchains as a ledger serving as a source of truth and consensus, we aim to connect and share these experiences, ensuring they become part of a larger, interactive ecosystem for many players.
 
 ```mermaid
 flowchart TD
@@ -15,7 +16,7 @@ flowchart TD
     C -->|Player Three prompt| F[Generated Experience Z]
 ```
 
-OnChain Survivor employs a Challenger System where players submit challenges into a shared queue. Blockchain technology is used to record both current and past challenges, ensuring transparency and integrity. The challenge at the top of the queue becomes the gameplay prompt for a fixed period (measured in blockchain blocks), meaning all players engage with the same challenge and share a unified experience. This mechanism works like an auction: as challenges are submitted, they are ranked, giving every participant the opportunity to have their challenge selected as the daily prompt.
+OnChain Survivor employs a system where players submit challenges into a shared queue that  will  reflect and provide feedback on gameplay demands, using  Blockchain technology to record both current and past challenges, ensuring transparency and integrity. The challenge at the top of the queue becomes the gameplay prompt for a fixed period of time (measured in blocks), meaning all players engage with the same challenge and share a unified experience. This mechanism works like an auction: as challenges are submitted, they are ranked, giving every participant the opportunity to have their challenge selected as the daily prompt.
 
 ```mermaid
 flowchart LR
@@ -36,47 +37,24 @@ graph TD
 
 ## Development Roadmap: Towards Locally Generated AI Worlds
 
-OnChain Survivor aims to evolve into a fully local AI-driven experience, where game environments and content are generated in real time based on consensus inputs. In the short term, the project will combine human creativity with AI-assisted asset production, laying the foundation for a gradual transition toward fully interactive, real-time worlds.
+Onchain Survivor aims to be fully local AI run experience, where game environments and content are generated in real time locally, based on consensus inputs at a global scale.
 
-The evolution will begin by incorporating semi-automated tools, such as neural style transfer and procedural asset generation—and will progressively integrate more advanced AI systems capable of managing gameplay dynamics, visual design, audio, and narrative concurrently. Blockchain technology will be used to record and synchronize these experiences, ensuring that all players share a consistent, verifiable narrative.
+In the short term, the project will combine human creativity with AI-assisted asset production, laying the foundation for a gradual transition toward fully AI made worlds. The evolution will begin by incorporating semi-automated tools, such as neural style transfer and procedural asset generation—and will progressively integrate more advanced AI systems capable of managing gameplay dynamics, visual design, audio, and narrative concurrently. Blockchain technology will be used to record and synchronize these experiences, ensuring that all players share a consistent, verifiable narrative.
 
 ```mermaid
 flowchart LR
-    subgraph Phase1 [P.1: Man made, AI assisted]
-        A[Daily Survival Challenges, Card rewards]
+    subgraph Phase1 [P1: Man made, AI assisted]
+        A[Daily Challenges, Player feedback]
     end
-    subgraph Phase2 [P.2: AI made, Man assisted]
-        B[Games using the card Rewards,<br> as system prompts]
+    subgraph Phase2 [P2: AI made, Man assisted]
+        B[System prompts, Neural Style Transfer]
     end
-    subgraph Phase3 [P.3: Fully AI Made]
+    subgraph Phase3 [P3: Fully AI Made, DAO Controlled]
         C[Fully Real-time AI<br> made rendering,<br> locally run!]
     end
 
     A --> B --> C
 ```
-
-###  Phase 1 : Daily Challenges, by players for players!
-
-In this phase, players directly influence the daily game experience by submitting challenges to a centralized, blockchain-managed queue. Each submission is recorded transparently, and challenges are ranked by the Ether amount attached to them. Only the top-ranked challenge becomes the active game prompt for a fixed period measured in blockchain blocks, ensuring a competitive and fair environment.
-
-**Challenge Submission**:
-Players submit challenges to modify the game. Each challenge is added to a centralized queue maintained on the blockchain.
-
-**Ranking Process**:
-The challenges are then ranked based on the amount of Ether submitted, forming a daily ranked list.
-
-The top-ranked (first place) challenge is selected to define the game state for a predetermined number of blocks.
-Once a challenge is selected, it is recorded in the system, and all other challengers move up in rank, creating ongoing opportunities for new challenges to be submitted and ranked.
-
-**Daily Rank up**: Every n Blocks, the top-ranked challenge in the queue becomes the game state for the set period of time, making room for the second-highest to claim the number one spot. All other positions advance one spot too!
-
-This system ensures fairness and continuous engagement by refreshing the challenge queue regularly and offering all players a chance to shape the game.
-
-## Phase 2: Shared Challenge Queue Across Multiple Games
-Additional game templates will share the same smart contract-managed challenge queue. A challenge submitted for one game will automatically apply to all, creating a unified experience—while design constraints ensure that each game remains coherent.
-
-## Phase 3: Real-Time, Locally Driven AI Experiences
-Future updates will allow players to modify game visuals and gameplay in real time. Using advanced style transfer techniques, the game will render each frame live according to player-selected styles. This builds on current demonstrations like GenAI-rendered videos, with plans to adopt leading open-source real-time technologies as they mature.
 
 ## Art & Sound
 While the current version uses basic 3D graphics and simple music, future iterations will integrate neural style transfer and AI-generated music to offer diverse, evolving artistic experiences
@@ -121,7 +99,7 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 
 [TBD]. 
 
-## 🙏Acknowledgments ❤
+## Acknowledgments ❤
 
 -   **Three js**: engine ❤.
 -   **Web3 js**: blockchain interactions ❤.
@@ -129,7 +107,8 @@ Contributions from everyone are welcomed! You can contact me directly, make a pr
 -   **Microsoft Copilot**:  art ❤.
 -   **Adobe Mixamo**: 3d animator ❤.
 -   **Meshy.ai**: low poly 3d modeler ❤, under the https://creativecommons.org/licenses/by/4.0/ License.
--   **Tensor Flow**: neural style transfer ❤ 
+-   **Tensor Flow**: neural style transfer ❤
+-   **Cursor**: IDE ❤.
 
 ## Contact
 
