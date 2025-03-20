@@ -79,7 +79,7 @@ Additional game templates will share the same smart contract-managed challenge q
 Future updates will allow players to modify game visuals and gameplay in real time. Using advanced style transfer techniques, the game will render each frame live according to player-selected styles. This builds on current demonstrations like GenAI-rendered videos, with plans to adopt leading open-source real-time technologies as they mature.
 
 ## Art & Sound
-Art and music submissions are welcome without strict style guidelines. While the current version uses basic 3D graphics and simple music, future iterations will integrate neural style transfer and AI-generated music to offer diverse, evolving artistic experiences
+While the current version uses basic 3D graphics and simple music, future iterations will integrate neural style transfer and AI-generated music to offer diverse, evolving artistic experiences
 
 ## Interaction Models 
 
